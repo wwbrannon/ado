@@ -97,8 +97,8 @@ class BranchStataExpr: public BaseStataExpr
 
 // We don't need to continue the parse tree all the way up to the level of a
 // translation unit because the command syntax is so constrained. Breaking it
-// out into BaseStataCmd and its derived classes at the top level makes it
-// easier to write the R.
+// out into BaseStataCmd and its derived classes at the top level makes this
+// somewhat easier.
 
 // the abstract base class for Stata commands
 class BaseStataCmd
@@ -116,8 +116,18 @@ class EmbeddedRCmd: public BaseStataCmd
         std::string text;
 
     public:
-        virtual Rcpp::List as_list() const = 0;
+        virtual Rcpp::List as_list() const;
         EmbeddedRCmd(std::string _text);
+};
+
+class ImmediateStataCmd: public BaseStataCmd
+{
+    public:
+        virtual Rcpp::List as_list() const;
+        ImmediateStataCmd(std::vector<std::unique_ptr<BaseStataExpr>> _exprs);
+
+    private:
+        std::vector<std::unique_ptr<BaseStataExpr>> exprs;
 };
 
 class GeneralStataCmd: public BaseStataCmd

@@ -28,9 +28,10 @@ infra:
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) StataExpr.cpp -o build/StataExpr.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) OptionList.cpp -o build/OptionList.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) StataOption.cpp -o build/StataOption.o
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) MakeGeneralStataCmd.cpp -o build/MakeGeneralStataCmd.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) GeneralStataCmd.cpp -o build/GeneralStataCmd.o
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) MakeGeneralStataCmd.cpp -o build/MakeGeneralStataCmd.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) EmbeddedRCmd.cpp -o build/EmbeddedRCmd.o
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) ImmediateStataCmd.cpp -o build/ImmediateStataCmd.o
 
 clean:
 	rm -rf build
