@@ -27,6 +27,7 @@ RStataDriver::RStataDriver(std::string _text, int _debug_level)
 
     debug_level = _debug_level;
     error_seen = 0;
+    echo = 0;
 }
 
 RStataDriver::RStataDriver(int _callbacks, Rcpp::Function _cmd_action,
