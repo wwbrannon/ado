@@ -637,7 +637,7 @@ power_expression:
       postfix_expression %prec EXPONENT
     | power_expression power_operator postfix_expression %prec EXPONENT
     {
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_power_expression"});
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_arithmetic_expression", "rstata_power_expression"});
         node->addData("verb", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -649,7 +649,7 @@ unary_expression:
       power_expression
     | unary_operator power_expression
     {
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_unary_expression"});
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_arithmetic_expression", "rstata_unary_expression"});
         node->addData("verb", *($1));
         node->appendChild("right", $2);
         $$ = node;
@@ -660,7 +660,7 @@ multiplication_expression:
       unary_expression
     | multiplication_expression multiplication_operator unary_expression
     {
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_multiplication_expression"});
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_arithmetic_expression", "rstata_multiplication_expression"});
         node->addData("verb", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -672,7 +672,7 @@ additive_expression:
       multiplication_expression %prec "+"
     | additive_expression additive_operator multiplication_expression %prec "+"
     {
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_additive_expression"});
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_arithmetic_expression", "rstata_additive_expression"});
         node->addData("verb", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
