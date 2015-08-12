@@ -33,7 +33,8 @@ int yywrap()
 %start commands
 
 %token <num> NUMBER
-%token <str> IDENT STRING_LITERAL
+%token <str> NUMBER_MISSING
+%token <str> IDENT STRING_LITERAL STRING_MISSING
 %token <str> GT_OP LE_OP EQ_OP NE_OP OR_OP AND_OP
 
 %token <str> BY BYSORT XI QUIETLY
@@ -48,7 +49,6 @@ int yywrap()
 %token <str> HELP ASSERT PROBIT TTEST PWCORR CORRELATE TEST PREDICT
 %token <str> RESTORE SAVE SET SORT MLOGIT REGRESS LOGIT CI
 
-
 %%
 
 commands:
@@ -57,10 +57,10 @@ commands:
 
 command:
       insheet_cmd
-    | table_cmd
-    | sum_cmd
     | di_cmd
     | exit_cmd
+    /* | table_cmd
+    | sum_cmd
     | append_cmd
     | cd_cmd
     | clear_cmd
@@ -113,7 +113,7 @@ command:
     | regress_cmd
     | logit_cmd
     | ci_cmd
-    | use_cmd
+    | use_cmd */
     ;
 
 primary_expression:
@@ -195,6 +195,7 @@ varlist:
     | varlist IDENT
     ;
 
+/* 
 append_cmd:
     syntax
     {
@@ -475,13 +476,6 @@ sort_cmd:
     }
     ;
 
-exit_cmd:
-    EXIT
-    {
-        raise_condition("Exit requested", "exit");
-    }
-    ;
-
 help_cmd:
     syntax
     {
@@ -573,6 +567,27 @@ use_cmd:
     }
     ;
 
+table_cmd:
+      TABLE IDENT
+    | TABLE IDENT IDENT
+    {
+    }
+    ;
+
+sum_cmd:
+   SUM varlist 
+    {
+    }
+    ;
+*/
+
+exit_cmd:
+    EXIT
+    {
+        raise_condition("Exit requested", "exit");
+    }
+    ;
+
 insheet_cmd:
     INSHEET USING STRING_LITERAL
     {
@@ -613,19 +628,6 @@ insheet_cmd:
         };
         
         cmdlist_ptr = &cmdlist;
-    }
-    ;
-
-table_cmd:
-      TABLE IDENT
-    | TABLE IDENT IDENT
-    {
-    }
-    ;
-
-sum_cmd:
-   SUM varlist 
-    {
     }
     ;
 

@@ -22,10 +22,14 @@ void count();
 
 \"(\\.|[^"\\])*\"       { count(); yylval.str = strdup(yytext); return STRING_LITERAL; }
 \'(\\.|[^'\\])*\'       { count(); yylval.str = strdup(yytext); return STRING_LITERAL; }
+\"\"                    { count(); yylval.str = strdup(yytext); return STRING_MISSING; }
+\'\'                    { count(); yylval.str = strdup(yytext); return STRING_MISSING; }
 
 [_A-Za-z][A-Za-z0-9_]*  { count(); yylval.str = strdup(yytext); return IDENT; }
 
 -?[0-9]+(\.[0-9]+)?     { count(); yylval.str = strdup(yytext); yylval.num = atoi(yytext); return NUMBER; }
+\.                      { count(); yylval.str = strdup(yytext); return NUMBER_MISSING; }
+\.[a-z]                 { count(); yylval.str = strdup(yytext); return NUMBER_MISSING; }
 
 "&&"                    { count(); yylval.str = strdup(yytext); return AND_OP; }
 "&"                     { count(); yylval.str = strdup(yytext); return AND_OP; }
