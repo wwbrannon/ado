@@ -1651,16 +1651,6 @@ lrtest                              {
                                         yylval->node->appendChild("verb", verb);
                                         return token::TOK_LRTEST;
                                     }
-test                                {
-                                        R_ECHO(yytext);
-                                        
-                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
-                                        verb->addData("value", *(new std::string(yytext)));
-
-                                        yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
-                                        yylval->node->appendChild("verb", verb);
-                                        return token::TOK_TEST;
-                                    }
 anova                               {
                                         R_ECHO(yytext);
                                         

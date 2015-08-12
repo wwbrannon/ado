@@ -122,7 +122,7 @@ yy::RStataParser::error(const location_type& l, const std::string& m)
 %token <node>   EMBEDDED_CODE
 %token <node>   BY XI BYSORT
 %token <node>   QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
-%token <node>   MERGE COLLAPSE IVREGRESS RECODE GSORT LRTEST TEST ANOVA
+%token <node>   MERGE COLLAPSE IVREGRESS RECODE GSORT LRTEST ANOVA
 
                 /* Command components and keywords */
 %token          USING IF IN
@@ -155,10 +155,11 @@ yy::RStataParser::error(const location_type& l, const std::string& m)
 %type <node>    option_list argument_expression_list expression_list
 
                 /* Non-terminals for the syntax of special commands */
-%type <node>    anova_term anova_term_list collapse_list collapse_spec
+%type <node>    anova_term_list collapse_list collapse_spec
 %type <node>    collapse_spec_element collapse_spec_element_base gsort_var
 %type <node>    gsort_varlist modelspec modelspec_list numlist recode_rule_lhs
-%type <node>    recode_rule_or_var recode_rule_or_var_list test_spec_list varlist
+%type <node>    recode_rule_or_var recode_rule_or_var_list varlist
+%type <node>    anova_nest_expression anova_error_expression
 
 %destructor { }                 translation_unit
 %destructor { delete $$; }      <str>
@@ -586,15 +587,6 @@ nonmodifier_cmd:
 
         $$ = $1;
     }
-    | TEST test_spec_list option_list
-    {
-        $1->appendChild("expression_list", $2);
-        
-        if($3->nChildren() > 0)
-            $1->appendChild("option_list", $3);
-        
-        $$ = $1;
-    }
     | ANOVA IDENT anova_term_list if_clause in_clause weight_clause option_list
     {
         $3->prependChild($2);
@@ -665,7 +657,7 @@ collapse_spec_element_base:
       IDENT
     {
     }
-    | IDENT "=" IDENT
+    | IDENT "=" IDENT /* We need to weed this later on */
     {
     }
     ;
@@ -773,28 +765,46 @@ modelspec_list:
     }
     ;
 
-/* Helper constructs for test */
-test_spec_list:
-      %empty
-    |
+/* Helper constructs for anova */
+anova_nest_expression:
+      unary_factor_expression
+    | anova_nest_expression "|" unary_factor_expression
+    {
+        $2; // shut up, bison...
+
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_anova_nest_expression"});
+        node->addData("verb", std::string("anova_nest"));
+        node->appendChild("left", $1);
+        node->appendChild("right", $3);
+        $$ = node;
+    }
     ;
 
-/* Helper constructs for anova */
+anova_error_expression:
+      anova_nest_expression
+    | anova_nest_expression "/"
+    {
+        $2; // shut up, bison...
+
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_anova_error_expression"});
+        node->addData("verb", std::string("anova_error"));
+        node->appendChild("left", $1);
+        $$ = node;
+    }
+    ;
+
 anova_term_list:
-      anova_term
+      anova_error_expression
     {
         ExprNode *node = new ExprNode("rstata_expression_list");
         node->appendChild($1);
         $$ = node;
     }
-    | anova_term_list anova_term
+    | anova_term_list anova_error_expression
     {
         $1->appendChild($2);
         $$ = $1;
     }
-    ;
-
-anova_term:
     ;
 
 /*
