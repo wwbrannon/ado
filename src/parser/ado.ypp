@@ -23,23 +23,31 @@ int yywrap()
   
 %}
 
-%token NUMBER IDENT STRING_LITERAL
-%token INSHEET TABLE SUM DI EXIT
-%token USING BY IN IF PWEIGHT AWEIGHT
-%token GT_OP LE_OP EQ_OP NE_OP OR_OP AND_OP
-
 %union {
     char *str;
     int num;
 }
 
-%type <str> INSHEET
-%type <str> USING
-%type <str> STRING_LITERAL
-
 %parse-param {STATA_CMD_LIST_T *cmdlist_ptr}
 %define parse.error verbose
 %start commands
+
+%token <num> NUMBER
+%token <str> IDENT STRING_LITERAL
+%token <str> GT_OP LE_OP EQ_OP NE_OP OR_OP AND_OP
+
+%token <str> BY BYSORT XI QUIETLY
+%token <str> USING IN IF PWEIGHT AWEIGHT
+
+%token <str> INSHEET TABLE SUM DI EXIT
+%token <str> APPEND CD CLEAR CODEBOOK COLLAPSE COMPARE COUNT
+%token <str> DESCRIBE DESTRING DROP DUPLICATES EGEN FORMAT GENERATE
+%token <str> INFILE INSPECT KEEP LABEL LIST LOG LS MEMORY MERGE
+%token <str> MOVE MVDECODE MVENCODE ORDER OUTFILE PRESERVE USE
+%token <str> QUERY RANGE RECAST RECODE RENAME REPLACE RESHAPE
+%token <str> HELP ASSERT PROBIT TTEST PWCORR CORRELATE TEST PREDICT
+%token <str> RESTORE SAVE SET SORT MLOGIT REGRESS LOGIT CI
+
 
 %%
 
@@ -53,6 +61,59 @@ command:
     | sum_cmd
     | di_cmd
     | exit_cmd
+    | append_cmd
+    | cd_cmd
+    | clear_cmd
+    | codebook_cmd
+    | collapse_cmd
+    | compare_cmd
+    | count_cmd
+    | describe_cmd
+    | destring_cmd
+    | drop_cmd
+    | duplicates_cmd
+    | egen_cmd
+    | format_cmd
+    | generate_cmd
+    | infile_cmd
+    | inspect_cmd
+    | keep_cmd
+    | label_cmd
+    | list_cmd
+    | log_cmd
+    | ls_cmd
+    | memory_cmd
+    | merge_cmd
+    | move_cmd
+    | mvdecode_cmd
+    | mvencode_cmd
+    | order_cmd
+    | outfile_cmd
+    | preserve_cmd
+    | query_cmd
+    | range_cmd
+    | recast_cmd
+    | recode_cmd
+    | rename_cmd
+    | replace_cmd
+    | reshape_cmd
+    | restore_cmd
+    | save_cmd
+    | set_cmd
+    | sort_cmd
+    | help_cmd
+    | assert_cmd
+    | probit_cmd
+    | ttest_cmd
+    | pwcorr_cmd
+    | correlate_cmd
+    | test_cmd
+    | predict_cmd
+    | mlogit_cmd
+    | regress_cmd
+    | logit_cmd
+    | ci_cmd
+    | use_cmd
     ;
 
 primary_expression:
@@ -134,10 +195,381 @@ varlist:
     | varlist IDENT
     ;
 
+append_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+cd_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+clear_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+codebook_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+collapse_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+compare_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+count_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+describe_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+destring_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+drop_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+duplicates_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+egen_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+format_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+generate_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+infile_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+inspect_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+keep_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+label_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+list_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+log_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+ls_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+memory_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+merge_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+move_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+mvdecode_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+mvencode_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+order_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+outfile_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+preserve_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+query_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+range_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+recast_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+recode_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+rename_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+replace_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+reshape_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+restore_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+save_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+set_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+sort_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
 exit_cmd:
     EXIT
     {
         raise_condition("Exit requested", "exit");
+    }
+    ;
+
+help_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+assert_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+probit_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+ttest_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+pwcorr_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+correlate_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+test_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+predict_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+mlogit_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+regress_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+logit_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+ci_cmd:
+    syntax
+    {
+        
+    }
+    ;
+
+use_cmd:
+    syntax
+    {
+        
     }
     ;
 

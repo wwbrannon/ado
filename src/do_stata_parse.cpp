@@ -25,7 +25,7 @@ List do_stata_parse(std::string line)
     do {
         char *verb, *weight, *using_filename;
         int range_lower, range_upper;
-        modifiers, varlist, assign_stmt, if_exp, options;
+        modifiers, varlist, assign_stmt, if_exp, options; // have to find the right expression type
         List res;
        
         // book-keeping for walking the list of commands
@@ -56,7 +56,7 @@ List do_stata_parse(std::string line)
             range_lower = R_Nilvalue;
         }
 
-        
+        // and the expression types here
 
         res = List::create(_["verb"]            = verb,
                            _["modifiers"]       = modifiers,
