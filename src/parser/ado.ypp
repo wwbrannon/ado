@@ -180,7 +180,7 @@ compound_cmd:
 cmds:
       cmd
     {
-        ExprNode *node = new ExprNode("compound_cmd");
+        ExprNode *node = new ExprNode("rstata_compound_cmd");
         node->appendChild($1);
         $$ = node;
     }
@@ -252,7 +252,7 @@ modifier_cmd:
 modifier_cmd_list:
       modifier_cmd
     {
-        ExprNode *node = new ExprNode("modifier_cmd_list");
+        ExprNode *node = new ExprNode("rstata_modifier_cmd_list");
         node->appendChild($1);
         $$ = node;
     }
@@ -266,7 +266,7 @@ modifier_cmd_list:
 nonmodifier_cmd:
       IDENT expression_list if_clause in_clause weight_clause using_clause option_list
     {
-        ExprNode *node = new ExprNode("GeneralStataCmd");
+        ExprNode *node = new ExprNode("rstata_general_cmd");
         node->appendChild("verb", $1);
         node->appendChild("varlist", $2);
         
@@ -299,7 +299,7 @@ nonmodifier_cmd:
     }
     | IDENT
     {
-        ExprNode *node = new ExprNode("GeneralStataCmd");
+        ExprNode *node = new ExprNode("rstata_general_cmd");
         node->appendChild("verb", $1);
         $$ = node;
     }
@@ -307,7 +307,7 @@ nonmodifier_cmd:
     /* commands with unusual enough syntax to parse them separately */
     | MERGE MERGE_SPEC expression_list using_clause option_list
     {
-        ExprNode *node = new ExprNode("GeneralStataCmd");
+        ExprNode *node = new ExprNode("rstata_general_cmd");
         node->appendChild("verb", $1);
         node->addData("merge_spec", *($2));
         
@@ -330,7 +330,7 @@ nonmodifier_cmd:
     }
     | GENERATE expression if_clause in_clause option_list
     {
-        ExprNode *node = new ExprNode("GeneralStataCmd");
+        ExprNode *node = new ExprNode("rstata_general_cmd");
         node->appendChild("verb", $1);
         node->appendChild("newvar", $2);
         
@@ -353,7 +353,7 @@ nonmodifier_cmd:
     }
     | GENERATE type_spec expression if_clause in_clause option_list
     {
-        ExprNode *node = new ExprNode("GeneralStataCmd");
+        ExprNode *node = new ExprNode("rstata_general_cmd");
         node->appendChild("verb", $1);
         node->addData("type_spec", *($2));
         node->appendChild("newvar", $3);
@@ -377,7 +377,7 @@ nonmodifier_cmd:
     }
     | RECAST type_spec expression_list option_list
     {
-        ExprNode *node = new ExprNode("GeneralStataCmd");
+        ExprNode *node = new ExprNode("rstata_general_cmd");
         node->appendChild("verb", $1);
         node->addData("type_spec", *($2));
 
@@ -392,7 +392,7 @@ nonmodifier_cmd:
     }
     | DISPLAY format_spec expression
     {
-        ExprNode *node = new ExprNode("GeneralStataCmd");
+        ExprNode *node = new ExprNode("rstata_general_cmd");
         node->appendChild("verb", $1);
         node->addData("format_spec", *($2));
         node->appendChild("expression", $3);
@@ -401,7 +401,7 @@ nonmodifier_cmd:
     }
     | DISPLAY expression
     {
-        ExprNode *node = new ExprNode("GeneralStataCmd");
+        ExprNode *node = new ExprNode("rstata_general_cmd");
         node->appendChild("verb", $1);
         node->appendChild("expression", $2);
         
@@ -409,7 +409,7 @@ nonmodifier_cmd:
     }
     | FORMAT format_spec expression_list
     {
-        ExprNode *node = new ExprNode("GeneralStataCmd");
+        ExprNode *node = new ExprNode("rstata_general_cmd");
         node->appendChild("verb", $1);
         node->addData("format_spec", *($2));
         node->appendChild("varlist", $3);
@@ -418,7 +418,7 @@ nonmodifier_cmd:
     }
     | FORMAT expression_list format_spec
     {
-        ExprNode *node = new ExprNode("GeneralStataCmd");
+        ExprNode *node = new ExprNode("rstata_general_cmd");
         node->appendChild("verb", $1);
         node->addData("format_spec", *($3));
         node->appendChild("varlist", $2);
@@ -512,7 +512,7 @@ postfix_expression:
       primary_expression
     | postfix_expression "[" expression "]" %prec "["
     {
-        ExprNode *node = new ExprNode("expression");
+        ExprNode *node = new ExprNode("rstata_expression");
         node->addData("value", std::string("[]"));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -524,7 +524,7 @@ postfix_expression:
     }
     | postfix_expression "(" ")" %prec "("
     {
-        ExprNode *node = new ExprNode("expression");
+        ExprNode *node = new ExprNode("rstata_expression");
         node->addData("value", std::string("()"));
         node->appendChild("left", $1);
         
@@ -535,7 +535,7 @@ postfix_expression:
     }
     | postfix_expression "(" argument_expression_list ")"
     {
-        ExprNode *node = new ExprNode("expression");
+        ExprNode *node = new ExprNode("rstata_expression");
         node->addData("value", std::string("()"));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -551,7 +551,7 @@ power_expression:
       postfix_expression %prec EXPONENT
     | power_expression power_operator postfix_expression %prec EXPONENT
     {
-        ExprNode *node = new ExprNode("expression");
+        ExprNode *node = new ExprNode("rstata_expression");
         node->addData("value", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -563,7 +563,7 @@ unary_expression:
       power_expression
     | unary_operator power_expression
     {
-        ExprNode *node = new ExprNode("expression");
+        ExprNode *node = new ExprNode("rstata_expression");
         node->addData("value", *($1));
         node->appendChild("right", $2);
         $$ = node;
@@ -574,7 +574,7 @@ multiplication_expression:
       unary_expression
     | multiplication_expression multiplication_operator unary_expression
     {
-        ExprNode *node = new ExprNode("expression");
+        ExprNode *node = new ExprNode("rstata_expression");
         node->addData("value", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -586,7 +586,7 @@ additive_expression:
       multiplication_expression %prec "+"
     | additive_expression additive_operator multiplication_expression %prec "+"
     {
-        ExprNode *node = new ExprNode("expression");
+        ExprNode *node = new ExprNode("rstata_expression");
         node->addData("value", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -598,7 +598,7 @@ relational_expression:
       additive_expression %prec RELATIONAL
     | relational_expression relational_operator additive_expression %prec RELATIONAL
     {
-        ExprNode *node = new ExprNode("expression");
+        ExprNode *node = new ExprNode("rstata_expression");
         node->addData("value", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -610,7 +610,7 @@ equality_expression:
       relational_expression
     | equality_expression equality_operator relational_expression
     {
-        ExprNode *node = new ExprNode("expression");
+        ExprNode *node = new ExprNode("rstata_expression");
         node->addData("value", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -622,7 +622,7 @@ logical_expression:
       equality_expression
     | logical_expression logical_operator equality_expression
     {
-        ExprNode *node = new ExprNode("expression");
+        ExprNode *node = new ExprNode("rstata_expression");
         node->addData("value", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -633,7 +633,7 @@ logical_expression:
 argument_expression_list:
       logical_expression
     {
-        ExprNode *node = new ExprNode("expression_list");
+        ExprNode *node = new ExprNode("rstata_argument_expression_list");
         node->appendChild($1);
         $$ = node;
     }
@@ -651,7 +651,7 @@ expression:
       logical_expression
     | IDENT assignment_operator logical_expression
     {
-        ExprNode *node = new ExprNode("expression");
+        ExprNode *node = new ExprNode("rstata_expression");
         node->addData("value", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -662,7 +662,7 @@ expression:
 expression_list:
       expression
     {
-        ExprNode *node = new ExprNode("expression_list");
+        ExprNode *node = new ExprNode("rstata_expression_list");
         node->appendChild($1);
         $$ = node;
     }
@@ -673,7 +673,7 @@ expression_list:
     }
     | type_spec "(" expression_list ")"
     {
-        ExprNode *node = new ExprNode("type_constructor");
+        ExprNode *node = new ExprNode("rstata_type_constructor");
         node->addData("type_spec", *($1));
         node->appendChild("varlist", $3);
         
@@ -693,7 +693,7 @@ expression_list:
 option_list:
       %empty
     {
-        $$ = new ExprNode("option_list");
+        $$ = new ExprNode("rstata_option_list");
     }
     | "," options
     {
@@ -706,7 +706,7 @@ option_list:
 options:
       option
     {
-        ExprNode *node = new ExprNode("option_list");
+        ExprNode *node = new ExprNode("rstata_option_list");
         node->appendChild($1);
         $$ = node;
     }
@@ -739,11 +739,11 @@ option:
 weight_clause:
       %empty
     {
-        $$ = new ExprNode("weight_clause");
+        $$ = new ExprNode("rstata_weight_clause");
     }
     | "[" IDENT assignment_operator expression "]"
     {
-        ExprNode *node = new ExprNode("weight_clause");
+        ExprNode *node = new ExprNode("rstata_weight_clause");
         node->appendChild("left", $2);
         node->appendChild("right", $4);
         
@@ -764,11 +764,11 @@ weight_clause:
 if_clause:
       %empty
     {
-        $$ = new ExprNode("if_clause");
+        $$ = new ExprNode("rstata_if_clause");
     }
     | IF expression
     {
-        ExprNode *node = new ExprNode("if_clause");
+        ExprNode *node = new ExprNode("rstata_if_clause");
         node->appendChild("if_expression", $2);
         
         delete $1;
@@ -786,11 +786,11 @@ if_clause:
 in_clause:
       %empty
     {
-        $$ = new ExprNode("in_clause");
+        $$ = new ExprNode("rstata_in_clause");
     }
     | IN NUMBER "/" NUMBER
     {
-        ExprNode *node = new ExprNode("in_clause");
+        ExprNode *node = new ExprNode("rstata_in_clause");
         node->appendChild("upper", $2);
         node->appendChild("lower", $4);
         
@@ -810,11 +810,11 @@ in_clause:
 using_clause:
       %empty
     {
-        $$ = new ExprNode("using_clause");
+        $$ = new ExprNode("rstata_using_clause");
     }
     | USING STRING_LITERAL
     {
-        ExprNode *node = new ExprNode("using_clause");
+        ExprNode *node = new ExprNode("rstata_using_clause");
         node->appendChild("filename", $2);
         
         delete $1;
@@ -823,7 +823,7 @@ using_clause:
     }
     | USING IDENT
     {
-        ExprNode *node = new ExprNode("using_clause");
+        ExprNode *node = new ExprNode("rstata_using_clause");
         node->appendChild("filename", $2);
         
         delete $1;

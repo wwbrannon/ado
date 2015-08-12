@@ -31,12 +31,6 @@ function(node)
 
 }
 
-evaluate.rstata_string_missing <- #This probably shouldn't exist
-function(node)
-{
-
-}
-
 evaluate.rstata_datetime <-
 function(node)
 {

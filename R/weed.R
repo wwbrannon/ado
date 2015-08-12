@@ -25,12 +25,6 @@ function(node)
 
 }
 
-weed.rstata_string_missing <- #This probably shouldn't exist
-function(node)
-{
-
-}
-
 weed.rstata_datetime <-
 function(node)
 {
