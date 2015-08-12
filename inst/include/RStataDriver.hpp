@@ -15,10 +15,13 @@
 class RStataDriver
 {
     public:
+        // ctor for do_parse and parse_accept
         RStataDriver(std::string text, int debug_level);
+        
+        // ctor for do_parse_with_callbacks
         RStataDriver(int callback, Rcpp::Function cmd_action,
                      Rcpp::Function macro_value_accessor,
-                     std::string text, int debug_level);
+                     std::string text, int debug_level, int echo);
         ~RStataDriver();
         
         ExprNode *ast;
@@ -39,6 +42,7 @@ class RStataDriver
         void error(const std::string& m);
 
         int debug_level;
+        int echo;
         
     private:
         RStataDriver(const RStataDriver& that); // no copy ctor

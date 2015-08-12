@@ -31,7 +31,7 @@ RStataDriver::RStataDriver(std::string _text, int _debug_level)
 
 RStataDriver::RStataDriver(int _callbacks, Rcpp::Function _cmd_action,
                            Rcpp::Function _macro_value_accessor,
-                           std::string _text, int _debug_level)
+                           std::string _text, int _debug_level, int _echo)
             : cmd_action(Rcpp::Function("identity")),
               macro_value_accessor(Rcpp::Function("identity"))
 {
@@ -42,6 +42,7 @@ RStataDriver::RStataDriver(int _callbacks, Rcpp::Function _cmd_action,
     macro_value_accessor = _macro_value_accessor;
 
     debug_level = _debug_level;
+    echo = _echo;
     error_seen = 0;
 }
 
@@ -51,11 +52,6 @@ RStataDriver::~RStataDriver()
     delete ast; // all the other members still get their destructors called
 }
 
-    // We should just be able to do this:
-    //     yy_scan_string(text.c_str());
-    // but there's a probable flex bug that overflows yytext on unput()
-    // when input comes from yy_scan_string(). Instead, let's create a
-    // tempfile, because that works correctly.
 int
 RStataDriver::parse()
 {
@@ -76,6 +72,11 @@ RStataDriver::parse()
     }
     rewind(this->tmp);
     
+    // We should just be able to do this:
+    //     yy_scan_string(text.c_str());
+    // but there's a probable flex bug that overflows yytext on unput()
+    // when input comes from yy_scan_string(). Instead, let's create a
+    // tempfile, because that works correctly.
     yy_switch_to_buffer(yy_create_buffer(this->tmp, YY_BUF_SIZE, yyscanner), yyscanner);
 
     int res;

@@ -157,7 +157,7 @@ function(dta = NULL, filename=NULL, string=NULL,
                 #each command, invokes the process_cmd callback
                 do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
                                         macro_value_accessor=macro_value_accessor,
-                                        debug_level=debug_level)
+                                        debug_level=debug_level, echo=0)
             },
             error = function(c) c)
 
@@ -195,7 +195,7 @@ function(dta = NULL, filename=NULL, string=NULL,
 
         do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
                                 macro_value_accessor=macro_value_accessor,
-                                debug_level=debug_level)
+                                debug_level=debug_level, echo=1)
     } else if(!is.null(filename))
     {
         inpt <- readLines(con=file(filename, "r"))
@@ -204,7 +204,7 @@ function(dta = NULL, filename=NULL, string=NULL,
 
         do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
                                 macro_value_accessor=macro_value_accessor,
-                                debug_level=debug_level)
+                                debug_level=debug_level, echo=1)
     } else
     {
         inpt <- readLines(con=textConnection(string))
@@ -213,7 +213,7 @@ function(dta = NULL, filename=NULL, string=NULL,
 
         do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
                                 macro_value_accessor=macro_value_accessor,
-                                debug_level=debug_level)
+                                debug_level=debug_level, echo=1)
     }
 
     return(invisible(get("rstata_dta", envir=rstata_env)));

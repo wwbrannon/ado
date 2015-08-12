@@ -58,6 +58,12 @@ std::string trim(const std::string& str, const std::string& what = " ");
 
 typedef yy::RStataParser::token token;
 
+// Should we echo the matched text to Rcpp::Rcout?
+// It's necessary for logging and for printing the commands
+// run in do-files. There's no semicolon because correct
+// usage is "R_ECHO(val);".
+#define R_ECHO(val) if(driver.echo) Rcpp::Rcout << val
+
 // Code run each time a pattern is matched
 #define YY_USER_ACTION  { llocp->columns(yyleng); }
 %}
@@ -99,11 +105,15 @@ std::stack<std::vector<std::string>> macro_stack;
 %}
                                     /* if you write {{{ ... }}}, the ... will be executed as R code */
 <INITIAL>"{{{"                      {
+                                        R_ECHO(yytext);
+                                        
                                         embed_buf.clear();
                                         yy_push_state(EMBED, yyscanner);
                                     }
 <EMBED>{
     "}}}"                           {
+                                        R_ECHO(yytext);
+                                        
                                         yy_pop_state(yyscanner);
 
                                         ExprNode *node = new ExprNode("rstata_embedded_code");
@@ -115,14 +125,30 @@ std::stack<std::vector<std::string>> macro_stack;
                                     }
     
     [\n]+                           {
+                                        R_ECHO(yytext);
+                                        
                                         llocp->lines(yyleng);
                                         embed_buf += std::string(yytext);
                                     }
-    \}[^\}]                         { embed_buf += std::string(yytext); }
-    \}\}[^\}]                       { embed_buf += std::string(yytext); }
-    [^\}\n]+                        { embed_buf += std::string(yytext); }
+    \}[^\}]                         { 
+                                        R_ECHO(yytext);
+                                        
+                                        embed_buf += std::string(yytext);
+                                    }
+    \}\}[^\}]                       {
+                                        R_ECHO(yytext);
+                                        
+                                        embed_buf += std::string(yytext);
+                                    }
+    [^\}\n]+                        {
+                                        R_ECHO(yytext);
+                                        
+                                        embed_buf += std::string(yytext);
+                                    }
 
     <<EOF>>                         {
+                                        R_ECHO("\n");
+                                        
                                         embed_buf.clear();
                                         yy_pop_state(yyscanner);
                                         
@@ -135,6 +161,8 @@ std::stack<std::vector<std::string>> macro_stack;
 
                                     /* INITIAL rules to match macros, local and global */
 <INITIAL>\`                         {
+                                        R_ECHO(yytext);
+                                        
                                         while(!macro_stack.empty())
                                             macro_stack.pop();
                                         
@@ -145,6 +173,8 @@ std::stack<std::vector<std::string>> macro_stack;
                                         yy_push_state(LOCAL_MACRO, yyscanner);
                                     }
 <INITIAL>\$/({L}|{D})+              {
+                                        R_ECHO(yytext);
+                                        
                                         while(!macro_stack.empty())
                                             macro_stack.pop();
                                         
@@ -155,6 +185,8 @@ std::stack<std::vector<std::string>> macro_stack;
                                         yy_push_state(GMACRO_ALPHA, yyscanner);
                                     }
 <INITIAL>\$\{                       {
+                                        R_ECHO(yytext);
+                                        
                                         while(!macro_stack.empty())
                                             macro_stack.pop();
                                         
@@ -170,6 +202,8 @@ std::stack<std::vector<std::string>> macro_stack;
                                     /* Rules for while within optionally nested local macros */
 <LOCAL_MACRO>{
     \`                              {
+                                        R_ECHO(yytext);
+                                        
                                         // create and push a stack frame
                                         std::vector<std::string> frame;
                                         macro_stack.push(frame);
@@ -179,6 +213,9 @@ std::stack<std::vector<std::string>> macro_stack;
 
                                     /* Local macros can't include newlines */
     \n                              {
+                                        R_ECHO(yytext);
+                                        R_ECHO("\n");
+                                        
                                         llocp->lines(1);
                                         
                                         while(!macro_stack.empty())
@@ -194,6 +231,8 @@ std::stack<std::vector<std::string>> macro_stack;
 
                                     /* We've reached the matching close quote - let's expand the macro */
     \'                              {
+                                        R_ECHO(yytext);
+                                        
                                         std::vector<std::string> frame = macro_stack.top();
                                         std::string combined, replacement;
                                         
@@ -224,6 +263,8 @@ std::stack<std::vector<std::string>> macro_stack;
                                     }
     
     [^\`\'\n]+                      {
+                                        R_ECHO(yytext);
+                                        
                                         // push yytext to the back of the current frame
                                         std::vector<std::string> frame = macro_stack.top();
                                         macro_stack.pop();
@@ -234,6 +275,8 @@ std::stack<std::vector<std::string>> macro_stack;
    
                                     /* This is an error (failing to close the macro) */
     <<EOF>>                         {
+                                        R_ECHO("\n");
+                                        
                                         while(!macro_stack.empty())
                                             macro_stack.pop();
                                         
@@ -254,6 +297,8 @@ std::stack<std::vector<std::string>> macro_stack;
 <GMACRO_ALPHA>{
                                     /* A global macro name that doesn't need to be disambiguated with braces */
     ({L}|{D})+                      {
+                                        R_ECHO(yytext);
+                                        
                                         // push yytext to the back of the current frame
                                         std::vector<std::string> frame = macro_stack.top();
                                         macro_stack.pop();
@@ -264,6 +309,8 @@ std::stack<std::vector<std::string>> macro_stack;
    
                                     /* Any other character is a delimiter - we're at the end of the macro */
     [^{L}{D}]|\n                    {
+                                        R_ECHO(yytext);
+                                        
                                         if(yyleng == 1 && yytext[0] == '\n')
                                             llocp->lines(1);
                                         
@@ -333,6 +380,8 @@ std::stack<std::vector<std::string>> macro_stack;
 <GMACRO_BRACE>{
                                     /* Allow any type of macro to be nested here */
     \`                              {
+                                        R_ECHO(yytext);
+                                        
                                         // create and push a stack frame
                                         std::vector<std::string> frame;
                                         macro_stack.push(frame);
@@ -340,6 +389,8 @@ std::stack<std::vector<std::string>> macro_stack;
                                         yy_push_state(LOCAL_MACRO, yyscanner);
                                     }
     \$/({L}|{D})+                   {
+                                        R_ECHO(yytext);
+                                        
                                         // create and push a stack frame
                                         std::vector<std::string> frame;
                                         macro_stack.push(frame);
@@ -347,6 +398,8 @@ std::stack<std::vector<std::string>> macro_stack;
                                         yy_push_state(GMACRO_ALPHA, yyscanner);
                                     }
     \$\{                            {
+                                        R_ECHO(yytext);
+                                        
                                         // create and push a stack frame
                                         std::vector<std::string> frame;
                                         macro_stack.push(frame);
@@ -356,6 +409,8 @@ std::stack<std::vector<std::string>> macro_stack;
                                     
                                     /* Characters that should be part of the name */
     [^\`\$\{\}\n]+                  {
+                                        R_ECHO(yytext);
+                                        
                                         // push yytext to the back of the current frame
                                         std::vector<std::string> frame = macro_stack.top();
                                         macro_stack.pop();
@@ -366,6 +421,8 @@ std::stack<std::vector<std::string>> macro_stack;
    
                                     /* We've seen the closing brace - wrap up and expand this macro */
     \}                              {
+                                        R_ECHO(yytext);
+                                        
                                         std::vector<std::string> frame = macro_stack.top();
                                         std::string combined, replacement;
 
@@ -396,6 +453,9 @@ std::stack<std::vector<std::string>> macro_stack;
                                     
                                     /* newline here is an error - these macros can't cross lines */
     \n                              {
+                                        R_ECHO(yytext);
+                                        R_ECHO("\n");
+                                        
                                         llocp->lines(1);
                                         
                                         while(!macro_stack.empty())
@@ -411,6 +471,8 @@ std::stack<std::vector<std::string>> macro_stack;
                                     
                                     /* EOF here is an error - the user forgot the closing "}" */
     <<EOF>>                         {
+                                        R_ECHO("\n");
+                                        
                                         while(!macro_stack.empty())
                                             macro_stack.pop();
                                         
@@ -426,16 +488,38 @@ std::stack<std::vector<std::string>> macro_stack;
 
 
                                     /* Eat long comments */
-<INITIAL>"/*"                       { yy_push_state(LONG_COMMENT, yyscanner); }
+<INITIAL>"/*"                       {
+                                        R_ECHO(yytext);
+                                        
+                                        yy_push_state(LONG_COMMENT, yyscanner);
+                                    }
 <LONG_COMMENT>{
                                     /* Got a close-comment marker, all done */
-    "*/"                            { yy_pop_state(yyscanner); }
+    "*/"                            {
+                                        R_ECHO(yytext);
+                                        
+                                        yy_pop_state(yyscanner);
+                                    }
 
-    [^\*\n]+                        { /* Eat this chunk of comment */ }
-    \*                              { /* Eat a single asterisk */ }
-    [\n]+                           { llocp->lines(yyleng); }
+    [^\*\n]+                        {
+                                        R_ECHO(yytext);
+                                        
+                                        /* Eat this chunk of comment */
+                                    }
+    \*                              {
+                                        R_ECHO(yytext);
+                                        
+                                        /* Eat a single asterisk */
+                                    }
+    [\n]+                           {
+                                        R_ECHO(yytext);
+                                        
+                                        llocp->lines(yyleng);
+                                    }
     
     <<EOF>>                         {
+                                        R_ECHO("\n");
+                                        
                                         yy_pop_state(yyscanner);
                                         driver.error(*llocp, "Unclosed comment");
                                         yyterminate();
@@ -445,16 +529,34 @@ std::stack<std::vector<std::string>> macro_stack;
 
 
                                     /* Allow a triple slash at EOL as a line extender */
-\/\/\/\n                            { llocp->lines(yyleng); llocp->step(); }
+\/\/\/\n                            {
+                                        R_ECHO(yytext);
+                                        
+                                        llocp->lines(yyleng); llocp->step();
+                                    }
 
 
 
                                     /* Eat short comments */
-<INITIAL>"//"                       { yy_push_state(SHORT_COMMENT, yyscanner); }
-<INITIAL>^\*                        { yy_push_state(SHORT_COMMENT, yyscanner); }
+<INITIAL>"//"                       {
+                                        R_ECHO(yytext);
+                                        
+                                        yy_push_state(SHORT_COMMENT, yyscanner);
+                                    }
+<INITIAL>^\*                        {
+                                        R_ECHO(yytext);
+                                        
+                                        yy_push_state(SHORT_COMMENT, yyscanner);
+                                    }
 <SHORT_COMMENT>{
-    [^\n]*                          { /* eat anything but a newline */ }
+    [^\n]*                          {
+                                        R_ECHO(yytext);
+                                        
+                                        /* eat anything but a newline */
+                                    }
     \n                              {
+                                        R_ECHO(yytext);
+                                        
                                          yy_pop_state(yyscanner);
                                          llocp->lines(1);
                                          return token::TOK_NEWLINE;
@@ -465,6 +567,8 @@ std::stack<std::vector<std::string>> macro_stack;
 
                                     /* similarly, lines that start with "!" or "shell" are sh commands */
 ^\![^\n]*$                          {
+                                        R_ECHO(yytext);
+                                        
                                         std::string *s = new std::string(yytext);
                                         std::string n = s->substr(1, s->size());
 
@@ -474,6 +578,8 @@ std::stack<std::vector<std::string>> macro_stack;
                                         return token::TOK_EMBEDDED_CODE;
                                     }
 ^shell[^\n]*$                       {
+                                        R_ECHO(yytext);
+                                        
                                         std::string *s = new std::string(yytext);
                                         std::string n = s->substr(5, s->size());
 
@@ -487,23 +593,38 @@ std::stack<std::vector<std::string>> macro_stack;
 
                                     /* Statement separators; consider more than one in a row to be one */
 [\n]+                               {
+                                        R_ECHO(yytext);
+                                        
                                         yylval->str = new std::string(yytext);
                                         llocp->lines(yyleng);
                                         return token::TOK_NEWLINE;
                                     }
 [;]+                                {
+                                        R_ECHO(yytext);
+                                        
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_SEMICOLON;
                                     }
 
                                     /* ignore whitespace but track column numbers */
-{B}+                                { llocp->step(); }
+{B}+                                {
+                                        R_ECHO(yytext);
+                                        
+                                        llocp->step();
+                                    }
 
 
-<INITIAL>\`\"                       { cdquote_buf.clear(); yy_push_state(CDQUOTE, yyscanner); }
+<INITIAL>\`\"                       {
+                                        R_ECHO(yytext);
+                                        
+                                        cdquote_buf.clear();
+                                        yy_push_state(CDQUOTE, yyscanner);
+                                    }
 <CDQUOTE>{
                                     /* Allow any type of macro to be nested here */
     \`                              {
+                                        R_ECHO(yytext);
+                                        
                                         // create and push a stack frame
                                         std::vector<std::string> frame;
                                         macro_stack.push(frame);
@@ -511,6 +632,8 @@ std::stack<std::vector<std::string>> macro_stack;
                                         yy_push_state(LOCAL_MACRO, yyscanner);
                                     }
     \$/({L}|{D})+                   {
+                                        R_ECHO(yytext);
+                                        
                                         // create and push a stack frame
                                         std::vector<std::string> frame;
                                         macro_stack.push(frame);
@@ -518,6 +641,8 @@ std::stack<std::vector<std::string>> macro_stack;
                                         yy_push_state(GMACRO_ALPHA, yyscanner);
                                     }
     \$\{                            {
+                                        R_ECHO(yytext);
+                                        
                                         // create and push a stack frame
                                         std::vector<std::string> frame;
                                         macro_stack.push(frame);
@@ -527,6 +652,8 @@ std::stack<std::vector<std::string>> macro_stack;
     
                                     /* Saw the matching close quote - all done */
     \"\'                            {
+                                        R_ECHO(yytext);
+                                        
                                         std::string *s = new std::string(cdquote_buf);
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_string_literal"});
                                         yylval->node->addData("value", *s);
@@ -536,21 +663,67 @@ std::stack<std::vector<std::string>> macro_stack;
                                     }
 
                                     /* Unlike in Stata, strings can continue over multiple lines */
-    [\n]+                           { llocp->lines(yyleng); cdquote_buf += std::string(yytext); }
+    [\n]+                           {
+                                        R_ECHO(yytext);
+                                        
+                                        llocp->lines(yyleng); cdquote_buf += std::string(yytext);
+                                    }
 
-    \\\$                            { cdquote_buf += '$'; }
-    \\\`                            { cdquote_buf += '`'; }
-    \\n                             { cdquote_buf += '\n'; }
-    \\t                             { cdquote_buf += '\t'; }
-    \\r                             { cdquote_buf += '\r'; }
-    \\b                             { cdquote_buf += '\b'; }
-    \\f                             { cdquote_buf += '\f'; }
-    \\.                             { cdquote_buf += yytext[1]; }
-    \\                              { cdquote_buf += '\\'; }
+    \\\$                            {
+                                        R_ECHO(yytext);
+                                        
+                                        cdquote_buf += '$';
+                                    }
+    \\\`                            {
+                                        R_ECHO(yytext);
+                                        
+                                        cdquote_buf += '`';
+                                    }
+    \\n                             {
+                                        R_ECHO(yytext);
+                                        
+                                        cdquote_buf += '\n';
+                                    }
+    \\t                             {
+                                        R_ECHO(yytext);
+                                        
+                                        cdquote_buf += '\t';
+                                    }
+    \\r                             {
+                                        R_ECHO(yytext);
+                                        
+                                        cdquote_buf += '\r';
+                                    }
+    \\b                             {
+                                        R_ECHO(yytext);
+                                        
+                                        cdquote_buf += '\b';
+                                    }
+    \\f                             {
+                                        R_ECHO(yytext);
+                                        
+                                        cdquote_buf += '\f';
+                                    }
+    \\.                             {
+                                        R_ECHO(yytext);
+                                        
+                                        cdquote_buf += yytext[1];
+                                    }
+    \\                              {
+                                        R_ECHO(yytext);
+                                        
+                                        cdquote_buf += '\\';
+                                    }
 
-    [^\\\n\`\$]+                    { cdquote_buf += std::string(yytext); }
+    [^\\\n\`\$]+                    {
+                                        R_ECHO(yytext);
+                                        
+                                        cdquote_buf += std::string(yytext);
+                                    }
 
     <<EOF>>                         {
+                                        R_ECHO("\n");
+                                        
                                         cdquote_buf.clear();
                                         yy_pop_state(yyscanner);
 
@@ -559,10 +732,17 @@ std::stack<std::vector<std::string>> macro_stack;
                                     }
 }
 
-<INITIAL>\"                         { string_buf.clear(); yy_push_state(STRING, yyscanner); }
+<INITIAL>\"                         {
+                                        R_ECHO(yytext);
+                                        
+                                        string_buf.clear();
+                                        yy_push_state(STRING, yyscanner);
+                                    }
 <STRING>{
                                     /* Allow any type of macro to be nested here */
     \`                              {
+                                        R_ECHO(yytext);
+                                        
                                         // create and push a stack frame
                                         std::vector<std::string> frame;
                                         macro_stack.push(frame);
@@ -570,6 +750,8 @@ std::stack<std::vector<std::string>> macro_stack;
                                         yy_push_state(LOCAL_MACRO, yyscanner);
                                     }
     \$/({L}|{D})+                   {
+                                        R_ECHO(yytext);
+                                        
                                         // create and push a stack frame
                                         std::vector<std::string> frame;
                                         macro_stack.push(frame);
@@ -577,6 +759,8 @@ std::stack<std::vector<std::string>> macro_stack;
                                         yy_push_state(GMACRO_ALPHA, yyscanner);
                                     }
     \$\{                            {
+                                        R_ECHO(yytext);
+                                        
                                         // create and push a stack frame
                                         std::vector<std::string> frame;
                                         macro_stack.push(frame);
@@ -586,6 +770,8 @@ std::stack<std::vector<std::string>> macro_stack;
     
                                     /* Saw the matching close quote - all done */
     \"                              {
+                                        R_ECHO(yytext);
+                                        
                                         /* Saw a close quote - all done */
                                         std::string *s = new std::string(string_buf);
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_string_literal"});
@@ -596,22 +782,73 @@ std::stack<std::vector<std::string>> macro_stack;
                                     }
 
                                     /* Unlike in Stata, strings can continue over multiple lines */
-    [\n]+                           { llocp->lines(yyleng); string_buf += std::string(yytext); }
+    [\n]+                           {
+                                        R_ECHO(yytext);
+                                        
+                                        llocp->lines(yyleng);
+                                        string_buf += std::string(yytext);
+                                    }
 
-    \\\"                            { string_buf += '"'; }
-    \\\`                            { string_buf += '`'; }
-    \\\$                            { string_buf += '$'; }
-    \\n                             { string_buf += '\n'; }
-    \\t                             { string_buf += '\t'; }
-    \\r                             { string_buf += '\r'; }
-    \\b                             { string_buf += '\b'; }
-    \\f                             { string_buf += '\f'; }
-    \\.                             { string_buf += yytext[1]; }
-    \\                              { string_buf += '\\'; }
+    \\\"                            {
+                                        R_ECHO(yytext);
+                                        
+                                        string_buf += '"';
+                                    }
+    \\\`                            {
+                                        R_ECHO(yytext);
+                                        
+                                        string_buf += '`';
+                                    }
+    \\\$                            {
+                                        R_ECHO(yytext);
+                                        
+                                        string_buf += '$';
+                                    }
+    \\n                             {
+                                        R_ECHO(yytext);
+                                        
+                                        string_buf += '\n';
+                                    }
+    \\t                             {
+                                        R_ECHO(yytext);
+                                        
+                                        string_buf += '\t';
+                                    }
+    \\r                             {
+                                        R_ECHO(yytext);
+                                        
+                                        string_buf += '\r';
+                                    }
+    \\b                             {
+                                        R_ECHO(yytext);
+                                        
+                                        string_buf += '\b';
+                                    }
+    \\f                             {
+                                        R_ECHO(yytext);
+                                        
+                                        string_buf += '\f';
+                                    }
+    \\.                             {
+                                        R_ECHO(yytext);
+                                        
+                                        string_buf += yytext[1];
+                                    }
+    \\                              {
+                                        R_ECHO(yytext);
+                                        
+                                        string_buf += '\\';
+                                    }
 
-    [^\\\n\"\`\$]+                  { string_buf += std::string(yytext); }
+    [^\\\n\"\`\$]+                  {
+                                        R_ECHO(yytext);
+                                        
+                                        string_buf += std::string(yytext);
+                                    }
 
     <<EOF>>                         {
+                                        R_ECHO("\n");
+                                        
                                         string_buf.clear();
                                         yy_pop_state(yyscanner);
 
@@ -624,6 +861,8 @@ std::stack<std::vector<std::string>> macro_stack;
 
                                                         /* datetime literals */
 {D}{D}{M}{D}+                                           {
+                                                            R_ECHO(yytext);
+                                        
                                                             yylval->node = new ExprNode({"rstata_literal", "rstata_datetime"});
 
                                                             std::string *s = new std::string(yytext);
@@ -633,6 +872,8 @@ std::stack<std::vector<std::string>> macro_stack;
                                                             return token::TOK_DATE;
                                                         }
 {D}{D}{M}{D}+[ \t]+{D}{D}:{D}{D}(:{D}{D}(\.{D}+)?)?     {
+                                                            R_ECHO(yytext);
+                                        
                                                             yylval->node = new ExprNode({"rstata_literal", "rstata_datetime"});
 
                                                             std::string *s = new std::string(yytext);
@@ -642,66 +883,124 @@ std::stack<std::vector<std::string>> macro_stack;
 
 
                                     /* format specifiers */
-%-?{D}+s                            { yylval->str = new std::string(yytext); return token::TOK_STRING_FORMAT; }
-%-?0?{D}+\.{D}+[efg]c?              { yylval->str = new std::string(yytext); return token::TOK_NUMBER_FORMAT; }
-%-?t[Ccdwmqh]{L}*                   { yylval->str = new std::string(yytext); return token::TOK_DATETIME_FORMAT; }
+%-?{D}+s                            {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_STRING_FORMAT;
+                                    }
+%-?0?{D}+\.{D}+[efg]c?              {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_NUMBER_FORMAT;
+                                    }
+%-?t[Ccdwmqh]{L}*                   {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_DATETIME_FORMAT;
+                                    }
 
 
 
                                     /* Numeric data types */
-byte                                { yylval->str = new std::string(yytext); return token::TOK_BYTE; }
-int                                 { yylval->str = new std::string(yytext); return token::TOK_INT; }
-long                                { yylval->str = new std::string(yytext); return token::TOK_LONG; }
-float                               { yylval->str = new std::string(yytext); return token::TOK_FLOAT; }
-double                              { yylval->str = new std::string(yytext); return token::TOK_DOUBLE; }
+byte                                {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_BYTE;
+                                    }
+int                                 {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_INT;
+                                    }
+long                                {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_LONG;
+                                    }
+float                               {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_FLOAT;
+                                    }
+double                              {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_DOUBLE;
+                                    }
 
 
 
                                     /* String data types */
-str                                 { yylval->str = new std::string(yytext); return token::TOK_STRING_TYPE_SPEC; }
-str{D}+                             { yylval->str = new std::string(yytext); return token::TOK_STRING_TYPE_SPEC; }
-strL                                { yylval->str = new std::string(yytext); return token::TOK_STRING_TYPE_SPEC; }
+str                                 {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_STRING_TYPE_SPEC;
+                                    }
+str{D}+                             {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_STRING_TYPE_SPEC;
+                                    }
+strL                                {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_STRING_TYPE_SPEC;
+                                    }
 
 
 
                                     /* numeric literals in their various formats */
 \.                                  {
+                                        R_ECHO(yytext);
+                                        
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_NUMBER_MISSING;
                                     }
 0[xX]{H}+                           { /* hex */
+                                        R_ECHO(yytext);
+                                        
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_NUMBER;
                                     }
 0{D}+                               { /* octal */
+                                        R_ECHO(yytext);
+                                        
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_NUMBER;
                                     }
 {D}+                                { /* decimal integer */
+                                        R_ECHO(yytext);
+                                        
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_NUMBER;
                                     }
 {D}+\.({D}+)?/[^_A-Za-z_]           { /* decimal float */
+                                        R_ECHO(yytext);
+                                        
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_NUMBER;
                                     }
 {D}+{E}                             { /* scientific notation */
+                                        R_ECHO(yytext);
+                                        
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_NUMBER;
                                     }
 {D}*"."{D}+({E})?                   { /* scientific notation with fractions, or numbers like ".0239" */
+                                        R_ECHO(yytext);
+                                        
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
@@ -711,15 +1010,33 @@ strL                                { yylval->str = new std::string(yytext); ret
 
 
                                     /* Other keywords */
-using                               { yylval->str = new std::string(yytext); return token::TOK_USING; }
-if                                  { yylval->str = new std::string(yytext); return token::TOK_IF; }
-in                                  { yylval->str = new std::string(yytext); return token::TOK_IN; }
-(1\:1|1\:m|m\:1|m\:m)               { yylval->str = new std::string(yytext); return token::TOK_MERGE_SPEC; }
+using                               {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_USING;
+                                    }
+if                                  {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_IF;
+                                    }
+in                                  {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_IN;
+                                    }
+(1\:1|1\:m|m\:1|m\:m)               {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_MERGE_SPEC;
+                                    }
 
 
 
                                     /* Weight-clause specifiers (this is a hack) */
 "["{B}*(a|p|i|f)weight{B}*"="       {
+                                        R_ECHO(yytext);
+                                        
                                         ExprNode *clause = new ExprNode("rstata_weight_clause");
                                         ExprNode *kind = new ExprNode({"rstata_literal", "rstata_ident"});
                                         std::string *s = new std::string(yytext);
@@ -738,42 +1055,146 @@ in                                  { yylval->str = new std::string(yytext); ret
 
 
                                     /* infix operators and various single-character tokens */
-"&"                                 { yylval->str = new std::string(yytext); return token::TOK_AND_OP; }
-"|"                                 { yylval->str = new std::string(yytext); return token::TOK_OR_OP; }
-">"                                 { yylval->str = new std::string(yytext); return token::TOK_GT_OP; }
-"<"                                 { yylval->str = new std::string(yytext); return token::TOK_LT_OP; }
-">="                                { yylval->str = new std::string(yytext); return token::TOK_GE_OP; }
-"<="                                { yylval->str = new std::string(yytext); return token::TOK_LE_OP; }
-"=="                                { yylval->str = new std::string(yytext); return token::TOK_EQ_OP; }
-"!="                                { yylval->str = new std::string(yytext); return token::TOK_NE_OP; }
-"~="                                { yylval->str = new std::string(yytext); return token::TOK_NE_OP; }
-"!"                                 { yylval->str = new std::string(yytext); return token::TOK_NEG_OP; }
-"~"                                 { yylval->str = new std::string(yytext); return token::TOK_NEG_OP; }
+"&"                                 {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_AND_OP;
+                                    }
+"|"                                 {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_OR_OP;
+                                    }
+">"                                 {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_GT_OP;
+                                    }
+"<"                                 {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_LT_OP;
+                                    }
+">="                                {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_GE_OP;
+                                    }
+"<="                                {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_LE_OP;
+                                    }
+"=="                                {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_EQ_OP;
+                                    }
+"!="                                {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_NE_OP;
+                                    }
+"~="                                {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_NE_OP;
+                                    }
+"!"                                 {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_NEG_OP;
+                                    }
+"~"                                 {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_NEG_OP;
+                                    }
 
-\*                                  { yylval->str = new std::string(yytext); return token::TOK_STAR; }
-\+                                  { yylval->str = new std::string(yytext); return token::TOK_PLUS; }
-\/                                  { yylval->str = new std::string(yytext); return token::TOK_SLASH; }
-\-                                  { yylval->str = new std::string(yytext); return token::TOK_MINUS; }
-\^                                  { yylval->str = new std::string(yytext); return token::TOK_CARET; }
-=                                   { yylval->str = new std::string(yytext); return token::TOK_ASSIGN; }
+\*                                  {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_STAR;
+                                    }
+\+                                  {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_PLUS;
+                                    }
+\/                                  {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_SLASH;
+                                    }
+\-                                  {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_MINUS;
+                                    }
+\^                                  {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_CARET;
+                                    }
+=                                   {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_ASSIGN;
+                                    }
 
-\[                                  { yylval->str = new std::string(yytext); return token::TOK_LBRACKET; }
-\]                                  { yylval->str = new std::string(yytext); return token::TOK_RBRACKET; }
-\(                                  { yylval->str = new std::string(yytext); return token::TOK_LPAREN; }
-\)                                  { yylval->str = new std::string(yytext); return token::TOK_RPAREN; }
-\{                                  { yylval->str = new std::string(yytext); return token::TOK_LBRACE; }
-\}                                  { yylval->str = new std::string(yytext); return token::TOK_RBRACE; }
-,                                   { yylval->str = new std::string(yytext); return token::TOK_COMMA; }
-:                                   { yylval->str = new std::string(yytext); return token::TOK_COLON; }
+\[                                  {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_LBRACKET;
+                                    }
+\]                                  {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_RBRACKET;
+                                    }
+\(                                  {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_LPAREN;
+                                    }
+\)                                  {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_RPAREN;
+                                    }
+\{                                  {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_LBRACE;
+                                    }
+\}                                  {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_RBRACE;
+                                    }
+,                                   {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_COMMA;
+                                    }
+\:                                  {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext); return token::TOK_COLON;
+                                    }
 
                                     /* Factor variable operators and level-restricted virtual variables */
 "c."                                {
+                                        R_ECHO(yytext);
+                                        
                                         yylval->node = new ExprNode({"rstata_expression", "rstata_factor_expression", "rstata_continuous_expression"});
                                         yylval->node->addData("verb", "c.");
 
                                         return token::TOK_CONT_OPERATOR;
                                     }
 "i."                                {
+                                        R_ECHO(yytext);
+                                        
                                         yylval->node = new ExprNode({"rstata_expression", "rstata_factor_expression", "rstata_indicator_expression"});
                                         yylval->node->addData("verb", "i.");
 
@@ -781,6 +1202,8 @@ in                                  { yylval->str = new std::string(yytext); ret
                                     }
 
 i?"bn."                             {
+                                        R_ECHO(yytext);
+                                        
                                         yylval->node = new ExprNode({"rstata_expression", "rstata_factor_expression", "rstata_baseline_expression"});
                                         yylval->node->addData("verb", "ib.");
                                         yylval->node->addData("level", "n");
@@ -788,6 +1211,8 @@ i?"bn."                             {
                                         return token::TOK_BASE_OPERATOR;
                                     }
 i?"b(freq)."                        {
+                                        R_ECHO(yytext);
+                                        
                                         yylval->node = new ExprNode({"rstata_expression", "rstata_factor_expression", "rstata_baseline_expression"});
                                         yylval->node->addData("verb", "ib.");
                                         yylval->node->addData("level", "freq");
@@ -795,6 +1220,8 @@ i?"b(freq)."                        {
                                         return token::TOK_BASE_OPERATOR;
                                     }
 i?"b(last)."                        {
+                                        R_ECHO(yytext);
+                                        
                                         yylval->node = new ExprNode({"rstata_expression", "rstata_factor_expression", "rstata_baseline_expression"});
                                         yylval->node->addData("verb", "ib.");
                                         yylval->node->addData("level", "last");
@@ -802,6 +1229,8 @@ i?"b(last)."                        {
                                         return token::TOK_BASE_OPERATOR;
                                     }
 i?"b(first)."                       {
+                                        R_ECHO(yytext);
+                                        
                                         yylval->node = new ExprNode({"rstata_expression", "rstata_factor_expression", "rstata_baseline_expression"});
                                         yylval->node->addData("verb", "ib.");
                                         yylval->node->addData("level", "first");
@@ -809,6 +1238,8 @@ i?"b(first)."                       {
                                         return token::TOK_BASE_OPERATOR;
                                     }
 i?"b"{D}+"."                        {
+                                        R_ECHO(yytext);
+                                        
                                         std::string *s = new std::string(yytext);
 
                                         yylval->node = new ExprNode({"rstata_expression", "rstata_factor_expression", "rstata_baseline_expression"});
@@ -822,6 +1253,8 @@ i?"b"{D}+"."                        {
                                         return token::TOK_BASE_OPERATOR;
                                     }
 i?"b(#"{D}+")."                     {
+                                        R_ECHO(yytext);
+                                        
                                         std::string *s = new std::string(yytext);
 
                                         yylval->node = new ExprNode({"rstata_expression", "rstata_factor_expression", "rstata_baseline_expression"});
@@ -836,6 +1269,8 @@ i?"b(#"{D}+")."                     {
                                     }
 
 i?{D}+"."                          {
+                                        R_ECHO(yytext);
+                                        
                                         std::string *s = new std::string(yytext);
 
                                         yylval->node = new ExprNode({"rstata_expression", "rstata_factor_expression", "rstata_indicator_expression"});
@@ -845,6 +1280,8 @@ i?{D}+"."                          {
                                         return token::TOK_IND_OPERATOR;
                                     }
 "i("{D}+(\ +{D}+)*")."              {
+                                        R_ECHO(yytext);
+                                        
                                         std::string *s = new std::string(yytext);
                                         std::vector<std::string> x = split(s->substr(2, s->length() - 2), ' ');
 
@@ -860,6 +1297,8 @@ i?{D}+"."                          {
                                         return token::TOK_IND_OPERATOR;
                                     }
 "i("\ *{D}+\ *\/{D}+\ *")."         {
+                                        R_ECHO(yytext);
+                                        
                                         std::string *s = new std::string(yytext);
                                         std::vector<std::string> x = split(s->substr(2, s->length() -2), ' ');
                                         yylval->node = new ExprNode({"rstata_expression", "rstata_factor_expression", "rstata_indicator_expression"});
@@ -872,6 +1311,8 @@ i?{D}+"."                          {
                                     }
 
 i?"o"{D}+"."                        {
+                                        R_ECHO(yytext);
+                                        
                                         std::string *s = new std::string(yytext);
 
                                         yylval->node = new ExprNode({"rstata_expression", "rstata_factor_expression", "rstata_omit_expression"});
@@ -885,6 +1326,8 @@ i?"o"{D}+"."                        {
                                         return token::TOK_OMIT_OPERATOR;
                                     }
 i?"o("{D}+(\ +{D}+)*")."            {
+                                        R_ECHO(yytext);
+                                        
                                         std::string *s = new std::string(yytext);
                                         std::vector<std::string> x;
 
@@ -905,6 +1348,8 @@ i?"o("{D}+(\ +{D}+)*")."            {
                                         return token::TOK_IND_OPERATOR;
                                     }
 i?"o("\ *{D}+\ *\/{D}+\ *")."       {
+                                        R_ECHO(yytext);
+                                        
                                         std::string *s = new std::string(yytext);
                                         std::vector<std::string> x;
 
@@ -922,13 +1367,25 @@ i?"o("\ *{D}+\ *\/{D}+\ *")."       {
                                         return token::TOK_IND_OPERATOR;
                                     }
 
-"##"                                { yylval->str = new std::string(yytext); return token::TOK_FACT_CROSS; }
-"#"                                 { yylval->str = new std::string(yytext); return token::TOK_CROSS; }
+"##"                                {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_FACT_CROSS;
+                                    }
+"#"                                 {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_CROSS;
+                                    }
 
 
 
                                     /* command verbs that have to be hardcoded into the grammar */
 by                                  {
+                                        R_ECHO(yytext);
+                                        
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
@@ -937,6 +1394,8 @@ by                                  {
                                         return token::TOK_BY;
                                     }
 bysort                              {
+                                        R_ECHO(yytext);
+                                        
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
@@ -945,6 +1404,8 @@ bysort                              {
                                         return token::TOK_BYSORT;
                                     }
 xi                                  {
+                                        R_ECHO(yytext);
+                                        
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
@@ -953,6 +1414,8 @@ xi                                  {
                                         return token::TOK_XI;
                                     }
 capture                             {
+                                        R_ECHO(yytext);
+                                        
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
@@ -961,6 +1424,8 @@ capture                             {
                                         return token::TOK_CAPTURE;
                                     }
 cap                                 {
+                                        R_ECHO(yytext);
+                                        
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", "capture");
 
@@ -969,6 +1434,8 @@ cap                                 {
                                         return token::TOK_CAPTURE;
                                     }
 quietly                             {
+                                        R_ECHO(yytext);
+                                        
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
@@ -977,6 +1444,8 @@ quietly                             {
                                         return token::TOK_QUIETLY;
                                     }
 qui                                 {
+                                        R_ECHO(yytext);
+                                        
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", "quietly");
 
@@ -985,6 +1454,8 @@ qui                                 {
                                         return token::TOK_QUIETLY;
                                     }
 noisily                             {
+                                        R_ECHO(yytext);
+                                        
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
@@ -995,30 +1466,42 @@ noisily                             {
 
                                     /* Non-prefix special commands */
 merge                               {
+                                        R_ECHO(yytext);
+                                        
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_ident"});
                                         yylval->node->addData("value", *(new std::string(yytext)));
 
                                         return token::TOK_MERGE;
                                     }
 display                             {
+                                        R_ECHO(yytext);
+                                        
+                                        R_ECHO(yytext);
+
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_ident"});
                                         yylval->node->addData("value", *(new std::string(yytext)));
 
                                         return token::TOK_DISPLAY;
                                     }
 disp                                {
+                                        R_ECHO(yytext);
+                                        
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_ident"});
                                         yylval->node->addData("value", *(new std::string(yytext)));
 
                                         return token::TOK_DISPLAY;
                                     }
 di                                  {
+                                        R_ECHO(yytext);
+                                        
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_ident"});
                                         yylval->node->addData("value", *(new std::string(yytext)));
 
                                         return token::TOK_DISPLAY;
                                     }
 format                              {
+                                        R_ECHO(yytext);
+                                        
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_ident"});
                                         yylval->node->addData("value", *(new std::string(yytext)));
 
@@ -1029,12 +1512,18 @@ format                              {
 
                                     /* all non-keyword identifiers */
 [_A-Za-z][A-Za-z0-9_]*              {
+                                        R_ECHO(yytext);
+                                        
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_ident"});
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_IDENT;
                                     }
 
-.                                   { driver.error(*llocp, "Illegal character"); yyterminate(); }
+.                                   {
+                                        R_ECHO(yytext);
+                                        
+                                        driver.error(*llocp, "Illegal character"); yyterminate();
+                                    }
 
 <<EOF>>                             { return token::TOK_END; }
 
