@@ -23,6 +23,7 @@ class RStataDriver
         int parse();
 
         int callbacks;
+        void wrap_cmd_action(Rcpp::List ast);
         Rcpp::Function cmd_action;
         Rcpp::Function get_macro_value;
 

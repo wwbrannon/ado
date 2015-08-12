@@ -18,7 +18,7 @@ class RStataDriver;
 
 #define YY_DECL int yylex(yy::RStataParser::semantic_type* yylval_param, yy::RStataParser::location_type* llocp, RStataDriver& driver)
 
-#define R_ACTION(node) if(driver.callbacks == 1) { driver.cmd_action(node->as_R_object()); }
+#define R_ACTION(node) if(driver.callbacks == 1) { driver.wrap_cmd_action(node->as_R_object()); }
 }
 
 %param { RStataDriver& driver }
@@ -49,9 +49,8 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 }
 
 /* Operator  precedence */
-%left RELATIONAL
-%left "+" "-"
-%left UNARY
+%precedence RELATIONAL
+%precedence "+" "-"
 %precedence EXPONENT
 %precedence "["
 %precedence "("
@@ -624,8 +623,8 @@ power_expression:
     ;
 
 unary_expression:
-      power_expression %prec UNARY
-    | unary_operator power_expression %prec UNARY
+      power_expression
+    | unary_operator power_expression
     {
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_arithmetic_expression", "rstata_unary_expression"});
         node->addData("verb", *($1));

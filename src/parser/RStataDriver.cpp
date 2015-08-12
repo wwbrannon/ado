@@ -6,6 +6,7 @@ class RStataDriver;
 #include "ado.tab.hpp"
 
 #include "RStataDriver.hpp"
+#include "RStataExceptions.hpp"
 
 /*
  * Free-standing utility functions
@@ -77,6 +78,28 @@ RStataDriver::parse()
     scan_end();
     
     return res;
+}
+
+void
+RStataDriver::wrap_cmd_action(Rcpp::List ast)
+{
+  int ret = Rcpp::as<int>(cmd_action(ast));
+  
+  // success
+  if(ret == 0)
+    return;
+  
+  // an error in the semantic analyzer or code generator
+  if(ret == 1)
+  {
+    throw BadCommandException();
+  }
+  
+  // a runtime error in evaluation or printing
+  if(ret == 2)
+  {
+    throw EvalErrorException();
+  }
 }
 
 void

@@ -11,6 +11,7 @@ SEXP
 do_parse_with_callbacks(std::string text, Rcpp::Function cmd_action,
                         Rcpp::Function get_macro_value, int debug_level=0)
 {
+BEGIN_RCPP
     RStataDriver *driver = new RStataDriver(1, cmd_action, get_macro_value,
                                             text, debug_level);
 
@@ -22,12 +23,14 @@ do_parse_with_callbacks(std::string text, Rcpp::Function cmd_action,
     delete driver;
 
     return R_NilValue;
+END_RCPP
 }
 
 // [[Rcpp::export]]
 Rcpp::List
 do_parse(std::string text, int debug_level=0)
 {
+BEGIN_RCPP
     Rcpp::List res;
     RStataDriver *driver = new RStataDriver(text, debug_level);
 
@@ -42,5 +45,6 @@ do_parse(std::string text, int debug_level=0)
     delete driver;
 
     return res;
+END_RCPP
 }
 
