@@ -60,6 +60,20 @@ ExprNode::addData(std::string _name, std::string _value)
  * Adding children
  */
 void
+ExprNode::prependChild(std::string _name, ExprNode *_child)
+{
+    names.insert(names.begin(), _name);
+    children.insert(children.begin(), _child);
+}
+
+void
+ExprNode::prependChild(ExprNode *_child)
+{
+    children.insert(children.begin(), _child);
+    names.insert(names.begin(), std::string(""));
+}
+
+void
 ExprNode::appendChild(std::string _name, ExprNode *_child)
 {
     names.push_back(_name);

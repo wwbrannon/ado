@@ -23,6 +23,8 @@ class ExprNode
         void addData(std::string _name, std::string value);
 
         // methods to add children
+        void prependChild(std::string _name, ExprNode *_child); // one named child
+        void prependChild(ExprNode *_child); // one nameless child
         void appendChild(std::string _name, ExprNode *_child); // one named child
         void appendChild(ExprNode *_child); // one nameless child
         
