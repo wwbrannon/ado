@@ -69,21 +69,11 @@ commands:
 
 command:
       embedded_r_cmd
-    | stata_cmd
+    | prefix_cmd_list nonmodifier_cmd
     ;
 
 embedded_r_cmd:
     EMBEDDED_R
-    ;
-
-stata_cmd:
-      immediate_cmd
-    | prefix_cmd_list nonmodifier_cmd
-    ;
-
-immediate_cmd:
-      IDENT expression_list
-    | IDENT expression_list ',' option_list
     ;
 
 prefix_cmd_list:
@@ -109,8 +99,8 @@ nonmodifier_cmd:
     | IDENT filename
     | IDENT filename ',' option_list
     
-    | IDENT varlist assignment_expression if_clause IN_CLAUSE weight_clause using_clause
-    | IDENT varlist assignment_expression if_clause IN_CLAUSE weight_clause using_clause ',' option_list
+    | IDENT expression_list if_clause IN_CLAUSE weight_clause using_clause
+    | IDENT expression_list if_clause IN_CLAUSE weight_clause using_clause ',' option_list
     ;
 
 special_cmd:
@@ -121,10 +111,49 @@ special_cmd:
     ;
 
 /*
- ************************
- * The expression grammar
- ************************
- */
+ ************************************************************
+ * The expression grammar. Note that varlists are expressions
+ * syntactically, even if they're not semantically.
+ ************************************************************
+*/
+
+assignment_operator:
+    '='
+    ;
+
+unary_operator:
+      '-'
+    | '+'
+    | '!'
+    | '~'
+    ;
+
+power_operator:
+    '^'
+    ;
+
+multiplication_operator:
+      '*'
+    | '/'
+    | '%'
+    ;
+
+additive_operator:
+      '+'
+    | '-'
+    ;
+
+relational_operator:
+      '<'
+    | '>'
+    | GT_OP
+    | LE_OP
+    ;
+
+equality_operator:
+      EQ_OP
+    | NE_OP
+    ;
 
 primary_expression:
       NUMBER
@@ -137,86 +166,64 @@ primary_expression:
 
 postfix_expression:
       primary_expression
+    | postfix_expression '[' expression ']'
     | postfix_expression '(' ')'
     | postfix_expression '(' argument_expression_list ')'
     ;
 
 argument_expression_list:
-      primary_expression
-    | argument_expression_list ',' assignment_expression
+      logical_or_expression
+    | argument_expression_list ',' logical_or_expression
+    ;
+
+power_expression:
+      postfix_expression
+    | postfix_expression power_operator postfix_expression
     ;
 
 unary_expression:
-      postfix_expression
-    | unary_operator postfix_expression
+      power_expression
+    | unary_operator power_expression
     ;
 
-unary_operator:
-      '-'
-    | '+'
-    | '!'
-    ;
-
-mult_expression:
+multiplication_expression:
       unary_expression
-    | mult_expression '*' unary_expression
-    | mult_expression '/' unary_expression
-    | mult_expression '%' unary_expression
+    | multiplication_expression multiplication_operator unary_expression
     ;
 
 additive_expression:
-    mult_expression
-    | additive_expression '+' mult_expression
-    | additive_expression '-' mult_expression
+      multiplication_expression
+    | additive_expression additive_operator multiplication_expression
     ;
 
 relational_expression:
-    additive_expression
-    | relational_expression '<' additive_expression
-    | relational_expression '>' additive_expression
-    | relational_expression LE_OP additive_expression
-    | relational_expression GT_OP additive_expression
+      additive_expression
+    | relational_expression relational_operator additive_expression
     ;
 
 equality_expression:
       relational_expression
-    | equality_expression EQ_OP relational_expression
-    | equality_expression NE_OP relational_expression
+    | equality_expression equality_operator relational_expression
     ;
 
-and_expression:
+logical_and_expression:
       equality_expression
-    | and_expression AND_OP equality_expression
+    | logical_and_expression AND_OP equality_expression
     ;
 
-or_expression:
-      and_expression
-    | or_expression OR_OP and_expression
-    ;
-
-assignment_expression:
-    IDENT '=' or_expression
+logical_or_expression:
+      logical_and_expression
+    | logical_or_expression OR_OP logical_and_expression
     ;
 
 expression:
-      assignment_expression
-    | or_expression
+      logical_or_expression
+    | IDENT assignment_operator logical_or_expression
     ;
 
 expression_list:
       expression
     | expression_list expression
-    ;
-
-/*
- **************************************************
- * Varlists - needs more fleshing out in the future
- **************************************************
- */
-
-varlist:
-      IDENT
-    | varlist IDENT
     ;
 
 /*
@@ -235,7 +242,6 @@ option:
     | IDENT '(' option_arguments ')'
     ;
 
-/* FIXME: option args are much more baroque than this */
 option_arguments:
       expression
     | option_arguments expression
