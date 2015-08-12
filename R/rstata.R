@@ -6,7 +6,14 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
     #Sanity checks: create an empty dataset if none provided,
     #but make sure we have a data frame
     if(is.null(dta))
-        dta <- data.frame();
+    {
+        dta <- data.frame()
+        varname <- "dta"
+    } else
+    {
+        varname <- deparse(substitute(dta))
+    }
+
     stopifnot(is.data.frame(dta))
     
     #Sanity checks: make sure file and string aren't both set
@@ -18,10 +25,7 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
     #Should we put the final dataset back into the variable
     #we were given, pointer-style, on exit?
     if(!is.null(assign.back) && assign.back)
-    {
-        varname <- deparse(substitute(dta))
         on.exit(assign(varname, dta, pos=parent.frame()))
-    }
     
     #Create two environments used to hold a) the symbol table for macro
     #substitution, b) settings and parameters that commands can see
@@ -67,13 +71,22 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
             #We got a bad command, but restart rather than abort
             if(inherits(val, "bad_command"))
             {
-                print(val)
+                print(val$message)
                 next
             }
 
-            #A different error - should this prompt to save data?
+            #A different error - exit but save data
             if(inherits(val, "error"))
-                signalCondition(val); #re-raise the exception
+            {
+                cat(paste0(val$message), "\n", sep="")
+                
+                on.exit("")
+                s <- substr(readline("Will now exit. Save data? "), 1, 1)
+                if(s == "Y" || s == "y")
+                    assign(varname, dta, pos=parent.frame())
+
+                break
+            }
             
             #The custom condition for ado-language exit commands
             if(inherits(val, "exit"))

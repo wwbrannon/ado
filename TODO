@@ -1,14 +1,15 @@
 Immediate TODO:
     o) Macros, without loops
         o) not terribly hard - just need to find a way to lex nested macros and
-           substitute their values from the symbol table
+           recursively substitute their values from the symbol table. the driver's
+           callbacks make this fairly easy to implement
         o) "compound double quotes"
-        o) commands to manipulate macros
 
-        o) the driver's two callbacks make this fairly easy to implement
-
+    o) Loops
+        o) much harder, because of macros
+    
+Later functionality
     o) semantic analysis and infrastructural R functions
-        o) do signalCondition and friends behave the way I think?
         o) weeding for each type of node
         o) AST walkers to construct unevaluated calls and expression objects
             o) name abbreviation
@@ -17,14 +18,11 @@ Immediate TODO:
     
     o) functions for the initial set of commands
     
-Later functionality
-    o) Loops
-        o) much harder, because of macros
-    
     o) Many more commands
         o) data management: egen, input, label, etc
         o) graphics
         o) basic stats
+        o) a few more macro manipulation commands
         
 Debug:
     o) use testthat and travis
