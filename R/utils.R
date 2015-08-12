@@ -1,3 +1,18 @@
+every <-
+function(vec)
+{
+    len <- length(which(vec))
+
+    if(is.na(len) || len != length(vec))
+        return(FALSE)
+    else
+        return(TRUE)
+}
+
+`%is%` <-
+function(x, y)
+all(y %in% class(x))
+
 #Reverse a vector of strings
 rev_string <-
 function(str)
