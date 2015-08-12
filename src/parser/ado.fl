@@ -121,7 +121,7 @@ llocp->step();
                                         yylval->node->addData("lang", "shell");
                                         return token::TOK_EMBEDDED_CODE;
                                     }
-^(?i:shell)[^\n]*$                  {
+^shell[^\n]*$                       {
                                         std::string *s = new std::string(yytext);
 
                                         std::string n = s->substr(5, s->size());
@@ -192,11 +192,11 @@ llocp->step();
 
 
                                     /* Numeric data types */
-(?i:byte)                           { yylval->str = new std::string(yytext); return token::TOK_BYTE; }
-(?i:int)                            { yylval->str = new std::string(yytext); return token::TOK_INT; }
-(?i:long)                           { yylval->str = new std::string(yytext); return token::TOK_LONG; }
-(?i:float)                          { yylval->str = new std::string(yytext); return token::TOK_FLOAT; }
-(?i:double)                         { yylval->str = new std::string(yytext); return token::TOK_DOUBLE; }
+byte                                { yylval->str = new std::string(yytext); return token::TOK_BYTE; }
+int                                 { yylval->str = new std::string(yytext); return token::TOK_INT; }
+long                                { yylval->str = new std::string(yytext); return token::TOK_LONG; }
+float                               { yylval->str = new std::string(yytext); return token::TOK_FLOAT; }
+double                              { yylval->str = new std::string(yytext); return token::TOK_DOUBLE; }
 
 
 
@@ -214,7 +214,7 @@ strL                                { yylval->str = new std::string(yytext); ret
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_NUMBER_MISSING;
                                     }
-\.[a-zA-Z]                          {
+\.[a-z]                             {
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
@@ -261,9 +261,9 @@ strL                                { yylval->str = new std::string(yytext); ret
 
 
                                     /* Other keywords */
-(?i:using)                          { yylval->str = new std::string(yytext); return token::TOK_USING; }
-(?i:if)                             { yylval->str = new std::string(yytext); return token::TOK_IF; }
-(?i:in)                             { yylval->str = new std::string(yytext); return token::TOK_IN; }
+using                               { yylval->str = new std::string(yytext); return token::TOK_USING; }
+if                                  { yylval->str = new std::string(yytext); return token::TOK_IF; }
+in                                  { yylval->str = new std::string(yytext); return token::TOK_IN; }
 (1\:1|1\:m|m\:1|m\:m)               { yylval->str = new std::string(yytext); return token::TOK_MERGE_SPEC; }
 
 
@@ -474,7 +474,7 @@ i?"o("\ *{D}+\ *\/{D}+\ *")."       {
 
 
                                     /* command verbs that have to be hardcoded into the grammar */
-(?i:by)                             {
+by                                  {
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
@@ -482,7 +482,7 @@ i?"o("\ *{D}+\ *\/{D}+\ *")."       {
                                         yylval->node->appendChild("verb", verb);
                                         return token::TOK_BY;
                                     }
-(?i:bysort)                         {
+bysort                              {
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
@@ -490,7 +490,7 @@ i?"o("\ *{D}+\ *\/{D}+\ *")."       {
                                         yylval->node->appendChild("verb", verb);
                                         return token::TOK_BYSORT;
                                     }
-(?i:xi)                             {
+xi                                  {
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
@@ -498,7 +498,7 @@ i?"o("\ *{D}+\ *\/{D}+\ *")."       {
                                         yylval->node->appendChild("verb", verb);
                                         return token::TOK_XI;
                                     }
-(?i:capture)                        {
+capture                             {
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
@@ -506,7 +506,7 @@ i?"o("\ *{D}+\ *\/{D}+\ *")."       {
                                         yylval->node->appendChild("verb", verb);
                                         return token::TOK_CAPTURE;
                                     }
-(?i:cap)                            {
+cap                                 {
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", "capture");
 
@@ -514,7 +514,7 @@ i?"o("\ *{D}+\ *\/{D}+\ *")."       {
                                         yylval->node->appendChild("verb", verb);
                                         return token::TOK_CAPTURE;
                                     }
-(?i:quietly)                        {
+quietly                             {
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
@@ -522,7 +522,7 @@ i?"o("\ *{D}+\ *\/{D}+\ *")."       {
                                         yylval->node->appendChild("verb", verb);
                                         return token::TOK_QUIETLY;
                                     }
-(?i:qui)                            {
+qui                                 {
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", "quietly");
 
@@ -530,7 +530,7 @@ i?"o("\ *{D}+\ *\/{D}+\ *")."       {
                                         yylval->node->appendChild("verb", verb);
                                         return token::TOK_QUIETLY;
                                     }
-(?i:noisily)                        {
+noisily                             {
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
@@ -540,19 +540,19 @@ i?"o("\ *{D}+\ *\/{D}+\ *")."       {
                                     }
 
                                     /* Non-prefix special commands */
-(?i:merge)                          {
+merge                               {
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_ident"});
                                         yylval->node->addData("value", *(new std::string(yytext)));
 
                                         return token::TOK_MERGE;
                                     }
-(?i:display)                        {
+display                             {
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_ident"});
                                         yylval->node->addData("value", *(new std::string(yytext)));
 
                                         return token::TOK_DISPLAY;
                                     }
-(?i:format)                         {
+format                              {
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_ident"});
                                         yylval->node->addData("value", *(new std::string(yytext)));
 
@@ -568,9 +568,9 @@ i?"o("\ *{D}+\ *\/{D}+\ *")."       {
                                         return token::TOK_IDENT;
                                     }
 
-<<EOF>>                             { return token::TOK_END; }
-
 .                                   { driver.error(*llocp, "Illegal character"); yyterminate(); }
+
+<<EOF>>                             { return token::TOK_END; }
 
 %%
 
