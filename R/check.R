@@ -140,7 +140,7 @@ verifynode.rstata_foreach <-
 function(node, debug_level=0)
 {
   raiseifnot(length(node$children) == 3,
-             msg=if(debug_level NULL else "Malformed foreach statement"))
+             msg=if(debug_level) NULL else "Malformed foreach statement")
   raiseifnot("numlist" %in% names(node$children) ||
              "varlist" %in% names(node$children) ||
              "local_macro_source" %in% names(node$children) ||
