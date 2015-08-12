@@ -1,3 +1,26 @@
+hasOption <-
+function(option_list, opt)
+{
+    nm <- vapply(option_list, function(v) v[[name]], logical(1))
+
+    opt %in% nm
+}
+
+optionArgs <-
+function(option_list, opt)
+{
+    if(!hasOption(option_list, opt))
+        return(NULL)
+    
+    nm <- vapply(option_list, function(v) v[[name]], logical(1))
+    val <- nm[which(nm == opt)]
+
+    if("args" %in% names(val))
+        return(val[[args]])
+    else
+        return(NULL)
+}
+
 assignSetting <-
 function(name, value)
 {
