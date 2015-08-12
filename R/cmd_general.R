@@ -48,25 +48,6 @@ function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL, option_lis
   match.call()
 }
 
-## Macro management commands
-rstata_cmd_local <-
-function(expression_list)
-{
-  match.call()
-}
-
-rstata_cmd_global <-
-function(expression_list)
-{
-  match.call()
-}
-
-rstata_cmd_macro <- #for macro drop
-function()
-{
-
-}
-
 #Others
 rstata_cmd_about <-
 function()
@@ -116,15 +97,8 @@ function()
 
 }
 
-rstata_cmd_tempfile <-
-function()
-{
-
-}
-
 rstata_cmd_do <-
 function()
 {
 
 }
-

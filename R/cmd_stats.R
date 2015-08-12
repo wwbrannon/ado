@@ -40,12 +40,6 @@ function()
 
 }
 
-rstata_cmd_display <-
-function()
-{
-
-}
-
 rstata_cmd_estimates <-
 function()
 {
@@ -89,12 +83,6 @@ function()
 }
 
 rstata_cmd_logistic <-
-function()
-{
-
-}
-
-rstata_cmd_logit <-
 function()
 {
 

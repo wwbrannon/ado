@@ -100,19 +100,7 @@ function()
 
 }
 
-rstata_cmd_generate <-
-function()
-{
-
-}
-
 rstata_cmd_gsort <-
-function()
-{
-
-}
-
-rstata_cmd_insheet <-
 function()
 {
 
