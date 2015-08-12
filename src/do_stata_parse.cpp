@@ -9,10 +9,11 @@
 // [[Rcpp::export]]
 Rcpp::List
 do_parse_with_callbacks(std::string text, Rcpp::Function cmd_action,
-                        int debug_level=0)
+                        Rcpp::Function get_macro_value, int debug_level=0)
 {
     Rcpp::List res;
-    RStataDriver *driver = new RStataDriver(1, cmd_action, text, debug_level);
+    RStataDriver *driver = new RStataDriver(1, cmd_action, get_macro_value,
+                                            text, debug_level);
 
     // parse the input
     if( driver->parse() != 0 || driver->error_seen != 0)

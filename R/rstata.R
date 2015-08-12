@@ -15,13 +15,6 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
         stop("Cannot specify both the filename and string arguments")
     }
     
-    #Create two environments used to hold a) the symbol table for macro
-    #substitution, b) settings and parameters that commands can see
-    #or modify. The callback function can find these environments on the
-    #search path, so there's no need for getter and setter functions.
-    settings.env <- new.env()
-    macro.env <- new.env()
-
     #Should we put the final dataset back into the variable
     #we were given, pointer-style, on exit?
     if(!is.null(assign.back) && assign.back)
@@ -30,6 +23,20 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
         on.exit(assign(varname, dta, pos=parent.frame()))
     }
     
+    #Create two environments used to hold a) the symbol table for macro
+    #substitution, b) settings and parameters that commands can see
+    #or modify.
+    settings.env <- new.env()
+    macro.env <- new.env()
+    
+    #A macro value accessor that closes over the macro environment, so
+    #we can pass it in to the parser as a callback.
+    get_macro_value <-
+    function(name)
+    {
+        get(name, envir=macro.env, inherits=FALSE)
+    }
+
     if(interactive() && is.null(filename) && is.null(string))
     {
         #We're reading from stdin, interactively:
@@ -51,7 +58,8 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
                 #    o) finally, eval the expression object for its side
                 #       effects, including printing any output, and throw
                 #       away the value
-                do_parse_with_callbacks(inpt, process_cmd)
+                do_parse_with_callbacks(inpt, process_cmd, get_macro_value)
+                                        
             },
             error = function(c) c,
             exit = function(c) c)
@@ -78,17 +86,17 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
     {   
         inpt <- readLines(con=stdin(), warn=FALSE)
         
-        do_parse_with_callbacks(text=inpt, cmd_action=process_cmd)
+        do_parse_with_callbacks(inpt, process_cmd, get_macro_value)
     } else if(!is.null(filename))
     {
         inpt <- readLines(con=file(filename, "r"))
         
-        do_parse_with_callbacks(text=inpt, cmd_actionprocess_cmd)
+        do_parse_with_callbacks(inpt, process_cmd, get_macro_value)
     } else
     {
         inpt <- readLines(con=textConnection(string))
         
-        do_parse_with_callbacks(text=inpt, cmd_action=process_cmd)
+        do_parse_with_callbacks(inpt, process_cmd, get_macro_value)
     }
 
     return(invisible(dta));

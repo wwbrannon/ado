@@ -39,13 +39,16 @@ RStataDriver::RStataDriver(std::string _text, int _debug_level)
 }
 
 RStataDriver::RStataDriver(int _callbacks, Rcpp::Function _cmd_action,
+                           Rcpp::Function _get_macro_value,
                            std::string _text, int _debug_level)
-            : cmd_action(Rcpp::Function("identity"))
+            : cmd_action(Rcpp::Function("identity")),
+              get_macro_value(Rcpp::Function("identity"))
 {
     text = _text;
     
     callbacks = _callbacks;
     cmd_action = _cmd_action;
+    get_macro_value = _get_macro_value;
 
     debug_level = _debug_level;
     error_seen = 0;
