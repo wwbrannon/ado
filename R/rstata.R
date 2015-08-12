@@ -1,5 +1,11 @@
-#The REPL and environment-handling logic for rstata
+### The REPL, batch-processing and environment-handling logic for rstata
+
 rstata <-
+function(what)
+UseMethod(what)
+
+# FIXME
+rstata.data.frame <-
 function(dta = NULL, conn=stdin(), assign.back=TRUE)
 {
     #create an empty dataset if none provided,
@@ -44,4 +50,15 @@ function(dta = NULL, conn=stdin(), assign.back=TRUE)
     
     return(invisible(dta));
 }
+
+#The batch-processing version that acts on a file
+rstata.character <-
+function(filename)
+{
+    rstata.data.frame(dta=NULL, conn=file(filename, "r"), assign.back=FALSE)
+}
+
+#Default to the data frame method, incl if NULL received as first argument
+rstata.NULL    <- rstata.data.frame
+rstata.default <- rstata.data.frame
 
