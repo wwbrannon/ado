@@ -1,6 +1,6 @@
 PKG_CPPFLAGS = "-I../inst/include"
 PKG_CXXFLAGS = "-c -g -O3 -Wall -fPIC -pedantic -pipe -Wno-unused"
-PKG_LIBS="./parser/build/ado.a"
+PKG_LIBS="./parser/ado.a"
 
 CC=ccache gcc$(VER)
 CXX=ccache g++$(VER)
@@ -12,6 +12,7 @@ MAKE=make -j8
 .PHONY: all parser
 
 all: $(SHLIB)
+$(SHLIB): parser
 
 parser:
     (cd parser; make)
