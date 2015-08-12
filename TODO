@@ -3,17 +3,14 @@ Roadmap to v1.0:
 
 Immediate TODO:
     o) finish as_expr methods
+    o) finish the Option and OptionList classes
+    o) convert STATA_CMD_LIST_T and macros to be a class and an std::vector
+    
     o) finish expression-parsing code in ado.ypp, testing with gen
+    o) finish the rest of the grammar
     o) make sure it works
 
-Next up:
-    o) a syntax for running R code within ado
-    o) fill in syntax rules and actions for remaining commands
-
 Semantics:
-    o) implement the evaluator and dispatcher functions
-    o) a mechanism for registering an arbitrary R function obeying the
-       calling convention as a Stata command
     o) write up stubs for all R functions implementing Stata commands
 
 Write a simple test suite
