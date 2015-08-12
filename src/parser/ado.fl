@@ -319,18 +319,11 @@ strL                                { yylval->str = new std::string(yytext); ret
 
                                     /* numeric literals in their various formats */
 \.                                  {
-                                        yylval->node = new ExprNode("rstata_number");
-
-                                        yylval->node->addData("value", *(new std::string(yytext)));
-                                        return token::TOK_NUMBER_MISSING;
-                                    }
-\.[a-z]                             {
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_NUMBER_MISSING;
                                     }
-
 0[xX]{H}+                           { /* hex */
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
 
