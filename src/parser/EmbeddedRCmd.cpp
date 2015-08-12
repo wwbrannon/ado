@@ -15,7 +15,7 @@ List EmbeddedRCmd::as_list() const
    
     res = List::create(_["func"]            = Symbol("dispatch.rstata.cmd"),
                        _["verb"]            = verb,
-                       _["text"]            = text,
+                       _["text"]            = text);
     
     return res;
 }
