@@ -68,12 +68,12 @@ typedef yy::RStataParser::token token;
                         { \
                             tmp = tmp.erase(0, macro_length); \
                             macro_length = 0; \
+                            Rcpp::Rcout << tmp; \
                         } else \
                         { \
                             macro_length -= tmp.length(); \
                         } \
                         \
-                        Rcpp::Rcout << tmp; \
                     }
 
 // Code run each time a pattern is matched
