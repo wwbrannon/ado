@@ -55,12 +55,18 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 %precedence "["
 %precedence "("
 
-%token <str> END 0 "end of file"
-%token <str> ILLEGAL_CHARACTER /* Not used, but invokes error handling if seen */
+/* Not used, but invokes error handling if seen */
+%token ILLEGAL_CHARACTER
 
+/* EOF and command separators */
 %token
+    END 0           "end of file"
     NEWLINE
     SEMICOLON       ";"
+;
+
+/* Operators or symbols whose values don't need to be passed up to the next layer */
+%token
     LPAREN          "("
     RPAREN          ")"
     COMMA           ","
@@ -72,6 +78,7 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
     ASSIGN          "="
 ;
 
+/* Operators whose values need to be passed up to the next layer */
 %token <str>
     PLUS            "+"
     LT_OP           "<"
@@ -157,32 +164,26 @@ translation_unit:
       external_statement
     {
         driver.ast = $1;
-
         $$ = $1;
     }
-    | translation_unit cmd_seps external_statement
+    | translation_unit external_statement
     {
-        $1->appendChild($3);
+        $1->appendChild($2);
         driver.ast = $1;
-
         $$ = $1;
     }
+    | error
+    ;
+
+cmd_sep:
+      END
+    | NEWLINE
+    | ";"
     ;
 
 external_statement:
       cmd
-    | error
     | compound_cmd
-    ;
-
-cmd_seps:
-      cmd_sep
-    | cmd_seps cmd_sep
-    ;
-
-cmd_sep:
-      NEWLINE
-    | ";"
     ;
 
 compound_cmd:
@@ -199,44 +200,28 @@ cmds:
         node->appendChild($1);
         $$ = node;
     }
-    | cmds cmd_seps cmd
+    | cmds cmd
     {
-        $1->appendChild($3);
+        $1->appendChild($2);
 
         $$ = $1;
     }
     ;
 
 cmd:
-      EMBEDDED_R
+      EMBEDDED_R cmd_sep
     {
         R_ACTION($1);
         
         $$ = $1;
     }
-    | nonmodifier_cmd
+    | nonmodifier_cmd cmd_sep
     {
         R_ACTION($1);
         
         $$ = $1;
     }
-    | modifier_cmd_list nonmodifier_cmd
-    {
-        $1->appendChild("main_cmd", $2);
-        
-        R_ACTION($1);
-        
-        $$ = $1;
-    }
-    | modifier_cmd_list ":" nonmodifier_cmd
-    {
-        $1->appendChild("main_cmd", $3);
-
-        R_ACTION($1);
-        
-        $$ = $1;
-    }
-    | modifier_cmd_list compound_cmd
+    | modifier_cmd_list nonmodifier_cmd cmd_sep
     {
         $1->appendChild("main_cmd", $2);
         
@@ -244,7 +229,23 @@ cmd:
         
         $$ = $1;
     }
-    | modifier_cmd_list ":" compound_cmd
+    | modifier_cmd_list ":" nonmodifier_cmd cmd_sep
+    {
+        $1->appendChild("main_cmd", $3);
+
+        R_ACTION($1);
+        
+        $$ = $1;
+    }
+    | modifier_cmd_list compound_cmd cmd_sep
+    {
+        $1->appendChild("main_cmd", $2);
+        
+        R_ACTION($1);
+        
+        $$ = $1;
+    }
+    | modifier_cmd_list ":" compound_cmd cmd_sep
     {
         $1->appendChild("main_cmd", $3);
         
@@ -253,7 +254,7 @@ cmd:
         $$ = $1;
     }
 
-    | modifier_cmd_list long_modifier_cmd expression_list option_list ":" nonmodifier_cmd
+    | modifier_cmd_list long_modifier_cmd expression_list option_list ":" nonmodifier_cmd cmd_sep
     {
         $2->appendChild("varlist", $3);
         
@@ -267,7 +268,7 @@ cmd:
         
         $$ = $1;
     }
-    | modifier_cmd_list long_modifier_cmd expression_list option_list ":" compound_cmd
+    | modifier_cmd_list long_modifier_cmd expression_list option_list ":" compound_cmd cmd_sep
     {
         $2->appendChild("varlist", $3);
         
