@@ -14,7 +14,7 @@ function(expression_list, return.match.call=NULL)
     {
         stmt <- exprs[[1]]
 
-        if(is.symbol(stmt) || is.character(stmt))
+        if(is.symbol(stmt))
         {
             #clear the macro
             nm <- paste0("_", as.character(stmt))
@@ -32,7 +32,7 @@ function(expression_list, return.match.call=NULL)
         }
     } else if(length(exprs) == 2)
     {
-        raiseifnot(is.symbol(exprs[[1]]) || is.character(exprs[[1]]),
+        raiseifnot(is.symbol(exprs[[1]]),
                    cls="EvalErrorException", msg="Invalid macro name")
         raiseifnot(is.character(exprs[[2]]), cls="EvalErrorException",
                    msg="Attempt to set macro to non-string value")
@@ -60,7 +60,7 @@ function(expression_list, return.match.call=NULL)
     {
         stmt <- exprs[[1]]
 
-        if(is.symbol(stmt) || is.character(stmt))
+        if(is.symbol(stmt))
         {
             #clear the macro
             rm(list=as.character(stmt), envir=env)
@@ -76,7 +76,7 @@ function(expression_list, return.match.call=NULL)
         }
     } else if(length(exprs) == 2)
     {
-        raiseifnot(is.symbol(exprs[[1]]) || is.character(exprs[[1]]),
+        raiseifnot(is.symbol(exprs[[1]]),
                    cls="EvalErrorException", msg="Invalid macro name")
         raiseifnot(is.character(exprs[[2]]), cls="EvalErrorException",
                    msg="Attempt to set macro to non-string value")
@@ -103,7 +103,7 @@ function(expression_list, return.match.call=NULL)
                msg="No macro name given")
     for(nm in exprs)
     {
-        raiseifnot(is.symbol(nm) || is.character(nm), cls="EvalErrorException",
+        raiseifnot(is.symbol(nm), cls="EvalErrorException",
                    msg="Invalid macro name")
 
         val <- paste0("_", as.character(nm))
@@ -141,7 +141,7 @@ function(expression_list, return.match.call=NULL)
     {
         raiseifnot(length(exprs) == 2, cls="EvalErrorException",
                    msg="Invalid macro drop command")
-        raiseifnot(is.symbol(exprs[[2]]) || is.character(exprs[[2]]),
+        raiseifnot(is.symbol(exprs[[2]]),
                    cls="EvalErrorException", msg="Invalid macro name")
 
         #if you want to drop a local macro, just drop it with its full
