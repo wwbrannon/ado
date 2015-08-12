@@ -1,6 +1,5 @@
 %option stack
 %option bison-bridge
-%option noyywrap
 
 %{ /* -*- C++ -*- */
 #include <cstring>
@@ -29,6 +28,17 @@ std::vector<std::string> &split(const std::string &s, char delim, std::vector<st
 std::string trim(const std::string& str, const std::string& what = " ");
 
 typedef yy::RStataParser::token token;
+
+extern "C" int
+yywrap()
+{
+    yypop_buffer_state();
+    
+    if(!YY_CURRENT_BUFFER)
+        return 1;
+    else
+        return 0;
+}
 
 // Code run each time a pattern is matched
 #define YY_USER_ACTION  { llocp->columns(yyleng); }
@@ -65,7 +75,10 @@ std::string string_buf;
 std::stack<std::vector<std::string>> macro_stack;
 %}
                                     /* if you write {{{ ... }}}, the ... will be executed as R code */
-<INITIAL>"{{{"                      { yy_push_state(EMBED); }
+<INITIAL>"{{{"                      {
+                                        embed_buf.clear();
+                                        yy_push_state(EMBED);
+                                    }
 <EMBED>{
     "}}}"                           {
                                         yy_pop_state();
@@ -77,55 +90,210 @@ std::stack<std::vector<std::string>> macro_stack;
                                         yylval->node = node;
                                         return token::TOK_EMBEDDED_CODE;
                                     }
-    \n+                             { llocp->lines(yyleng); embed_buf += std::string(yytext); }
+    
+    [\n]+                           {
+                                        llocp->lines(yyleng);
+                                        embed_buf += std::string(yytext);
+                                    }
+    \}[^\}]                         { embed_buf += std::string(yytext); }
+    \}\}[^\}]                       { embed_buf += std::string(yytext); }
     [^\}\n]+                        { embed_buf += std::string(yytext); }
 
-    <<EOF>>                         { driver.error(*llocp, "Unclosed embed block"); yyterminate(); }
+    <<EOF>>                         {
+                                        embed_buf.clear();
+                                        yy_pop_state();
+                                        
+                                        driver.error(*llocp, "Unclosed embed block");
+                                        yyterminate();
+                                    }
 }
 
 
 
-                                    /* FIXME Macros, local and global */
-<INITIAL>\`                         { yy_push_state(LOCAL_MACRO);  }
-<INITIAL>\$                         { yy_push_state(GLOBAL_MACRO); }
+                                    /* Macros, local and global */
+<INITIAL>\`                         {
+                                        while(!macro_stack.empty())
+                                            macro_stack.pop();
+                                        
+                                        // create and push a stack frame
+                                        std::vector<std::string> frame;
+                                        macro_stack.push(frame);
+
+                                        yy_push_state(LOCAL_MACRO);
+                                    }
+<INITIAL>\$                         {
+                                        while(!macro_stack.empty())
+                                            macro_stack.pop();
+                                        
+                                        // create and push a stack frame
+                                        std::vector<std::string> frame;
+                                        macro_stack.push(frame);
+
+                                        yy_push_state(GLOBAL_MACRO);
+                                    }
 
 <LOCAL_MACRO>{
-    \`                              { yy_push_state(LOCAL_MACRO); }
-    \$                              { yy_push_state(GLOBAL_MACRO); }
+    \`                              {
+                                        // create and push a stack frame
+                                        std::vector<std::string> frame;
+                                        macro_stack.push(frame);
 
-    \n                              { llocp->lines(1); driver.error(*llocp, "Unclosed local macro"); yyterminate(); }
-    <<EOF>>                         { driver.error(*llocp, "Unclosed local macro"); yyterminate(); }
+                                        yy_push_state(LOCAL_MACRO);
+                                    }
+    \$                              {
+                                        // create and push a stack frame
+                                        std::vector<std::string> frame;
+                                        macro_stack.push(frame);
 
-    [^\`\']*                        { /* something with macro_stack */ }
-    \'                              { yy_pop_state(); }
+                                        yy_push_state(GLOBAL_MACRO);
+                                    }
+
+    \n                              {
+                                        llocp->lines(1);
+                                        
+                                        while(!macro_stack.empty())
+                                            macro_stack.pop();
+                                        
+                                        do {
+                                            yy_pop_state();
+                                        } while(yy_top_state() != INITIAL);
+                                        
+                                        driver.error(*llocp, "Unclosed local macro");
+                                        yyterminate();
+                                    }
+
+    \'                              {
+                                        std::vector<std::string> frame = macro_stack.top();
+                                        std::string combined, replacement;
+
+                                        macro_stack.pop();
+                                        
+                                        for(size_t i =0; i != frame.size(); i++)
+                                            combined += frame[i];
+                                        combined = std::string("_") + combined; // local macros start with a "_"
+                                        std::cout << combined;
+
+                                        replacement = driver.get_macro_value(combined);
+
+                                        if(!macro_stack.empty())
+                                        {
+                                            std::vector<std::string> prev = macro_stack.top();
+                                            prev.push_back(replacement);
+                                            
+                                            yy_pop_state();
+                                        } else
+                                        {
+                                            yy_pop_state();
+
+                                            switch(yy_top_state())
+                                            {
+                                                case CDQUOTE:
+                                                    cdquote_buf += replacement;
+                                                    break;
+                                                case STRING:
+                                                    string_buf += replacement;
+                                                    break;
+                                                case INITIAL:
+                                                    yypush_buffer_state(yy_scan_string(replacement.c_str()));
+                                                    break;
+                                                default:
+                                                    driver.error(*llocp, "Macro in impossible location");
+                                                    yyterminate();
+                                            }
+                                        }
+                                    }
+    
+    [^\`\'\n]*                      {
+                                        // push yytext to the back of the current frame
+                                        std::vector<std::string> frame = macro_stack.top();
+                                        frame.push_back(std::string(yytext));
+                                    }
+    
+    <<EOF>>                         {
+                                        while(!macro_stack.empty())
+                                            macro_stack.pop();
+                                        
+                                        do {
+                                            yy_pop_state();
+                                        } while(yy_top_state() != INITIAL);
+                                        
+                                        driver.error(*llocp, "Unclosed local macro");
+                                        yyterminate();
+                                    }
 }
 
+                                    /* FIXME */
 <GLOBAL_MACRO>{
-    \`                              { yy_push_state(LOCAL_MACRO);  }
-    \$                              { yy_push_state(GLOBAL_MACRO); }
+    \`                              {
+                                        // create and push a stack frame
+                                        std::vector<std::string> frame;
+                                        macro_stack.push(frame);
 
-    \n                              { llocp->lines(1); driver.error(*llocp, "Unclosed global macro"); yyterminate(); }
-    <<EOF>>                         { driver.error(*llocp, "Unclosed global macro"); yyterminate(); }
+                                        yy_push_state(LOCAL_MACRO);
+                                    }
+    \$                              {
+                                        // create and push a stack frame
+                                        std::vector<std::string> frame;
+                                        macro_stack.push(frame);
 
-    [^\`\']*                        { /* something with macro_stack */ }
-    \'                              { yy_pop_state(); }
+                                        yy_push_state(GLOBAL_MACRO);
+                                    }
+
+    [{B}|\n]+                       {
+                                        // concatenate all the strings in the current frame and get the
+                                        // expansion text from the R layer via the callback function, and then:
+                                        // a) if there's a previous frame on the stack, push the expansion text
+                                        //    to the back of that;
+                                        // b) if we're at the bottom of the stack, check the previous state:
+                                        //    append the text to cdquote_buf or string_buf if appropriate;
+                                        // c) if we're at the bottom of the stack and the previous state is
+                                        //    INITIAL, you'll have to arrange for the lexer to scan the new
+                                        //    buffer for the expansion text and then switch back to the old
+                                        //    buffer once it's exhausted
+                                        yy_pop_state();
+                                    }
+
+                                    /* these are balanced delimiters, but they can't be nested */
+    \{[^\{\}\n\$\`]+\}              {
+
+                                    }
+
+    ({L}|{D})+                      { /* something with macro_stack */ }
+    
+    <<EOF>>                         {
+                                        // concatenate all the strings in the current frame and get the
+                                        // expansion text from the R layer via the callback function, and then:
+                                        // a) if there's a previous frame on the stack, push the expansion text
+                                        //    to the back of that;
+                                        // b) if we're at the bottom of the stack, check the previous state:
+                                        //    append the text to cdquote_buf or string_buf if appropriate;
+                                        // c) if we're at the bottom of the stack and the previous state is
+                                        //    INITIAL, you'll have to arrange for the lexer to scan the new
+                                        //    buffer for the expansion text and then switch back to the old
+                                        //    buffer once it's exhausted
+                                        yy_pop_state();
+                                    }
 }
 
 
 
                                     /* Eat long comments */
-                                    /* FIXME? */
+                                    /* FIXME */
 <INITIAL>"/*"                       { yy_push_state(LONG_COMMENT); }
 <LONG_COMMENT>{
     "/*"                            { yy_push_state(LONG_COMMENT); }
-    "/"+[^\n]                       { /* skip "/" if nt followed by a newline */ }
+    "/"+[^\n]                       { /* skip "/" if not followed by a newline */ }
     "/"+[^\*]                       { /* skip "/" if not followed by "*" */ }
     [^/\*\n]*                       { /* skip anything but "*", "/" and newline */ }
-    "*"+[^*/\n]*                    { /* skip "*"s not followed by a "/" or newline */ }
+    "*"+[^\*/\n]*                   { /* skip "*"s not followed by a "/" or newline */ }
     [\n]+                           { llocp->lines(yyleng); }
     "*"+"/"                         { yy_pop_state(); }
 
-    <<EOF>>                         { driver.error(*llocp, "Unclosed comment"); yyterminate(); }
+    <<EOF>>                         {
+                                        yy_pop_state();
+                                        driver.error(*llocp, "Unclosed comment");
+                                        yyterminate();
+                                    }
 }
 
 
