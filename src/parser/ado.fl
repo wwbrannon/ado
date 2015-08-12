@@ -189,6 +189,8 @@ loc.step();
 \}                          { yylval->str = new std::string(yytext); return token::TOK_RBRACE; }
 ,                           { yylval->str = new std::string(yytext); return token::TOK_COMMA; }
 :                           { yylval->str = new std::string(yytext); return token::TOK_COLON; }
+;                           { yylval->str = new std::string(yytext); return token::TOK_SEMICOLON; }
+.                           { yylval->str = new std::string(yytext); return token::TOK_BADCHAR; }
 
 
 

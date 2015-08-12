@@ -80,40 +80,43 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
     LPAREN          "("
     RPAREN          ")"
     NEWLINE         "\n"
+    SEMICOLON       ";"
 ;
 
+%token <str>    BADCHAR
+
 /* Literals of various fundamental types */
-%token <node> NUMBER NUMBER_MISSING
-%token <node> IDENT
-%token <node> STRING_LITERAL STRING_MISSING
-%token <node> DATE TIME DATETIME
+%token <node>   NUMBER NUMBER_MISSING
+%token <node>   IDENT
+%token <node>   STRING_LITERAL STRING_MISSING
+%token <node>   DATE TIME DATETIME
 
 /* Commands with unusual enough syntax they have to be parsed separately */
-%token <node> EMBEDDED_R;
-%token <node> QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
-%token <node> MERGE
+%token <node>   EMBEDDED_R;
+%token <node>   QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
+%token <node>   MERGE
 
 /* Command components and keywords */
-%token <str> USING IF IN
-%token <node> MERGE_SPEC
+%token <str>    USING IF IN
+%token <node>   MERGE_SPEC
 
 /* Nonterminal token types */
-%type <node> translation_unit external_statement compound_cmd cmds modifier_cmd_list cmd
+%type <node>    translation_unit external_statement compound_cmd cmds modifier_cmd_list cmd
 
-%type <node> modifier_cmd nonmodifier_cmd
+%type <node>    modifier_cmd nonmodifier_cmd
 
-%type <str> assignment_operator unary_operator power_operator equality_operator
-%type <str> multiplication_operator additive_operator relational_operator logical_operator
+%type <str>     assignment_operator unary_operator power_operator equality_operator
+%type <str>     multiplication_operator additive_operator relational_operator logical_operator
 
-%type <node> if_clause in_clause weight_clause using_clause
+%type <node>    if_clause in_clause weight_clause using_clause
 
-%type <node> expression
-%type <node> primary_expression postfix_expression power_expression
-%type <node> unary_expression multiplication_expression additive_expression
-%type <node> relational_expression equality_expression logical_expression
+%type <node>    expression
+%type <node>    primary_expression postfix_expression power_expression
+%type <node>    unary_expression multiplication_expression additive_expression
+%type <node>    relational_expression equality_expression logical_expression
 
-%type <node> option
-%type <node> option_list argument_expression_list expression_list
+%type <node>    option
+%type <node>    option_list argument_expression_list expression_list
 
 %start translation_unit
 %%
@@ -130,12 +133,17 @@ translation_unit:
         driver.ast = $1;
         $$ = $1;
     }
-    | translation_unit "\n" external_statement
+    | translation_unit cmd_sep external_statement
     {
         $1->appendChild($3);
         driver.ast = $1;
         $$ = $1;
     }
+    ;
+
+cmd_sep:
+      "\n"
+    | ";"
     ;
 
 external_statement:
@@ -157,7 +165,7 @@ cmds:
         node->appendChild($1);
         $$ = node;
     }
-    | cmds "\n" cmd
+    | cmds cmd_sep cmd
     {
         $1->appendChild($3);
         $$ = $1;

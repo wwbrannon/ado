@@ -1,6 +1,11 @@
 Roadmap to v0.1:
 Immediate TODO:
     o) misc small parser fixes
+        o) fix the format:
+            list components should be named
+            omit components if empty
+            what are those NAs?
+        o) error if other character given
         o) delete the random strings that don't become part of the AST,
            to avoid a memory leak
         o) make sure the location tracking works
