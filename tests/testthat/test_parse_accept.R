@@ -1,17 +1,8 @@
 context("Parser accepts all and only valid input")
 
 #The expectation functions we're going to use here
-expect_accept <-
-function(str)
-{
-    eval(bquote(expect_equal(parse_accept(.(str)), 1)))
-}
-
-expect_reject <-
-function(str)
-{
-    eval(bquote(expect_equal(parse_accept(.(str)), 0)))
-}
+expect_accept <- function(str) eval(bquote(expect_equal(parse_accept(.(str)), 1)))
+expect_reject <- function(str) eval(bquote(expect_equal(parse_accept(.(str)), 0)))
 
 #What do we need to test? Both valid and invalid input for
 #these categories of commands/expressions:
