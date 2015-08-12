@@ -48,6 +48,12 @@ BranchExprNode::BranchExprNode(std::string _type, std::string _data)
     data = _data;
 }
 
+BranchExprNode::BranchExprNode()
+{
+    type = "";
+    data = "";
+}
+
 void
 BranchExprNode::setChildren(std::initializer_list<BranchExprNode *> list)
 {
