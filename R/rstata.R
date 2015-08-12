@@ -64,33 +64,29 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
                   #       away the value
                   do_parse_with_callbacks(inpt, process_cmd, get_macro_value)
               },
+              error = function(c) c)
               
-              error = function(c) c,
-              exit = function(c) c,
-              bad_command = function(c) c)
-
               if(inherits(val, "error"))
               {
-                cat(paste0(c$message), "\n", sep="")
-                
-                on.exit("")
-                s <- substr(readline("Will now exit. Save data? "), 1, 1)
-                if(s == "Y" || s == "y")
-                  assign(varname, dta, pos=parent.frame())
-                
-                break
-              }
-              
-              if(inherits(val, "exit"))
-              {
-                cat("\n")
-                break
-              }
-              
-              if(inherits(val, "bad_command"))
-              {
-                print(c$message)
-                next
+                if(inherits(val, "exit"))
+                {
+                  cat("\n")
+                  break
+                } else if(inherits(val, "bad_command"))
+                {
+                  cat(paste0(val$message, "\n", sep=""))
+                  next
+                } else
+                {
+                  cat(paste0(val$message, "\n", sep=""))
+                  
+                  on.exit("")
+                  s <- substr(readline("Will now exit. Save data? "), 1, 1)
+                  if(s == "Y" || s == "y")
+                    assign(varname, dta, pos=parent.frame())
+                  
+                  break
+                }
               }
         }
     } else if(is.null(filename) && is.null(string))
@@ -116,11 +112,9 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
 process_cmd <-
 function(ast)
 {
-    print(ast); return(1);
-  
-    #possible FIXME: conditions raised here shouldn't be swallowed by
-    #the C++ layer - are they?
-
+    # FIXME: conditions are not propagating correctly, or being handled
+    # correctly in the caller
+    
     #Do semantic analysis and run checks, including for things that Stata
     #considers syntax, and raise error conditions if the checks fail.
     weed(ast)
@@ -128,12 +122,13 @@ function(ast)
     #Code generation: convert the raw AST into an R call object
     cl <- codegen(ast)
     
-    #Evaluate the generated call
-    #    a) for its side effects
-    #    b) for the printable object this tryCatch will return
-    obj <- eval(cl, envir=parent.frame())
+    #Evaluate the generated calls
+    #    a) for their side effects
+    #    b) for printable objects
+    objs <- eval(cl, envir=parent.frame())
     
-    print(obj) #dispatches to the custom print methods
+    for(obj in objs)
+      print(obj) #dispatches to the custom print methods
 
     return(0); #a compatible type for the C++ layer
 }
