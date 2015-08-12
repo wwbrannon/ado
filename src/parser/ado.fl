@@ -20,12 +20,10 @@ void count();
 "/*"                    { long_comment(); } /* the lexer eats comments */
 \/\/                    { short_comment(); }
 
-\"(\\.|[^"\\])*\"       { count(); yylval.str = strdup(yytext); return STRING_LITERAL; }
-\'(\\.|[^'\\])*\'       { count(); yylval.str = strdup(yytext); return STRING_LITERAL; }
 \"\"                    { count(); yylval.str = strdup(yytext); return STRING_MISSING; }
 \'\'                    { count(); yylval.str = strdup(yytext); return STRING_MISSING; }
-
-[_A-Za-z][A-Za-z0-9_]*  { count(); yylval.str = strdup(yytext); return IDENT; }
+\"(\\.|[^"\\])*\"       { count(); yylval.str = strdup(yytext); return STRING_LITERAL; }
+\'(\\.|[^'\\])*\'       { count(); yylval.str = strdup(yytext); return STRING_LITERAL; }
 
 -?[0-9]+(\.[0-9]+)?     { count(); yylval.str = strdup(yytext); yylval.num = atoi(yytext); return NUMBER; }
 \.                      { count(); yylval.str = strdup(yytext); return NUMBER_MISSING; }
@@ -132,6 +130,8 @@ void count();
 (?i:using)              { count(); yylval.str = strdup(yytext); return USING; }
 (?i:in)                 { count(); yylval.str = strdup(yytext); return IN; }
 (?i:if)                 { count(); yylval.str = strdup(yytext); return IF; }
+
+[_A-Za-z][A-Za-z0-9_]*  { count(); yylval.str = strdup(yytext); return IDENT; }
 
 \n                      { count(); ++line_num; }
 [ \t\v\r\f]+            { count(); }
