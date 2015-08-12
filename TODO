@@ -1,11 +1,8 @@
 Roadmap to v0.1:
-
 Immediate TODO:
-    o) finish the grammar
-        o) shift/reduce conflicts in the expression sections
+    o) the parser should be a C++ class, not yyparse
+    o) rewrite do_stata_parse to suit
     o) finish the actions for commands
-        o) the parser should be a C++ class, not yyparse
-        o) rewrite do_stata_parse to suit
 
 Semantics:
     o) write up stubs for the R functions implementing Stata commands
@@ -14,10 +11,6 @@ Semantics:
     o) Stata-like output: how much is this worth imitating?
 
 Write a test suite and test
-
-Write documentation
-    o) man entries, vignettes, examples
-    o) document the R expression format the parser emits
 
 * Edit the exports in 'NAMESPACE', and add necessary imports.
 * Run R CMD build to build the package tarball.
@@ -28,11 +21,17 @@ Later functionality
 
     v0.3: Real varlists, with factors, interactions, etc
 
-    A mechanism for registering an arbitrary R function obeying the
-    calling convention as a Stata command
+    v0.4:
+        A mechanism for registering an arbitrary R function obeying the
+        calling convention as a Stata command
     
-    Many more commands - egen, input, label
+        Many more commands - egen, input, label
     
-    Formats
+        Formats / data types
     
-    Graphics?
+        Graphics?
+
+Write documentation
+    o) man entries, vignettes, examples
+    o) document the R expression format the parser emits
+

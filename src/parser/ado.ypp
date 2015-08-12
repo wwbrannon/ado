@@ -3,7 +3,7 @@
 #include <cstring>
 #include <iostream>
 #include <Rcpp.h>
-#include "rstata.hpp"
+#include "RStata.hpp"
 
 void raise_condition(const std::string& msg, const std::string& type);
 
@@ -39,9 +39,15 @@ int yywrap()
 
 /* Operators */
 %token <str> GT_OP LT_OP EQ_OP NE_OP OR_OP AND_OP
+%precedence RELATIONAL
+%precedence '+' '-'
+%precedence EXPONENT
+%precedence '['
+%precedence '('
+
 
 /* Command components and keywords */
-%token <str> USING IF WITH IN
+%token <str> USING IF IN
 
 /* Commands with unusual enough syntax they have to be parsed separately */
 %token <str> QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
@@ -57,7 +63,7 @@ int yywrap()
 
 translation_unit:
       external_statement
-    | translation_unit external_statement
+    | translation_unit NEWLINE external_statement
     ;
 
 external_statement:
@@ -71,7 +77,7 @@ compound_cmd:
 
 cmds:
       cmd
-    | cmds cmd
+    | cmds NEWLINE cmd
     ;
 
 cmd:
@@ -166,14 +172,14 @@ primary_expression:
 
 postfix_expression:
       primary_expression
-    | postfix_expression '[' expression ']'
-    | postfix_expression '(' ')'
+    | postfix_expression '[' expression ']' %prec '['
+    | postfix_expression '(' ')' %prec '('
     | postfix_expression '(' argument_expression_list ')'
     ;
 
 power_expression:
-      postfix_expression
-    | postfix_expression power_operator postfix_expression
+      postfix_expression %prec EXPONENT
+    | power_expression power_operator postfix_expression %prec EXPONENT
     ;
 
 unary_expression:
@@ -187,13 +193,13 @@ multiplication_expression:
     ;
 
 additive_expression:
-      multiplication_expression
-    | additive_expression additive_operator multiplication_expression
+      multiplication_expression %prec '+'
+    | additive_expression additive_operator multiplication_expression %prec '+'
     ;
 
 relational_expression:
-      additive_expression
-    | relational_expression relational_operator additive_expression
+      additive_expression %prec RELATIONAL
+    | relational_expression relational_operator additive_expression %prec RELATIONAL
     ;
 
 equality_expression:
