@@ -3,10 +3,10 @@ Roadmap to v0.1:
 Immediate TODO:
     o) finish the grammar
         o) shift/reduce conflicts in the expression sections
-        o) real varlists, with factors, interactions, etc
-        o) incorporate most of the currently unused keyword tokens
+        o) incorporate the currently unused keyword tokens, or have them raise a not implemented error
         o) abbreviations for abbreviate-able keywords
     o) finish the actions for commands
+        o) the parser should be a C++ class, not yyparse
 
 Semantics:
     o) write up stubs for the R functions implementing Stata commands
@@ -25,12 +25,15 @@ Write documentation
 * Run R CMD check to check the package tarball.
 
 Later functionality
+    v0.2: Loops + Macros
+
+    v0.3: Real varlists, with factors, interactions, etc
+
     A mechanism for registering an arbitrary R function obeying the
     calling convention as a Stata command
     
     Many more commands - egen, input, label
+    
     Formats
     
     Graphics?
-
-    Loops + Macros
