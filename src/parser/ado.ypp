@@ -162,7 +162,12 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
  */
 
 translation_unit:
-      external_statement
+      error
+    {
+        ExprNode *node = new ExprNode("rstata_compound_cmd");
+        $$ = node;
+    }
+    | external_statement
     {
         ExprNode *node = new ExprNode("rstata_compound_cmd");
         node->appendChild($1);
@@ -187,12 +192,15 @@ translation_unit:
 
         $$ = $1;
     }
+    | translation_unit error
+    {
+        $$ = $1;
+    }
     ;
 
 external_statement:
       cmd
     | compound_cmd
-    | error
     ;
 
 cmd_sep:

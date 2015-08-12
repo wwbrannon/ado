@@ -1,6 +1,5 @@
 Now:
-  o) finalize the format of generated code
-    o) there should be more S3 classes set on the generated objects
+  o) cmd sep handling is bad: need a newline before each }
 
   o) infrastructural R functions
     o) varlist_to_formula
