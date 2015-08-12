@@ -45,7 +45,7 @@ function(expr, envir=parent.frame(),
             ret[[length(ret)+1]] <- tmp$value
 
             if(print.results && tmp$visible)
-                cat(as.character(tmp$value), "\n", sep="")
+                print(tmp$value)
         }
     }
 
