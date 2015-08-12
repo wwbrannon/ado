@@ -160,7 +160,7 @@ yy::RStataParser::error(const location_type& l, const std::string& m)
 %type <node>    relational_expression equality_expression logical_expression
 %type <node>    cross_expression unary_factor_expression number_or_missing
 
-%type <node>    option options
+%type <node>    option options option_ident
 %type <node>    option_list argument_expression_list expression_list
 
                 /* Non-terminals for the syntax of special commands */
@@ -531,35 +531,62 @@ cmd_sep:
 
 modifier_cmd:
       CAPTURE
+    {
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_modifier_cmd"});
+        node->appendChild("verb", $1);
+
+        $$ = node;
+    }
     | QUIETLY
+    {
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_modifier_cmd"});
+        node->appendChild("verb", $1);
+
+        $$ = node;
+    }
     | NOISILY
+    {
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_modifier_cmd"});
+        node->appendChild("verb", $1);
+
+        $$ = node;
+    }
     ;
 
 long_modifier_cmd:
       BYSORT expression_list option_list
     {
-        $1->appendChild("expression_list", $2);
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        node->appendChild("verb", $1);
+
+        node->appendChild("expression_list", $2);
 
         if($3->nChildren() > 0)
-          $1->appendChild("option_list", $3);
+          node->appendChild("option_list", $3);
 
-        $$ = $1;
+        $$ = node;
     }
     | BY expression_list option_list
     {
-        $1->appendChild("expression_list", $2);
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        node->appendChild("verb", $1);
+
+        node->appendChild("expression_list", $2);
 
         if($3->nChildren() > 0)
-          $1->appendChild("option_list", $3);
+          node->appendChild("option_list", $3);
 
-        $$ = $1;
+        $$ = node;
     }
     | XI option_list
     {
-      if($2->nChildren() > 0)
-        $1->appendChild("option_list", $2);
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        node->appendChild("verb", $1);
 
-      $$ = $1;
+        if($2->nChildren() > 0)
+          node->appendChild("option_list", $2);
+
+        $$ = node;
     }
     ;
 
@@ -630,11 +657,14 @@ nonmodifier_cmd:
      * we can do about it. */
     | MERGE MERGE_SPEC expression_list using_clause option_list
     {
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        node->appendChild("verb", $1);
+
         if($3->nChildren() > 0)
-            $1->appendChild("expression_list", $3);
+            node->appendChild("expression_list", $3);
 
         if($4->nChildren() > 0)
-            $1->appendChild("using_clause", $4);
+            node->appendChild("using_clause", $4);
 
         // we're going to make the merge_spec an option
         ExprNode *opt = new ExprNode("rstata_option");
@@ -651,30 +681,36 @@ nonmodifier_cmd:
         $5->appendChild(opt);
         $1->appendChild("option_list", $5);
 
-        $$ = $1;
+        $$ = node;
     }
     | XI expression_list option_list /* only necessary because this is a keyword */
     {
-        $1->appendChild("expression_list", $2);
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        node->appendChild("verb", $1);
+
+        node->appendChild("expression_list", $2);
         
         if($3->nChildren() > 0)
-            $1->appendChild("option_list", $3);
+            node->appendChild("option_list", $3);
 
-        $$ = $1;
+        $$ = node;
     }
     | IVREGRESS TSLS varlist "(" varlist "=" varlist ")" if_clause in_clause weight_clause option_list
     {
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        node->appendChild("verb", $1);
+
         $3->prependChild($2);
-        $1->appendChild("expression_list", $3);
+        node->appendChild("expression_list", $3);
 
         if($9->nChildren() > 0)
-            $1->appendChild("if_clause", $9);
+            node->appendChild("if_clause", $9);
 
         if($10->nChildren() > 0)
-            $1->appendChild("in_clause", $10);
+            node->appendChild("in_clause", $10);
 
         if($11->nChildren() > 0)
-            $1->appendChild("weight_clause", $11);
+            node->appendChild("weight_clause", $11);
 
         // We're going to make the other two varlists into options
         ExprNode *endogenous_opt = new ExprNode("rstata_option");
@@ -697,33 +733,39 @@ nonmodifier_cmd:
         
         $11->appendChild(endogenous_opt);
         $11->appendChild(instrumental_opt);
-        $1->appendChild("option_list", $12);
+        node->appendChild("option_list", $12);
 
-        $$ = $1;
+        $$ = node;
     }
     | GSORT gsort_varlist option_list
     {
-        $1->appendChild("expression_list", $2);
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        node->appendChild("verb", $1);
+
+        node->appendChild("expression_list", $2);
 
         if($3->nChildren() > 0)
-            $1->appendChild("option_list", $3);
+            node->appendChild("option_list", $3);
 
-        $$ = $1;
+        $$ = node;
     }
     | COLLAPSE collapse_spec_base_list if_clause in_clause weight_clause option_list
     {
+        ExprNode *cmd = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        cmd->appendChild("verb", $1);
+
         /* the components which are correct as-is */
         if($3->nChildren() > 0)
-            $1->appendChild("if_clause", $3);
+            cmd->appendChild("if_clause", $3);
 
         if($4->nChildren() > 0)
-            $1->appendChild("in_clause", $4);
+            cmd->appendChild("in_clause", $4);
 
         if($5->nChildren() > 0)
-            $1->appendChild("weight_clause", $5);
+            cmd->appendChild("weight_clause", $5);
 
         if($6->nChildren() > 0)
-            $1->appendChild("option_list", $6);
+            cmd->appendChild("option_list", $6);
 
         /* the expression list we need to wrap in a function call */
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
@@ -746,69 +788,82 @@ nonmodifier_cmd:
         arglist->appendChild($2); // variable names or assignments follow
         
         node->appendChild("right", arglist);
+        cmd->appendChild("expression_list", node);
         
-        $$ = $1;
+        $$ = cmd;
     }
     | COLLAPSE collapse_list if_clause in_clause weight_clause option_list
     {
-        $1->appendChild("expression_list", $2);
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        node->appendChild("verb", $1);
+
+        node->appendChild("expression_list", $2);
 
         if($3->nChildren() > 0)
-            $1->appendChild("if_clause", $3);
+            node->appendChild("if_clause", $3);
 
         if($4->nChildren() > 0)
-            $1->appendChild("in_clause", $4);
+            node->appendChild("in_clause", $4);
 
         if($5->nChildren() > 0)
-            $1->appendChild("weight_clause", $5);
+            node->appendChild("weight_clause", $5);
 
         if($6->nChildren() > 0)
-            $1->appendChild("option_list", $6);
+            node->appendChild("option_list", $6);
 
-        $$ = $1;
+        $$ = node;
     }
     | LRTEST modelspec_list option_list
     {
-        $1->appendChild("expression_list", $2);
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        node->appendChild("verb", $1);
+
+        node->appendChild("expression_list", $2);
 
         if($3->nChildren() > 0)
-            $1->appendChild("option_list", $3);
+            node->appendChild("option_list", $3);
 
-        $$ = $1;
+        $$ = node;
     }
     | ANOVA IDENT anova_term_list if_clause in_clause weight_clause option_list
     {
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        node->appendChild("verb", $1);
+
         $3->prependChild($2);
-        $1->appendChild("expression_list", $3);
+        node->appendChild("expression_list", $3);
         
         if($4->nChildren() > 0)
-            $1->appendChild("if_clause", $4);
+            node->appendChild("if_clause", $4);
 
         if($5->nChildren() > 0)
-            $1->appendChild("in_clause", $5);
+            node->appendChild("in_clause", $5);
 
         if($6->nChildren() > 0)
-            $1->appendChild("weight_clause", $6);
+            node->appendChild("weight_clause", $6);
 
         if($7->nChildren() > 0)
-            $1->appendChild("option_list", $7);
+            node->appendChild("option_list", $7);
         
-        $$ = $1;
+        $$ = node;
     }
     | RECODE recode_rule_list if_clause in_clause option_list
     {
-        $1->appendChild("expression_list", $2);
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        node->appendChild("verb", $1);
+
+        node->appendChild("expression_list", $2);
 
         if($3->nChildren() > 0)
-            $1->appendChild("if_clause", $3);
+            node->appendChild("if_clause", $3);
 
         if($4->nChildren() > 0)
-            $1->appendChild("in_clause", $4);
+            node->appendChild("in_clause", $4);
 
         if($5->nChildren() > 0)
-            $1->appendChild("option_list", $5);
+            node->appendChild("option_list", $5);
         
-        $$ = $1;
+        $$ = node;
     }
     ;
 
@@ -1470,14 +1525,14 @@ options:
     ;
 
 option:
-      IDENT
+      option_ident
     {
         ExprNode *node = new ExprNode("rstata_option");
         node->appendChild("name", $1);
 
         $$ = node;
     }
-    | IDENT "(" argument_expression_list ")"
+    | option_ident "(" argument_expression_list ")"
     {
         ExprNode *node = new ExprNode("rstata_option");
         node->appendChild("name", $1);
@@ -1485,6 +1540,25 @@ option:
 
         $$ = node;
     }
+    ;
+
+/* these special command verbs sometimes (e.g., with "by")
+ * have to be usable as options */
+option_ident:
+      IDENT
+    | BY
+    | BYSORT
+    | XI
+    | CAPTURE
+    | QUIETLY
+    | NOISILY
+    | MERGE
+    | COLLAPSE
+    | RECODE
+    | IVREGRESS
+    | GSORT
+    | LRTEST
+    | ANOVA
     ;
 
 /*

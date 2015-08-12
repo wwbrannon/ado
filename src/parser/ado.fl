@@ -1940,8 +1940,7 @@ capture                             {
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
-                                        yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
-                                        yylval->node->appendChild("verb", verb);
+                                        yylval->node = verb;
                                         return token::TOK_CAPTURE;
                                     }
 cap                                 {
@@ -1950,8 +1949,7 @@ cap                                 {
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", "capture");
 
-                                        yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
-                                        yylval->node->appendChild("verb", verb);
+                                        yylval->node = verb;
                                         return token::TOK_CAPTURE;
                                     }
 quietly                             {
@@ -1960,8 +1958,7 @@ quietly                             {
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
-                                        yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
-                                        yylval->node->appendChild("verb", verb);
+                                        yylval->node = verb;
                                         return token::TOK_QUIETLY;
                                     }
 qui                                 {
@@ -1970,8 +1967,7 @@ qui                                 {
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", "quietly");
 
-                                        yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
-                                        yylval->node->appendChild("verb", verb);
+                                        yylval->node = verb;
                                         return token::TOK_QUIETLY;
                                     }
 noisily                             {
@@ -1980,8 +1976,7 @@ noisily                             {
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
-                                        yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
-                                        yylval->node->appendChild("verb", verb);
+                                        yylval->node = verb;
                                         return token::TOK_NOISILY;
                                     }
                                     
@@ -1992,8 +1987,7 @@ by                                  {
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
-                                        yylval->node = new ExprNode({"rstata_cmd","rstata_general_cmd"});
-                                        yylval->node->appendChild("verb", verb);
+                                        yylval->node = verb;
                                         return token::TOK_BY;
                                     }
 bysort                              {
@@ -2002,8 +1996,7 @@ bysort                              {
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
-                                        yylval->node = new ExprNode({"rstata_cmd","rstata_general_cmd"});
-                                        yylval->node->appendChild("verb", verb);
+                                        yylval->node = verb;
                                         return token::TOK_BYSORT;
                                     }
 xi                                  {
@@ -2012,8 +2005,7 @@ xi                                  {
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
-                                        yylval->node = new ExprNode({"rstata_cmd","rstata_general_cmd"});
-                                        yylval->node->appendChild("verb", verb);
+                                        yylval->node = verb;
                                         return token::TOK_XI;
                                     }
 
@@ -2025,8 +2017,7 @@ merge                               {
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
-                                        yylval->node = new ExprNode({"rstata_cmd","rstata_general_cmd"});
-                                        yylval->node->appendChild("verb", verb);
+                                        yylval->node = verb;
                                         return token::TOK_MERGE;
                                     }
 collapse                            {
@@ -2035,8 +2026,7 @@ collapse                            {
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
-                                        yylval->node = new ExprNode({"rstata_cmd","rstata_general_cmd"});
-                                        yylval->node->appendChild("verb", verb);
+                                        yylval->node = verb;
                                         return token::TOK_COLLAPSE;
                                     }
 recode                              {
@@ -2045,8 +2035,7 @@ recode                              {
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
-                                        yylval->node = new ExprNode({"rstata_cmd","rstata_general_cmd"});
-                                        yylval->node->appendChild("verb", verb);
+                                        yylval->node = verb;
                                         return token::TOK_RECODE;
                                     }
 ivregress                           {
@@ -2055,8 +2044,7 @@ ivregress                           {
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
-                                        yylval->node = new ExprNode({"rstata_cmd","rstata_general_cmd"});
-                                        yylval->node->appendChild("verb", verb);
+                                        yylval->node = verb;
                                         return token::TOK_IVREGRESS;
                                     }
 gsort                               {
@@ -2065,8 +2053,7 @@ gsort                               {
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
-                                        yylval->node = new ExprNode({"rstata_cmd","rstata_general_cmd"});
-                                        yylval->node->appendChild("verb", verb);
+                                        yylval->node = verb;
                                         return token::TOK_GSORT;
                                     }
 lrtest                              {
@@ -2075,8 +2062,7 @@ lrtest                              {
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
-                                        yylval->node = new ExprNode({"rstata_cmd","rstata_general_cmd"});
-                                        yylval->node->appendChild("verb", verb);
+                                        yylval->node = verb;
                                         return token::TOK_LRTEST;
                                     }
 anova                               {
@@ -2085,8 +2071,7 @@ anova                               {
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
-                                        yylval->node = new ExprNode({"rstata_cmd","rstata_general_cmd"});
-                                        yylval->node->appendChild("verb", verb);
+                                        yylval->node = verb;
                                         return token::TOK_ANOVA;
                                     }
 
