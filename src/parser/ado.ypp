@@ -1,3 +1,4 @@
+%glr-parser
 %skeleton "lalr1.cc" /* -*- C++ -*- */
 %require "3.0.2"
 
@@ -131,7 +132,7 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 %type <node>    if_clause in_clause weight_clause using_clause
 
 %type <node>    expression
-%type <node>    primary_expression label_expression postfix_expression power_expression
+%type <node>    primary_expression postfix_expression power_expression
 %type <node>    unary_expression multiplication_expression additive_expression
 %type <node>    relational_expression equality_expression logical_expression
 %type <node>    cross_expression unary_factor_expression
@@ -522,10 +523,6 @@ logical_operator:
     | "|"
     ;
 
-label_operator:
-    ":"
-    ;
-
 cross_operator:
       "##"
     | "#"
@@ -545,21 +542,9 @@ primary_expression:
     }
     ;
 
-label_expression:
-      primary_expression
-    | label_expression label_operator primary_expression
-    {
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_label_expression"});
-        node->addData("verb", ":");
-        node->appendChild("left", $1);
-        node->appendChild("right", $3);
-        $$ = node;
-    }
-    ;
-
 unary_factor_expression:
-      label_expression
-    | unary_factor_operator label_expression
+      primary_expression
+    | unary_factor_operator primary_expression
     {
         $1->appendChild("left", $2);
         
@@ -842,7 +827,7 @@ in_clause:
     {
         $$ = new ExprNode("rstata_in_clause");
     }
-    | IN NUMBER "/" NUMBER
+    | IN NUMBER "/" NUMBER /* failing to reference the "/" produces a spurious warning */
     {
         ExprNode *node = new ExprNode("rstata_in_clause");
         node->appendChild("upper", $2);
