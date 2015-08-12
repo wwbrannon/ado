@@ -1,8 +1,21 @@
 Now:
-  o) Parser / lexer:
-    o) syntax for collapse
+  o) get rid of type_spec and use the type_constructor class
+    o) should format_spec and maybe merge_spec also be expressions?
+
+  o) syntax for collapse
+    o) any other weirdly formed commands?
 
   o) if block construct
+
+  o) Macros, without loops
+    o) need to find a way to lex nested macros and recursively substitute
+       their values from the symbol table - use flex start conditions
+    o) "compound double quotes"
+
+  o) the way you're trying to make rstata_env's contents be in scope isn't working
+
+Parser / lexer:
+  o) Loops: much harder, because of macros
 
 Backend:
   o) infrastructural R functions
@@ -19,15 +32,6 @@ Backend:
   o) Stata's "stored results"
 
   o) complete all the commands which now have stubs
-
-Parser / lexer:
-  o) Macros, without loops
-      o) need to find a way to lex nested macros and recursively substitute
-         their values from the symbol table - use flex start conditions
-      o) "compound double quotes"
-
-  o) Loops
-      o) much harder, because of macros
 
 Systematic debugging:
   o) use testthat and travis
@@ -52,7 +56,7 @@ Wishlist functionality:
      also a race condition, and is Unix-specific
 
   o) A mechanism for the user to register an R function obeying the
-     calling convention as a Stata command - the "registry" package?
+     calling convention as a Stata command, persistently
 
   o) graphics
 

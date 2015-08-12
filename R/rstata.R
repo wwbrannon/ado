@@ -192,9 +192,10 @@ function(ast, debug_level=0)
         deep_eval(ret_p1, envir=parent.env(environment()), enclos=rstata_env)
     },
     error=function(c) c,
+    EvalErrorException=function(c) c,
     ExitRequestedException=function(c) c)
 
-    if(inherits(ret_p2, "error")) #raise an EvalErrorException in the C++
+    if(inherits(ret_p2, "EvalErrorException") || inherits(ret_p2, "error"))
         return( list(2, ret_p2$message) )
 
     if(inherits(ret_p2, "ExitRequestedException"))
