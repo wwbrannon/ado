@@ -1,11 +1,11 @@
 Now:
-    o) better error messages
-        o) from check() and codegen() and ultimately raiseifnot
-        o) methods take debug_level arguments; now they need to act on them
+    o) finish code generation and finalize generated format
 
-    o) code generation: construct unevaluated calls and expression objects
-    
     o) name abbreviation
+
+    o) better error messages
+        o) from check() and codegen()
+        o) methods take debug_level arguments; now they need to act on them
 
     o) infrastructural R functions
       o) for operators
@@ -32,9 +32,12 @@ Commands:
         o) data management: egen, input, label, etc
         o) basic stats
         o) a few more macro manipulation commands
-        
+
 Documentation:
-    o) functions, examples, a vignette, update README
+    o) document package object and rstata()
+    o) update README
+    o) long vignette: comprehensive
+    o) short vignette: summary + differences from Stata
     o) document the R expression format the parser emits
 
 Misc:
