@@ -262,7 +262,8 @@ function(node, debug_level=0)
   raiseifnot(length(node$children) > 0,
              msg=if(debug_level) NULL else "Empty compound/block command")
   raiseifnot(every(vapply(node$children,
-                          function(x) x %is% "rstata_embedded_code" ||    #embedded R or sh code
+                          function(x) x %is% "rstata_compound_cmd" ||     #they can be nested
+                                      x %is% "rstata_embedded_code" ||    #embedded R or sh code
                                       x %is% "rstata_cmd" ||              #a usual Stata cmd
                                       x %is% "rstata_if_cmd" ||           #an if expr { } block
                                       x %is% "rstata_modifier_cmd_list",  #a Stata cmd with modifiers
