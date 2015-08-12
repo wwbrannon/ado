@@ -1231,7 +1231,7 @@ in                                  {
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_RBRACE;
                                     }
-,                                   {
+","                                 {
                                         R_ECHO(yytext);
                                         
                                         yylval->str = new std::string(yytext);
@@ -1242,6 +1242,12 @@ in                                  {
                                         
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_COLON;
+                                    }
+\.                                  {
+                                        R_ECHO(yytext);
+
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_PERIOD;
                                     }
 
                                     /* Factor variable operators and level-restricted virtual variables */
@@ -1532,7 +1538,58 @@ merge                               {
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_ident"});
                                         yylval->node->addData("value", *(new std::string(yytext)));
 
+                                        // FIXME why isn't this also generating a cmd node?
                                         return token::TOK_MERGE;
+                                    }
+collapse                            {
+                                        R_ECHO(yytext);
+                                        
+                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        verb->addData("value", *(new std::string(yytext)));
+
+                                        yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
+                                        yylval->node->appendChild("verb", verb);
+                                        return token::TOK_COLLAPSE;
+                                    }
+recode                              {
+                                        R_ECHO(yytext);
+                                        
+                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        verb->addData("value", *(new std::string(yytext)));
+
+                                        yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
+                                        yylval->node->appendChild("verb", verb);
+                                        return token::TOK_RECODE;
+                                    }
+ivregress                           {
+                                        R_ECHO(yytext);
+                                        
+                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        verb->addData("value", *(new std::string(yytext)));
+
+                                        yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
+                                        yylval->node->appendChild("verb", verb);
+                                        return token::TOK_IVREGRESS;
+                                    }
+gsort                               {
+                                        R_ECHO(yytext);
+                                        
+                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        verb->addData("value", *(new std::string(yytext)));
+
+                                        yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
+                                        yylval->node->appendChild("verb", verb);
+                                        return token::TOK_GSORT;
+                                    }
+lrtest                              {
+                                        R_ECHO(yytext);
+                                        
+                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        verb->addData("value", *(new std::string(yytext)));
+
+                                        yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
+                                        yylval->node->appendChild("verb", verb);
+                                        return token::TOK_LRTEST;
                                     }
 
 
