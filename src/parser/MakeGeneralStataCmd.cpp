@@ -1,5 +1,5 @@
 #include <Rcpp.h>
-#include "rstata.hpp"
+#include "RStata.hpp"
 
 MakeGeneralStataCmd::MakeGeneralStataCmd(std::string _verb)
 {

@@ -1,7 +1,7 @@
 /* Methods for the OptionListExprNode class */
 
 #include <Rcpp.h>
-#include "rstata.hpp"
+#include "RStata.hpp"
 
 using namespace Rcpp;
 

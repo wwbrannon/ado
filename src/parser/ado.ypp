@@ -1,9 +1,26 @@
+%skeleton "RStataParser.cpp" /* -*- C++ -*- */
+%require "3.0.2"
+%defines
+%define parser_class_name {RStataParser}
+
+%define api.token.constructor
+%define api.value.type variant
+%define parse.assert
+
+%param { RStataDriver& driver }
+
+%locations
+%define parse.trace
+%define parse.error verbose
+
 %{
+#include <string>
 #include <cstdio>
 #include <cstring>
 #include <iostream>
 #include <Rcpp.h>
 #include "RStata.hpp"
+#include "RStataDriver.hpp"
 
 void raise_condition(const std::string& msg, const std::string& type);
 
@@ -25,8 +42,6 @@ int yywrap()
     char *str;
 }
 
-%parse-param {std::unique_ptr<BaseExprNode> **ast_root}
-%define parse.error verbose
 %start translation_unit
 
 %token <str> NEWLINE
