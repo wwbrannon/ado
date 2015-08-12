@@ -16,21 +16,24 @@ all: parse.o lex.o
 			build/EmbeddedRCmd.o
 
 parse.o: infra
-	bison -d -Wall -b build/ado ado.ypp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) build/ado.tab.cpp -o build/parse.o 
 
 lex.o: infra
-	flex -o build/lex.yy.cpp --header-file=build/lex.yy.hpp ado.fl
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) build/lex.yy.cpp -o build/lex.o 
 
-infra:
-	mkdir -p build
+infra: generate
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) ExprNode.cpp -o build/ExprNode.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) OptionListExprNode.cpp -o build/OptionListExprNode.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) OptionExprNode.cpp -o build/OptionExprNode.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) GeneralStataCmd.cpp -o build/GeneralStataCmd.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) MakeGeneralStataCmd.cpp -o build/MakeGeneralStataCmd.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) EmbeddedRCmd.cpp -o build/EmbeddedRCmd.o
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) RStataDriver.cpp -o build/RStataDriver.o
+
+generate:
+	mkdir -p build
+	flex -o build/lex.yy.cpp --header-file=build/lex.yy.hpp ado.fl
+	bison -d -Wall -b build/ado ado.ypp
 
 clean:
 	rm -rf build

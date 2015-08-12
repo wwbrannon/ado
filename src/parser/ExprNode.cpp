@@ -1,4 +1,4 @@
-/* Methods for the derived classes of BaseExprNode */
+/* Methods for most of the derived classes of BaseExprNode */
 
 #include <utility>
 #include <Rcpp.h>
@@ -7,30 +7,6 @@
 using namespace Rcpp;
 
 // Constructors
-NumberExprNode::NumberExprNode(signed long int _data)
-{
-    NumericVector x(1);
-    x[0] = _data;
-
-    data = x;
-}
-
-NumberExprNode::NumberExprNode(unsigned long int _data)
-{
-    NumericVector x(1);
-    x[0] = _data;
-
-    data = x;
-}
-
-NumberExprNode::NumberExprNode(long double _data)
-{
-    NumericVector x(1);
-    x[0] = _data;
-
-    data = x;
-}
-
 IdentExprNode::IdentExprNode(std::string _data)
 {
     data = _data;
@@ -41,10 +17,34 @@ StringExprNode::StringExprNode(std::string _data)
     data = _data;
 }
 
-BranchExprNode::BranchExprNode(std::string _data, std::vector<std::unique_ptr<BaseExprNode>> _children)
+DatetimeExprNode::DatetimeExprNode(std::string _date, std::string _time)
+{
+    if(_date.empty() && _time.empty())
+        dt = R_NilValue;
+
+    if(_date.empty() && !_time.empty())
+        dt = Datetime(_time, "%H:%M:%OS");
+
+    if(!_date.empty() && _time.empty())
+        dt = Datetime(_date, "%d%b%Y");
+    
+    if(!_date.empty() && !_time.empty())
+        dt = Datetime(_date + " " + _time, "%d%b%Y %H:%M:%OS");
+}
+
+DatetimeExprNode::DatetimeExprNode(std::string _dt)
+{
+    dt = Datetime(_dt, std::string("%d%b%Y %H:%M:%OS"));
+}
+
+BranchExprNode::BranchExprNode(std::string _data)
 {
     data = _data;
+}
 
+void
+BranchExprNode::setChildren(std::vector<std::unique_ptr<BaseExprNode>> _children)
+{
     children = std::move(_children);
 }
 
@@ -72,6 +72,15 @@ List StringExprNode::as_R_object() const
     List res;
     
     res.push_back(data);
+
+    return res;
+}
+
+List DatetimeExprNode::as_R_object() const
+{
+    List res;
+
+    res.push_back(dt);
 
     return res;
 }

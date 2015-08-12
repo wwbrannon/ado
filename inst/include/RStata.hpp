@@ -19,16 +19,13 @@ class BaseExprNode
 {
     public:
         // method that returns this BaseExprNode as an R expression
-        virtual Rcpp::List as_R_object() const = 0;
+        virtual Rcpp::List as_R_object() const;
 };
 
 // The next three classes are AST nodes for literals - string, symbol and numeric
 class NumberExprNode: public BaseExprNode
 {
     public:
-        NumberExprNode(signed long int _data);
-        NumberExprNode(unsigned long int _data);
-        NumberExprNode(long double _data);
         NumberExprNode(std::string _data);
         
         virtual Rcpp::List as_R_object() const;
@@ -57,6 +54,18 @@ class StringExprNode: public BaseExprNode
 
     private:
         std::string data;
+};
+
+class DatetimeExprNode: public BaseExprNode
+{
+    public:
+        DatetimeExprNode(std::string _date, std::string _time);
+        DatetimeExprNode(std::string _dt);
+        
+        virtual Rcpp::List as_R_object() const;
+
+    private:
+        Rcpp::Datetime dt;
 };
 
 // Options as they occur after commands, prefix or otherwise
@@ -89,7 +98,8 @@ class OptionListExprNode: public BaseExprNode
 class BranchExprNode: public BaseExprNode
 {
     public:
-        BranchExprNode(std::string _data, std::vector<std::unique_ptr<BaseExprNode>> _children);
+        BranchExprNode(std::string _data);
+        void setChildren(std::vector<std::unique_ptr<BaseExprNode>> _children);
         
         virtual Rcpp::List as_R_object() const;
     

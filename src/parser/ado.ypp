@@ -10,6 +10,13 @@
 %define parse.error verbose
 %define api.token.prefix {TOK_}
 
+%code requires
+{
+    #include <memory>
+    #include "RStata.hpp"
+    class RStataDriver;
+}
+
 %param { RStataDriver& driver }
 
 %locations
@@ -21,7 +28,6 @@
     #include <cstring>
     #include <iostream>
     #include <Rcpp.h>
-    #include "RStata.hpp"
     #include "RStataDriver.hpp"
 
     void yy::RStataParser::error(const location_type& l, const std::string& m)
@@ -36,9 +42,30 @@
  
 }
 
-%token
-    END 0   "end of file"
-    
+%token END         0   "end of file"
+
+%token <std::string>
+    LBRACKET        "["
+    RBRACKET        "]"
+    LPAREN          "("
+    RPAREN          ")"
+    LBRACE          "{"
+    RBRACE          "}"
+    DQUOTE          "\""
+    SQUOTE          "'"
+    COMMA           ","
+    COLON           ":"
+;
+
+%token <BaseExprNode>
+    NEG_OP          "!"
+    STAR            "*"
+    PLUS            "+"
+    SLASH           "/"
+    MINUS           "-"
+    CARET           "^"
+    EQUALS          "="
+;
 
 %token <BaseExprNode> NEWLINE
 %token <BaseExprNode> EMBEDDED_R;
@@ -56,7 +83,7 @@
 %precedence '('
 
 /* Command components and keywords */
-%token <BaseExprNode> USING IF IN
+%token <std::string> USING IF IN
 
 /* Commands with unusual enough syntax they have to be parsed separately */
 %token <BaseExprNode> QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */

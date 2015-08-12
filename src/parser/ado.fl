@@ -5,11 +5,13 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
-
 #include "RStata.hpp"
-#include "RStataDriver.hpp"
 #include "ado.tab.hpp"
+#include "RStataDriver.hpp"
 
+#define yyterminate() raise_condition("Terminated", "error")
+
+// Functions to eat comments
 void long_comment();
 void short_comment();
 
@@ -39,13 +41,13 @@ B           [ \t\v\r\f]
 %}
 
                             /* ignore whitespace but track line and column numbers */
-[\n]+                       { loc.lines(yyleng); loc.step(); }
-{B}+                        { loc.step(); }
+[\n]+                       loc.lines(yyleng); loc.step();
+{B}+                        loc.step();
 
-                            /* eat comments but track line and column numbers */
-"/*"                        { long_comment(); }
-\/\/                        { short_comment(); }
-^\*                         { short_comment(); }
+                            /* eat comments */
+"/*"                        long_comment();
+\/\/                        short_comment();
+^\*                         short_comment();
 
 
 
@@ -53,99 +55,93 @@ B           [ \t\v\r\f]
 \{\{\{.*\}\}\}              {
                                 char *s;
                                 
-                                count();
-                                
-                                /* chop off the first and last three characters of yylval.str,
+                                /* chop off the first and last three characters of yytext,
                                    which are the {{{ and }}} that begin and end this command */
                                 s = strdup(yytext);
                                 s[strlen(s) - 3] = '\0';
                                 s += 3;
                                 
-                                yylval.str = s;
-
-                                return EMBEDDED_R;
+                                return yy::RStataParser::make_EMBEDDED_R(EmbeddedRCmd(std::string(s)), loc);
                             }
 
 
 
                             /* string literals and string (or string-ish) data types */
-\"\"                        { count(); yylval.str = strdup(yytext); return STRING_MISSING; }
-\"(\\.|[^"\\])*\"           { count(); yylval.str = strdup(yytext); return STRING_LITERAL; }
+\"\"                        return yy::RStataParser::make_STRING_MISSING(StringExprNode(""), loc);
+\"(\\.|[^"\\])*\"           return yy::RStataParser::make_STRING_LITERAL(StringExprNode(yytext), loc);
 
 
 
                                                         /* datetime literals */
-{D}{D}{M}{D}+                                           { count(); yylval.str = strdup(yytext); return DATE; }
-{D}{D}:{D}{D}(:{D}{D}(\.{D}+)?)?                        { count(); yylval.str = strdup(yytext); return TIME; }
-{D}{D}{M}{D}+[ \t]+{D}{D}:{D}{D}(:{D}{D}(\.{D}+)?)?     { count(); yylval.str = strdup(yytext); return DATETIME; }
+{D}{D}{M}{D}+                                           return yy::RStataParser::make_DATE(DatetimeExprNode(std::string(yytext), std::string("")), loc);
+{D}{D}:{D}{D}(:{D}{D}(\.{D}+)?)?                        return yy::RStataParser::make_TIME(DatetimeExprNode(std::string(""), std::string(yytext)), loc);
+{D}{D}{M}{D}+[ \t]+{D}{D}:{D}{D}(:{D}{D}(\.{D}+)?)?     return yy::RStataParser::make_DATETIME(DatetimeExprNode(yytext), loc);
 
 
 
                             /* numbers and numeric data types */
-\.                          { count(); yylval.str = strdup(yytext); return NUMBER_MISSING; }
-\.{L}                       { count(); yylval.str = strdup(yytext); return NUMBER_MISSING; }
+\.                          return yy::RStataParser::make_NUMBER_MISSING(NumberExprNode(""), loc);
+\.{L}                       return yy::RStataParser::make_NUMBER_MISSING(NumberExprNode(""), loc);
 
-[+-]?0[xX]{H}+              { count(); yylval.str = strdup(yytext); return NUMBER; } /* hex */
-0{D}+                       { count(); yylval.str = strdup(yytext); return NUMBER; } /* octal */
-[+-]?{D}+(\.{D}+)?          { count(); yylval.str = strdup(yytext); return NUMBER; } /* decimal */
+[+-]?0[xX]{H}+              return yy::RStataParser::make_NUMBER(NumberExprNode(yytext), loc); /* hex */
+0{D}+                       return yy::RStataParser::make_NUMBER(NumberExprNode(yytext), loc); /* octal */
+[+-]?{D}+(\.{D}+)?          return yy::RStataParser::make_NUMBER(NumberExprNode(yytext), loc); /* decimal */
 
-{D}+{E}                     { count(); yylval.str = strdup(yytext); return NUMBER; } /* scientific notation */
-{D}*"."{D}+({E})?           { count(); yylval.str = strdup(yytext); return NUMBER; }
-{D}+"."{D}*({E})?           { count(); yylval.str = strdup(yytext); return NUMBER; }
+{D}+{E}                     return yy::RStataParser::make_NUMBER(NumberExprNode(yytext), loc); /* scientific notation */
+{D}*"."{D}+({E})?           return yy::RStataParser::make_NUMBER(NumberExprNode(yytext), loc);
+{D}+"."{D}*({E})?           return yy::RStataParser::make_NUMBER(NumberExprNode(yytext), loc);
 
 
 
                             /* Other keywords */
-(?i:using)                  { count(); yylval.str = strdup(yytext); return USING; }
-(?i:if)                     { count(); yylval.str = strdup(yytext); return IF; }
-(?i:in)                     { count(); yylval.str = strdup(yytext); return IN; }
+(?i:using)                  return yy::RStataParser::make_USING(yytext, loc);
+(?i:if)                     return yy::RStataParser::make_IF(yytext, loc);
+(?i:in)                     return yy::RStataParser::make_IN(yytext, loc);
 
 
 
                             /* logical operators and various single-character tokens */
-"&"                         { count(); yylval.str = strdup(yytext); return AND_OP; }
-"|"                         { count(); yylval.str = strdup(yytext); return OR_OP; }
-">="                        { count(); yylval.str = strdup(yytext); return GT_OP; }
-"<="                        { count(); yylval.str = strdup(yytext); return LT_OP; }
-"=="                        { count(); yylval.str = strdup(yytext); return EQ_OP; }
-"!="                        { count(); yylval.str = strdup(yytext); return NE_OP; }
-"~="                        { count(); yylval.str = strdup(yytext); return NE_OP; }
-"!"                         { count(); yylval.str = strdup(yytext); return '!'; }
-"~"                         { count(); yylval.str = strdup(yytext); return '~'; }
+"&"                         return yy::RStataParser::make_AND_OP(BranchExprNode(yytext), loc);
+"|"                         return yy::RStataParser::make_OR_OP(BranchExprNode(yytext), loc);
+">="                        return yy::RStataParser::make_GT_OP(BranchExprNode(yytext), loc);
+"<="                        return yy::RStataParser::make_LT_OP(BranchExprNode(yytext), loc);
+"=="                        return yy::RStataParser::make_EQ_OP(BranchExprNode(yytext), loc);
+"!="                        return yy::RStataParser::make_NE_OP(BranchExprNode(yytext), loc);
+"~="                        return yy::RStataParser::make_NE_OP(BranchExprNode(yytext), loc);
+"!"                         return yy::RStataParser::make_NEG_OP(BranchExprNode(yytext), loc);
+"~"                         return yy::RStataParser::make_NEG_OP(BranchExprNode("!"), loc);
 
-\*                          { count(); yylval.str = strdup(yytext); return '*'; }
-\+                          { count(); yylval.str = strdup(yytext); return '+'; }
-\/                          { count(); yylval.str = strdup(yytext); return '/'; }
-\-                          { count(); yylval.str = strdup(yytext); return '-'; }
-\^                          { count(); yylval.str = strdup(yytext); return '^'; }
+\*                          return yy::RStataParser::make_STAR(BranchExprNode(yytext), loc);
+\+                          return yy::RStataParser::make_PLUS(BranchExprNode(yytext), loc);
+\/                          return yy::RStataParser::make_SLASH(BranchExprNode(yytext), loc);
+\-                          return yy::RStataParser::make_MINUS(BranchExprNode(yytext), loc);
+\^                          return yy::RStataParser::make_CARET(BranchExprNode(yytext), loc);
+=                           return yy::RStataParser::make_EQUALS(BranchExprNode(yytext), loc);
 
-\[                          { count(); yylval.str = strdup(yytext); return '['; }
-\]                          { count(); yylval.str = strdup(yytext); return ']'; }
-\(                          { count(); yylval.str = strdup(yytext); return '('; }
-\)                          { count(); yylval.str = strdup(yytext); return ')'; }
-\{                          { count(); yylval.str = strdup(yytext); return '{'; }
-\}                          { count(); yylval.str = strdup(yytext); return '}'; }
-\"                          { count(); yylval.str = strdup(yytext); return '"'; }
-\'                          { count(); yylval.str = strdup(yytext); return '\''; }
-=                           { count(); yylval.str = strdup(yytext); return '='; }
-,                           { count(); yylval.str = strdup(yytext); return ','; }
-:                           { count(); yylval.str = strdup(yytext); return ':'; }
+\[                          return yy::RStataParser::make_LBRACKET(yytext, loc);
+\]                          return yy::RStataParser::make_RBRACKET(yytext, loc);
+\(                          return yy::RStataParser::make_LPAREN(yytext, loc);
+\)                          return yy::RStataParser::make_RPAREN(yytext, loc);
+\{                          return yy::RStataParser::make_LBRACE(yytext, loc);
+\}                          return yy::RStataParser::make_RBRACE(yytext, loc);
+\"                          return yy::RStataParser::make_DQUOTE(yytext, loc);
+\'                          return yy::RStataParser::make_SQUOTE(yytext, loc);
+,                           return yy::RStataParser::make_COMMA(yytext, loc);
+:                           return yy::RStataParser::make_COLON(yytext, loc);
 
 
 
                             /* command verbs that have to be hardcoded into the grammar */
-(?i:capture)                { count(); yylval.str = strdup(yytext); return CAPTURE; }
-(?i:quietly)                { count(); yylval.str = strdup(yytext); return QUIETLY; }
-(?i:qui)                    { count(); yylval.str = strdup(yytext); return QUIETLY; }
-(?i:noisily)                { count(); yylval.str = strdup(yytext); return NOISILY; }
-(?i:merge)                  { count(); yylval.str = strdup(yytext); return MERGE; }
+(?i:capture)                return yy::RStataParser::make_CAPTURE(MakeGeneralStataCmd(yytext).create(), loc);
+(?i:quietly)                return yy::RStataParser::make_QUIETLY(MakeGeneralStataCmd(yytext).create(), loc);
+(?i:qui)                    return yy::RStataParser::make_QUIETLY(MakeGeneralStataCmd("quietly").create(), loc);
+(?i:noisily)                return yy::RStataParser::make_NOISILY(MakeGeneralStataCmd(yytext).create(), loc);
+(?i:merge)                  return yy::RStataParser::make_MERGE(MakeGeneralStataCmd(yytext).create(), loc);
 
 
 
                             /* all non-keyword identifiers */
-[_A-Za-z][A-Za-z0-9_]*      { count(); yylval.str = strdup(yytext); return IDENT; }
-
-
+[_A-Za-z][A-Za-z0-9_]*      return yy::RStataParser::make_IDENT(IdentExprNode(yytext), loc);
 
 %%
 
@@ -155,24 +151,10 @@ void long_comment()
 
 loop:
     while ((c = getc(yyin)) != '*' && c != '\0')
-    {
-        if (c == '\n')
-        {
-            col_num = 0;
-            line_num++;
-        }
-        else if (c == '\t')
-            col_num += 8 - (col_num % 8);
-        else
-            col_num++;
-        
         putchar(c);
-    }
 
     if ((c1 = getc(yyin)) != '/' && c != '\0')
     {
-        col_num++; /* for the asterisk that got us here */
-        
         unput(c1);
         goto loop;
     }
@@ -186,16 +168,20 @@ void short_comment()
     char c;
     
     while ((c = getc(yyin)) != '\n' && c != 0)
-    {
-        if (c == '\t')
-            col_num += 8 - (col_num % 8);
-        else
-            col_num++;
-        
         putchar(c);
-    }
+}
 
-    col_num = 0;
-    line_num++;
+// The scanning-related functions of the driver class, which depend on lexer-related objects
+void
+RStataDriver::scan_begin()
+{
+    buf = yy_scan_string(text.c_str());
+    yy_switch_to_buffer(buf);
+}
+
+void
+RStataDriver::scan_end()
+{
+    yy_delete_buffer(buf);
 }
 

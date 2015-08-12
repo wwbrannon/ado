@@ -1,30 +1,36 @@
 #ifndef RSTATA_DRIVER_H
 #define RSTATA_DRIVER_H
 
+#include <memory>
 #include <string>
-#include <map>
 
-/* define the YY_DECL macro for flex, and declare it for bison */
+typedef struct yy_buffer_state *YY_BUFFER_STATE;
+
+// define the YY_DECL macro for flex
 #define YY_DECL yy::RStataParser::symbol_type yylex(RStataDriver& driver)
 YY_DECL;
+
+void raise_condition(const std::string& msg, const std::string& type);
 
 class RStataDriver
 {
     public:
-        rstata_driver();
-        virtual ~rstata_driver();
+        RStataDriver(const std::string text);
+        virtual ~RStataDriver();
 
-        std::map<std::string, int> variables;
-
-        int result;
+        std::unique_ptr<BaseExprNode> ast;
 
         void scan_begin();
         void scan_end();
 
-        int parse(const std::string& s);
+        int parse();
         
         void error(const yy::location& l, const std::string& m);
         void error(const std::string& m);
+
+    private:
+        std::string        text;
+        YY_BUFFER_STATE    buf;
 };
 
 #endif /* RSTATA_DRIVER_H */

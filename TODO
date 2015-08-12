@@ -1,6 +1,5 @@
 Roadmap to v0.1:
 Immediate TODO:
-    o) the parser should be a C++ class, not yyparse
     o) rewrite do_stata_parse to suit
     o) finish the actions for commands
 
