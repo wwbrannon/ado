@@ -1,3 +1,8 @@
+D           [0-9]
+L           [a-zA-Z_]
+H           [a-fA-F0-9]
+E           [Ee][+-]?{D}+
+
 %{
 #include <iostream>
 #include "rstata.hpp"
@@ -17,124 +22,147 @@ void count();
 %option noyywrap
 
 %%
-"/*"                    { long_comment(); } /* the lexer eats comments */
-\/\/                    { short_comment(); }
+                            /* eat comments but track line and column numbers */
+"/*"                        { long_comment(); }
+\/\/                        { short_comment(); }
 
-\"\"                    { count(); yylval.str = strdup(yytext); return STRING_MISSING; }
-\'\'                    { count(); yylval.str = strdup(yytext); return STRING_MISSING; }
-\"(\\.|[^"\\])*\"       { count(); yylval.str = strdup(yytext); return STRING_LITERAL; }
-\'(\\.|[^'\\])*\'       { count(); yylval.str = strdup(yytext); return STRING_LITERAL; }
 
--?[0-9]+(\.[0-9]+)?     { count(); yylval.str = strdup(yytext); yylval.num = atoi(yytext); return NUMBER; }
-\.                      { count(); yylval.str = strdup(yytext); return NUMBER_MISSING; }
-\.[a-z]                 { count(); yylval.str = strdup(yytext); return NUMBER_MISSING; }
 
-"&&"                    { count(); yylval.str = strdup(yytext); return AND_OP; }
-"&"                     { count(); yylval.str = strdup(yytext); return AND_OP; }
-"||"                    { count(); yylval.str = strdup(yytext); return OR_OP; }
-"|"                     { count(); yylval.str = strdup(yytext); return OR_OP; }
-">="                    { count(); yylval.str = strdup(yytext); return GT_OP; }
-"<="                    { count(); yylval.str = strdup(yytext); return LE_OP; }
-"=="                    { count(); yylval.str = strdup(yytext); return EQ_OP; }
-"!="                    { count(); yylval.str = strdup(yytext); return NE_OP; }
+                            /* if you write {{{ ... }}}, the ... will be executed as R code */
+\{\{\{.*\}\}\}              { count(); yylval.str = strdup(yytext); return EMBEDDED_R; }
 
-\*                      { count(); yylval.str = strdup(yytext); return '*'; }
-\+                      { count(); yylval.str = strdup(yytext); return '+'; }
-\/                      { count(); yylval.str = strdup(yytext); return '/'; }
-\-                      { count(); yylval.str = strdup(yytext); return '-'; }
 
-\[                      { count(); yylval.str = strdup(yytext); return '['; }
-\]                      { count(); yylval.str = strdup(yytext); return ']'; }
-\(                      { count(); yylval.str = strdup(yytext); return '('; }
-\)                      { count(); yylval.str = strdup(yytext); return ')'; }
-\{                      { count(); yylval.str = strdup(yytext); return '{'; }
-\}                      { count(); yylval.str = strdup(yytext); return '}'; }
-\"                      { count(); yylval.str = strdup(yytext); return '"'; }
-\'                      { count(); yylval.str = strdup(yytext); return '\''; }
-=                       { count(); yylval.str = strdup(yytext); return '='; }
-%                       { count(); yylval.str = strdup(yytext); return '%'; }
-,                       { count(); yylval.str = strdup(yytext); return ','; }
-:                       { count(); yylval.str = strdup(yytext); return ':'; }
 
-(?i:exit)               { count(); yylval.str = strdup(yytext); return EXIT; }
-(?i:quit)               { count(); yylval.str = strdup(yytext); return EXIT; }
-(?i:insheet)            { count(); yylval.str = strdup(yytext); return INSHEET; }
-(?i:tab)                { count(); yylval.str = strdup(yytext); return TABLE; }
-(?i:tabulte)            { count(); yylval.str = strdup(yytext); return TABLE; }
-(?i:sum)                { count(); yylval.str = strdup(yytext); return SUM; }
-(?i:summarize)          { count(); yylval.str = strdup(yytext); return SUM; }
-(?i:di)                 { count(); yylval.str = strdup(yytext); return DI; }
-(?i:display)            { count(); yylval.str = strdup(yytext); return DI; }
-(?i:ls)                 { count(); yylval.str = strdup(yytext); return LS; }
-(?i:recast)             { count(); yylval.str = strdup(yytext); return RECAST; }
-(?i:move)               { count(); yylval.str = strdup(yytext); return MOVE; }
-(?i:infile)             { count(); yylval.str = strdup(yytext); return INFILE; }
-(?i:memory)             { count(); yylval.str = strdup(yytext); return MEMORY; }
-(?i:range)              { count(); yylval.str = strdup(yytext); return RANGE; }
-(?i:list)               { count(); yylval.str = strdup(yytext); return LIST; }
-(?i:log)                { count(); yylval.str = strdup(yytext); return LOG; }
-(?i:outfile)            { count(); yylval.str = strdup(yytext); return OUTFILE; }
-(?i:mvdecode)           { count(); yylval.str = strdup(yytext); return MVDECODE; }
-(?i:append)             { count(); yylval.str = strdup(yytext); return APPEND; }
-(?i:format)             { count(); yylval.str = strdup(yytext); return FORMAT; }
-(?i:mvencode)           { count(); yylval.str = strdup(yytext); return MVENCODE; }
-(?i:label)              { count(); yylval.str = strdup(yytext); return LABEL; }
-(?i:compare)            { count(); yylval.str = strdup(yytext); return COMPARE; }
-(?i:replace)            { count(); yylval.str = strdup(yytext); return REPLACE; }
-(?i:reshape)            { count(); yylval.str = strdup(yytext); return RESHAPE; }
-(?i:cd)                 { count(); yylval.str = strdup(yytext); return CD; }
-(?i:keep)               { count(); yylval.str = strdup(yytext); return KEEP; }
-(?i:merge)              { count(); yylval.str = strdup(yytext); return MERGE; }
-(?i:recode)             { count(); yylval.str = strdup(yytext); return RECODE; }
-(?i:rename)             { count(); yylval.str = strdup(yytext); return RENAME; }
-(?i:sort)               { count(); yylval.str = strdup(yytext); return SORT; }
-(?i:save)               { count(); yylval.str = strdup(yytext); return SAVE; }
-(?i:restore)            { count(); yylval.str = strdup(yytext); return RESTORE; }
-(?i:drop)               { count(); yylval.str = strdup(yytext); return DROP; }
-(?i:codebook)           { count(); yylval.str = strdup(yytext); return CODEBOOK; }
-(?i:duplicates)         { count(); yylval.str = strdup(yytext); return DUPLICATES; }
-(?i:egen)               { count(); yylval.str = strdup(yytext); return EGEN; }
-(?i:count)              { count(); yylval.str = strdup(yytext); return COUNT; }
-(?i:describe)           { count(); yylval.str = strdup(yytext); return DESCRIBE; }
-(?i:collapse)           { count(); yylval.str = strdup(yytext); return COLLAPSE; }
-(?i:destring)           { count(); yylval.str = strdup(yytext); return DESTRING; }
-(?i:inspect)            { count(); yylval.str = strdup(yytext); return INSPECT; }
-(?i:generate)           { count(); yylval.str = strdup(yytext); return GEN; }
-(?i:preserve)           { count(); yylval.str = strdup(yytext); return PRESERVE; }
-(?i:order)              { count(); yylval.str = strdup(yytext); return ORDER; }
-(?i:clear)              { count(); yylval.str = strdup(yytext); return CLEAR; }
-(?i:use)                { count(); yylval.str = strdup(yytext); return USE; }
-(?i:set)                { count(); yylval.str = strdup(yytext); return SET; }
-(?i:query)              { count(); yylval.str = strdup(yytext); return QUERY; }
-(?i:help)               { count(); yylval.str = strdup(yytext); return HELP; }
-(?i:assert)             { count(); yylval.str = strdup(yytext); return ASSERT; }
-(?i:probit)             { count(); yylval.str = strdup(yytext); return PROBIT; }
-(?i:ttest)              { count(); yylval.str = strdup(yytext); return TTEST; }
-(?i:pwcorr)             { count(); yylval.str = strdup(yytext); return PWCORR; }
-(?i:correlate)          { count(); yylval.str = strdup(yytext); return CORRELATE; }
-(?i:test)               { count(); yylval.str = strdup(yytext); return TEST; }
-(?i:predict)            { count(); yylval.str = strdup(yytext); return PREDICT; }
-(?i:mlogit)             { count(); yylval.str = strdup(yytext); return MLOGIT; }
-(?i:regress)            { count(); yylval.str = strdup(yytext); return REGRESS; }
-(?i:reg)                { count(); yylval.str = strdup(yytext); return REGRESS; }
-(?i:logit)              { count(); yylval.str = strdup(yytext); return LOGIT; }
-(?i:ci)                 { count(); yylval.str = strdup(yytext); return CI; }
+                            /* string literals and string data types */
+\"\"                        { count(); yylval.str = strdup(yytext); return STRING_MISSING; }
+\"(\\.|[^"\\])*\"           { count(); yylval.str = strdup(yytext); return STRING_LITERAL; }
 
-(?i:by)                 { count(); yylval.str = strdup(yytext); return BY; }
-(?i:bysort)             { count(); yylval.str = strdup(yytext); return BYSORT; }
-(?i:xi)                 { count(); yylval.str = strdup(yytext); return XI; }
-(?i:quietly)            { count(); yylval.str = strdup(yytext); return QUIETLY; }
+str                         { count(); yylval.str = strdup(yytext); return STRING_TYPE_SPEC; }
+str{D}+                     { count(); yylval.str = strdup(yytext); return STRING_TYPE_SPEC; }
+strL                        { count(); yylval.str = strdup(yytext); return STRING_TYPE_SPEC; }
 
-(?i:pweight)            { count(); yylval.str = strdup(yytext); return PWEIGHT; }
-(?i:aweight)            { count(); yylval.str = strdup(yytext); return AWEIGHT; }
-(?i:using)              { count(); yylval.str = strdup(yytext); return USING; }
-(?i:in)                 { count(); yylval.str = strdup(yytext); return IN; }
-(?i:if)                 { count(); yylval.str = strdup(yytext); return IF; }
 
-[_A-Za-z][A-Za-z0-9_]*  { count(); yylval.str = strdup(yytext); return IDENT; }
 
-\n                      { count(); ++line_num; }
-[ \t\v\r\f]+            { count(); }
+                            /* numbers and numeric data types */
+\.                          { count(); yylval.str = strdup(yytext); return NUMBER_MISSING; }
+\.{L}                       { count(); yylval.str = strdup(yytext); return NUMBER_MISSING; }
+
+[+-]?0[xX]{H}+              { count(); yylval.str = strdup(yytext); return NUMBER; } /* hex */
+0{D}+                       { count(); yylval.str = strdup(yytext); return NUMBER; } /* octal */
+[+-]?{D}+(\.{D}+)?          { count(); yylval.str = strdup(yytext); return NUMBER; } /* decimal */
+
+{D}+{E}                     { count(); yylval.str = strdup(yytext); return NUMBER; } /* scientific notation */
+{D}*"."{D}+({E})?           { count(); yylval.str = strdup(yytext); return NUMBER; }
+{D}+"."{D}*({E})?           { count(); yylval.str = strdup(yytext); return NUMBER; }
+
+(?i:byte)                   { count(); yylval.str = strdup(yytext); return BYTE; } /* Stata's numeric data types */
+(?i:int)                    { count(); yylval.str = strdup(yytext); return INT; }
+(?i:long)                   { count(); yylval.str = strdup(yytext); return LONG; }
+(?i:float)                  { count(); yylval.str = strdup(yytext); return FLOAT; }
+(?i:double)                 { count(); yylval.str = strdup(yytext); return DOUBLE; }
+
+
+
+                            /* format specifiers */
+%-?{D}+s                    { count(); yylval.str = strdup(yytext); return STRING_FORMAT; }
+%-?0?{D}+\.{D}+[efg]c?      { count(); yylval.str = strdup(yytext); return NUMBER_FORMAT; }
+%-?t[Ccdwmqh]{L}*           { count(); yylval.str = strdup(yytext); return DATETIME_FORMAT; }
+
+
+
+                            /* logical operators and various single-character tokens */
+"&&"                        { count(); yylval.str = strdup(yytext); return AND_OP; }
+"&"                         { count(); yylval.str = strdup(yytext); return AND_OP; }
+"||"                        { count(); yylval.str = strdup(yytext); return OR_OP; }
+"|"                         { count(); yylval.str = strdup(yytext); return OR_OP; }
+">="                        { count(); yylval.str = strdup(yytext); return GT_OP; }
+"<="                        { count(); yylval.str = strdup(yytext); return LE_OP; }
+"=="                        { count(); yylval.str = strdup(yytext); return EQ_OP; }
+"!="                        { count(); yylval.str = strdup(yytext); return NE_OP; }
+
+\*                          { count(); yylval.str = strdup(yytext); return '*'; }
+\+                          { count(); yylval.str = strdup(yytext); return '+'; }
+\/                          { count(); yylval.str = strdup(yytext); return '/'; }
+\-                          { count(); yylval.str = strdup(yytext); return '-'; }
+
+\[                          { count(); yylval.str = strdup(yytext); return '['; }
+\]                          { count(); yylval.str = strdup(yytext); return ']'; }
+\(                          { count(); yylval.str = strdup(yytext); return '('; }
+\)                          { count(); yylval.str = strdup(yytext); return ')'; }
+\{                          { count(); yylval.str = strdup(yytext); return '{'; }
+\}                          { count(); yylval.str = strdup(yytext); return '}'; }
+\"                          { count(); yylval.str = strdup(yytext); return '"'; }
+\'                          { count(); yylval.str = strdup(yytext); return '\''; }
+=                           { count(); yylval.str = strdup(yytext); return '='; }
+%                           { count(); yylval.str = strdup(yytext); return '%'; }
+,                           { count(); yylval.str = strdup(yytext); return ','; }
+:                           { count(); yylval.str = strdup(yytext); return ':'; }
+
+
+
+                            /* command verbs */
+(?i:exit)                   { count(); yylval.str = strdup(yytext); return EXIT; }
+(?i:quit)                   { count(); yylval.str = strdup(yytext); return EXIT; }
+(?i:insheet)                { count(); yylval.str = strdup(yytext); return INSHEET; }
+(?i:tab)                    { count(); yylval.str = strdup(yytext); return TABLE; }
+(?i:tabulate)               { count(); yylval.str = strdup(yytext); return TABLE; }
+(?i:outsheet)               { count(); yylval.str = strdup(yytext); return OUTSHEET; }
+(?i:capture)                { count(); yylval.str = strdup(yytext); return CAPTURE; }
+(?i:sum)                    { count(); yylval.str = strdup(yytext); return SUM; }
+(?i:summarize)              { count(); yylval.str = strdup(yytext); return SUM; }
+(?i:di)                     { count(); yylval.str = strdup(yytext); return DI; }
+(?i:display)                { count(); yylval.str = strdup(yytext); return DI; }
+(?i:ls)                     { count(); yylval.str = strdup(yytext); return LS; }
+(?i:log)                    { count(); yylval.str = strdup(yytext); return LOG; }
+(?i:replace)                { count(); yylval.str = strdup(yytext); return REPLACE; }
+(?i:cd)                     { count(); yylval.str = strdup(yytext); return CD; }
+(?i:keep)                   { count(); yylval.str = strdup(yytext); return KEEP; }
+(?i:merge)                  { count(); yylval.str = strdup(yytext); return MERGE; }
+(?i:xtile)                  { count(); yylval.str = strdup(yytext); return XTILE; }
+(?i:rename)                 { count(); yylval.str = strdup(yytext); return RENAME; }
+(?i:sort)                   { count(); yylval.str = strdup(yytext); return SORT; }
+(?i:save)                   { count(); yylval.str = strdup(yytext); return SAVE; }
+(?i:drop)                   { count(); yylval.str = strdup(yytext); return DROP; }
+(?i:duplicates)             { count(); yylval.str = strdup(yytext); return DUPLICATES; }
+(?i:count)                  { count(); yylval.str = strdup(yytext); return COUNT; }
+(?i:describe)               { count(); yylval.str = strdup(yytext); return DESCRIBE; }
+(?i:generate)               { count(); yylval.str = strdup(yytext); return GEN; }
+(?i:order)                  { count(); yylval.str = strdup(yytext); return ORDER; }
+(?i:clear)                  { count(); yylval.str = strdup(yytext); return CLEAR; }
+(?i:use)                    { count(); yylval.str = strdup(yytext); return USE; }
+(?i:set)                    { count(); yylval.str = strdup(yytext); return SET; }
+(?i:mlogit)                 { count(); yylval.str = strdup(yytext); return MLOGIT; }
+(?i:logit)                  { count(); yylval.str = strdup(yytext); return LOGIT; }
+(?i:regress)                { count(); yylval.str = strdup(yytext); return REGRESS; }
+(?i:reg)                    { count(); yylval.str = strdup(yytext); return REGRESS; }
+
+
+
+                            /* modifiers that can be applied to commands */
+(?i:by)                     { count(); yylval.str = strdup(yytext); return BY; }
+(?i:bysort)                 { count(); yylval.str = strdup(yytext); return BYSORT; }
+(?i:xi)                     { count(); yylval.str = strdup(yytext); return XI; }
+(?i:quietly)                { count(); yylval.str = strdup(yytext); return QUIETLY; }
+
+
+
+                            /* post-verb components of commands */
+(?i:pweight)                { count(); yylval.str = strdup(yytext); return PWEIGHT; }
+(?i:aweight)                { count(); yylval.str = strdup(yytext); return AWEIGHT; }
+(?i:using)                  { count(); yylval.str = strdup(yytext); return USING; }
+(?i:in)                     { count(); yylval.str = strdup(yytext); return IN; }
+(?i:if)                     { count(); yylval.str = strdup(yytext); return IF; }
+
+
+
+                            /* all non-keyword identifiers */
+[_A-Za-z][A-Za-z0-9_]*      { count(); yylval.str = strdup(yytext); return IDENT; }
+
+
+
+                            /* ignore whitespace but track line and column numbers */
+\n                          { count(); ++line_num; }
+[ \t\v\r\f]+                { count(); }
 %%
 
 void long_comment()

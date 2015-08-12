@@ -12,7 +12,7 @@ all: parse.o lex.o
 	ar -rcs ado.a build/parse.o build/lex.o build/GeneralStataCmd.o build/MakeGeneralStataCmd.o build/StataExpr.o
 
 parse.o: infra
-	bison -d -b build/ado ado.ypp
+	bison -d -Wall -b build/ado ado.ypp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) build/ado.tab.cpp -o build/parse.o 
 
 lex.o: infra
