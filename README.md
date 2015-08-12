@@ -1,4 +1,4 @@
-statashell
+rstata
 ==========
 
 A Stata-like shell for R, implemented as a loadable package. It's intended to serve as training wheels for Stata users who'd like to switch or need to use R, but don't know much about R or programming in general.
