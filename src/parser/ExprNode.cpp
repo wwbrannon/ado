@@ -98,6 +98,7 @@ ExprNode::as_R_object() const
     
     Rcpp::CharacterVector node_data(data.size());
     Rcpp::CharacterVector node_data_names(data.size());
+    Rcpp::CharacterVector classes;
     
     std::map<std::string, std::string>::const_iterator it;
     unsigned int x;
@@ -122,7 +123,10 @@ ExprNode::as_R_object() const
     chld.attr("names") = names;
     res["children"] = chld;
 
-    res.attr("class") = "rstata.ast.node"; // for e.g. our S3 print method
+    // set classes for S3 method dispatch
+    classes.push_back(type);
+    classes.push_back("rstata_ast_node");
+    res.attr("class") = classes;
 
     return res;
 }

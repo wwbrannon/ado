@@ -1,13 +1,14 @@
 Roadmap to v0.1:
 Immediate TODO:
+    o) the lexer should format dates/times/datetimes and numbers into strings
+       in a way that the R code can immediately convert
     o) grammar expansion: fully general varlists
         o) factor variable operators ("i.", "c.", "o.", "#"/"##", "ib."/"b."/"X.varname")
         o) :value_label_name
-    
-    o) next, infrastructural R functions - AST walkers, name abbreviation support, etc
-
-Semantics:
-    o) write up stubs for the initial 9 commands (+ other special ones?)
+    o) next, infrastructural R functions
+        o) weeding for each type of node
+        o) AST walkers to construct unevaluated calls and eval them
+    o) functions for the initial set of commands
     o) Stata-like output: how much is this worth imitating?
 
 Write a test suite and test
