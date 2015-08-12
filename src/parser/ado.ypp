@@ -81,16 +81,17 @@
 /* Commands with unusual enough syntax they have to be parsed separately */
 %token <EmbeddedRCmd *> EMBEDDED_R;
 %token <GeneralStataCmd *> QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
-%token <GeneralStataCmd *> MERGE
+%token <IdentExprNode *> MERGE
 
 /* Command components and keywords */
 %token <std::string> USING IF IN
-%token <std::string> MERGE_SPEC
+%token <StringExprNode *> MERGE_SPEC
 
 /* Nonterminal token types */
 %type <BranchExprNode *> translation_unit external_statement compound_cmd cmds modifier_cmd_list
 
-%type <GeneralStataCmd *> cmd modifier_cmd nonmodifier_cmd
+%type <GeneralStataCmd *> modifier_cmd
+%type <BranchExprNode *> cmd nonmodifier_cmd
 
 %type <std::string> assignment_operator unary_operator power_operator equality_operator
 %type <std::string> multiplication_operator additive_operator relational_operator
@@ -162,22 +163,27 @@ cmds:
 cmd:
       EMBEDDED_R
     {
-        $$ = $1; /* object made in the lexer */
+        $$ = $1;
     }
     | modifier_cmd_list nonmodifier_cmd
     {
-        
+        $1->appendChild($2);
+        $$ = $1;
     }
     | modifier_cmd_list ":" nonmodifier_cmd
     {
-
+        $1->appendChild($3);
+        $$ = $1;
     }
     | modifier_cmd_list nonmodifier_cmd ":" nonmodifier_cmd
     {
+        $1->appendChild($2);
+        $2->setChildren({$4});
+        $$ = $1;
     }
     ;
 
-modifier_cmd: /* objects made in the lexer */
+modifier_cmd:
       CAPTURE
     | QUIETLY
     | NOISILY
@@ -186,31 +192,51 @@ modifier_cmd: /* objects made in the lexer */
 modifier_cmd_list:
       modifier_cmd
     {
-        
+        BranchExprNode *node = new BranchExprNode("modifier_cmd_list", "");
+        node->appendChild($1);
+        $$ = node;
     }
     | modifier_cmd_list modifier_cmd
     {
-
+        $1->appendChild($2);
+        $$ = $1;
     }
     ;
 
 nonmodifier_cmd:
       compound_cmd
     {
+        $$ = $1;
     }
     | IDENT expression_list if_clause in_clause weight_clause using_clause option_list
     {
-
+        GeneralStataCmd *node = MakeGeneralStataCmd($1)
+                                    .varlist($2)
+                                    .if_clause($3)
+                                    .in_clause($4)
+                                    .weight($5)
+                                    .using_clause($4)
+                                    .options($7)
+                                .create();
+        $$ = node;
     }
     | IDENT
     {
-
+        GeneralStataCmd *node = MakeGeneralStataCmd($1).create();
+        $$ = node;
     }
     
     /* commands with unusual enough syntax to parse them separately */
-    MERGE MERGE_SPEC expression_list using_clause option_list
+    | MERGE MERGE_SPEC expression_list using_clause option_list
     {
-
+        BranchExprNode *opts = $4;
+        opts->appendChild($2);
+        GeneralStataCmd *node = MakeGeneralStataCmd($1)
+                                    .varlist($3)
+                                    .using_clause($4)
+                                    .options(opts)
+                                .create();
+        $$ = node;
     }
     ;
 

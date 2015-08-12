@@ -137,7 +137,11 @@ B           [ \t\v\r\f]
 (?i:using)                  return yy::RStataParser::make_USING(yytext, loc);
 (?i:if)                     return yy::RStataParser::make_IF(yytext, loc);
 (?i:in)                     return yy::RStataParser::make_IN(yytext, loc);
-(1\:1|1\:m|m\:1|m\:m)       return yy::RStataParser::make_MERGE_SPEC(yytext, loc);
+(1\:1|1\:m|m\:1|m\:m)       {
+                                const StringExprNode *cmd = new StringExprNode(std::string(yytext));
+                                return yy::RStataParser::make_MERGE_SPEC(cmd, loc);
+                            }
+
 
 
                             /* logical operators and various single-character tokens */
@@ -189,7 +193,8 @@ B           [ \t\v\r\f]
                                 return yy::RStataParser::make_NOISILY(cmd, loc);
                             }
 (?i:merge)                  {
-                                const GeneralStataCmd *cmd = MakeGeneralStataCmd(std::string(yytext)).create();
+                                // this is an IDENT because the parser constructs this command with its options
+                                const IdentExprNode *cmd = new IdentExprNode(std::string(yytext));
                                 return yy::RStataParser::make_MERGE(cmd, loc);
                             }
 
@@ -197,7 +202,7 @@ B           [ \t\v\r\f]
 
                             /* all non-keyword identifiers */
 [_A-Za-z][A-Za-z0-9_]*      {
-                                const IdentExprNode *cmd = new IdentExprNode(yytext);
+                                const IdentExprNode *cmd = new IdentExprNode(std::string(yytext));
                                 return yy::RStataParser::make_IDENT(cmd, loc);
                             }
 

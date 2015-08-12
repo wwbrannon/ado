@@ -4,7 +4,7 @@ CPFLAGS += "-I/usr/local/lib/R/site-library/Rcpp/include"
 CPFLAGS += "-I../../inst/include/"
 CPFLAGS += "-I./build"
 
-all: parse.o lex.o infra
+all: infra lex.o parse.o
 	ar -rcs ado.a build/parse.o build/lex.o \
 			build/GeneralStataCmd.o build/MakeGeneralStataCmd.o \
 			build/EmbeddedRCmd.o build/RStataDriver.o \
