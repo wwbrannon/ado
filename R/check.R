@@ -40,13 +40,13 @@ function(node, debug_level=0)
 {
   #Children - length, names, types
   raiseifnot(length(node$children) == 0,
-             msg=if(debug_level) NULL else "Malformed command object")
+             msg=if(debug_level) NULL else "Invalid literal")
 
   #Data members - length, names, values
   raiseifnot(length(node$data) == 1,
-             msg=if(debug_level) NULL else "Malformed command object")
+             msg=if(debug_level) NULL else "Invalid literal")
   raiseifnot("value" %in% names(node$data),
-             msg=if(debug_level) NULL else "Malformed command object")
+             msg=if(debug_level) NULL else "Invalid literal")
 
   NextMethod()
 }
@@ -56,7 +56,7 @@ verifynode.rstata_ident <-
 function(node, debug_level=0)
 {
   raiseifnot(length(grep("^[_A-Za-z][A-Za-z0-9_]*$", node$data["value"])) > 0,
-             msg=if(debug_level) NULL else "Malformed command object")
+             msg=if(debug_level) NULL else "Invalid identifier")
   raiseifnot(!is.null(as.symbol(node$data["value"])),
              msg=if(debug_level) NULL else "Invalid identifier")
 

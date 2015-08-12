@@ -34,9 +34,10 @@ rstata_cmd_exit <-
 function(return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
+    {
+        raiseCondition("Exit requested", "ExitRequestedException")
         return(match.call())
-
-    raiseCondition("Exit requested", "ExitRequestedException")
+    }
 }
 
 
@@ -88,9 +89,10 @@ rstata_cmd_quit <-
 function(return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
+    {
+        raiseCondition("Exit requested", "ExitRequestedException")
         return(match.call())
-
-    raiseCondition("Exit requested", "ExitRequestedException")
+    }
 }
 
 rstata_cmd_restore <-

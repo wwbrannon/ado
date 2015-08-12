@@ -1,9 +1,4 @@
 Now:
-  o) command-implementing functions should take a return.match.call argument for debugging
-    o) stats commands don't have them yet
-    o) codegen should take a debug_level argument and if it's > 0, set the return.match.call args of
-       command functions to TRUE
-
   o) function and option args should be separable by ',' or ' '
     o) does this require a GLR parser?
 

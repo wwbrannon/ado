@@ -172,9 +172,9 @@ function(ast, debug_level=0)
     ret_p1 <-
     tryCatch(
     {
-        check(ast, debug_level=debug_level)
+        check(ast, debug_level)
 
-        codegen(ast)
+        codegen(ast, debug_level)
     },
     error=function(c) c,
     BadCommandException=function(c) c)
