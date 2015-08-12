@@ -30,7 +30,8 @@ List GeneralStataCmd::as_list() const
 {
     List res;
    
-    res = List::create(_["verb"]            = Symbol(verb),
+    res = List::create(_["func"]            = Symbol("dispatch.rstata.cmd"),
+                       _["verb"]            = verb,
                        _["modifiers"]       = modifiers->as_expr(),
                        _["varlist"]         = varlist->as_expr(),
                        _["assign_stmt"]     = assign_stmt->as_expr(),
