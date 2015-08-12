@@ -153,6 +153,7 @@ function(node)
   codegen(node$children$if_expression)
 }
 
+#' @export
 codegen.rstata_in_clause <-
 function(node)
 {
