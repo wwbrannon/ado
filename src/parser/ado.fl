@@ -1,6 +1,6 @@
 %{
 #include <iostream>
-#include "rstata.h"
+#include "rstata.hpp"
 #include "ado.tab.hpp"
 #define YY_DECL extern "C" int yylex()
 
@@ -99,7 +99,7 @@ void count();
 (?i:collapse)           { count(); yylval.str = strdup(yytext); return COLLAPSE; }
 (?i:destring)           { count(); yylval.str = strdup(yytext); return DESTRING; }
 (?i:inspect)            { count(); yylval.str = strdup(yytext); return INSPECT; }
-(?i:generate)           { count(); yylval.str = strdup(yytext); return GENERATE; }
+(?i:generate)           { count(); yylval.str = strdup(yytext); return GEN; }
 (?i:preserve)           { count(); yylval.str = strdup(yytext); return PRESERVE; }
 (?i:order)              { count(); yylval.str = strdup(yytext); return ORDER; }
 (?i:clear)              { count(); yylval.str = strdup(yytext); return CLEAR; }

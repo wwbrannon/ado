@@ -3,7 +3,7 @@
 #include <cstring>
 #include <iostream>
 #include <Rcpp.h>
-#include "rstata.h"
+#include "rstata.hpp"
 
 using namespace std;
 
@@ -42,7 +42,7 @@ int yywrap()
 
 %token <str> INSHEET TABLE SUM DI EXIT
 %token <str> APPEND CD CLEAR CODEBOOK COLLAPSE COMPARE COUNT
-%token <str> DESCRIBE DESTRING DROP DUPLICATES EGEN FORMAT GENERATE
+%token <str> DESCRIBE DESTRING DROP DUPLICATES EGEN FORMAT GEN
 %token <str> INFILE INSPECT KEEP LABEL LIST LOG LS MEMORY MERGE
 %token <str> MOVE MVDECODE MVENCODE ORDER OUTFILE PRESERVE USE
 %token <str> QUERY RANGE RECAST RECODE RENAME REPLACE RESHAPE
@@ -57,9 +57,10 @@ commands:
 
 command:
       insheet_cmd
-    | di_cmd
     | exit_cmd
+    | gen_cmd
     /* | table_cmd
+    | di_cmd
     | sum_cmd
     | append_cmd
     | cd_cmd
@@ -579,12 +580,24 @@ sum_cmd:
     {
     }
     ;
+
+di_cmd:
+    DI expression
+    {
+    }
+    ;
 */
 
 exit_cmd:
     EXIT
     {
         raise_condition("Exit requested", "exit");
+    }
+    ;
+
+gen_cmd:
+    GEN assignment_expression
+    {
     }
     ;
 
@@ -599,11 +612,6 @@ insheet_cmd:
     }
     ;
 
-di_cmd:
-    DI expression
-    {
-    }
-    ;
 %%
 
 using namespace Rcpp;
