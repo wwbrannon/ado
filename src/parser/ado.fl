@@ -53,7 +53,7 @@ llocp->step();
 
 
                                     /* eat comments */
-\/\*                                { long_comment(); }
+\/\*                                { long_comment(llocp); }
 \/\/                                { llocp->lines(1); llocp->step(); short_comment(); }
 ^\*                                 { llocp->lines(1); llocp->step(); short_comment(); }
 
@@ -489,7 +489,6 @@ i?"o("\ *{D}+\ *\/{D}+\ *")."       {
 %%
 
 // Functions to eat comments
-// FIXME - this should track line and column numbers
 void long_comment(yy::RStataParser::location_type* llocp)
 {
     char c, c1;
@@ -506,14 +505,19 @@ loop:
         putchar(c);
     }
 
-    if ((c1 = getc(yyin)) != '/' && c != '\0')
+    if(c != '\0')
     {
-        unput(c1);
-        goto loop;
-    }
+        llocp->step(); // for the '*'
 
-    if (c != '\0')
+        if( (c1 = getc(yyin)) != '/')
+        {
+            unput(c1);
+            goto loop;
+        }
+
+        llocp->step(); // for the '/'
         putchar(c1);
+    }
 }
 
 void short_comment()
