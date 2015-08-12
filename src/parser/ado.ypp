@@ -89,6 +89,12 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 %token <node>   STRING_LITERAL STRING_MISSING
 %token <node>   DATE TIME DATETIME
 
+/* Type specifiers */
+%token <str> BYTE INT LONG FLOAT DOUBLE STRING_TYPE_SPEC;
+
+/* Formats */
+%token <str> STRING_FORMAT DATETIME_FORMAT NUMBER_FORMAT
+
 /* Commands with unusual enough syntax they have to be parsed separately */
 %token <node>   EMBEDDED_R;
 %token <node>   QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */

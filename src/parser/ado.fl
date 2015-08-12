@@ -102,6 +102,28 @@ loc.step();
                                                         }
 
 
+                            /* format specifiers */
+%-?{D}+s                    { yylval->str = new std::string(yytext); return token::TOK_STRING_FORMAT; }
+%-?0?{D}+\.{D}+[efg]c?      { yylval->str = new std::string(yytext); return token::TOK_NUMBER_FORMAT; }
+%-?t[Ccdwmqh]{L}*           { yylval->str = new std::string(yytext); return token::TOK_DATETIME_FORMAT; }
+
+
+
+                            /* Numeric data types */
+(?i:byte)                   { yylval->str = new std::string(yytext); return token::TOK_BYTE; }
+(?i:int)                    { yylval->str = new std::string(yytext); return token::TOK_INT; }
+(?i:long)                   { yylval->str = new std::string(yytext); return token::TOK_LONG; }
+(?i:float)                  { yylval->str = new std::string(yytext); return token::TOK_FLOAT; }
+(?i:double)                 { yylval->str = new std::string(yytext); return token::TOK_DOUBLE; }
+
+
+
+                            /* String data types */
+str                         { yylval->str = new std::string(yytext); return token::TOK_STRING_TYPE_SPEC; }
+str{D}+                     { yylval->str = new std::string(yytext); return token::TOK_STRING_TYPE_SPEC; }
+strL                        { yylval->str = new std::string(yytext); return token::TOK_STRING_TYPE_SPEC; }
+
+
 
                             /* numbers and numeric data types */
 \.                          {
