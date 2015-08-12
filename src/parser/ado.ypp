@@ -55,9 +55,6 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 %precedence "["
 %precedence "("
 
-/* Not used, but invokes error handling if seen */
-%token ILLEGAL_CHARACTER
-
 /* EOF and command separators */
 %token END 0
 
@@ -113,7 +110,7 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 
                 /* Commands with unusual enough syntax they have to be parsed separately */
 %token <node>   EMBEDDED_CODE
-%token <node>   BY XI
+%token <node>   BY XI BYSORT
 %token <node>   QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
 %token <node>   DISPLAY FORMAT MERGE
 
@@ -348,7 +345,16 @@ modifier_cmd:
     ;
 
 long_modifier_cmd:
-      BY expression_list option_list
+      BYSORT expression_list option_list
+    {
+        $1->appendChild("expression_list", $2);
+
+        if($3->nChildren() > 0)
+          $1->appendChild("option_list", $3);
+
+        $$ = $1;
+    }
+    | BY expression_list option_list
     {
         $1->appendChild("expression_list", $2);
 
