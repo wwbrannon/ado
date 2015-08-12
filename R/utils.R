@@ -94,44 +94,44 @@ function(children)
   {
     if(n == "if_clause")
     {
-      if(!children[n] %is% "rstata_if_clause")
+      if(!children[[n]] %is% "rstata_if_clause")
         return(FALSE)
     }
     
     if(n == "in_clause")
     {
-      if(!children[n] %is% "rstata_in_clause")
+      if(!children[[n]] %is% "rstata_in_clause")
         return(FALSE)
     }
     
     if(n == "weight_clause")
     {
-      if(!children[n] %is% "rstata_weight_clause")
+      if(!children[[n]] %is% "rstata_weight_clause")
         return(FALSE)
     }
     
     if(n == "using_clause")
     {
-      if(!children[n] %is% "rstata_using_clause")
+      if(!children[[n]] %is% "rstata_using_clause")
         return(FALSE)
     }
     
     if(n == "option_list")
     {
-      if(!children[n] %is% "rstata_option_list")
+      if(!children[[n]] %is% "rstata_option_list")
         return(FALSE)
     }
     
     if(n == "varlist")
     {
-      if(!children[n] %is% "rstata_expression_list")
+      if(!children[[n]] %is% "rstata_expression_list")
         return(FALSE)
       
-      types <- vapply(children,
-                      function(n) n %is% "rstata_ident" ||
-                                  n %is% "rstata_label_expression" ||
-                                  n %is% "rstata_factor_expression" ||
-                                  n %is% "rstata_cross_expression",
+      types <- vapply(children[[n]]$children,
+                      function(x) x %is% "rstata_ident" ||
+                                  x %is% "rstata_label_expression" ||
+                                  x %is% "rstata_factor_expression" ||
+                                  x %is% "rstata_cross_expression",
                       TRUE)
       if(length(which(types)) != length(types))
         return(FALSE)
@@ -139,7 +139,7 @@ function(children)
     
     if(n == "expression")
     {
-      if(!(children[n] %is% "rstata_expression"))
+      if(!(children[[n]] %is% "rstata_expression"))
         return(FALSE)
     }
   }
