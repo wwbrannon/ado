@@ -97,26 +97,26 @@ B           [ \t\v\r\f]
 (?i:using)                  return yy::RStataParser::make_USING(yytext, loc);
 (?i:if)                     return yy::RStataParser::make_IF(yytext, loc);
 (?i:in)                     return yy::RStataParser::make_IN(yytext, loc);
-
+(1\:1|1\:m|m\:1|m\:m)       return yy::RStataParser::make_MERGE_SPEC(yytext, loc);
 
 
                             /* logical operators and various single-character tokens */
-"&"                         return yy::RStataParser::make_AND_OP(BranchExprNode(yytext), loc);
-"|"                         return yy::RStataParser::make_OR_OP(BranchExprNode(yytext), loc);
-">="                        return yy::RStataParser::make_GT_OP(BranchExprNode(yytext), loc);
-"<="                        return yy::RStataParser::make_LT_OP(BranchExprNode(yytext), loc);
-"=="                        return yy::RStataParser::make_EQ_OP(BranchExprNode(yytext), loc);
-"!="                        return yy::RStataParser::make_NE_OP(BranchExprNode(yytext), loc);
-"~="                        return yy::RStataParser::make_NE_OP(BranchExprNode(yytext), loc);
-"!"                         return yy::RStataParser::make_NEG_OP(BranchExprNode(yytext), loc);
-"~"                         return yy::RStataParser::make_NEG_OP(BranchExprNode("!"), loc);
+"&"                         return yy::RStataParser::make_AND_OP(yytext, loc);
+"|"                         return yy::RStataParser::make_OR_OP(yytext, loc);
+">="                        return yy::RStataParser::make_GT_OP(yytext, loc);
+"<="                        return yy::RStataParser::make_LT_OP(yytext, loc);
+"=="                        return yy::RStataParser::make_EQ_OP(yytext, loc);
+"!="                        return yy::RStataParser::make_NE_OP(yytext, loc);
+"~="                        return yy::RStataParser::make_NE_OP(yytext, loc);
+"!"                         return yy::RStataParser::make_NEG_OP(yytext, loc);
+"~"                         return yy::RStataParser::make_NEG_OP("!", loc);
 
-\*                          return yy::RStataParser::make_STAR(BranchExprNode(yytext), loc);
-\+                          return yy::RStataParser::make_PLUS(BranchExprNode(yytext), loc);
-\/                          return yy::RStataParser::make_SLASH(BranchExprNode(yytext), loc);
-\-                          return yy::RStataParser::make_MINUS(BranchExprNode(yytext), loc);
-\^                          return yy::RStataParser::make_CARET(BranchExprNode(yytext), loc);
-=                           return yy::RStataParser::make_EQUALS(BranchExprNode(yytext), loc);
+\*                          return yy::RStataParser::make_STAR(yytext, loc);
+\+                          return yy::RStataParser::make_PLUS(yytext, loc);
+\/                          return yy::RStataParser::make_SLASH(yytext, loc);
+\-                          return yy::RStataParser::make_MINUS(yytext, loc);
+\^                          return yy::RStataParser::make_CARET(yytext, loc);
+=                           return yy::RStataParser::make_EQUALS(yytext, loc);
 
 \[                          return yy::RStataParser::make_LBRACKET(yytext, loc);
 \]                          return yy::RStataParser::make_RBRACKET(yytext, loc);

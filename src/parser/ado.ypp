@@ -49,9 +49,6 @@
     SQUOTE          "'"
     COMMA           ","
     COLON           ":"
-;
-
-%token <BaseExprNode>
     NEG_OP          "!"
     STAR            "*"
     PLUS            "+"
@@ -61,7 +58,6 @@
     EQUALS          "="
 ;
 
-%token <std::string> NEWLINE
 %token <BaseExprNode> EMBEDDED_R;
 
 /* Literals of various fundamental types */
@@ -70,8 +66,12 @@
 %token <BaseExprNode> STRING_LITERAL STRING_MISSING
 %token <BaseExprNode> DATE TIME DATETIME
 
+/* Commands with unusual enough syntax they have to be parsed separately */
+%token <BaseExprNode> QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
+%token <BaseExprNode> MERGE
+
 /* Operators */
-%token <BaseExprNode> GT_OP LT_OP EQ_OP NE_OP OR_OP AND_OP
+%token <std::string> GT_OP LT_OP EQ_OP NE_OP OR_OP AND_OP
 %precedence RELATIONAL
 %precedence '+' '-'
 %precedence EXPONENT
@@ -80,10 +80,8 @@
 
 /* Command components and keywords */
 %token <std::string> USING IF IN
-
-/* Commands with unusual enough syntax they have to be parsed separately */
-%token <BaseExprNode> QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
-%token <BaseExprNode> MERGE
+%token <std::string> MERGE_SPEC
+%token <std::string> NEWLINE
 
 %start translation_unit
 %%
@@ -95,22 +93,36 @@
  */
 
 translation_unit:
-      external_statement
+      external_statement { driver.ast = std::move($1);  }
     | translation_unit NEWLINE external_statement
+    {
+        $$ = 
+
+        driver.ast = std::move($$);
+    }
     ;
 
 external_statement:
       cmd
     | compound_cmd
+    {
+
+    }
     ;
 
 compound_cmd:
     '{' cmds '}'
+    {
+
+    }
     ;
 
 cmds:
       cmd
     | cmds NEWLINE cmd
+    {
+
+    }
     ;
 
 cmd:
@@ -118,21 +130,33 @@ cmd:
     | modifier_cmd_list nonmodifier_cmd
     | modifier_cmd_list ':' nonmodifier_cmd
     | modifier_cmd_list nonmodifier_cmd ':' nonmodifier_cmd
+    {
+
+    }
     ;
 
 embedded_r_cmd:
     EMBEDDED_R
+    {
+
+    }
     ;
 
 modifier_cmd:
       CAPTURE
     | QUIETLY
     | NOISILY
+    {
+
+    }
     ;
 
 modifier_cmd_list:
       modifier_cmd
     | modifier_cmd_list modifier_cmd
+    {
+
+    }
     ;
 
 nonmodifier_cmd:
@@ -140,10 +164,23 @@ nonmodifier_cmd:
     | special_cmd
     | IDENT expression_list if_clause in_clause weight_clause using_clause option_list
     | IDENT
+    {
+
+    }
     ;
 
 special_cmd:
     merge_cmd
+    {
+
+    }
+    ;
+
+merge_cmd:
+    MERGE MERGE_SPEC expression_list using_clause option_list
+    {
+        
+    }
     ;
 
 /*
@@ -193,76 +230,173 @@ equality_operator:
 
 primary_expression:
       IDENT
+    {
+        $$ = new IdentExprNode($1);
+    }
     | NUMBER
+    {
+        $$ = new NumberExprNode($1);
+    }
     | NUMBER_MISSING
+    {
+        $$ = new NumberExprNode("");
+    }
     | STRING_LITERAL
+    {
+        $$ = new StringExprNode($1);
+    }
     | STRING_MISSING
+    {
+        $$ = new StringExprNode("");
+    }
     | DATE
+    {
+        $$ = new DatetimeExprNode($1, "");
+    }
     | TIME
+    {
+        $$ = new DatetimeExprNode("", $1);
+    }
     | DATETIME
+    {
+        $$ = new DatetimeExprNode($1);
+    }
     | '(' expression ')'
+    {
+        $$ = $2;
+    }
     ;
 
 postfix_expression:
       primary_expression
     | postfix_expression '[' expression ']' %prec '['
+    {
+        node = new BranchExprNode('[]');
+        node.setChildren($1, $3);
+        $$ = node;
+    }
     | postfix_expression '(' ')' %prec '('
+    {
+        node = new BranchExprNode('()');
+        node.setChildren($1);
+        $$ = node;
+    }
     | postfix_expression '(' argument_expression_list ')'
+    {
+        node = new BranchExprNode('()');
+        node.setChildren($1, $3);
+        $$ = node;
+    }
     ;
 
 power_expression:
       postfix_expression %prec EXPONENT
     | power_expression power_operator postfix_expression %prec EXPONENT
+    {
+        BranchExprnode = new BranchExprNode('^');
+        node.setChildren($1, $3);
+        $$ = node;
+    }
     ;
 
 unary_expression:
       power_expression
     | unary_operator power_expression
+    {
+        node = new BranchExprNode($1);
+        node.setChildren($2);
+        $$ = node;
+    }
     ;
 
 multiplication_expression:
       unary_expression
     | multiplication_expression multiplication_operator unary_expression
+    {
+        node = new BranchExprNode($2);
+        node.setChildren($1, $3);
+        $$ = node;
+    }
     ;
 
 additive_expression:
       multiplication_expression %prec '+'
     | additive_expression additive_operator multiplication_expression %prec '+'
+    {
+        node = new BranchExprNode($2);
+        node.setChildren($1, $3);
+        $$ = node;
+    }
     ;
 
 relational_expression:
       additive_expression %prec RELATIONAL
     | relational_expression relational_operator additive_expression %prec RELATIONAL
+    {
+        node = new BranchExprNode($2);
+        node.setChildren($1, $3);
+        $$ = node;
+    }
     ;
 
 equality_expression:
       relational_expression
     | equality_expression equality_operator relational_expression
+    {
+        node = new BranchExprNode($2);
+        node.setChildren($1, $3);
+        $$ = node;
+    }
     ;
 
 logical_and_expression:
       equality_expression
     | logical_and_expression AND_OP equality_expression
+    {
+        node = new BranchExprNode($2);
+        node.setChildren($1, $3);
+        $$ = node;
+    }
     ;
 
 logical_or_expression:
       logical_and_expression
     | logical_or_expression OR_OP logical_and_expression
+    {
+        node = new BranchExprNode($2);
+        node.setChildren($1, $3);
+        $$ = node;
+    }
     ;
 
 argument_expression_list:
       logical_or_expression
     | argument_expression_list ',' logical_or_expression
+    {
+        $1.appendChild($3);
+        $$ = $1;
+    }
     ;
 
 expression:
       logical_or_expression
     | IDENT assignment_operator logical_or_expression
+    {
+        node = new BranchExprNode($2);
+        node.setChildren($1, $3);
+        $$ = node;
+    }
     ;
 
 expression_list:
       expression
-    | expression_list expression
+    {
+    }
+    | expression_list expression /* FIXME what's the base case? */
+    {
+        $1.appendChild($2);
+        $$ = $1;
+    }
     ;
 
 /*
@@ -273,12 +407,21 @@ expression_list:
 
 option_list:
       %empty
-    | option_list ',' option
+    | option_list ',' option /* FIXME what's the base case? */
+    {
+        $1.appendChild($3);
+        $$ = $1;
+    }
     ;
 
 option:
       IDENT
+    {
+    }
     | IDENT '(' expression_list ')'
+    {
+        
+    }
     ;
 
 /*
@@ -289,7 +432,13 @@ option:
 
 weight_clause:
       %empty
-    | '[' IDENT '=' expression ']';
+    | '[' IDENT '=' expression ']'
+    {
+        node = new BranchExprNode("weight");
+        node.setChildren($2, $4);
+        $$ = node;
+    }
+    ;
 
 /*
  **************************************************
@@ -300,6 +449,9 @@ weight_clause:
 if_clause:
       %empty
     | IF expression
+    {
+        $$ = $2;
+    }
     ;
 
 /*
@@ -311,6 +463,11 @@ if_clause:
 in_clause:
       %empty
     | IN NUMBER '/' NUMBER
+    {
+        node = new BranchExprNode("IN");
+        node.setChildren($2, $4);
+        $$ = node;
+    }
     ;
 
 /*
@@ -322,17 +479,13 @@ in_clause:
 using_clause:
       %empty
     | USING STRING_LITERAL
+    {
+        $$ = $2;
+    }
     | USING IDENT
-    ;
-
-/*
- ******************************
- * The "special" Stata commands
- ******************************
- */
-
-merge_cmd:
-    MERGE
+    {
+        $$ = $2;
+    }
     ;
 
 %%
