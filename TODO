@@ -1,15 +1,8 @@
 Roadmap to v0.1:
 Immediate TODO:
     o) grammar expansion: fully general varlists
-        o) type constructor literals as expressions
         o) factor variable operators ("i.", "c.", "o.", "#"/"##", "ib."/"b."/"X.varname")
-        o) time series support
         o) :value_label_name
-    o) error recovery + error if other character given
-    o) make sure the location tracking works
-    o) memory leaks
-        o) delete the random string tokens that don't become part of the AST
-        o) what about memory leaks during the error recovery stuff?
     
     o) next, infrastructural R functions - AST walkers, name abbreviation support, etc
 
@@ -33,6 +26,7 @@ Later functionality
     
     v0.3:
         o) Loops + Macros
+        o) time series support
 
 Write documentation
     o) man entries, vignettes, examples

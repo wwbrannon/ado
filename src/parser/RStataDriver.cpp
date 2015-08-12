@@ -7,7 +7,10 @@ class RStataDriver;
 
 #include "RStataDriver.hpp"
 
-// a utility function
+/*
+ * Free-standing utility functions
+ */
+
 void
 raise_condition(const std::string& msg, const std::string& type)
 {
@@ -18,6 +21,10 @@ raise_condition(const std::string& msg, const std::string& type)
   Rcpp::Function stopper("stop");
   stopper(cond);
 }
+
+/*
+ * Everything else
+ */
 
 // ctor
 RStataDriver::RStataDriver(std::string _text)
@@ -52,12 +59,17 @@ RStataDriver::parse()
 void
 RStataDriver::error(const yy::location& l, const std::string& m)
 {
-    raise_condition(std::string(": ") + std::string(m), "error");
+    const std::string msg = "Error: line " + std::to_string(l.begin.line) +
+          ", column " + std::to_string(l.begin.column) + ": " + m;
+    
+    Rcpp::Rcerr << msg << std::endl;
 }
 
 void
 RStataDriver::error(const std::string& m)
 {
-    raise_condition(std::string(m), "error");
+    const std::string msg = "Error: line unknown, column unknown: " + m;
+    
+    Rcpp::Rcerr << msg << std::endl;
 }
 
