@@ -146,7 +146,7 @@ class GeneralStataCmd: public BaseStataCmd
         std::string using_filename; // "using filename": the filename given after using, or NULL
     
     public:
-        BaseStataCmd *PrefixCmd;
+        BaseStataCmd *ChildCmd;
         virtual Rcpp::List as_list() const;
 
         GeneralStataCmd(std::string _verb,
