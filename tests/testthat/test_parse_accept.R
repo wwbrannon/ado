@@ -49,6 +49,24 @@ test_that("Postfix expressions parse", {
     expect_accept("disp val(foo() bar baz)\n")
 })
 
+test_that("Format specifiers parse", {
+    expect_accept("disp %10.0f\n")
+    expect_accept("disp %-14s\n")
+    expect_accept("disp %05.0f\n")
+    expect_accept("disp %tcDDmonCCYY_HH:MM:SS.ss\n")
+    expect_accept("disp %9.2fc\n")
+    expect_accept("disp %21x\n")
+    expect_accept("disp %-12.2f\n")
+    expect_accept("disp %10.0g\n")
+    expect_accept("disp %9s\n")
+    expect_accept("disp %8s\n")
+    expect_accept("%10.7e\n")
+    expect_accept("%16L\n")
+    expect_accept("%9.2fc\n")
+    expect_accept("%-9.0gc\n")
+    #FIXME
+})
+
 test_that("Arithmetic expressions parse", {
     expect_accept("disp 45+1\n")
     expect_accept("disp 97-23\n")
@@ -61,28 +79,118 @@ test_that("Arithmetic expressions parse", {
     expect_accept("disp (12 + 87 * (76 - 4)) ^ 2 - (34 / (43 + 98)) ^ 0.5\n")
 })
 
-test_that("Factor expressions and factorial operators parse", {
-    #FIXME
+test_that("Type constructors parse", {
+    expect_accept("gen byte foo = 1\n")
+    expect_accept("gen byte foo\n")
+    expect_accept("gen byte(var1 var2 var3) byte baz\n")
+    expect_accept("gen int foo = 1\n")
+    expect_accept("gen int foo\n")
+    expect_accept("gen int(var1 var2 var3) byte baz\n")
+    expect_accept("gen long foo = 1\n")
+    expect_accept("gen long foo\n")
+    expect_accept("gen long(var1 var2 var3) int baz\n")
+    expect_accept("gen double foo = 1\n")
+    expect_accept("gen double foo\n")
+    expect_accept("gen double(var1 var2 var3) long baz\n")
+    expect_accept("gen strL foo = 1\n")
+    expect_accept("gen strL foo\n")
+    expect_accept("gen strL(var1 var2 var3) int baz\n")
+    expect_accept("gen str foo = 1\n")
+    expect_accept("gen str foo\n")
+    expect_accept("gen str(var1 var2 var3)\n")
+    expect_accept("gen str987 foo = 1\n")
+    expect_accept("gen str987 foo\n")
+    expect_accept("gen str987(var1 var2 var3)\n")
 })
 
-test_that("Type constructors parse", {
-    #FIXME
+test_that("Factor expressions and factorial operators parse", {
+    expect_accept("logit y c.var1\n")
+    expect_accept("logit y i.var1\n")
+    expect_accept("logit y bn.myvar\n")
+    expect_accept("logit y ibn.var3\n")
+    expect_accept("logit y ib(freq).zazz\n")
+    expect_accept("logit y b(last).quux\n")
+    expect_accept("logit y ib(first).baz\n")
+    expect_accept("logit y b3.foo\n")
+    expect_accept("logit y ib3.var\n")
+    expect_accept("logit y b(#4).foo\n")
+    expect_accept("logit y ib(#5).var\n")
+    expect_accept("logit y i3.treat\n")
+    expect_accept("logit y i(3).var\n")
+    expect_accept("logit y i(3 8).var\n")
+    expect_accept("logit y i(0 1).var\n")
+    expect_accept("logit y i(4 / 3).var2\n")
+    expect_accept("logit y i(4/2).var\n")
+    expect_accept("logit y io4.var\n")
+    expect_accept("logit y o4.var\n")
+    expect_accept("logit y io(3).var\n")
+    expect_accept("logit y o(3 8).var\n")
+    expect_accept("logit y io(0 1).var\n")
+    expect_accept("logit y o(4 / 3).var2\n")
+    expect_accept("logit y io(4/2).var\n")
+    expect_accept("logit y bn.myvar c.var2#i.var4\n")
+    expect_accept("logit y ibn.var3 i.var2##c.var2\n")
+    expect_accept("logit y i(0 1).var var2#var4\n")
+    expect_accept("logit y i(4 / 3).var2 var##var1\n")
 })
 
 test_that("Relational and equality expressions parse", {
-    #FIXME
+    expect_accept("gen foo = var == var1\n")
+    expect_accept("gen foo = var != var1\n")
+    expect_accept("gen foo = var == var1 == var2\n")
+    expect_accept("gen foo = (var == var1 == var2)\n")
+    expect_accept("gen foo = 3 != var\n")
+    expect_accept("gen foo = var != 3\n")
+    expect_accept("gen foo = (var != 3)\n")
+    expect_accept("disp var1 > var2\n")
+    expect_accept("disp var1 >= var2\n")
+    expect_accept("disp var1 < var2\n")
+    expect_accept("disp var1 <= var2\n")
+    expect_accept("disp (var1 / 2) > var2\n")
+    expect_accept("disp (var1 / 2 + 3) > var2\n")
+    expect_accept("disp (var1 == 3) > var2\n")
+    expect_accept("disp (var1 == 3) <= var2\n")
 })
 
 test_that("Logical expressions parse", {
-    #FIXME
+    expect_accept("disp var2 | var1\n")
+    expect_accept("disp var2 & var1\n")
+    expect_accept("gen foo = var1 < var2 | var1 > var3\n")
+    expect_accept("gen foo = (var1 < var2 | var1 > var3)\n")
+    expect_accept("gen foo = var1 < var2 & var1 > var3\n")
+    expect_accept("gen foo = (var1 < var2 & var1 > var3)\n")
 })
 
 test_that("Assignment expressions parse", {
-    #FIXME
+    expect_accept("gen foo = var\n")
+    expect_accept("gen foo = 1\n")
+    expect_accept("gen foo = 1 + 3.4\n")
+    expect_accept('gen foo = "string"\n')
+    expect_accept('gen foo = "`string"\'\n')
+    expect_accept('gen foo = seq()\n')
+    expect_accept("gen foo = seq[3]\n")
+    expect_accept("gen foo = 3 > 4\n")
+    expect_accept("gen foo = -var\n")
+    expect_accept("gen foo = (3 != var)\n")
+    expect_accept("gen foo = 3 != var\n")
+    
+    #FIXME these tests pass but the parse is incorrect
+    expect_accept("gen foo = var1 < var2 | var1 > var3\n")
+    expect_accept("gen foo = (var1 < var2 | var1 > var3)\n")
 })
 
 test_that("Long comments parse", {
-    #FIXME
+    expect_accept("/* this is a long comment */ disp foo\n")
+    expect_accept("disp /* not displayed */ foo\n")
+    expect_accept("disp foo /* not displayed */\n")
+    expect_accept("disp 1+3 - 5 ^ /* oh look a comment */ 3\n")
+    expect_accept("disp 1+3 - 5 ^ /* oh look
+                  a
+                  multiline
+                  comment */ 3\n")
+    expect_reject("disp /* this comment isn't terminated foo\n")
+    expect_accept("disp /* this comment is terminated */ foo\n")
+    expect_reject("disp /* /* comments */ can't be nested */ foo\n")
 })
 
 test_that("Short comments parse", {
