@@ -5,7 +5,8 @@
 #' @import Rcpp
 rstata <-
 function(dta = NULL, filename=NULL, string=NULL,
-         assign.back=TRUE, save.history=TRUE)
+         assign.back=TRUE, save.history=TRUE,
+         debug_level=0)
 {
     #Sanity checks: create an empty dataset if none provided,
     #but make sure we have a data frame
@@ -72,7 +73,9 @@ function(dta = NULL, filename=NULL, string=NULL,
             
             #Send the input to the bison parser, which, after reading
             #each command, invokes the process_cmd callback
-            do_parse_with_callbacks(inpt, process_cmd, get_macro_value)
+            do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
+                                    get_macro_value=get_macro_value,
+                                    debug_level=debug_level)
           },
           error = function(c) c)
           
@@ -109,21 +112,27 @@ function(dta = NULL, filename=NULL, string=NULL,
         inpt <- Reduce(function(x, y) paste(x, y, sep="\n"), inpt)
         inpt <- paste0(inpt, "\n\n\n")
         
-        do_parse_with_callbacks(inpt, process_cmd, get_macro_value)
+        do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
+                                get_macro_value=get_macro_value,
+                                debug_level=debug_level)
     } else if(!is.null(filename))
     {
         inpt <- readLines(con=file(filename, "r"))
         inpt <- Reduce(function(x, y) paste(x, y, sep="\n"), inpt)
         inpt <- paste0(inpt, "\n\n\n")
         
-        do_parse_with_callbacks(inpt, process_cmd, get_macro_value)
+        do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
+                                get_macro_value=get_macro_value,
+                                debug_level=debug_level)
     } else
     {
         inpt <- readLines(con=textConnection(string))
         inpt <- Reduce(function(x, y) paste(x, y, sep="\n"), inpt)
         inpt <- paste0(inpt, "\n\n\n")
         
-        do_parse_with_callbacks(inpt, process_cmd, get_macro_value)
+        do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
+                                get_macro_value=get_macro_value,
+                                debug_level=debug_level)
     }
     
     return(invisible(dta));
