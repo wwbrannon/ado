@@ -605,7 +605,10 @@ primary_expression:
     {
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_type_expression"});
         node->addData("verb", *($1));
-        node->appendChild("left", $2);
+        
+        ExprNode *lst = new ExprNode("rstata_expression_list");
+        lst->appendChild($2);
+        node->appendChild("left", lst);
 
         $$ = node;
     }

@@ -158,16 +158,33 @@ function(children)
 
     if(n == "varlist")
     {
-      if(!children[[n]] %is% "rstata_expression_list")
-        return(FALSE)
+      if(!(children[[n]] %is% "rstata_expression_list"))
+          return(FALSE)
 
-      types <- vapply(children[[n]]$children,
-                      function(x) x %is% "rstata_ident" ||
-                                  x %is% "rstata_factor_expression" ||
-                                  x %is% "rstata_cross_expression",
-                      TRUE)
-      if(length(which(types)) != length(types))
-        return(FALSE)
+      if(children[[n]]$children[[1]] %is% "rstata_type_expression")
+      {
+          type_exp <- children[[n]]$children[[1]]
+          types <- vapply(type_exp$children[[1]]$children,
+                          function(x) x %is% "rstata_ident",
+                          TRUE)
+
+          if(length(which(types)) != length(types))
+              return(FALSE)
+          else
+              return(TRUE)
+      } else
+      {
+          types <- vapply(children[[n]]$children,
+                          function(x) x %is% "rstata_ident" ||
+                              x %is% "rstata_factor_expression" ||
+                              x %is% "rstata_cross_expression",
+                          TRUE)
+
+          if(length(which(types)) != length(types))
+              return(FALSE)
+          else
+              return(TRUE)
+      }
     }
 
     if(n == "expression_list")

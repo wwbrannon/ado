@@ -1,22 +1,19 @@
 Now:
+  o) fill out calling signatures for cmd functions
+    o) mark functions byable which are
+    o) go back and make some expression_lists into expression or varlists
+
+  o) function and option args should be separable by ',' or ' '
+  o) by can go before quietly etc; fix how check() and codegen() handle this
+
+  o) better error messages from check()
+      o) methods take debug_level arguments; now they need to act on them
+
   o) Macro substitution and compound double quotes
   o) a couple macro backend FIXMEs
   o) the `=expr' syntax?
 
-  o) better error messages
-      o) from check() and codegen()
-      o) methods take debug_level arguments; now they need to act on them
-
-  o) syntax for weird commands
-    o) collapse
-    o) recode
-    o) possibly egen
-    o) possibly gsort
-    o) possible pctile
-
 Backend:
-  o) the way you're trying to make rstata_env's contents be in scope isn't working
-
   o) infrastructural R functions
     o) varlist_to_formula
     o) for operators - how many of these even need to exist?
@@ -28,12 +25,19 @@ Backend:
 
   o) complete all the commands which now have stubs
 
-  o) "special" abreviations like tab
+  o) hardcode "special" abreviations like tab
 
 Frontend:
   o) Loops: much harder, because of macros
 
-  o) syntax for stats commands - how bad is this?
+  o) syntax for weird commands
+    o) collapse
+    o) recode
+    o) ivregress
+    o) lrtest
+    o) test
+    o) possibly anova
+    o) possibly gsort
 
 ===============================================================================
 Systematic debugging:

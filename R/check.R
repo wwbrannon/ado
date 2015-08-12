@@ -509,10 +509,8 @@ function(node, debug_level=0)
   #Children - length, names, types
   raiseifnot(length(node$children) == 1)
   raiseifnot(names(node$children) == c("left"))
-  raiseifnot(node$children$left %is% "rstata_expression_list" ||
-             node$children$left %is% "rstata_ident")
-  if(node$children$left %is% "rstata_expression_list")
-    raiseifnot(every(vapply(node$children$left$children, function(x) x %is% "rstata_ident", TRUE)))
+  raiseifnot(node$children$left %is% "rstata_expression_list")
+  raiseifnot(every(vapply(node$children$left$children, function(x) x %is% "rstata_ident", TRUE)))
 
   invisible(TRUE)
 }
