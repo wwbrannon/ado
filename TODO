@@ -1,11 +1,10 @@
 Now:
-  o) fix probable codegen bug on long modifier_cmd_lists
-
   o) fill out calling signatures for cmd functions
     o) mark functions byable which are
     o) go back and make some expression_lists into expression or varlists
 
   o) function and option args should be separable by ',' or ' '
+  o) two modifier_cmd_lists, one on either side of a long_modifier_cmd
 
   o) better error messages from check()
       o) methods take debug_level arguments; now they need to act on them

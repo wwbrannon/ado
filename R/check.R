@@ -259,7 +259,8 @@ function(node, debug_level=0)
   raiseifnot(length(node$children) > 0)
   raiseifnot(every(vapply(node$children,
                           function(x) x %is% "rstata_modifier_cmd" ||
-                                      x %is% "rstata_general_cmd",
+                                      x %is% "rstata_general_cmd" ||
+                                      x %is% "rstata_compound_cmd",
                           TRUE)))
 
   named <- names(node$children)[which(names(node$children) != "")]
