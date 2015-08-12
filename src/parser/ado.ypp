@@ -164,6 +164,8 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 translation_unit:
       error
     {
+        $1; // shut up, bison...
+
         ExprNode *node = new ExprNode("rstata_compound_cmd");
         $$ = node;
     }
@@ -194,6 +196,8 @@ translation_unit:
     }
     | translation_unit error
     {
+        $2; // shut up, bison...
+
         $$ = $1;
     }
     ;
