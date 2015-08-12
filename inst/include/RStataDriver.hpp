@@ -37,6 +37,9 @@ class RStataDriver
         int debug_level;
         
     private:
+        RStataDriver(const RStataDriver& that); // no copy ctor
+        RStataDriver& operator=(RStataDriver const&); // no assignment
+        
         std::string text;
         
         // See the comments in ado.fl for an explanation of this awful hack

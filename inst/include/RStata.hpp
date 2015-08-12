@@ -39,7 +39,11 @@ class ExprNode
         ExprNode *pop_at_index(unsigned int index);
 
     private:
-        bool dummy;
+        ExprNode(const ExprNode& that); // no copy ctor
+        ExprNode& operator=(ExprNode const &); // no assignment
+
+        bool dummy; // is this a "dummy" node we need to simplify the parser?
+        
         // the node's own data
         std::vector<std::string> types;
         std::map<std::string, std::string> data;
