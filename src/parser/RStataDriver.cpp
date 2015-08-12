@@ -2,7 +2,7 @@
 #include <Rcpp.h>
 #include "RStata.hpp"
 
-class RStataDriver;
+class RStataDriver; // forward-declare this
 #include "ado.tab.hpp"
 
 #include "RStataDriver.hpp"
@@ -51,7 +51,11 @@ RStataDriver::parse()
         int res;
     
         yy::RStataParser parser(*this);
-        parser.set_debug_level(debug_level);
+        
+        if( (this->debug_level & DEBUG_PARSE_TRACE) != 0 )
+            parser.set_debug_level(1);
+        else
+            parser.set_debug_level(0);
         
         res = parser.parse();
         
@@ -67,7 +71,7 @@ RStataDriver::parse()
 void
 RStataDriver::wrap_cmd_action(Rcpp::List ast)
 {
-  Rcpp::List ret = cmd_action(ast, debug_level);
+  Rcpp::List ret = cmd_action(ast, this->debug_level);
   
   int status = Rcpp::as<int>(ret[0]);
   std::string msg = Rcpp::as<std::string>(ret[1]);
@@ -106,20 +110,25 @@ RStataDriver::get_macro_value(const char *name)
 void
 RStataDriver::error(const yy::location& l, const std::string& m)
 {
-    const std::string msg = "Error: line " + std::to_string(l.begin.line) +
-          ", column " + std::to_string(l.begin.column) + ": " + m;
-    
-    Rcpp::Rcerr << msg << std::endl;
-
+    if( (this->debug_level & DEBUG_NO_PARSE_ERROR) == 0 )
+    {
+        const std::string msg = "Error: line " + std::to_string(l.begin.line) +
+              ", column " + std::to_string(l.begin.column) + ": " + m;
+        
+        Rcpp::Rcerr << msg << std::endl;
+    }
     error_seen = 1;
 }
 
 void
 RStataDriver::error(const std::string& m)
 {
-    const std::string msg = "Error: line unknown, column unknown: " + m;
+    if( (this->debug_level & DEBUG_NO_PARSE_ERROR) == 0 )
+    {
+        const std::string msg = "Error: line unknown, column unknown: " + m;
     
-    Rcpp::Rcerr << msg << std::endl;
+        Rcpp::Rcerr << msg << std::endl;
+    }
 
     error_seen = 1;
 }

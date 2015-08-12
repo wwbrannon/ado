@@ -23,6 +23,8 @@ function(vec)
 
 `%is%` <- function(x, y) every(y %in% class(x))
 `%p%` <- function(x, y) paste0(x, y)
+`%|%` <- function(x, y) bitwOr(x, y)
+`%&%` <- function(x, y) bitwAnd(x, y)
 
 deep_eval <-
 function(expr, envir=parent.frame(),

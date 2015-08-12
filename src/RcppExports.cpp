@@ -32,14 +32,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // parse_accept
-int parse_accept(std::string text, int debug_level);
-RcppExport SEXP rstata_parse_accept(SEXP textSEXP, SEXP debug_levelSEXP) {
+int parse_accept(std::string text);
+RcppExport SEXP rstata_parse_accept(SEXP textSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< std::string >::type text(textSEXP);
-    Rcpp::traits::input_parameter< int >::type debug_level(debug_levelSEXP);
-    __result = Rcpp::wrap(parse_accept(text, debug_level));
+    __result = Rcpp::wrap(parse_accept(text));
     return __result;
 END_RCPP
 }

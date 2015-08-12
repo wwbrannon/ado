@@ -6,6 +6,12 @@
 #include <Rcpp.h>
 #include "RStata.hpp"
 
+// flags you can bitwise OR to enable debugging features
+#define DEBUG_PARSE_TRACE       4
+#define DEBUG_MATCH_CALL        8
+#define DEBUG_VERBOSE_ERROR     16
+#define DEBUG_NO_PARSE_ERROR    32
+
 class RStataDriver
 {
     public:

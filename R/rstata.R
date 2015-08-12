@@ -6,6 +6,13 @@
 #    o) settings and parameters that commands can see or modify.
 rstata_env <- new.env(parent=emptyenv())
 
+#Flags you can bitwise OR to enable debugging features.
+#It's important that these have the same values as in the C++ header file.
+DEBUG_PARSE_TRACE <- 4
+DEBUG_MATCH_CALL <- 8
+DEBUG_VERBOSE_ERROR <- 16
+DEBUG_NO_PARSE_ERROR <- 32
+
 #' @export
 #' @useDynLib rstata
 #' @import Rcpp
@@ -178,9 +185,9 @@ function(ast, debug_level=0)
     ret_p1 <-
     tryCatch(
     {
-        check(ast, debug_level)
+        check(ast, ifelse( (debug_level %&% DEBUG_VERBOSE_ERROR) != 0, 1, 0))
 
-        codegen(ast, debug_level)
+        codegen(ast, ifelse( (debug_level %&% DEBUG_MATCH_CALL) != 0, 1, 0))
     },
     error=function(c) c,
     BadCommandException=function(c) c)

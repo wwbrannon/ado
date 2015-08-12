@@ -61,13 +61,13 @@ do_parse(std::string text, int debug_level=0)
 
 // [[Rcpp::export]]
 int
-parse_accept(std::string text, int debug_level=0)
+parse_accept(std::string text)
 {
   int ret;
   
   try
   {
-    RStataDriver *driver = new RStataDriver(text, debug_level);
+    RStataDriver *driver = new RStataDriver(text, DEBUG_NO_PARSE_ERROR);
     
     if(driver->parse() == 0 && driver->error_seen == 0)
         ret = 1;
