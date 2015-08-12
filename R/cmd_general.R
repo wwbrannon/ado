@@ -2,53 +2,42 @@
 ### selection of Stata features and will help test the infrastructure
 ### other commands will eventually rely on.
 
-## Quitting the REPL
-rstata_cmd_exit <-
+rstata_cmd_about <-
 function()
 {
-  raiseCondition("Exit requested", "ExitRequestedException")
+    match.call()
 }
 
-rstata_cmd_quit <-
-function()
+rstata_cmd_cd <-
+function(expression_list=NULL)
 {
-  raiseCondition("Exit requested", "ExitRequestedException")
+    match.call()
 }
 
-## Data manipulation commands
-rstata_cmd_generate <-
-function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL)
-{
-  match.call()
-}
-
-rstata_cmd_insheet <-
-function(using_clause, varlist=NULL, option_list=NULL)
-{
-  match.call()
-}
-
-## Immediate commands
 rstata_cmd_display <-
 function(expression, format_spec=NULL)
 {
-  match.call()
+    match.call()
 }
 
-## Stats commands
-rstata_cmd_logit <-
-function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL, option_list=NULL)
+rstata_cmd_do <-
+function(expression_list, options=NULL)
 {
-  match.call()
+    match.call()
 }
 
-rstata_cmd_tabulate <-
-function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL, option_list=NULL)
+rstata_cmd_exit <-
+function()
 {
-  match.call()
+    raiseCondition("Exit requested", "ExitRequestedException")
 }
 
-## Other general commands
+
+rstata_cmd_help <-
+function(expression_list, option_list=NULL)
+{
+    match.call()
+}
 
 #the if expr { } construct
 rstata_cmd_if <-
@@ -57,56 +46,56 @@ function(expression, compound_cmd)
     match.call()
 }
 
-rstata_cmd_about <-
-function()
-{
-    match.call()
-}
-
-rstata_cmd_help <-
-function()
-{
-    match.call()
-}
-
 rstata_cmd_log <-
-function()
-{
-    match.call()
-}
-
-rstata_cmd_set <-
-function()
+function(expression_list=NULL, using_clause=NULL, option_list=NULL)
 {
     match.call()
 }
 
 rstata_cmd_preserve <-
+function(option_list=NULL)
+{
+    match.call()
+}
+
+rstata_cmd_pwd <-
+function(expression_list=NULL)
+{
+    match.call()
+}
+
+rstata_cmd_query <-
 function()
 {
     match.call()
+}
+
+rstata_cmd_quit <-
+function()
+{
+    raiseCondition("Exit requested", "ExitRequestedException")
 }
 
 rstata_cmd_restore <-
-function()
-{
-    match.call()
-}
-
-rstata_cmd_sleep <-
-function()
-{
-    match.call()
-}
-
-rstata_cmd_do <-
-function()
+function(option_list=NULL)
 {
     match.call()
 }
 
 rstata_cmd_run <-
-function()
+function(expression_list, option_list=NULL)
+{
+    match.call()
+}
+
+rstata_cmd_set <-
+function(expression_list)
+{
+    match.call()
+}
+
+rstata_cmd_sleep <-
+function(expression_list)
 {
     match.call()
 }

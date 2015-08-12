@@ -1,251 +1,272 @@
 rstata_cmd_append <-
-function()
+function(using_clause, option_list=NULL)
 {
-
-}
-
-rstata_cmd_cd <-
-function()
-{
-
+  match.call()
 }
 
 rstata_cmd_clear <-
-function()
+function(expression_list=NULL)
 {
-
+  match.call()
 }
 
 rstata_cmd_codebook <-
-function()
+function(expression_list=NULL, if_clause=NULL, in_clause=NULL, option_list=NULL)
 {
-
+  match.call()
 }
 
+#FIXME
 rstata_cmd_collapse <-
 function()
 {
-
+  match.call()
 }
 
 rstata_cmd_compare <-
-function()
+function(expression_list, if_clause=NULL, in_clause=NULL, by_dta=NULL)
 {
-
+  match.call()
 }
 
 rstata_cmd_count <-
-function()
+function(if_clause=NULL, in_clause=NULL, by_dta=NULL)
 {
+  match.call()
+}
 
+rstata_cmd_decode <-
+function(expression, if_clause=NULL, in_clause=NULL, option_list)
+{
+    match.call()
 }
 
 rstata_cmd_describe <-
-function()
+function(expression_list=NULL, using_clause=NULL, option_list=NULL)
 {
-
+  match.call()
 }
 
 rstata_cmd_destring <-
-function()
+function(expression_list=NULL, option_list=NULL)
 {
-
+  match.call()
 }
 
 rstata_cmd_dir <-
-function()
+function(expression_list=NULL, option_list=NULL)
 {
-
+  match.call()
 }
 
 rstata_cmd_drop <-
-function()
+function(expression_list=NULL, if_clause=NULL, in_clause=NULL, by_dta=NULL)
 {
-
+  match.call()
 }
 
 rstata_cmd_duplicates <-
-function()
+function(expression_list=NULL, if_clause=NULL, in_clause=NULL, option_list=NULL)
 {
-
+  match.call()
 }
 
 rstata_cmd_egen <-
-function()
+function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL, by_dta=NULL)
 {
-
+  match.call()
 }
 
 rstata_cmd_encode <-
-function()
+function(expression, if_clause=NULL, in_clause=NULL, option_list)
 {
-
+  match.call()
 }
 
 rstata_cmd_erase <-
-function()
+function(expression)
 {
-
+  match.call()
 }
 
 rstata_cmd_expand <-
-function()
+function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL)
 {
+  match.call()
+}
 
+rstata_cmd_flist <-
+function(expression_list=NULL, if_clause=NULL, in_clause=NULL, option_list=NULL, by_dta=NULL)
+{
+    match.call()
 }
 
 rstata_cmd_format <-
-function()
+function(expression_list=NULL, format_spec=NULL)
 {
+  match.call()
+}
 
+rstata_cmd_generate <-
+function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL, by_dta=NULL)
+{
+    match.call()
 }
 
 rstata_cmd_gsort <-
-function()
+function(expression_list, option_list=NULL)
 {
+    match.call()
+}
 
+
+rstata_cmd_insheet <-
+function(using_clause, varlist=NULL, option_list=NULL)
+{
+    match.call()
 }
 
 rstata_cmd_isid <-
-function()
+function(expression_list, using_clause=NULL, option_list=NULL)
 {
-
+  match.call()
 }
 
 rstata_cmd_keep <-
-function()
+function(expression_list=NULL, if_clause=NULL, in_clause=NULL, by_dta=NULL)
 {
-
+  match.call()
 }
 
 rstata_cmd_label <-
-function()
+function(expression_list, using_clause=NULL, option_list=NULL)
 {
-
+  match.call()
 }
 
 rstata_cmd_list <-
-function()
+function(expression_list=NULL, if_clause=NULL, in_clause=NULL, option_list=NULL, by_dta=NULL)
 {
-
+  match.call()
 }
 
 rstata_cmd_lookfor <-
-function()
+function(expression_list)
 {
-
+  match.call()
 }
 
 rstata_cmd_ls <-
-function()
+function(expression, option_list=NULL)
 {
-
+  match.call()
 }
 
 rstata_cmd_merge <-
-function()
+function(expression_list, using_clause, merge_spec, option_list=NULL)
 {
-
+  match.call()
 }
 
 rstata_cmd_mkdir <-
-function()
+function(expression, option_list=NULL)
 {
-
+  match.call()
 }
 
 rstata_cmd_order <-
-function()
+function(expression_list, option_list=NULL)
 {
-
-}
-
-rstata_cmd_pctile <-
-function()
-{
-
+  match.call()
 }
 
 rstata_cmd_recast <-
-function()
+function(expression, option_list=NULL)
 {
-
+  match.call()
 }
 
+#FIXME
 rstata_cmd_recode <-
 function()
 {
-
+  match.call()
 }
 
 rstata_cmd_rename <-
-function()
+function(expression_list)
 {
-
+  match.call()
 }
 
 rstata_cmd_reshape <-
-function()
+function(expression_list=NULL, option_list=NULL)
 {
-
+  match.call()
 }
 
 rstata_cmd_rm <-
-function()
+function(expression)
 {
-
+  match.call()
 }
 
 rstata_cmd_rmdir <-
-function()
+function(expression)
 {
-
+  match.call()
 }
 
 rstata_cmd_sample <-
-function()
+function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL, by_dta=NULL)
 {
-
+  match.call()
 }
 
 rstata_cmd_save <-
-function()
+function(expression=NULL, option_list=NULL)
 {
-
+  match.call()
 }
 
 rstata_cmd_separate <-
-function()
+function(expression, option_list, if_clause=NULL, in_clause=NULL)
 {
-
+  match.call()
 }
 
 rstata_cmd_sort <-
-function()
+function(expression, in_clause=NULL, option_list=NULL)
 {
-
+  match.call()
 }
 
 rstata_cmd_split <-
-function()
+function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL)
 {
+  match.call()
+}
 
+rstata_cmd_tostring <-
+function(expression_list, option_list=NULL)
+{
+    match.call()
 }
 
 rstata_cmd_type <-
-function()
+function(expression, option_list=NULL)
 {
-
+  match.call()
 }
 
 rstata_cmd_use <-
-function()
+function(expression_list=NULL, if_clause=NULL, in_clause=NULL, using_clause=NULL, option_list=NULL)
 {
-
+  match.call()
 }
 
 rstata_cmd_xtile <-
-function()
+function(expression, if_clause=NULL, in_clause=NULL, weight_clause=NULL, option_list=NULL)
 {
-
+  match.call()
 }
