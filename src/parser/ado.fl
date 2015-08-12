@@ -20,12 +20,10 @@
 void long_comment();
 void short_comment();
 
-static yy::location loc;
-
 typedef yy::RStataParser::token token;
 
 // Code run each time a pattern is matched
-# define YY_USER_ACTION  loc.columns(yyleng);
+# define YY_USER_ACTION  llocp->columns(yyleng);
 %}
 
 D           [0-9]
@@ -40,16 +38,16 @@ B           [ \t\v\r\f]
 
 %{
 // Code run each time yylex is called
-loc.step();
+llocp->step();
 %}
 
 
                             /* ignore whitespace but track line and column numbers */
-[\n]+                       loc.lines(yyleng); loc.step();
-{B}+                        loc.step();
+[\n]+                       llocp->lines(yyleng); llocp->step();
+{B}+                        llocp->step();
 
                             /* eat comments */
-\/\*                         long_comment();
+\/\*                        long_comment();
 \/\/                        short_comment();
 ^\*                         short_comment();
 
