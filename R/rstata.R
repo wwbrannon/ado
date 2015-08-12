@@ -1,14 +1,17 @@
 #the REPL loop and environment-handling logic for rstata
 
 rstata <-
-function(dta = NULL)
+function(dta = NULL, assign.back=TRUE)
 {
     #create an empty dataset if none provided,
     #but make sure we have a data frame
     if(is.null(dta))
         dta <- data.frame();
     stopifnot(is.data.frame(dta))
-
+    
+    if(!is.null(assign.back) && assign.back)
+        varname <- deparse(substitute(dta))
+    
     while(TRUE)
     {
         line <- readline(". ")
@@ -41,6 +44,9 @@ function(dta = NULL)
         cat('\n')
     }
 
-    return(invisible(dta))
+    if(!is.null(assign.back) && assign.back)
+        assign(varname, dta, pos=parent.frame())
+    
+    return(invisible(dta));
 }
 
