@@ -17,9 +17,9 @@
 class BaseStataExpr
 {
     public:
-        StataExpr **children; // array length known at parse time
+        BaseStataExpr **children; // array length known at parse time
         
-        // method that returns this StataExpr as an R expression
+        // method that returns this BaseStataExpr as an R expression
         virtual Rcpp::Language as_expr() const = 0;
 };
 
@@ -28,25 +28,23 @@ class NumberStataExpr: public BaseStataExpr
     public:
         NumberStataExpr(signed long int _data);
         NumberStataExpr(unsigned long int _data);
-        NumberStataExpr(signed double _data);
-        NumberStataExpr(unsigned double _data);
+        NumberStataExpr(long double _data);
         
         virtual Rcpp::Language as_expr() const;
 
     private:
-        Rcpp::NumericVector data(1); // a type-generic number already in R format
+        Rcpp::NumericVector data; // a type-generic number already in R format
 };
 
 class IdentStataExpr: public BaseStataExpr
 {
     public:
-        IdentStataExpr(Rcpp::Symbol _data);
         IdentStataExpr(std::string _data);
         
         virtual Rcpp::Language as_expr() const;
 
     private:
-        Rcpp::Symbol data;
+        std::string data;
 };
 
 class StringStataExpr: public BaseStataExpr
@@ -64,26 +62,24 @@ class StringStataExpr: public BaseStataExpr
 class ModifierStataExpr: public BaseStataExpr
 {
     public:
-        ModifierStataExpr(Rcpp::Symbol _data, StataExpr **_children);
-        ModifierStataExpr(std::string _data, StataExpr **_children);
+        ModifierStataExpr(std::string _data, BaseStataExpr **_children);
         
         virtual Rcpp::Language as_expr() const;
     
     private:
-        Rcpp::Symbol data;
+        std::string data;
 };
 
 // OPTION_LIST
 class OptionStataExpr: public BaseStataExpr
 {
     public:
-        OptionStataExpr(Rcpp::Symbol _data, StataExpr **_children);
-        OptionStataExpr(std::string _data, StataExpr **_children);
+        OptionStataExpr(std::string _data, BaseStataExpr **_children);
         
         virtual Rcpp::Language as_expr() const;
     
     private:
-        Rcpp::Symbol data;
+        std::string data;
 };
 
 // all other expressions: assignment expressions, logical expressions,
@@ -92,13 +88,12 @@ class OptionStataExpr: public BaseStataExpr
 class BranchStataExpr: public BaseStataExpr
 {
     public:
-        BranchStataExpr(Rcpp::Symbol _data, StataExpr **_children);
-        BranchStataExpr(std::string _data, StataExpr **_children);
+        BranchStataExpr(std::string _data, BaseStataExpr **_children);
         
         virtual Rcpp::Language as_expr() const;
     
     private:
-        Rcpp::Symbol data;
+        std::string data;
 };
 
 // We don't need to continue the parse tree all the way up to the level of a
@@ -109,11 +104,11 @@ class StataCmd
     public:
         std::string verb; // the command verb
         
-        StataExpr *modifiers; // "modifiers": a MODIFIER_LIST of the by, bysort, etc, applied
-        StataExpr *varlist; // a varlist is a left-deep tree of IDENTs
-        StataExpr *assign_stmt; // "var = exp"
-        StataExpr *if_exp; // "if expression"
-        StataExpr *options; // ", options"
+        BaseStataExpr *modifiers; // "modifiers": a MODIFIER_LIST of the by, bysort, etc, applied
+        BaseStataExpr *varlist; // a varlist is a left-deep tree of IDENTs
+        BaseStataExpr *assign_stmt; // "var = exp"
+        BaseStataExpr *if_exp; // "if expression"
+        BaseStataExpr *options; // ", options"
         
         int has_range;
         int range_lower; // the lower range limit
@@ -125,9 +120,9 @@ class StataCmd
         StataCmd(std::string _verb,
                  std::string _weight, std::string _using_filename,
                  int _has_range, int _range_lower, int _range_upper,
-                 StataExpr *_modifiers, StataExpr *_varlist,
-                 StataExpr *_assign_stmt, StataExpr *_if_exp,
-                 StataExpr *_options);
+                 BaseStataExpr *_modifiers, BaseStataExpr *_varlist,
+                 BaseStataExpr *_assign_stmt, BaseStataExpr *_if_exp,
+                 BaseStataExpr *_options);
         
         // method that returns this StataCmd as an R list
         Rcpp::List as_list();
@@ -142,11 +137,11 @@ class MakeStataCmd
         StataCmd create();
 
         MakeStataCmd& verb(std::string const& _verb);
-        MakeStataCmd& modifiers(StataExpr *_modifiers);
-        MakeStataCmd& varlist(StataExpr *_varlist);
-        MakeStataCmd& assign_stmt(StataExpr *_assign_stmt);
-        MakeStataCmd& if_exp(StataExpr *_if_exp);
-        MakeStataCmd& options(StataExpr *_options);
+        MakeStataCmd& modifiers(BaseStataExpr *_modifiers);
+        MakeStataCmd& varlist(BaseStataExpr *_varlist);
+        MakeStataCmd& assign_stmt(BaseStataExpr *_assign_stmt);
+        MakeStataCmd& if_exp(BaseStataExpr *_if_exp);
+        MakeStataCmd& options(BaseStataExpr *_options);
         MakeStataCmd& has_range(int _has_range);
         MakeStataCmd& range_upper(int _range_upper);
         MakeStataCmd& range_lower(int _range_lower);
@@ -155,11 +150,11 @@ class MakeStataCmd
         
     private:
         std::string __verb;
-        StataExpr *__modifiers;
-        StataExpr *__varlist;
-        StataExpr *__assign_stmt;
-        StataExpr *__if_exp;
-        StataExpr *__options;
+        BaseStataExpr *__modifiers;
+        BaseStataExpr *__varlist;
+        BaseStataExpr *__assign_stmt;
+        BaseStataExpr *__if_exp;
+        BaseStataExpr *__options;
         int __has_range;
         int __range_lower;
         int __range_upper;

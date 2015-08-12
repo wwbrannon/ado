@@ -35,31 +35,31 @@ MakeStataCmd& MakeStataCmd::verb(std::string const& _verb)
     return *this;
 }
 
-MakeStataCmd& MakeStataCmd::modifiers(StataExpr *_modifiers)
+MakeStataCmd& MakeStataCmd::modifiers(BaseStataExpr *_modifiers)
 {
     __modifiers = _modifiers;
     return *this;
 }
 
-MakeStataCmd& MakeStataCmd::varlist(StataExpr *_varlist)
+MakeStataCmd& MakeStataCmd::varlist(BaseStataExpr *_varlist)
 {
     __varlist = _varlist;
     return *this;
 }
 
-MakeStataCmd& MakeStataCmd::assign_stmt(StataExpr *_assign_stmt)
+MakeStataCmd& MakeStataCmd::assign_stmt(BaseStataExpr *_assign_stmt)
 {
     __assign_stmt = _assign_stmt;
     return *this;
 }
 
-MakeStataCmd& MakeStataCmd::if_exp(StataExpr *_if_exp)
+MakeStataCmd& MakeStataCmd::if_exp(BaseStataExpr *_if_exp)
 {
     __if_exp = _if_exp;
     return *this;
 }
 
-MakeStataCmd& MakeStataCmd::options(StataExpr *_options)
+MakeStataCmd& MakeStataCmd::options(BaseStataExpr *_options)
 {
     __options = _options;
     return *this;

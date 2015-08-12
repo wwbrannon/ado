@@ -6,9 +6,9 @@ using namespace Rcpp;
 StataCmd::StataCmd(std::string _verb,
                    std::string _weight, std::string _using_filename,
                    int _has_range, int _range_lower, int _range_upper,
-                   StataExpr *_modifiers, StataExpr *_varlist,
-                   StataExpr *_assign_stmt, StataExpr *_if_exp,
-                   StataExpr *_options)
+                   BaseStataExpr *_modifiers, BaseStataExpr *_varlist,
+                   BaseStataExpr *_assign_stmt, BaseStataExpr *_if_exp,
+                   BaseStataExpr *_options)
 {
     verb = _verb;
 
@@ -24,7 +24,7 @@ StataCmd::StataCmd(std::string _verb,
 
     weight = _weight;
     using_filename = _using_filename;
-};
+}
 
 List StataCmd::as_list()
 {
