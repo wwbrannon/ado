@@ -8,10 +8,12 @@
 
 // [[Rcpp::export]]
 Rcpp::List
-do_stata_parse(std::string text, int debug_level=0)
+do_stata_parse(std::string text, int debug_level=0,
+               int batch=0, Rcpp::Function cmd_action=NULL)
 {
     Rcpp::List res;
-    RStataDriver *driver = new RStataDriver(text, debug_level);
+    RStataDriver *driver = new RStataDriver(text, debug_level,
+                                            batch, &cmd_action);
 
     // parse the input
     if( driver->parse() != 0 || driver->error_seen != 0)

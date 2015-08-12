@@ -17,6 +17,8 @@
 class RStataDriver;
 
 #define YY_DECL int yylex(yy::RStataParser::semantic_type* yylval_param, yy::RStataParser::location_type* llocp, RStataDriver& driver)
+
+#define R_ACTION(node) if(driver.batch != 0) { driver.(*cmd_action)(node->as_R_object())  }
 }
 
 %param { RStataDriver& driver }
@@ -196,10 +198,23 @@ cmds:
 
 cmd:
       EMBEDDED_R
+    {
+        R_ACTION($1);
+        
+        $$ = $1;
+    }
     | nonmodifier_cmd
+    {
+        R_ACTION($1);
+        
+        $$ = $1;
+    }
     | modifier_cmd_list nonmodifier_cmd
     {
         $1->appendChild("main_cmd", $2);
+        
+        R_ACTION($1);
+        
         $$ = $1;
     }
     | modifier_cmd_list ":" nonmodifier_cmd
@@ -208,6 +223,8 @@ cmd:
 
         delete $2;
 
+        R_ACTION($1);
+        
         $$ = $1;
     }
     | modifier_cmd_list nonmodifier_cmd ":" nonmodifier_cmd
@@ -217,11 +234,16 @@ cmd:
         
         delete $3;
         
+        R_ACTION($1);
+        
         $$ = $1;
     }
     | modifier_cmd_list compound_cmd
     {
         $1->appendChild("main_cmd", $2);
+        
+        R_ACTION($1);
+        
         $$ = $1;
     }
     | modifier_cmd_list ":" compound_cmd
@@ -229,6 +251,8 @@ cmd:
         $1->appendChild("main_cmd", $3);
         
         delete $2;
+        
+        R_ACTION($1);
         
         $$ = $1;
     }
@@ -238,6 +262,8 @@ cmd:
         $2->appendChild("main_cmd", $4);
         
         delete $3;
+        
+        R_ACTION($1);
         
         $$ = $1;
     }
