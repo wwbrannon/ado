@@ -1,0 +1,49 @@
+%{
+#include <stdio.h>
+#include "y.tab.h"
+%}
+
+%%
+\[ return LBRACKET;
+\] return RBRACKET;
+\( return LPAREN;
+\) return RPAREN;
+\{ return LBRACE;
+\} return RBRACE;
+\" return DQUOTE;
+\' return SQUOTE;
+= return EQUALS;
+, return COMMA;
+: return COLON;
+
+[0-9]+ return NUMBER;
+\* return TIMES;
+\+ return PLUS;
+\/ return DIVIDE;
+\- return SUBTRACT;
+
+(?i:insheet) return INSHEET;
+(?i:tab) return TABLE;
+(?i:reg) return REG;
+(?i:regress) return REG;
+(?i:logit) return LOGIT;
+(?i:sum) return SUM;
+(?i:summarize) return SUM;
+(?i:describe) return DESCRIBE;
+(?i:desc) return DESCRIBE;
+(?i:di) return DI;
+(?i:display) return DI;
+
+(?i:using) return USING;
+(?i:by) return BY;
+(?i:in) return IN;
+(?i:if) return IF;
+(?i:pweight) return PWEIGHT;
+(?i:aweight) return AWEIGHT;
+
+[_A-Za-z][A-Za-z0-9]* return IDENT;
+
+\n /* do nothing */;
+[ \t]+ /* do nothing */;
+%%
+
