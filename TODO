@@ -1,14 +1,4 @@
-Immediate TODO:
-    o) Macros, without loops
-        o) not terribly hard - just need to find a way to lex nested macros and
-           recursively substitute their values from the symbol table. the driver's
-           callbacks make this fairly easy to implement
-        o) "compound double quotes"
-
-    o) Loops
-        o) much harder, because of macros
-    
-Later functionality
+Semantic analysis / code generation:
     o) semantic analysis and infrastructural R functions
         o) weeding for each type of node
         o) AST walkers to construct unevaluated calls and expression objects
@@ -24,18 +14,36 @@ Later functionality
         o) basic stats
         o) a few more macro manipulation commands
         
+Parser / lexer:
+    o) the class information the parser is embedding in nodes isn't rich enough
+    o) Macros, without loops
+        o) not terribly hard - just need to find a way to lex nested macros and
+           recursively substitute their values from the symbol table. the driver's
+           callbacks make this fairly easy to implement
+        o) "compound double quotes"
+
+    o) Loops
+        o) much harder, because of macros
+    
 Debug:
     o) use testthat and travis
     o) write a unit test suite
     o) test, test, test...
 
-Write documentation
-    o) man entries, vignettes, examples
+Documentation:
+    o) convert comments to use roxygen2
+    o) man entries, vignettes, examples, README
     o) document the R expression format the parser emits
+    o) better error messages from weed()
 
+Misc:
+    o) Makevars and Makefile have to come from a configure script for
+       portability - autoconf?
+
+===============================================================================
 Wishlist functionality:
     o) A mechanism for the user to register an R function obeying the
-       calling convention as a Stata command
+       calling convention as a Stata command - the "registry" package?
     
     o) time-series operations and grammar
 

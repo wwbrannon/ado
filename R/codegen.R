@@ -65,7 +65,7 @@ function(node)
 
 }
 
-codegen.rstata_embedded_r_cmd <-
+codegen.rstata_embedded_r <-
 function(node)
 {
     #A stub from an older function - expand
