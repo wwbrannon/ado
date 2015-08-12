@@ -1,31 +1,99 @@
 context("Parser accepts all and only valid input")
 
+#It's important to provide both valid and invalid input to see
+#if invalid input is correctly rejected.
+
 #The expectation functions we're going to use here
 expect_accept <- function(str) eval(bquote(expect_equal(parse_accept(.(str)), 1)))
 expect_reject <- function(str) eval(bquote(expect_equal(parse_accept(.(str)), 0)))
 
-#What do we need to test? Both valid and invalid input for
-#these categories of commands/expressions:
-#   (*) special commands
-#   (*) loops
-#   (*) embedded code blocks
-#   (*) prefix commands with special commands
-#   (*) prefix commands with general commands
-#   expressions, via e.g. the generate command
-#   general commands
-#   macros, all three varieties
-#   comments
-#   compound command blocks
-#   statement delimiters
-#   command parts
-#       using clause
-#       weight clause
-#       if clause
-#       in clause
-#       option lists
-#       expression lists
-#It's important to provide both valid and invalid input to see
-#if invalid input is correctly rejected.
+test_that("Numeric literals parse", {
+    #FIXME
+})
+
+test_that("Arithmetic expressions parse", {
+    #FIXME
+})
+
+test_that("String expressions, with double and compound double quotes, parse", {
+    #FIXME
+})
+
+test_that("Factor expressions and factorial operators parse", {
+    #FIXME
+})
+
+test_that("Type constructors parse", {
+    #FIXME
+})
+
+test_that("Postfix expressions parse", {
+    #FIXME
+})
+
+test_that("Relational and equality expressions parse", {
+    #FIXME
+})
+
+test_that("Logical expressions parse", {
+    #FIXME
+})
+
+test_that("Assignment expressions parse", {
+    #FIXME
+})
+
+test_that("Short comments parse", {
+    #FIXME
+})
+
+test_that("Long comments parse", {
+    #FIXME
+})
+
+test_that("Both statement delimiters parse", {
+    #FIXME
+})
+
+test_that("Compound command blocks parse", {
+    #FIXME
+})
+
+test_that("Empty general commands parse", {
+    #FIXME
+})
+
+test_that("General commands with an expression_list parse", {
+    #FIXME
+})
+
+test_that("General commands with an option list parse", {
+    #FIXME
+})
+
+test_that("General commands with an if clause and an option list parse", {
+    #FIXME
+})
+
+test_that("General commands with an expression list and an if clause parse", {
+    #FIXME
+})
+
+test_that("General commands with an expression list and an in clause parse", {
+    #FIXME
+})
+
+test_that("General commands with an expression list and a weight clause parse", {
+    #FIXME
+})
+
+test_that("General commands with an expression list and a using clause parse", {
+    #FIXME
+})
+
+test_that("General commands with an expression list and an option list parse", {
+    #FIXME
+})
 
 test_that("Embedded code blocks parse", {
     expect_accept('{{{
@@ -132,12 +200,6 @@ test_that("Macro manipulation commands parse", {
     expect_accept('tempfile foobar\n')
     expect_accept('macro drop\n')
     expect_accept('macro dir\n')
-})
-
-test_that("Deeply nested expressions parse", {
-    expect_accept('gen foo = -(1 + ((98/4^2) - (8.3+1)))\n')
-    expect_accept('disp 87+.98-96/23^7\n')
-    expect_accept('logit y score##i.state\n')
 })
 
 test_that("If statements parse", {
