@@ -20,3 +20,18 @@ function(val)
 {
     #FIXME
 }
+
+#Helper functions for gsort - ascending sort
+rstata_func_asc <-
+function(vec)
+{
+    #FIXME
+}
+
+#Helper functions for gsort - descending sort
+rstata_func_desc <-
+function(vec)
+{
+    #FIXME
+}
+

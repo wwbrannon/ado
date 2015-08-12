@@ -155,8 +155,7 @@ yy::RStataParser::error(const location_type& l, const std::string& m)
 %type <node>    option_list argument_expression_list expression_list
 
                 /* Non-terminals for the syntax of special commands */
-%type <node>    anova_term_list collapse_list collapse_spec
-%type <node>    collapse_spec_element collapse_spec_element_base gsort_var
+%type <node>    anova_term_list collapse_list collapse_spec gsort_var
 %type <node>    gsort_varlist modelspec modelspec_list numlist recode_rule_lhs
 %type <node>    recode_rule_or_var recode_rule_or_var_list varlist
 %type <node>    anova_nest_expression anova_error_expression
@@ -519,6 +518,53 @@ nonmodifier_cmd:
 
         $$ = $1;
     }
+    | IVREGRESS varlist "(" varlist "=" varlist ")" if_clause in_clause weight_clause option_list
+    {
+        $1->appendChild("expression_list", $2);
+
+        if($8->nChildren() > 0)
+            $1->appendChild("if_clause", $8);
+
+        if($9->nChildren() > 0)
+            $1->appendChild("in_clause", $9);
+
+        if($10->nChildren() > 0)
+            $1->appendChild("weight_clause", $10);
+
+        // We're going to make the other two varlists into options
+        ExprNode *endogenous_opt = new ExprNode("rstata_option");
+        ExprNode *endogenous_name = new ExprNode({"rstata_literal", "rstata_ident"});
+        endogenous_name->addData("value", *(new std::string("endogenous_vars")));
+        endogenous_opt->appendChild("name", endogenous_name);
+        
+        ExprNode *endogenous_args = new ExprNode("rstata_argument_expression_list");
+        endogenous_args->appendChild($4);
+        endogenous_opt->appendChild("args", endogenous_args);
+
+        ExprNode *instrumental_opt = new ExprNode("rstata_option");
+        ExprNode *instrumental_name = new ExprNode({"rstata_literal", "rstata_ident"});
+        instrumental_name->addData("value", *(new std::string("instrumental_vars")));
+        instrumental_opt->appendChild("name", instrumental_name);
+        
+        ExprNode *instrumental_args = new ExprNode("rstata_argument_expression_list");
+        instrumental_args->appendChild($6);
+        instrumental_opt->appendChild("args", instrumental_args);
+        
+        $11->appendChild(endogenous_opt);
+        $11->appendChild(instrumental_opt);
+        $1->appendChild("option_list", $11);
+
+        $$ = $1;
+    }
+    | GSORT gsort_varlist option_list
+    {
+        $1->appendChild("expression_list", $2);
+
+        if($3->nChildren() > 0)
+            $1->appendChild("option_list", $3);
+
+        $$ = $1;
+    }
     | COLLAPSE collapse_list if_clause in_clause weight_clause option_list
     {
         $1->appendChild("expression_list", $2);
@@ -537,53 +583,12 @@ nonmodifier_cmd:
 
         $$ = $1;
     }
-    | GSORT gsort_varlist option_list
-    {
-        $1->appendChild("expression_list", $2);
-
-        if($3->nChildren() > 0)
-            $1->appendChild("option_list", $3);
-
-        $$ = $1;
-    }
     | LRTEST modelspec_list option_list
     {
         $1->appendChild("expression_list", $2);
 
         if($3->nChildren() > 0)
             $1->appendChild("option_list", $3);
-
-        $$ = $1;
-    }
-    | IVREGRESS varlist "(" varlist "=" varlist ")" if_clause in_clause weight_clause option_list
-    {
-        $1->appendChild("expression_list", $2);
-
-        if($8->nChildren() > 0)
-            $1->appendChild("if_clause", $8);
-
-        if($9->nChildren() > 0)
-            $1->appendChild("in_clause", $9);
-
-        if($10->nChildren() > 0)
-            $1->appendChild("weight_clause", $10);
-
-        // we're going to make the other two varlists into options
-        ExprNode *endogenous_opt = new ExprNode("rstata_option");
-        ExprNode *endogenous_name = new ExprNode({"rstata_literal", "rstata_ident"});
-        endogenous_name->addData("value", *(new std::string("endogenous_vars")));
-        endogenous_opt->appendChild("name", endogenous_name);
-        endogenous_opt->appendChild("args", $4);
-
-        ExprNode *instrumental_opt = new ExprNode("rstata_option");
-        ExprNode *instrumental_name = new ExprNode({"rstata_literal", "rstata_dent"});
-        instrumental_name->addData("value", *(new std::string("instrumental_vars")));
-        instrumental_opt->appendChild("name", instrumental_name);
-        instrumental_opt->appendChild("args", $6);
-        
-        $11->appendChild(endogenous_opt);
-        $11->appendChild(instrumental_opt);
-        $1->appendChild("option_list", $11);
 
         $$ = $1;
     }
@@ -653,26 +658,11 @@ numlist:
     ;
 
 /* Helper constructs for collapse */
-collapse_spec_element_base:
-      IDENT
-    {
-    }
-    | IDENT "=" IDENT /* We need to weed this later on */
-    {
-    }
-    ;
-
-collapse_spec_element:
-      collapse_spec_element_base
-    {
-    }
-    | collapse_spec_element collapse_spec_element_base
-    {
-    }
-;
-
 collapse_spec:
-    "(" IDENT ")" collapse_spec_element
+      "(" IDENT ")" varlist
+    {
+    }
+    | "(" IDENT ")" IDENT "=" IDENT
     {
     }
     ;
@@ -706,18 +696,22 @@ recode_rule_lhs:
 
 recode_rule_or_var:
       IDENT
-    {
-    }
     | "(" recode_rule_lhs "=" NUMBER ")" 
     {
     }
+    ;
 
 recode_rule_or_var_list:
       recode_rule_or_var
     {
+        ExprNode *node = new ExprNode("rstata_expression_list");
+        node->appendChild($1);
+        $$ = node;
     }
     | recode_rule_or_var_list recode_rule_or_var
     {
+        $1->appendChild($2);
+        $$ = $1;
     }
     ;
 
@@ -725,21 +719,48 @@ recode_rule_or_var_list:
 gsort_var:
       IDENT
     {
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
+        node->addData("verb", std::string("()"));
+        node->appendChild("left", std::string("asc"));
+        node->appendChild("right", $1);
+
+        $$ = node;
     }
     | "+" IDENT
     {
+        $1; // shut up, bison...
+        
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
+        node->addData("verb", std::string("()"));
+        node->appendChild("left", std::string("asc"));
+        node->appendChild("right", $2);
+
+        $$ = node;
     }
     | "-" IDENT
     {
+        $1; // shut up, bison...
+        
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
+        node->addData("verb", std::string("()"));
+        node->appendChild("left", std::string("desc"));
+        node->appendChild("right", $2);
+
+        $$ = node;
     }
     ;
 
 gsort_varlist:
       gsort_var
     {
+        ExprNode *node = new ExprNode("rstata_expression_list");
+        node->appendChild($1);
+        $$ = node;
     }
     | gsort_varlist gsort_var
     {
+        $1->appendChild($2);
+        $$ = $1;
     }
     ;
 
@@ -759,9 +780,14 @@ modelspec:
 modelspec_list:
       modelspec
     {
+        ExprNode *node = new ExprNode("rstata_expression_list");
+        node->appendChild($1);
+        $$ = node;
     }
     | modelspec_list modelspec
     {
+        $1->appendChild($2);
+        $$ = $1;
     }
     ;
 
@@ -770,13 +796,6 @@ anova_nest_expression:
       unary_factor_expression
     | anova_nest_expression "|" unary_factor_expression
     {
-        $2; // shut up, bison...
-
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_anova_nest_expression"});
-        node->addData("verb", std::string("anova_nest"));
-        node->appendChild("left", $1);
-        node->appendChild("right", $3);
-        $$ = node;
     }
     ;
 
@@ -784,12 +803,6 @@ anova_error_expression:
       anova_nest_expression
     | anova_nest_expression "/"
     {
-        $2; // shut up, bison...
-
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_anova_error_expression"});
-        node->addData("verb", std::string("anova_error"));
-        node->appendChild("left", $1);
-        $$ = node;
     }
     ;
 
