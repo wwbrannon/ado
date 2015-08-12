@@ -16,6 +16,13 @@ function(expression=NULL, return.match.call=NULL)
         return(match.call())
 }
 
+rstata_cmd_creturn <-
+function(expression, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+}
+
 rstata_cmd_di <-
 function(expression, format_spec=NULL, return.match.call=NULL)
 {
