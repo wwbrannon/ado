@@ -7,7 +7,7 @@
 rstata_env <- new.env(parent=emptyenv())
 
 #Flags you can bitwise OR to enable debugging features.
-#It's important that these have the same values as in the C++ header file.
+#It's important that these have the same numeric values as in the C++ header file.
 DEBUG_PARSE_TRACE <- 4
 DEBUG_MATCH_CALL <- 8
 DEBUG_VERBOSE_ERROR <- 16
@@ -28,6 +28,11 @@ function(dta = NULL, filename=NULL, string=NULL,
     #(re-)create the settings cache and macro symbol table
     assign("rstata_macro_env", new.env(parent=emptyenv()), envir=rstata_env)
     assign("rstata_settings_env", new.env(parent=emptyenv()), envir=rstata_env)
+
+    #create environments to represent Stata's e() and r() "class" objects
+    #for stored results
+    assign("rstata_eclass_env", new.env(parent=emptyenv()), envir=rstata_env)
+    assign("rstata_rclass_env", new.env(parent=emptyenv()), envir=rstata_env)
 
     #Sanity checks: create an empty dataset if none provided,
     #but make sure we have a data frame
@@ -64,6 +69,45 @@ function(dta = NULL, filename=NULL, string=NULL,
     {
         env <- get("rstata_macro_env", envir=rstata_env)
 
+        #Implement the e() and r() stored results objects, and the c() system
+        #values object. All of the regexes here are a little screwy: if the e(),
+        #r(), or c() appears at the beginning of the macro text, everything after
+        #the close paren is ignored. But this is actually Stata's behavior,
+        #so we'll run with it.
+
+        #the e() class
+        m <- regexpr("^e\\((?<match>.*)\\)", name, perl=TRUE)
+        start <- attr(m, "capture.start")
+        len <- attr(m, "capture.length")
+        if(start != -1)
+        {
+            cls_env <- get("rstata_eclass_env", envir=env, inherits=FALSE)
+            val <- substr(name, start, start + len - 1)
+            return(get(val, envir=cls_env, inherits=FALSE))
+        }
+
+        #the r() class
+        m <- regexpr("^r\\((?<match>.*)\\)", name, perl=TRUE)
+        start <- attr(m, "capture.start")
+        len <- attr(m, "capture.length")
+        if(start != -1)
+        {
+            cls_env <- get("rstata_eclass_env", envir=env, inherits=FALSE)
+            val <- substr(name, start, start + len - 1)
+            return(get(val, envir=cls_env, inherits=FALSE))
+        }
+
+        #the c() class
+        m <- regexpr("^r\\((?<match>.*)\\)", name, perl=TRUE)
+        start <- attr(m, "capture.start")
+        len <- attr(m, "capture.length")
+        if(start != -1)
+        {
+            val <- substr(name, start, start + len - 1)
+            return(get_c_class_value(val))
+        }
+
+        #a normal macro
         if(!(name %in% ls(env)))
             return("")
         else

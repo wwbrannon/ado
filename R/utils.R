@@ -342,5 +342,12 @@ function(name, cls="error", msg=NULL)
 varlist_to_formula <-
 function(varlist, dv=TRUE)
 {
+    #FIXME
+}
 
+#Look up a c()-class value
+get_c_class_value <-
+function(val)
+{
+    #FIXME
 }
