@@ -1,5 +1,6 @@
 Now:
   o) expression, expression_list and varlist as args / cmd arg types and type checking
+    o) should local, global and collapse be special commands?
 
   o) infrastructural R functions
     o) varlist_to_formula
@@ -12,7 +13,15 @@ Now:
       o) from check() and codegen()
       o) methods take debug_level arguments; now they need to act on them
 
+  o) Stata's "stored results"
+
+  o) complete all the commands which now have stubs
+
 Parser / lexer:
+  o) create a "!" shell command like the {{{ }}} embedded R command
+
+  o) syntax for collapse
+
   o) Macros, without loops
       o) need to find a way to lex nested macros and recursively substitute
          their values from the symbol table - use flex start conditions
@@ -21,11 +30,8 @@ Parser / lexer:
   o) Loops
       o) much harder, because of macros
 
-Commands: many more
-  o) data management: egen, input, label, etc
-  o) basic stats
-  o) a few more macro manipulation commands
-
+  o) if block construct
+  
 Systematic debugging:
   o) use testthat and travis
   o) write a unit test suite

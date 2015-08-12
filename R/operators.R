@@ -4,41 +4,41 @@
 op_cont <-
 function(arg)
 {
-  
+
 }
 
 #the "i." operator
 op_ind <-
 function(arg)
 {
-  
+
 }
 
 #the "o." operator
 op_omit <-
 function(arg)
 {
-  
+
 }
 
 #the "ib." and "b." operators
 op_base <-
 function(arg)
 {
-  
+
 }
 
 #the "#" operator
 `%#%` <-
-function(arg)
+function(left, right)
 {
-  
+
 }
 
 #the "##" operator
 `%##%` <-
-function(arg)
+function(left, right)
 {
-  
+
 }
 

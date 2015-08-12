@@ -19,52 +19,112 @@ function()
 rstata_cmd_generate <-
 function(expression, type_spec=NULL, if_clause=NULL, in_clause=NULL, option_list=NULL)
 {
-  rstata_dta <- get("rstata_dta", envir=rstata_env)
-  rstata_macro_env <- get("rstata_macro_env", envir=rstata_env)
-  rstata_settings_env <- get("rstata_settings_env", envir=rstata_env)
-  
-  print(rstata_dta)
-  print(rstata_macro_env)
-  print(rstata_settings_env)
-  
-  print(match.call())
+  match.call()
 }
 
 rstata_cmd_insheet <-
 function(using_clause, varlist=NULL, option_list=NULL)
 {
-  print(match.call())
+  match.call()
 }
 
 ## Immediate commands
 rstata_cmd_display <-
 function(expression, format_spec=NULL)
 {
-  print(match.call())
+  match.call()
 }
 
 ## Stats commands
 rstata_cmd_logit <-
 function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL, option_list=NULL)
 {
-  print(match.call())
+  match.call()
 }
 
 rstata_cmd_tabulate <-
 function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL, option_list=NULL)
 {
-  print(match.call())
+  match.call()
 }
 
 ## Macro management commands
 rstata_cmd_local <-
-function(expression)
+function(expression_list)
 {
-  print(match.call())
+  match.call()
 }
 
 rstata_cmd_global <-
-function(expression)
+function(expression_list)
 {
-  print(match.call())
+  match.call()
 }
+
+#Others
+about <-
+function()
+{
+
+}
+
+help <-
+function()
+{
+
+}
+
+log <-
+function()
+{
+
+}
+
+set <-
+function()
+{
+
+}
+
+file <-
+function()
+{
+
+}
+
+macro <- #for macro drop
+function()
+{
+
+}
+
+preserve <-
+function()
+{
+
+}
+
+restore <-
+function()
+{
+
+}
+
+sleep <-
+function()
+{
+
+}
+
+tempfile <-
+function()
+{
+
+}
+
+do <-
+function()
+{
+
+}
+
