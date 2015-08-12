@@ -81,9 +81,8 @@ function(dta = NULL, filename=NULL, string=NULL,
         len <- attr(m, "capture.length")
         if(start != -1)
         {
-            cls_env <- get("rstata_eclass_env", envir=env, inherits=FALSE)
             val <- substr(name, start, start + len - 1)
-            return(get(val, envir=cls_env, inherits=FALSE))
+            return(rstata_func_e(val))
         }
 
         #the r() class
@@ -92,9 +91,8 @@ function(dta = NULL, filename=NULL, string=NULL,
         len <- attr(m, "capture.length")
         if(start != -1)
         {
-            cls_env <- get("rstata_eclass_env", envir=env, inherits=FALSE)
             val <- substr(name, start, start + len - 1)
-            return(get(val, envir=cls_env, inherits=FALSE))
+            return(rstata_func_r(val))
         }
 
         #the c() class
@@ -104,7 +102,7 @@ function(dta = NULL, filename=NULL, string=NULL,
         if(start != -1)
         {
             val <- substr(name, start, start + len - 1)
-            return(get_c_class_value(val))
+            return(rstata_func_c(val))
         }
 
         #a normal macro

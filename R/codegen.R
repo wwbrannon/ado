@@ -230,12 +230,18 @@ function(node, debug_level=0)
 codegen.rstata_expression <-
 function(node, debug_level=0)
 {
-  #Get the function to call
+  #Get the function to call and its arguments in lists
   op <- node$data["verb"]
-  op <- function_for_ado_operator(op)
-
-  #Get the operator's arguments - one, two, or at least in principle, more
   args <- node$children[names(node$children) != "verb"]
+
+  #if we want to be able to pass this function to do.call, it can't
+  #have a name like "c" that masks something important from base R
+  if(op == "()")
+  {
+    args["left"] <- paste0("rstata_func_", args["left"])
+  }
+
+  op <- function_for_ado_operator(op)
   args <- lapply(args, function(x) codegen(x, debug_level))
 
   as.call(c(list(op), args))
