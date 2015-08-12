@@ -142,7 +142,7 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 %type <node>    cross_expression unary_factor_expression
 
 %type <node>    option options
-%type <node>    option_list comma_expression_list expression_list
+%type <node>    option_list argument_expression_list expression_list
 
 %destructor { }                 translation_unit
 %destructor { delete $$; }      <str>
@@ -672,16 +672,7 @@ postfix_expression:
 
         $$ = node;
     }
-    | postfix_expression "(" comma_expression_list ")"
-    {
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
-        node->addData("verb", std::string("()"));
-        node->appendChild("left", $1);
-        node->appendChild("right", $3);
-
-        $$ = node;
-    }
-    | postfix_expression "(" expression_list ")"
+    | postfix_expression "(" argument_expression_list ")"
     {
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
         node->addData("verb", std::string("()"));
@@ -775,6 +766,21 @@ logical_expression:
     }
     ;
 
+argument_expression_list:
+      logical_expression
+    {
+        ExprNode *node = new ExprNode("rstata_argument_expression_list");
+        node->appendChild($1);
+        $$ = node;
+    }
+    | argument_expression_list "," logical_expression
+    {
+        $1->appendChild($3);
+
+        $$ = $1;
+    }
+    ;
+
 expression:
       logical_expression
     | logical_expression assignment_operator logical_expression
@@ -787,9 +793,6 @@ expression:
     }
     ;
 
-/* These two rules are a reduce/reduce conflict we can't eliminate easily, but
- * it's acceptable because they have exactly the same actions.
- */
 expression_list:
       expression
     {
@@ -800,21 +803,6 @@ expression_list:
     | expression_list expression
     {
         $1->appendChild($2);
-        $$ = $1;
-    }
-    ;
-
-comma_expression_list:
-      expression
-    {
-        ExprNode *node = new ExprNode("rstata_comma_expression_list");
-        node->appendChild($1);
-        $$ = node;
-    }
-    | comma_expression_list "," expression
-    {
-        $1->appendChild($3);
-
         $$ = $1;
     }
     ;
@@ -859,14 +847,6 @@ option:
         $$ = node;
     }
     | IDENT "(" expression_list ")"
-    {
-        ExprNode *node = new ExprNode("rstata_option");
-        node->appendChild("name", $1);
-        node->appendChild("args", $3);
-
-        $$ = node;
-    }
-    | IDENT "(" comma_expression_list ")"
     {
         ExprNode *node = new ExprNode("rstata_option");
         node->appendChild("name", $1);
