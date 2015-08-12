@@ -54,6 +54,7 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 %precedence EXPONENT
 %precedence "["
 %precedence "("
+%nonassoc LABEL
 
 %token <str> END 0 "end of file"
 %token <str> ILLEGAL_CHARACTER /* Not used, but invokes error handling if seen */
@@ -88,45 +89,50 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
     CROSS           "#"
 ;
 
-/* Literals of various fundamental types */
+                /* Literals of various fundamental types */
 %token <node>   NUMBER NUMBER_MISSING
 %token <node>   IDENT IDENT_WITH_LEVEL
 %token <node>   STRING_LITERAL STRING_MISSING
 %token <node>   DATE DATETIME
 
-/* Type specifiers */
-%token <str> BYTE INT LONG FLOAT DOUBLE STRING_TYPE_SPEC;
+                /* Type specifiers */
+%token <str>    BYTE INT LONG FLOAT DOUBLE STRING_TYPE_SPEC;
 
-/* Formats */
-%token <str> STRING_FORMAT DATETIME_FORMAT NUMBER_FORMAT
+                /* Formats */
+%token <str>    STRING_FORMAT DATETIME_FORMAT NUMBER_FORMAT
 
-/* Commands with unusual enough syntax they have to be parsed separately */
+                /* Commands with unusual enough syntax they have to be parsed separately */
 %token <node>   EMBEDDED_R;
 %token <node>   QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
 %token <node>   GENERATE RECAST DISPLAY FORMAT MERGE
 
-/* Command components and keywords */
+                /* Command components and keywords */
 %token <str>    USING IF IN
 %token <str>    MERGE_SPEC
 
-/* Factor variable operators */
-%token <str> CONT_OPERATOR IND_OPERATOR BASE_OPERATOR OMIT_OPERATOR
+                /* Factor variable operators */
+%token <node>   CONT_OPERATOR IND_OPERATOR BASE_OPERATOR OMIT_OPERATOR
 
-/* Nonterminal token types */
+                /* Nonterminal token types */
 %type <node>    translation_unit external_statement compound_cmd cmds modifier_cmd_list cmd
+%type <node>    error
 
 %type <node>    modifier_cmd nonmodifier_cmd
 
-%type <str>     assignment_operator unary_operator power_operator equality_operator
+%type <node>    factor_operator
+
+%type <str>     assignment_operator label_operator unary_operator power_operator equality_operator
 %type <str>     multiplication_operator additive_operator relational_operator logical_operator
+%type <str>     cross_operator
 %type <str>     cmd_sep type_spec format_spec
 
 %type <node>    if_clause in_clause weight_clause using_clause
 
 %type <node>    expression
-%type <node>    primary_expression postfix_expression power_expression
+%type <node>    primary_expression label_expression postfix_expression power_expression
 %type <node>    unary_expression multiplication_expression additive_expression
 %type <node>    relational_expression equality_expression logical_expression
+%type <node>    cross_expression factor_expression
 
 %type <node>    option options
 %type <node>    option_list argument_expression_list expression_list
@@ -160,12 +166,11 @@ translation_unit:
         
         $$ = $1;
     }
-    | error
-    | translation_unit cmd_sep error
     ;
 
 external_statement:
       cmd
+    | error
     | compound_cmd
     ;
 
@@ -489,6 +494,13 @@ unary_operator:
     | "+"
     | "!"
     ;
+    
+factor_operator:
+      CONT_OPERATOR
+    | BASE_OPERATOR
+    | IND_OPERATOR
+    | OMIT_OPERATOR
+    ;
 
 power_operator:
     "^"
@@ -521,8 +533,18 @@ logical_operator:
     | "|"
     ;
 
+label_operator:
+    ":"
+    ;
+
+cross_operator:
+      "##"
+    | "#"
+    ;
+
 primary_expression:
       IDENT
+    | IDENT_WITH_LEVEL
     | NUMBER
     | NUMBER_MISSING
     | STRING_LITERAL
@@ -538,8 +560,31 @@ primary_expression:
     }
     ;
 
+label_expression:
+      primary_expression 
+    | label_expression label_operator primary_expression
+    {
+        ExprNode *node = new ExprNode("rstata_expression");
+        node->addData("value", *($2));
+        node->appendChild("left", $1);
+        node->appendChild("right", $3);
+        $$ = node;
+    }
+    ;
+
+factor_expression:
+      label_expression
+    | factor_expression factor_operator label_expression
+    {
+        $2->appendChild("left", $1);
+        $2->appendChild("right", $3);
+        
+        $$ = $2; // ExprNode constructed by the lexer, which is a bit of a hack
+    }
+    ;
+
 postfix_expression:
-      primary_expression
+      factor_expression %prec "["
     | postfix_expression "[" expression "]" %prec "["
     {
         ExprNode *node = new ExprNode("rstata_expression");
@@ -660,14 +705,26 @@ logical_expression:
     }
     ;
 
-argument_expression_list:
+cross_expression:
       logical_expression
+    | cross_expression cross_operator logical_expression
+    {
+        ExprNode *node = new ExprNode("rstata_expression");
+        node->addData("value", *($2));
+        node->appendChild("left", $1);
+        node->appendChild("right", $3);
+        $$ = node;
+    }
+    ;
+
+argument_expression_list:
+      cross_expression
     {
         ExprNode *node = new ExprNode("rstata_argument_expression_list");
         node->appendChild($1);
         $$ = node;
     }
-    | argument_expression_list "," logical_expression
+    | argument_expression_list "," cross_expression
     {
         $1->appendChild($3);
         
@@ -678,8 +735,8 @@ argument_expression_list:
     ;
 
 expression:
-      logical_expression
-    | IDENT assignment_operator logical_expression
+      cross_expression
+    | IDENT assignment_operator cross_expression
     {
         ExprNode *node = new ExprNode("rstata_expression");
         node->addData("value", *($2));

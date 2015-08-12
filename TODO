@@ -1,9 +1,14 @@
 Immediate TODO:
-    o) grammar expansion: more general varlists
-        o) :value_label_name
-        o) grammar and actions for factor variable operators
-           now that they're being lexed
+    o) fix the shift/reduce conflict around :value_label_name
     
+    o) Macros, without loops
+        o) not terribly hard - just need to find a way to lex nested macros and
+           substitute their values from the symbol table
+        o) "compound double quotes"
+        o) commands to manipulate macros
+
+        o) the driver's two callbacks make this fairly easy to implement
+
     o) semantic analysis and infrastructural R functions
         o) do signalCondition and friends behave the way I think?
         o) weeding for each type of node
@@ -15,16 +20,8 @@ Immediate TODO:
     o) functions for the initial set of commands
     
 Later functionality
-    o) Macros, without loops
-        o) not terribly hard - just need to find a way to lex nested macros and
-           substitute their values in the symbol table
-        o) "compound double quotes"
-        o) commands to manipulate macros
-
-        o) the driver's two callbacks make this fairly easy to implement
-
     o) Loops
-        o) much harder
+        o) much harder, because of macros
     
     o) Many more commands
         o) data management: egen, input, label, etc
