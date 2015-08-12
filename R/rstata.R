@@ -217,13 +217,21 @@ function(ast, debug_level=0)
     },
     error=function(c) c,
     EvalErrorException=function(c) c,
-    ExitRequestedException=function(c) c)
+    ExitRequestedException=function(c) c,
+    ContinueException=function(c) c,
+    BreakException=function(c) c)
 
     if(inherits(ret_p2, "EvalErrorException") || inherits(ret_p2, "error"))
         return( list(2, ret_p2$message) )
 
     if(inherits(ret_p2, "ExitRequestedException"))
         return( list(3, ret_p2$message) )
+
+    if(inherits(ret_p2, "ContinueException"))
+        return( list(4, ret_p2$message) )
+
+    if(inherits(ret_p2, "BreakException"))
+        return( list(5, ret_p2$message) )
 
     return( list(0, "Success") );
 }

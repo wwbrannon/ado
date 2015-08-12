@@ -38,11 +38,30 @@ function(macro_name, text, varlist=NULL, numlist=NULL,
         rstata_cmd_local(list(substitute(macro_name), as.character(val)))
         
         #And re-parse the text block
-        do_parse_with_callbacks(text=text,
-                                cmd_action=process_cmd,
-                                macro_value_accessor=macro_value_accessor,
-                                debug_level=debug_level,
-                                echo=0)
+        ret <-
+        tryCatch(
+        {
+            do_parse_with_callbacks(text=text,
+                                    cmd_action=process_cmd,
+                                    macro_value_accessor=macro_value_accessor,
+                                    debug_level=debug_level,
+                                    echo=0)
+        },
+        error=function(c) c)
+
+        if(inherits(ret, "error"))
+        {
+            if(inherits(ret, "BreakException"))
+            {
+                break
+            } else if(inherits(ret, "ContinueException"))
+            {
+                next
+            } else
+            {
+                signalCondition(ret) #pass it on up
+            }
+        }
     }
 }
 
@@ -87,11 +106,30 @@ function(macro_name, text, upper, lower,
         rstata_cmd_local(list(substitute(macro_name), as.character(val)))
 
         #And re-parse the text block
-        do_parse_with_callbacks(text=text,
-                                cmd_action=process_cmd,
-                                macro_value_accessor=macro_value_accessor,
-                                debug_level=debug_level,
-                                echo=0)
+        ret <-
+        tryCatch(
+        {
+            do_parse_with_callbacks(text=text,
+                                    cmd_action=process_cmd,
+                                    macro_value_accessor=macro_value_accessor,
+                                    debug_level=debug_level,
+                                    echo=0)
+        },
+        error=function(c) c)
+        
+        if(inherits(ret, "error"))
+        {
+            if(inherits(ret, "BreakException"))
+            {
+                break
+            } else if(inherits(ret, "ContinueException"))
+            {
+                next
+            } else
+            {
+                signalCondition(ret) #pass it on up
+            }
+        }
     }
 }
 

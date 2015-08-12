@@ -120,6 +120,12 @@ RStataDriver::wrap_cmd_action(Rcpp::List ast)
 
   if(status == 3)
     throw ExitRequestedException(msg);
+
+  if(status == 4)
+    throw ContinueException(msg);
+
+  if(status == 5)
+    throw BreakException(msg);
 }
 
 std::string
