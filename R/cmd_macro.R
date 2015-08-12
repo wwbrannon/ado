@@ -31,7 +31,6 @@ function(expression_list)
     invisible(TRUE)
 }
 
-#FIXME need to implement the "_all" special name
 rstata_cmd_global <-
 function(expression_list)
 {
@@ -104,7 +103,8 @@ function(expression_list)
         raiseifnot(length(exprs) == 2)
         raiseifnot(is.symbol(exprs[[2]]) || is.character(exprs[[2]]))
 
-        #FIXME - how does Stata handle local vs global macros for drop?
+        #if you want to drop a local macro, just drop it with its full
+        #name that begins with an underscore
         del <- as.character(exprs[[2]])
         if(del == "_all")
             rm(list=ls(envir=env), envir=env)
