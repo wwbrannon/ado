@@ -1,7 +1,11 @@
 Now:
-    o) name abbreviation - options, variables, commands
+    o) all FIXMEs
 
-    o) finish code generation and finalize generated format
+    o) name abbreviation - options, variables, commands
+      o) check() should check that abbrevs are valid
+      o) codegen() should unabbreviate them
+
+    o) finalize the format of generated code
 
     o) better error messages
         o) from check() and codegen()

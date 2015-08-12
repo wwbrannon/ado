@@ -29,8 +29,11 @@ function(dta = NULL, filename=NULL, string=NULL,
     
     #Should we, on exit, put the final dataset back into the variable
     #we were given as if we had a pointer to it?
-    if(!is.null(assign.back) && assign.back)
-        on.exit(assign(varname, dta, pos=parent.frame()))
+    if(!is.null(assign.back))
+        on.exit(if(assign.back)
+                {
+                  assign(varname, dta, pos=parent.frame())
+                })
     
     #Create two environments used to hold a) the symbol table for macro
     #substitution, b) settings and parameters that commands can see
@@ -75,6 +78,7 @@ function(dta = NULL, filename=NULL, string=NULL,
         tryCatch(
           {
             #FIXME how to incorporate debug level?
+            #FIXME "invalid for() loop sequence"
             objs <- eval(ret_p1, envir=parent.frame())
             
             for(obj in objs)
@@ -102,11 +106,22 @@ function(dta = NULL, filename=NULL, string=NULL,
         #Save the command history before we get started
         if(!is.null(save.history) && save.history)
         {
+          #the R command history before this function was invoked
           orig_cmdhist <- tempfile()
           savehistory(orig_cmdhist)
           
+          #our command history
           cmdhist <- tempfile()
-          savehistory(cmdhist)
+          cat("", file=cmdhist)
+          loadhistory(cmdhist) #start with empty history
+
+          on.exit(
+          {
+            loadhistory(orig_cmdhist)
+            
+            unlink(cmdhist)
+            unlink(orig_cmdhist)
+          }, add=TRUE)
         }
       
         while(TRUE)
@@ -146,22 +161,14 @@ function(dta = NULL, filename=NULL, string=NULL,
             {
               cat(paste0(val$message, sep=""))
               
-              on.exit()
               s <- substr(readline("Save dataset? "), 1, 1)
               if(s == "Y" || s == "y")
-                assign(varname, dta, pos=parent.frame())
+                assign.back <- TRUE
               
               break
             }
           }
         }
-      
-      if(!is.null(save.history) && save.history)
-      {
-        loadhistory(orig_cmdhist)
-        unlink(cmdhist)
-        unlink(orig_cmdhist)
-      }
     } else if(is.null(filename) && is.null(string))
     {   
         inpt <- readLines(con=stdin(), warn=FALSE)
