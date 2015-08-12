@@ -185,8 +185,19 @@ function(children)
     }
     if(n == "expression")
     {
-      if(!(children[[n]] %is% "rstata_expression"))
-        return(FALSE)
+        if(!children[[n]] %is% "rstata_expression_list")
+            return(FALSE)
+
+        types <- vapply(children[[n]]$children,
+                        function(x) x %is% "rstata_expression" ||
+                            x %is% "rstata_literal",
+                        TRUE)
+
+        if(length(which(types)) != length(types))
+            return(FALSE)
+
+        if(length(children[[n]]$children) != 1)
+            return(FALSE)
     }
   }
 
@@ -274,8 +285,7 @@ unabbreviateName <-
 function(name, choices, cls="error")
 {
   matched <- charmatch(name, choices)
-  raiseifnot(length(matched) == 1 && matched != 0 && !is.na(matched), cls=cls,
-             msg="Ambiguous abbreviation")
+  raiseifnot(length(matched) == 1 && matched != 0 && !is.na(matched), cls=cls)
 
   choices[matched]
 }

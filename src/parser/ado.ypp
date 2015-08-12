@@ -213,7 +213,7 @@ if_cmd:
         ExprNode *node = new ExprNode("rstata_if_cmd");
         node->appendChild("expression", $2);
         node->appendChild("compound_cmd", $3);
-       
+
         $$ = node;
     }
     ;
@@ -255,7 +255,7 @@ cmds:
 cmd:
       cmd_sep
     | EMBEDDED_CODE /* R or shell */
-    
+
     | nonmodifier_cmd cmd_sep
     {
         $2; // suppressing a stupid bison warning
@@ -450,7 +450,11 @@ nonmodifier_cmd:
         ExprNode *node = new ExprNode({"rstata_cmd", "rstata_special_cmd"});
         node->appendChild("verb", $1);
         node->addData("format_spec", *($2));
-        node->appendChild("expression_list", $3);
+
+        ExprNode *lst = new ExprNode("rstata_expression_list");
+        lst->appendChild($3);
+
+        node->appendChild("expression_list", lst);
 
         $$ = node;
     }
@@ -458,7 +462,11 @@ nonmodifier_cmd:
     {
         ExprNode *node = new ExprNode({"rstata_cmd", "rstata_special_cmd"});
         node->appendChild("verb", $1);
-        node->appendChild("expression_list", $2);
+
+        ExprNode *lst = new ExprNode("rstata_expression_list");
+        lst->appendChild($2);
+
+        node->appendChild("expression_list", lst);
 
         $$ = node;
     }
