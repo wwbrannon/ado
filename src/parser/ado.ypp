@@ -134,8 +134,12 @@ yy::RStataParser::error(const location_type& l, const std::string& m)
                 /* Factor variable operators */
 %token <node>   CONT_OPERATOR IND_OPERATOR BASE_OPERATOR OMIT_OPERATOR
 
-                /* Loops */
+                /* Loops
+                 * unlike other tokens, these tokens are only recognized in
+                 * certain lexer states that indicate we're parsing a loop */
 %token <node>   FOREACH FORVALUES
+%type  <node>   foreach_cmd forvalues_cmd
+%token          LOCAL GLOBAL VARLIST NEWLIST NUMLIST TO OF
 
                 /* Nonterminal token types */
 %type <node>    error cmd_sep
@@ -227,6 +231,131 @@ external_statement:
       cmd
     | compound_cmd
     | if_cmd
+    | foreach_cmd
+    | forvalues_cmd
+    ;
+
+/* The things between the braces are not literally string literals,
+ * even though they look like it by the time the parser sees them. The
+ * lexer accumulates the text of the loop body and returns it to the parser
+ * as a string even though it's not enclosed in double quotes in the original
+ * source code. The function that executes this command invokes a new parser
+ * instance on the text each time around the loop. If things get any more
+ * complicated than this, we'll have to refactor into a two-pass parse with
+ * a preprocessor for loops and macros on the first stage.
+ * (Which might be a good idea anyway...)
+ */
+foreach_cmd:
+      FOREACH IDENT foreach_sep varlist         "{" STRING_LITERAL "}"
+    {
+        $1->appendChild("macro_name", $2);
+        $1->appendChild("text", $6);
+        $1->appendChild("varlist", $4);
+
+        $$ = $1;
+    }
+    | FOREACH IDENT foreach_sep numlist         "{" STRING_LITERAL "}"
+    {
+        $1->appendChild("macro_name", $2);
+        $1->appendChild("text", $6);
+        $1->appendChild("numlist", $4);
+
+        $$ = $1;
+    }
+    | FOREACH IDENT foreach_sep LOCAL IDENT     "{" STRING_LITERAL "}"
+    {
+        $1->appendChild("macro_name", $2);
+        $1->appendChild("text", $7);
+        $1->appendChild("local_macro_source", $5);
+
+        $$ = $1;
+    }
+    | FOREACH IDENT foreach_sep GLOBAL IDENT    "{" STRING_LITERAL "}"
+    {
+        $1->appendChild("macro_name", $2);
+        $1->appendChild("text", $7);
+        $1->appendChild("global_macro_source", $5);
+
+        $$ = $1;
+    }
+    | FOREACH IDENT foreach_sep VARLIST varlist "{" STRING_LITERAL "}"
+    {
+        $1->appendChild("macro_name", $2);
+        $1->appendChild("text", $7);
+        $1->appendChild("varlist", $5);
+
+        $$ = $1;
+    }
+    | FOREACH IDENT foreach_sep NEWLIST varlist "{" STRING_LITERAL "}"
+    {
+        $1->appendChild("macro_name", $2);
+        $1->appendChild("text", $7);
+        $1->appendChild("varlist", $5);
+
+        $$ = $1;
+    }
+    | FOREACH IDENT foreach_sep NUMLIST numlist "{" STRING_LITERAL "}"
+    {
+        $1->appendChild("macro_name", $2);
+        $1->appendChild("text", $7);
+        $1->appendChild("numlist", $5);
+
+        $$ = $1;
+    }
+    ;
+
+forvalues_cmd:
+      FORVALUES IDENT "=" NUMBER "(" NUMBER ")" NUMBER "{" STRING_LITERAL "}"
+    {
+        $1->appendChild("macro_name", $2);
+        $1->appendChild("text", $10);
+
+        $1->appendChild("upper", $8);
+        $1->appendChild("lower", $4);
+        $1->appendChild("increment", $6);
+
+        $$ = $1;
+    }
+    | FORVALUES IDENT "=" NUMBER "/" NUMBER            "{" STRING_LITERAL "}"
+    {
+        $5; // shut up, bison...
+        
+        $1->appendChild("macro_name", $2);
+        $1->appendChild("text", $8);
+
+        $1->appendChild("upper", $6);
+        $1->appendChild("lower", $4);
+        // if "increment" and "increment_t" are both missing, assume increment = 1
+
+        $$ = $1;
+    }
+    | FORVALUES IDENT "=" NUMBER NUMBER ":" NUMBER     "{" STRING_LITERAL "}"
+    {
+        $1->appendChild("macro_name", $2);
+        $1->appendChild("text", $9);
+
+        $1->appendChild("upper", $7);
+        $1->appendChild("lower", $4);
+        $1->appendChild("increment_t", $5);
+
+        $$ = $1;
+    }
+    | FORVALUES IDENT "=" NUMBER NUMBER TO NUMBER      "{" STRING_LITERAL "}"
+    {
+        $1->appendChild("macro_name", $2);
+        $1->appendChild("text", $9);
+
+        $1->appendChild("upper", $7);
+        $1->appendChild("lower", $4);
+        $1->appendChild("increment_t", $5);
+
+        $$ = $1;
+    }
+    ;
+
+foreach_sep:
+      TO
+    | OF
     ;
 
 if_cmd:
