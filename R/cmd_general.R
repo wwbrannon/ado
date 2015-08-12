@@ -137,3 +137,10 @@ function(expression, return.match.call=NULL)
         return(match.call())
 }
 
+rstata_cmd_sysuse <-
+function(expression, option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+}
+
