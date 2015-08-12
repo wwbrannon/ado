@@ -294,16 +294,29 @@ function(name)
 valid_format_spec <-
 function(fmt)
 {
-  if(length(grep("%-?[0-9]+s", fmt)) > 0)
+  #string formats
+  if(length(grep("%[-~]?[0-9]+s", fmt)) > 0)
+    return(TRUE)
+  
+  #datetime formats
+  if(length(grep("%t[Ccdwmqh][A-Za-z\\.\\,\\:\\-\\_\\/\\\\\\+]*", fmt)) > 0)
+    return(TRUE)
+  
+  #numeric formats
+  if(length(grep("%-?[0-9]+\\.[0-9]+(g|f|e|gc|fc)", fmt)) > 0)
     return(TRUE)
 
-  if(length(grep("%-?0?[1-9][0-9]+\\.[0-9]+[efg]c?", fmt)) > 0)
-    return(TRUE)
-
-  if(length(grep("%-?t[Ccdwmqh][A-Za-z_]*", fmt)) > 0)
+  #special numeric formats
+  if(length(grep("%21x|%16H|%16L|%8H|%8L", fmt)) > 0)
     return(TRUE)
 
   return(FALSE)
+}
+
+expand_format_spec <-
+function(fmt)
+{
+    #FIXME
 }
 
 #Functions for generating code

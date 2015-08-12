@@ -215,7 +215,7 @@ function(node, debug_level=0)
 codegen.rstata_in_clause <-
 function(node, debug_level=0)
 {
-  #once the runtime part settles down, this should expand "f", "F", "l", "L"
+  #FIXME once the runtime part settles down, this should expand "f", "F", "l", "L"
   list(upper=codegen(node$children$upper, debug_level),
        lower=codegen(node$children$lower, debug_level))
 }

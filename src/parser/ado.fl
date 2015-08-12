@@ -108,6 +108,7 @@ E           [Ee][+-]?{D}+
 F           [FLfl]
 M           (?i:(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec))
 B           [ \t\v\r\f]
+T           [A-Za-z\.\,\:\-\_\/\\\+]
 
 %%
 
@@ -1361,16 +1362,9 @@ size_t macro_length = 0;
 
 
                                     /* format specifiers */
-%-?{D}+s                            {
-                                        R_ECHO(yytext);
-                                        
-                                        yylval->node = new ExprNode({"rstata_literal", "rstata_format_spec"});
 
-                                        std::string *s = new std::string(yytext);
-                                        yylval->node->addData("value", *s);
-                                        return token::TOK_STRING_FORMAT;
-                                    }
-%-?0?{D}+\.{D}+[efg]c?              {
+%-?{D}+\.{D}+(g|f|e|gc|fc)          {
+                                        // numeric formats
                                         R_ECHO(yytext);
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_format_spec"});
 
@@ -1379,7 +1373,27 @@ size_t macro_length = 0;
                                         
                                         return token::TOK_NUMBER_FORMAT;
                                     }
-%-?t[Ccdwmqh]{L}*                   {
+%21x|%16H|%16L|%8H|%8L              {
+                                        R_ECHO(yytext);
+                                        yylval->node = new ExprNode({"rstata_literal", "rstata_format_spec"});
+
+                                        std::string *s = new std::string(yytext);
+                                        yylval->node->addData("value", *s);
+                                        
+                                        return token::TOK_NUMBER_FORMAT;
+                                    }
+%[-~]?{D}+s                         {
+                                        // string formats
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->node = new ExprNode({"rstata_literal", "rstata_format_spec"});
+
+                                        std::string *s = new std::string(yytext);
+                                        yylval->node->addData("value", *s);
+                                        return token::TOK_STRING_FORMAT;
+                                    }
+%t[Ccdwmqh]{T}*                     {
+                                        // datetime formats
                                         R_ECHO(yytext);
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_format_spec"});
 

@@ -60,11 +60,10 @@ test_that("Format specifiers parse", {
     expect_accept("disp %10.0g\n")
     expect_accept("disp %9s\n")
     expect_accept("disp %8s\n")
-    expect_accept("%10.7e\n")
-    expect_accept("%16L\n")
-    expect_accept("%9.2fc\n")
-    expect_accept("%-9.0gc\n")
-    #FIXME
+    expect_accept("disp %10.7e\n")
+    expect_accept("disp %16L\n")
+    expect_accept("disp %9.2fc\n")
+    expect_accept("disp %-9.0gc\n")
 })
 
 test_that("Arithmetic expressions parse", {
@@ -408,6 +407,14 @@ test_that("Forvalues loops parse", {
         gen var`i' = `i'
     }\n")
 
+    expect_accept("forvalues i = 45 / 98 { // this is a short comment that the scanner should remove from the input
+        gen var`i' = `i'
+    }\n")
+
+    expect_accept("forvalues i = 45 / 98 { /* this is a long comment that the scanner should remove from the input */
+        gen var`i' = `i'
+    }\n")
+
     expect_accept("forvalues i = 45(2)98 {
         gen var`i' = `i'
     }\n")
@@ -423,6 +430,14 @@ test_that("Forvalues loops parse", {
 
 test_that("Foreach loops parse", {
     expect_accept("foreach i of 1 2 3 4 5 6 {
+        disp `i'
+    }\n")
+
+    expect_accept("foreach i of 1 2 3 4 5 6 { // this is a short comment that the scanner should remove from the input
+        disp `i'
+    }\n")
+
+    expect_accept("foreach i of 1 2 3 4 5 6 { /* this is a long comment that the scanner should remove from the input */
         disp `i'
     }\n")
 
@@ -454,3 +469,4 @@ test_that("Foreach loops parse", {
         disp `i'
     }\n")
 })
+
