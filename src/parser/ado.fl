@@ -159,7 +159,7 @@ strL                                { yylval->str = new std::string(yytext); ret
                                         return token::TOK_NUMBER_MISSING;
                                     }
 
-[+-]?0[xX]{H}+                      { /* hex */
+0[xX]{H}+                           { /* hex */
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
@@ -171,13 +171,13 @@ strL                                { yylval->str = new std::string(yytext); ret
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_NUMBER;
                                     }
-[+-]?{D}+                           { /* decimal integer */
+{D}+                                { /* decimal integer */
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_NUMBER;
                                     }
-[+-]?{D}+\.({D}+)?/[^_A-Za-z_]      { /* decimal float */
+{D}+\.({D}+)?/[^_A-Za-z_]           { /* decimal float */
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));

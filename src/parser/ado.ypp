@@ -49,8 +49,9 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 }
 
 /* Operator  precedence */
-%precedence RELATIONAL
-%precedence "+" "-"
+%left RELATIONAL
+%left "+" "-"
+%left UNARY
 %precedence EXPONENT
 %precedence "["
 %precedence "("
@@ -623,8 +624,8 @@ power_expression:
     ;
 
 unary_expression:
-      power_expression
-    | unary_operator power_expression
+      power_expression %prec UNARY
+    | unary_operator power_expression %prec UNARY
     {
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_arithmetic_expression", "rstata_unary_expression"});
         node->addData("verb", *($1));
