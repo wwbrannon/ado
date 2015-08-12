@@ -248,9 +248,25 @@ function(node, debug_level=0)
     raiseifnot(every(c("upper", "lower") %in% names(node$children)),
                msg=if(debug_level) NULL else "Missing limits for in clause")
 
-    raiseifnot(node$children[[1]] %is% "rstata_number",
+    raiseifnot(node$children[[1]] %is% "rstata_number" ||
+               (
+                   node$children[[1]] %is% "rstata_unary_expression" &&
+                   node$children[[1]]$children[[1]] %is% "rstata_number"
+               ) ||
+               (
+                   node$children[[1]] %is% "rstata_ident" &&
+                   node$children[[1]]$data["value"] %in% c("f", "F", "l", "L")
+               ),
                msg=if(debug_level) NULL else "Bad limit value for in clause")
-    raiseifnot(node$children[[2]] %is% "rstata_number",
+    raiseifnot(node$children[[2]] %is% "rstata_number" ||
+               (
+                   node$children[[2]] %is% "rstata_unary_expression" &&
+                   node$children[[2]]$children[[1]] %is% "rstata_number"
+               ) ||
+               (
+                   node$children[[2]] %is% "rstata_ident" &&
+                   node$children[[2]]$data["value"] %in% c("f", "F", "l", "L")
+               ),
                msg=if(debug_level) NULL else "Bad limit value for in clause")
   }
 

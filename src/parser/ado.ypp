@@ -1536,7 +1536,7 @@ in_clause:
     {
         $$ = new ExprNode("rstata_in_clause");
     }
-    | IN NUMBER "/" NUMBER
+    | IN unary_expression "/" unary_expression
     {
         $3; // suppressing a stupid bison warning
 
