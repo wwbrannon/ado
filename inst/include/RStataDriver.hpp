@@ -1,9 +1,7 @@
 #ifndef RSTATA_DRIVER_H
 #define RSTATA_DRIVER_H
 
-#include <memory>
 #include <string>
-
 #include "RStata.hpp"
 
 void raise_condition(const std::string& msg, const std::string& type);
@@ -14,7 +12,8 @@ class RStataDriver
         RStataDriver(std::string text);
         virtual ~RStataDriver();
 
-        BranchExprNode *ast;
+        ExprNode *ast;
+        void delete_ast();
 
         void scan_begin();
         void scan_end();
@@ -25,7 +24,7 @@ class RStataDriver
         void error(const std::string& m);
 
     private:
-        std::string        text;
+        std::string text;
 };
 
 #endif /* RSTATA_DRIVER_H */

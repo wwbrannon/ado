@@ -6,9 +6,7 @@ CPFLAGS += "-I./build"
 
 all: infra lex.o parse.o
 	ar -rcs ado.a build/parse.o build/lex.o \
-			build/GeneralStataCmd.o build/MakeGeneralStataCmd.o \
-			build/EmbeddedRCmd.o build/RStataDriver.o \
-			build/ExprNode.o
+			build/RStataDriver.o build/ExprNode.o
 
 parse.o: generate
 	g++ $(CPFLAGS) $(CXFLAGS) build/ado.tab.cpp -o build/parse.o 
@@ -18,9 +16,6 @@ lex.o: generate
 
 infra: generate
 	g++ $(CPFLAGS) $(CXFLAGS) ExprNode.cpp -o build/ExprNode.o
-	g++ $(CPFLAGS) $(CXFLAGS) GeneralStataCmd.cpp -o build/GeneralStataCmd.o
-	g++ $(CPFLAGS) $(CXFLAGS) MakeGeneralStataCmd.cpp -o build/MakeGeneralStataCmd.o
-	g++ $(CPFLAGS) $(CXFLAGS) EmbeddedRCmd.cpp -o build/EmbeddedRCmd.o
 	g++ $(CPFLAGS) $(CXFLAGS) RStataDriver.cpp -o build/RStataDriver.o
 
 generate:

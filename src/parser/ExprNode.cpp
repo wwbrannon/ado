@@ -1,4 +1,4 @@
-/* Methods for most of the derived classes of BranchExprNode */
+/* Methods for most of the derived classes of ExprNode */
 
 #include <utility>
 #include <Rcpp.h>
@@ -6,111 +6,103 @@
 
 using namespace Rcpp;
 
-// Constructors
-NumberExprNode::NumberExprNode(std::string _data)
+ExprNode::ExprNode(std::string _type)
 {
-    data = Language("as.numeric", _data).eval(); // FIXME
+    type = _type; // all other members' default constructors make them empty
 }
 
-IdentExprNode::IdentExprNode(std::string _data)
+
+
+ExprNode::~ExprNode()
 {
-    data = _data;
+    for(auto elem : children)
+    {
+        delete elem;
+    }
 }
 
-StringExprNode::StringExprNode(std::string _data)
+
+
+/*
+ * Adding data
+ */
+void
+ExprNode::addData(std::string _name, std::string _value)
 {
-    data = _data;
+    data[_name] = _value;
 }
 
-DatetimeExprNode::DatetimeExprNode(std::string _date, std::string _time)
+
+
+/*
+ * Adding children
+ */
+void
+ExprNode::appendChild(std::string _name, ExprNode *_child)
 {
-    if(_date.empty() && _time.empty())
-        dt = R_NilValue;
-
-    if(_date.empty() && !_time.empty())
-        dt = Datetime(_time, "%H:%M:%OS");
-
-    if(!_date.empty() && _time.empty())
-        dt = Datetime(_date, "%d%b%Y");
-    
-    if(!_date.empty() && !_time.empty())
-        dt = Datetime(_date + " " + _time, "%d%b%Y %H:%M:%OS");
-}
-
-DatetimeExprNode::DatetimeExprNode(std::string _dt)
-{
-    dt = Datetime(_dt, std::string("%d%b%Y %H:%M:%OS"));
-}
-
-BranchExprNode::BranchExprNode(std::string _type, std::string _data)
-{
-    type = _type;
-    data = _data;
-}
-
-BranchExprNode::BranchExprNode()
-{
-    type = "";
-    data = "";
+    names.push_back(_name);
+    children.push_back(_child);
 }
 
 void
-BranchExprNode::setChildren(std::initializer_list<BranchExprNode *> list)
+ExprNode::appendChild(ExprNode *_child)
+{
+    children.push_back(_child);
+}
+
+void
+ExprNode::setChildren(std::initializer_list<ExprNode *> _children)
 {
     children.clear();
+    names.clear();
 
-    for(auto elem : list)
+    for(auto elem : _children)
     {
         children.push_back(elem);
     }
 }
 
 void
-BranchExprNode::setChildren(std::vector<BranchExprNode *> _children)
+ExprNode::setChildren(std::vector<std::string> _names, std::vector<ExprNode *> _children)
 {
+    names = _names;
     children = _children;
 }
 
-void
-BranchExprNode::appendChild(BranchExprNode *_child)
-{
-    children.push_back(_child);
-}
 
-// The methods for conversion to R expressions
-NumericVector NumberExprNode::as_R_object() const
-{
-    return data;
-}
 
-Symbol IdentExprNode::as_R_object() const
+/*
+ * Recursively convert to an R data structure
+ */
+List
+ExprNode::as_R_object() const
 {
-    return Symbol(data);
-}
-
-String StringExprNode::as_R_object() const
-{
-    return data;
-}
-
-Datetime DatetimeExprNode::as_R_object() const
-{
-    return dt;
-}
-
-List BranchExprNode::as_R_object() const
-{
-    unsigned int x;
-    List res;
-
-    res["type"] = type;
-    res["data"] = data;
+    List res, chld;
+    CharacterVector node_data(data.size());
+    CharacterVector data_names(data.size());
     
+    std::map<std::string, std::string>::const_iterator it;
+    unsigned int x;
+    
+    // include the node type
+    res["type"] = type;
+    
+    // include the node data
+    for(it = data.begin(); it != data.end(); it++)
+    {
+        data_names.push_back(it->first);
+        node_data.push_back(it->second);
+    }
+    node_data.attr("names") = data_names;
+    res["data"] = node_data;
+
+    // include the children
     for(x = 0; x < children.size(); x++)
     {
-        List y = children[x]->as_R_object();
-        res.push_back(y);
+        chld.push_back(children[x]->as_R_object());
     }
+    chld.attr("names") = names;
+    res["children"] = chld;
 
     return res;
 }

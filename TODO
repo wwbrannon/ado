@@ -1,6 +1,7 @@
 Roadmap to v0.1:
 Immediate TODO:
-    o) finish the actions for commands
+    o) rewrite the grammar actions for new class hierarchy
+        o) delete various random strings that don't become part of the AST
 
 Semantics:
     o) write up stubs for the R functions implementing Stata commands

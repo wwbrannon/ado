@@ -7,6 +7,7 @@ class RStataDriver;
 
 #include "RStataDriver.hpp"
 
+// a utility function
 void
 raise_condition(const std::string& msg, const std::string& type)
 {
@@ -18,12 +19,21 @@ raise_condition(const std::string& msg, const std::string& type)
   stopper(cond);
 }
 
+// ctor
 RStataDriver::RStataDriver(std::string _text)
 {
     text = _text;
 }
 
+// dtor
 RStataDriver::~RStataDriver() { }
+
+// recursively delete the ast member
+void
+RStataDriver::delete_ast()
+{
+    delete ast; // the dtor recurses depth-first and deletes from the bottom up
+}
 
 int
 RStataDriver::parse()

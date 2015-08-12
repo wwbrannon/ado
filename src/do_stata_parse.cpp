@@ -9,6 +9,7 @@
 // [[Rcpp::export]]
 Rcpp::List do_stata_parse(std::string text)
 {
+    List res;
     RStataDriver *driver = new RStataDriver(text);
 
     // parse the input
@@ -16,6 +17,9 @@ Rcpp::List do_stata_parse(std::string text)
         return R_NilValue;
 
     // now take the resulting AST and recursively turn it into an R object
-    return driver->ast->as_R_object();
+    res = driver->ast->as_R_object();
+    driver->delete_ast();
+
+    return res;
 }
 
