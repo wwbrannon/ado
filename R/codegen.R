@@ -11,17 +11,49 @@ UseMethod("codegen")
 ##############################################################################
 ## Loops
 #' @export
+codegen.rstata_loop <-
+function(node, debug_level=0)
+{
+    NextMethod()
+}
+
+#' @export
 codegen.rstata_foreach <-
 function(node, debug_level=0)
 {
-    #FIXME
+    what <- setdiff(names(node$children), c("macro_name", "text"))
+    val <- codegen(node$children[[what]], debug_level)
+
+    ret <- list(as.symbol("rstata_foreach"),
+                macro_name=codegen(node$children$macro_name, debug_level),
+                text=codegen(node$children$text, debug_level))
+    ret[[what]] <- val
+
+    as.call(ret)
 }
 
 #' @export
 codegen.rstata_forvalues <-
 function(node, debug_level=0)
 {
-    #FIXME
+    macro_name <- codegen(node$children$macro_name, debug_level)
+    text <- codegen(node$children$text, debug_level)
+    
+    upper <- codegen(node$children$upper, debug_level)
+    lower <- codegen(node$children$lower, debug_level)
+
+    ret <- list(as.symbol("rstata_forvalues"),
+                macro_name=macro_name,
+                text=text,
+                upper=upper,
+                lower=lower)
+    
+    if("increment" %in% names(node$children))
+        ret[["increment"]] <- codegen(node$children$increment, debug_level)
+    else
+        ret[["increment_t"]] <- codegen(node$children$increment_t, debug_level)
+
+    as.call(ret)
 }
 
 ##############################################################################
@@ -44,8 +76,8 @@ codegen.rstata_if_cmd <-
 function(node, debug_level=0)
 {
     as.call(list(as.symbol("rstata_cmd_if"),
-            expression=codegen(node$children$expression),
-            compound_cmd=codegen(node$children$compound_cmd)))
+                 expression=codegen(node$children$expression, debug_level),
+                 compound_cmd=codegen(node$children$compound_cmd, debug_level)))
 }
 
 #' @export
@@ -70,7 +102,7 @@ function(node, debug_level=0)
 codegen.rstata_general_cmd <-
 function(node, debug_level=0)
 {
-  verb <- as.character(codegen(node$children$verb))
+  verb <- as.character(codegen(node$children$verb, debug_level))
   verb <- unabbreviateCommand(paste0("rstata_cmd_", verb))
   verb <- get(verb, mode="function")
 
@@ -106,7 +138,7 @@ function(node, debug_level=0)
 codegen.rstata_special_cmd <-
 function(node, debug_level=0)
 {
-  verb <- as.character(codegen(node$children$verb))
+  verb <- as.character(codegen(node$children$verb, debug_level))
   verb <- unabbreviateCommand(paste0("rstata_cmd_", verb))
   verb <- get(verb, mode="function")
 
@@ -140,7 +172,7 @@ function(node, debug_level=0)
 codegen.rstata_modifier_cmd <-
 function(node, debug_level=0)
 {
-  verb <- as.character(codegen(node$children$verb))
+  verb <- as.character(codegen(node$children$verb, debug_level))
   verb <- unabbreviateCommand(paste0("rstata_cmd_", verb))
   verb <- get(verb, mode="function")
 
@@ -176,30 +208,30 @@ function(node, debug_level=0)
 codegen.rstata_if_clause <-
 function(node, debug_level=0)
 {
-  codegen(node$children$if_expression)
+  codegen(node$children$if_expression, debug_level)
 }
 
 #' @export
 codegen.rstata_in_clause <-
 function(node, debug_level=0)
 {
-  list(upper=codegen(node$children$upper),
-       lower=codegen(node$children$lower))
+  list(upper=codegen(node$children$upper, debug_level),
+       lower=codegen(node$children$lower, debug_level))
 }
 
 #' @export
 codegen.rstata_using_clause <-
 function(node, debug_level=0)
 {
-  as.character(codegen(node$children$filename))
+  as.character(codegen(node$children$filename, debug_level))
 }
 
 #' @export
 codegen.rstata_weight_clause <-
 function(node, debug_level=0)
 {
-  list(kind=codegen(node$children$left),
-       weight_expression=codegen(node$children$right))
+  list(kind=codegen(node$children$left, debug_level),
+       weight_expression=codegen(node$children$right, debug_level))
 }
 
 #' @export
@@ -207,10 +239,10 @@ codegen.rstata_option <-
 function(node, debug_level=0)
 {
   if("args" %in% names(node$children))
-    list(name=codegen(node$children$name),
-         args=codegen(node$children$args))
+    list(name=codegen(node$children$name, debug_level),
+         args=codegen(node$children$args, debug_level))
   else
-    list(name=codegen(node$children$name))
+    list(name=codegen(node$children$name, debug_level))
 }
 
 #' @export
