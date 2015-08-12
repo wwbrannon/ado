@@ -198,7 +198,7 @@ loc.step();
                             }
 (?i:merge)                  {
                                 // this is an IDENT because the parser constructs this command with its options
-                                yylval->ident = new IdentExprNode(std::string(yytext));
+                                yylval->ident_node = new IdentExprNode(std::string(yytext));
                                 return token::TOK_MERGE;
                             }
 
@@ -206,7 +206,7 @@ loc.step();
 
                             /* all non-keyword identifiers */
 [_A-Za-z][A-Za-z0-9_]*      {
-                                yylval->ident = new IdentExprNode(std::string(yytext));
+                                yylval->ident_node = new IdentExprNode(std::string(yytext));
                                 return token::TOK_IDENT;
                             }
 

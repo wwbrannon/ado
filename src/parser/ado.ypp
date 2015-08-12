@@ -24,9 +24,16 @@ class RStataDriver;
 
 %union
 {
-    BranchExprNode *node;
-    IdentExprNode *ident;
     char *str;
+    
+    NumberExprNode      *number_node;
+    IdentExprNode       *ident_node;
+    StringExprNode      *str_node;
+    DatetimeExprNode    *dt_node;
+    
+    BranchExprNode      *node;
+    GeneralStataCmd     *stata_cmd_node;
+    EmbeddedRCmd        *r_cmd_node;
 }
 
 %code
@@ -85,14 +92,14 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 
 /* Literals of various fundamental types */
 %token <node> NUMBER NUMBER_MISSING
-%token <ident> IDENT
+%token <ident_node> IDENT
 %token <node> STRING_LITERAL STRING_MISSING
 %token <node> DATE TIME DATETIME
 
 /* Commands with unusual enough syntax they have to be parsed separately */
 %token <node> EMBEDDED_R;
 %token <node> QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
-%token <ident> MERGE
+%token <ident_node> MERGE
 
 /* Command components and keywords */
 %token <str> USING IF IN
@@ -141,11 +148,6 @@ translation_unit:
 
 external_statement:
       cmd
-    {
-        BranchExprNode *node = new BranchExprNode("cmd_list", "");
-        node->appendChild($1);
-        $$ = node;
-    }
     | compound_cmd
     ;
 
