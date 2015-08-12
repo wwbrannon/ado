@@ -11,6 +11,7 @@ GeneralStataCmd::GeneralStataCmd(std::string _verb,
                    BaseStataExpr *_options)
 {
     verb = _verb;
+    PrefixCmd = NULL;
 
     modifiers = _modifiers;
     varlist = _varlist;
@@ -32,7 +33,7 @@ List GeneralStataCmd::as_list() const
    
     res = List::create(_["func"]            = Symbol("dispatch.rstata.cmd"),
                        _["verb"]            = verb,
-                       _["modifiers"]       = modifiers->as_expr(),
+                       _["prefix"]          = PrefixCmd->as_list()
                        _["varlist"]         = varlist->as_expr(),
                        _["assign_stmt"]     = assign_stmt->as_expr(),
                        _["if_exp"]          = if_exp->as_expr(),

@@ -40,19 +40,7 @@ StringStataExpr::StringStataExpr(std::string _data)
     data = _data;
 }
 
-ModifierStataExpr::ModifierStataExpr(std::string _data, BaseStataExpr **_children)
-{
-    data = _data;
-    children = _children;
-}
-
-OptionStataExpr::OptionStataExpr(std::string _data, BaseStataExpr **_children)
-{
-    data = _data;
-    children = _children;
-}
-
-BranchStataExpr::BranchStataExpr(std::string _data, BaseStataExpr **_children)
+BranchStataExpr::BranchStataExpr(std::string _data, std::vector<BaseStataExpr> _children)
 {
     data = _data;
     children = _children;
@@ -72,16 +60,6 @@ Language IdentStataExpr::as_expr() const
 Language StringStataExpr::as_expr() const
 {
     return Language("c", data);
-}
-
-Language ModifierStataExpr::as_expr() const
-{
-    
-}
-
-Language OptionStataExpr::as_expr() const
-{
-    
 }
 
 Language BranchStataExpr::as_expr() const

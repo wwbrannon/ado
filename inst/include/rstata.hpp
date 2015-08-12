@@ -6,19 +6,35 @@
 // more than one line as well.)
 
 // The basic Stata command syntax is:
-// [ (modifier [arguments])+:] command [varlist | var = exp] [if expression] [in range] [weight] [using filename] [, options]
+// [ (prefix [arguments])+:] command [varlist | var = exp] [if expression] [in range] [weight] [using filename] [, options]
 
 #ifndef RSTATA_H
 #define RSTATA_H
 
 #include <Rcpp.h>
 
+// Options as they occur after commands, prefix or otherwise
+class StataOption
+{
+   
+
+};
+
+// Option lists
+class OptionList
+{
+    public:
+        OptionList(std::vector<StataOption> _options);
+        Rcpp::Language as_list() const;
+    
+    private:
+        std::vector<StataOption> options;
+};
+
 // abstract base class for Stata expressions
 class BaseStataExpr
 {
     public:
-        BaseStataExpr **children; // array length known at parse time
-        
         // method that returns this BaseStataExpr as an R expression
         virtual Rcpp::Language as_expr() const = 0;
 };
@@ -58,41 +74,18 @@ class StringStataExpr: public BaseStataExpr
         std::string data;
 };
 
-// BY, BYSORT, XI, etc.
-class ModifierStataExpr: public BaseStataExpr
-{
-    public:
-        ModifierStataExpr(std::string _data, BaseStataExpr **_children);
-        
-        virtual Rcpp::Language as_expr() const;
-    
-    private:
-        std::string data;
-};
-
-// OPTION_LIST
-class OptionStataExpr: public BaseStataExpr
-{
-    public:
-        OptionStataExpr(std::string _data, BaseStataExpr **_children);
-        
-        virtual Rcpp::Language as_expr() const;
-    
-    private:
-        std::string data;
-};
-
 // all other expressions: assignment expressions, logical expressions,
 // equality expressions, relational expressions, arithmetic expressions,
 // unary expressions and function calls
 class BranchStataExpr: public BaseStataExpr
 {
     public:
-        BranchStataExpr(std::string _data, BaseStataExpr **_children);
+        BranchStataExpr(std::string _data, std::vector<BaseStataExpr> _children);
         
         virtual Rcpp::Language as_expr() const;
     
     private:
+        std::vector<BaseStataExpr> children;
         std::string data;
 };
 
@@ -123,29 +116,28 @@ class EmbeddedRCmd: public BaseStataCmd
 
 class GeneralStataCmd: public BaseStataCmd
 {
-        private:
-            BaseStataExpr *modifiers; // "modifiers": a MODIFIER_LIST of the by, bysort, etc, applied
-            BaseStataExpr *varlist; // a varlist is a left-deep tree of IDENTs
-            BaseStataExpr *assign_stmt; // "var = exp"
-            BaseStataExpr *if_exp; // "if expression"
-            BaseStataExpr *options; // ", options"
-            
-            int has_range;
-            int range_lower; // the lower range limit
-            int range_upper; // the upper range limit
-            
-            std::string weight; // "weight": the column name of the weight, or NULL
-            std::string using_filename; // "using filename": the filename given after using, or NULL
+    private:
+        BaseStataExpr *varlist; // a varlist is a left-deep tree of IDENTs
+        BaseStataExpr *assign_stmt; // "var = exp"
+        BaseStataExpr *if_exp; // "if expression"
+        BaseStataExpr *options; // ", options"
         
-        public:
-            virtual Rcpp::List as_list() const;
+        int has_range;
+        int range_lower; // the lower range limit
+        int range_upper; // the upper range limit
+        
+        std::string weight; // "weight": the column name of the weight, or NULL
+        std::string using_filename; // "using filename": the filename given after using, or NULL
+    
+    public:
+        BaseStataCmd *PrefixCmd;
+        virtual Rcpp::List as_list() const;
 
-            GeneralStataCmd(std::string _verb,
-                            std::string _weight, std::string _using_filename,
-                            int _has_range, int _range_lower, int _range_upper,
-                            BaseStataExpr *_modifiers, BaseStataExpr *_varlist,
-                            BaseStataExpr *_assign_stmt, BaseStataExpr *_if_exp,
-                            BaseStataExpr *_options);
+        GeneralStataCmd(std::string _verb,
+                        std::string _weight, std::string _using_filename,
+                        int _has_range, int _range_lower, int _range_upper,
+                        BaseStataExpr *_varlist, BaseStataExpr *_options
+                        BaseStataExpr *_assign_stmt, BaseStataExpr *_if_exp);
 };
 
 // positional-only parameters are garbage...
@@ -157,7 +149,6 @@ class MakeGeneralStataCmd
         GeneralStataCmd create();
 
         MakeGeneralStataCmd& verb(std::string const& _verb);
-        MakeGeneralStataCmd& modifiers(BaseStataExpr *_modifiers);
         MakeGeneralStataCmd& varlist(BaseStataExpr *_varlist);
         MakeGeneralStataCmd& assign_stmt(BaseStataExpr *_assign_stmt);
         MakeGeneralStataCmd& if_exp(BaseStataExpr *_if_exp);
@@ -170,7 +161,6 @@ class MakeGeneralStataCmd
     
     private:
         std::string __verb;
-        BaseStataExpr *__modifiers;
         BaseStataExpr *__varlist;
         BaseStataExpr *__assign_stmt;
         BaseStataExpr *__if_exp;

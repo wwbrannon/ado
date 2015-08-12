@@ -43,12 +43,22 @@ int yywrap()
 %token <str> STRING_LITERAL STRING_MISSING STRING_TYPE_SPEC
 %token <str> GT_OP LE_OP EQ_OP NE_OP OR_OP AND_OP
 
+/* Formats */
 %token <str> STRING_FORMAT DATETIME_FORMAT NUMBER_FORMAT
 
-%token <str> BY BYSORT XI QUIETLY
-%token <str> USING IN IF PWEIGHT AWEIGHT
+/* Weight specifiers and command component keywords */
+%token <str> PWEIGHT AWEIGHT IWEIGHT FWEIGHT WEIGHT
+%token <str> USING IN IF
 
-%token <str> CAPTURE CD CLEAR COUNT DESCRIBE DI DROP DUPLICATES
+/* Prefix commands */
+%token <str> BY BYSORT XI QUIETLY CAPTURE NOISILY
+
+/* Immediate commands */
+%token <str> DISPLAY POWER BITESTI CCI CSI IRI MCCI ESIZEI
+%token <str> PRTESTI SDTESTI SYMMI TABI TTESTI
+
+/* Other commands */
+%token <str> CD CLEAR COUNT DESCRIBE DROP DUPLICATES
 %token <str> EXIT GEN INSHEET KEEP LOG LOGIT LS MERGE MLOGIT
 %token <str> ORDER OUTSHEET REGRESS RENAME REPLACE SAVE SET SORT
 %token <str> SUM TABLE USE XTILE 
@@ -142,6 +152,11 @@ expression:
     | or_expression
     ;
 
+expression_list:
+      %empty
+    | expression_list expression
+    ;
+
 /*
  **************************************************
  * Varlists - needs more fleshing out in the future
@@ -151,6 +166,49 @@ expression:
 varlist:
       %empty
     | varlist IDENT
+    ;
+
+/*
+ **************************************************
+ * Options and option lists
+ **************************************************
+ */
+
+option_list:
+      %empty
+    | option_list option
+    ;
+
+option:
+      IDENT
+    | IDENT '(' option_arguments ')'
+    ;
+
+/* FIXME: option args are much more bespoke than this */
+option_arguments:
+      expression
+    | option_arguments expression
+    ;
+
+/*
+ **************************************************
+ * Other command parts
+ **************************************************
+ */
+
+weight:
+    '[' weight_type '=' expression ']';
+
+weight_type:
+      WEIGHT
+    | PWEIGHT
+    | AWEIGHT
+    | FWEIGHT
+    | IWEIGHT
+    ;
+
+if_modifier:
+    IF expression
     ;
 
 /*
@@ -166,79 +224,163 @@ commands:
 
 command:
       embedded_r_cmd
-    | capture_cmd
-    | cd_cmd
+    | stata_cmd
+    ;
+
+stata_cmd:
+      immediate_cmd
+    | nonprefix_cmd_with_prefix
+    | nonprefix_cmd
+    ;
+
+immediate_cmd:
+    immediate_cmd_verb expression_list
+    ;
+
+immediate_cmd_verb:
+      DISPLAY
+    | POWER
+    | BITESTI
+    | CCI
+    | CSI
+    | IRI
+    | MCCI
+    | ESIZEI
+    | PRTESTI
+    | SDTESTI
+    | SYMMI
+    | TABI
+    | TTESTI
+    ;
+
+colonless_prefix_cmd:
+      CAPTURE
+    | QUIETLY
+    | NOISILY
+    ;
+
+colon_prefix_cmd:
+      xi_cmd
+    | by_cmd
+    | bysort_cmd
+    ;
+
+colonless_prefix_applied:
+      colonless_prefix_cmd nonprefix_cmd
+    | colonless_prefix_cmd ':' nonprefix_cmd
+    ;
+
+colon_prefix_with_colonless_prefix:
+      colonless_prefix_cmd colon_prefix_cmd
+      ;
+
+colon_prefix_applied:
+      colon_prefix_with_colonless_prefix ':' nonprefix_cmd
+    | colon_prefix_cmd ':' nonprefix_cmd
+    ;
+
+nonprefix_cmd_with_prefix:
+      colonless_prefix_applied
+    | colon_prefix_applied
+    ;
+
+nonprefix_cmd:
+      general_nonprefix_cmd
+    | special_nonprefix_cmd
+    ;
+
+general_nonprefix_cmd_verb:
+      COUNT
+    | DROP
+    | KEEP
+    | INSHEET
+    | GEN
+    | DESCRIBE
+    | LOGIT
+    | MLOGIT
+    | ORDER
+    | OUTSHEET
+    | SORT
+    | TABLE
+    | REGRESS
+    | REPLACE
+    | SUM
+    | XTILE
+    ;
+
+general_nonprefix_cmd:
+      general_nonprefix_cmd_verb varlist
+    | general_nonprefix_cmd_verb assignment_expression
+    | 
+
+special_nonprefix_cmd:
+      cd_cmd
+    | pwd_cmd
     | clear_cmd
-    | count_cmd
-    | describe_cmd
-    | di_cmd
-    | drop_cmd
-    | duplicates_cmd
     | exit_cmd
-    | gen_cmd
-    | insheet_cmd
-    | keep_cmd
-    | log_cmd
-    | logit_cmd
-    | ls_cmd
-    | merge_cmd
-    | mlogit_cmd
-    | order_cmd
-    | outsheet_cmd
-    | regress_cmd
-    | rename_cmd
-    | replace_cmd
-    | save_cmd
-    | set_cmd
-    | sort_cmd
-    | sum_cmd
-    | table_cmd
     | use_cmd
-    | xtile_cmd
+    | save_cmd
+    | ls_cmd
+    | rename_cmd
+    | set_cmd
+    
+    | log_cmd
+    | duplicates_cmd
+    | merge_cmd
     ;
 
 embedded_r_cmd:
     EMBEDDED_R
     {
+        /* chop off the first and last three characters of yylval.str,
+           which are the {{{ and }}} that begin and end this command */
         
+        s = strdup(yylval.str);
+        s[strlen(s) - 3] = '\0';
+        s += 3;
+        
+        EmbeddedRCmd cmd = EmbeddedRCmd(s);
+        ADD_TO_CMD_LIST(cmd, cmdlist_ptr)
     }
     ;
 
 /*
- **************************
- * The usual Stata commands
- **************************
+ ******************************************
+ * The colon-required Stata prefix commands
+ ******************************************
+ */
+
+xi_cmd:
+    XI
+    {
+
+    }
+    ;
+
+by_cmd:
+    BY
+    {
+
+    }
+    ;
+
+bysort_cmd:
+    BYSORT
+    {
+
+    }
+    ;
+
+/*
+ *************************************
+ * The "special" Stata non-prefix commands
+ *************************************
  */
 
 exit_cmd:
     EXIT
     {
         raise_condition("Exit requested", "exit");
-    }
-    ;
-
-gen_cmd:
-    GEN assignment_expression
-    {
-    }
-    ;
-
-insheet_cmd:
-    INSHEET USING STRING_LITERAL
-    {
-        GeneralStataCmd cmd = MakeGeneralStataCmd($1)
-                                .using_filename($3)
-                                .create();
-        
-        ADD_TO_CMD_LIST(cmd, cmdlist_ptr)
-    }
-    ;
-
-capture_cmd:
-      CAPTURE
-    | CAPTURE ':' command
-    {
-
     }
     ;
 
@@ -257,34 +399,6 @@ clear_cmd:
     }
     ;
 
-count_cmd:
-    COUNT
-    {
-
-    }
-    ;
-
-describe_cmd:
-    DESCRIBE
-    {
-
-    }
-    ;
-
-di_cmd:
-    DI
-    {
-
-    }
-    ;
-
-drop_cmd:
-    DROP
-    {
-
-    }
-    ;
-
 duplicates_cmd:
     DUPLICATES
     {
@@ -292,22 +406,8 @@ duplicates_cmd:
     }
     ;
 
-keep_cmd:
-    KEEP
-    {
-
-    }
-    ;
-
 log_cmd:
     LOG
-    {
-
-    }
-    ;
-
-logit_cmd:
-    LOGIT
     {
 
     }
@@ -327,43 +427,8 @@ merge_cmd:
     }
     ;
 
-mlogit_cmd:
-    MLOGIT
-    {
-
-    }
-    ;
-
-order_cmd:
-    ORDER
-    {
-
-    }
-    ;
-
-outsheet_cmd:
-    OUTSHEET
-    {
-
-    }
-    ;
-
-regress_cmd:
-    REGRESS
-    {
-
-    }
-    ;
-
 rename_cmd:
     RENAME
-    {
-
-    }
-    ;
-
-replace_cmd:
-    REPLACE
     {
 
     }
@@ -383,22 +448,8 @@ set_cmd:
     }
     ;
 
-sort_cmd:
-    SORT
-    {
-
-    }
-    ;
-
-sum_cmd:
-      SUM varlist
-    {
-
-    }
-    ;
-
 table_cmd:
-      TABLE IDENT
+    TABLE IDENT
     {
 
     }
@@ -406,13 +457,6 @@ table_cmd:
 
 use_cmd:
     USE
-    {
-
-    }
-    ;
-
-xtile_cmd:
-    XTILE
     {
 
     }
