@@ -61,7 +61,7 @@ B           [ \t\v\r\f]
                                 s[strlen(s) - 3] = '\0';
                                 s += 3;
                                 
-                                return yy::RStataParser::make_EMBEDDED_R(EmbeddedRCmd(std::string(s)), loc);
+                                return yy::RStataParser::make_EMBEDDED_R(new EmbeddedRCmd(std::string(s)), loc);
                             }
 
 

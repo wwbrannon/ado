@@ -42,15 +42,33 @@ DatetimeExprNode::DatetimeExprNode(std::string _dt)
     dt = Datetime(_dt, std::string("%d%b%Y %H:%M:%OS"));
 }
 
-BranchExprNode::BranchExprNode(std::string _data)
+BranchExprNode::BranchExprNode(std::string _type, std::string _data)
 {
+    type = _type;
     data = _data;
 }
 
 void
-BranchExprNode::setChildren(std::vector<std::unique_ptr<BaseExprNode>> _children)
+BranchExprNode::setChildren(std::initializer_list<BaseExprNode *> list)
 {
-    children = std::move(_children);
+    std::vector<BaseExprNode *>().swap(children);
+
+    for(auto elem : list)
+    {
+        children.push_back(elem);
+    }
+}
+
+void
+BranchExprNode::setChildren(std::vector<BaseExprNode *> _children)
+{
+    children = _children;
+}
+
+void
+BranchExprNode::appendChild(BaseExprNode *_child)
+{
+    children.push_back(_child);
 }
 
 // The methods for conversion to R expressions
@@ -95,6 +113,9 @@ List BranchExprNode::as_R_object() const
     unsigned int x;
     List res;
 
+    res["type"] = type;
+    res["data"] = data;
+    
     for(x = 0; x < children.size(); x++)
     {
         List y = children[x]->as_R_object();

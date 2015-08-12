@@ -4,6 +4,7 @@
 using namespace Rcpp;
 
 EmbeddedRCmd::EmbeddedRCmd(std::string _text)
+            : GeneralStataCmd(_text)
 {
     verb = "embedded_r";
     text = _text;

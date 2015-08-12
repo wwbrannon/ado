@@ -36,15 +36,19 @@
     }
 }
 
+/* Operator  precedence */
+%precedence RELATIONAL
+%precedence "+" "-"
+%precedence EXPONENT
+%precedence "["
+%precedence "("
+
 %token END         0   "end of file"
 
-%token <std::string> PLUS            "+"
+%token <std::string>
+    PLUS            "+"
     LT_OP           "<"
     GT_OP           ">"
-    LBRACKET        "["
-    RBRACKET        "]"
-    LPAREN          "("
-    RPAREN          ")"
     LBRACE          "{"
     RBRACE          "}"
     DQUOTE          "\""
@@ -63,34 +67,32 @@
     NE_OP           "!="
     OR_OP           "|"
     AND_OP          "&"
+    LBRACKET        "["
+    RBRACKET        "]"
+    LPAREN          "("
+    RPAREN          ")"
+    NEWLINE         "\n"
 ;
 
-%token <BaseExprNode> EMBEDDED_R;
-
 /* Literals of various fundamental types */
-%token <BaseExprNode> NUMBER NUMBER_MISSING
-%token <BaseExprNode> IDENT
-%token <BaseExprNode> STRING_LITERAL STRING_MISSING
-%token <BaseExprNode> DATE TIME DATETIME
+%token <NumberExprNode> NUMBER NUMBER_MISSING
+%token <IdentExprNode> IDENT
+%token <StringExprNode> STRING_LITERAL STRING_MISSING
+%token <DatetimeExprNode> DATE TIME DATETIME
 
 /* Commands with unusual enough syntax they have to be parsed separately */
-%token <BaseExprNode> QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
-%token <BaseExprNode> MERGE
-
-/* Operators */
-%precedence RELATIONAL
-%precedence '+' '-'
-%precedence EXPONENT
-%precedence '['
-%precedence '('
+%token <EmbeddedRCmd> EMBEDDED_R;
+%token <GeneralStataCmd> QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
+%token <GeneralStataCmd> MERGE
 
 /* Command components and keywords */
 %token <std::string> USING IF IN
 %token <std::string> MERGE_SPEC
-%token <std::string> NEWLINE
 
 /* Nonterminal token types */
-%type <GeneralStataCmd> cmd nonmodifier_cmd
+%type <BranchExprNode> translation_unit external_statement compound_cmd cmds modifier_cmd_list
+
+%type <GeneralStataCmd> cmd modifier_cmd nonmodifier_cmd
 
 %type <std::string> assignment_operator unary_operator power_operator equality_operator
 %type <std::string> multiplication_operator additive_operator relational_operator
@@ -102,19 +104,10 @@
 %type <BranchExprNode> unary_expression multiplication_expression additive_expression
 %type <BranchExprNode> relational_expression equality_expression logical_and_expression logical_or_expression
 
-%type <Option> option
+%type <BranchExprNode> option
 %type <BranchExprNode> option_list argument_expression_list expression_list
 
-/*
-translation_unit
-external_statement
-compound_cmd
-cmds
-modifier_cmd_list
-nonmodifier_cmd
-*/
-
-%start expression
+%start translation_unit
 %%
 
 /*
@@ -124,62 +117,82 @@ nonmodifier_cmd
  */
 
 translation_unit:
-      external_statement { driver.ast = std::move($1);  }
-    | translation_unit NEWLINE external_statement
+      external_statement
     {
-        $$ = 
-
-        driver.ast = std::move($$);
+        driver.ast = $1;
+        $$ = $1;
+    }
+    | translation_unit "\n" external_statement
+    {
+        $1->appendChild($3);
+        driver.ast = $1;
+        $$ = $1;
     }
     ;
 
 external_statement:
       cmd
+    {
+        BranchExprNode *node = new BranchExprNode("cmd_list", "");
+        node->appendChild($1);
+        $$ = node;
+    }
     | compound_cmd
     {
-
+        $$ = $1;
     }
     ;
 
 compound_cmd:
     '{' cmds '}'
     {
-
+        $$ = $2;
     }
     ;
 
 cmds:
       cmd
-    | cmds NEWLINE cmd
     {
-
+        BranchExprNode *node = new BranchExprNode("cmd_list", "");
+        node->appendChild($1);
+        $$ = node;
+    }
+    | cmds "\n" cmd
+    {
+        $1->appendChild($2);
+        $$ = $1;
     }
     ;
 
 cmd:
       EMBEDDED_R
     {
-
+        $$ = $1; /* object made in the lexer */
     }
     | modifier_cmd_list nonmodifier_cmd
+    {
+        
+    }
     | modifier_cmd_list ':' nonmodifier_cmd
-    | modifier_cmd_list nonmodifier_cmd ':' nonmodifier_cmd
     {
 
+    }
+    | modifier_cmd_list nonmodifier_cmd ':' nonmodifier_cmd
+    {
     }
     ;
 
-modifier_cmd:
+modifier_cmd: /* objects made in the lexer */
       CAPTURE
     | QUIETLY
     | NOISILY
-    {
-
-    }
     ;
 
 modifier_cmd_list:
       modifier_cmd
+    {
+        
+    }
     | modifier_cmd_list modifier_cmd
     {
 
@@ -190,6 +203,9 @@ nonmodifier_cmd:
       compound_cmd
     
     | IDENT expression_list if_clause in_clause weight_clause using_clause option_list
+    {
+
+    }
     | IDENT
     {
 
@@ -289,20 +305,20 @@ postfix_expression:
       primary_expression
     | postfix_expression '[' expression ']' %prec '['
     {
-        node = new BranchExprNode('[]');
-        node.setChildren($1, $3);
+        BranchExprNode *node = new BranchExprNode("expression", "[]");
+        node->setChildren( {$1, $3} );
         $$ = node;
     }
     | postfix_expression '(' ')' %prec '('
     {
-        node = new BranchExprNode('()');
-        node.setChildren($1);
+        BranchExprNode *node = new BranchExprNode("expression", "()");
+        node->appendChild($1);
         $$ = node;
     }
     | postfix_expression '(' argument_expression_list ')'
     {
-        node = new BranchExprNode('()');
-        node.setChildren($1, $3);
+        BranchExprNode *node = new BranchExprNode("expression", "()");
+        node->setChildren( {$1, $3} );
         $$ = node;
     }
     ;
@@ -311,8 +327,8 @@ power_expression:
       postfix_expression %prec EXPONENT
     | power_expression power_operator postfix_expression %prec EXPONENT
     {
-        BranchExprnode = new BranchExprNode('^');
-        node.setChildren($1, $3);
+        BranchExprNode *node = new BranchExprNode("expression", "^");
+        node->setChildren( {$1, $3} );
         $$ = node;
     }
     ;
@@ -321,8 +337,8 @@ unary_expression:
       power_expression
     | unary_operator power_expression
     {
-        node = new BranchExprNode($1);
-        node.setChildren($2);
+        BranchExprNode *node = new BranchExprNode("expression", $1);
+        node->appendChild($2);
         $$ = node;
     }
     ;
@@ -331,18 +347,18 @@ multiplication_expression:
       unary_expression
     | multiplication_expression multiplication_operator unary_expression
     {
-        node = new BranchExprNode($2);
-        node.setChildren($1, $3);
+        BranchExprNode *node = new BranchExprNode("expression", $2);
+        node->setChildren( {$1, $3} );
         $$ = node;
     }
     ;
 
 additive_expression:
-      multiplication_expression %prec '+'
-    | additive_expression additive_operator multiplication_expression %prec '+'
+      multiplication_expression %prec "+"
+    | additive_expression additive_operator multiplication_expression %prec "+"
     {
-        node = new BranchExprNode($2);
-        node.setChildren($1, $3);
+        BranchExprNode *node = new BranchExprNode("expression", $2);
+        node->setChildren( {$1, $3} );
         $$ = node;
     }
     ;
@@ -351,8 +367,8 @@ relational_expression:
       additive_expression %prec RELATIONAL
     | relational_expression relational_operator additive_expression %prec RELATIONAL
     {
-        node = new BranchExprNode($2);
-        node.setChildren($1, $3);
+        BranchExprNode *node = new BranchExprNode("expression", $2);
+        node->setChildren( {$1, $3} );
         $$ = node;
     }
     ;
@@ -361,8 +377,8 @@ equality_expression:
       relational_expression
     | equality_expression equality_operator relational_expression
     {
-        node = new BranchExprNode($2);
-        node.setChildren($1, $3);
+        BranchExprNode *node = new BranchExprNode("expression", $2);
+        node->setChildren( {$1, $3} );
         $$ = node;
     }
     ;
@@ -371,8 +387,8 @@ logical_and_expression:
       equality_expression
     | logical_and_expression "&" equality_expression
     {
-        node = new BranchExprNode($2);
-        node.setChildren($1, $3);
+        BranchExprNode *node = new BranchExprNode("expression", $2);
+        node->setChildren( {$1, $3} );
         $$ = node;
     }
     ;
@@ -381,17 +397,22 @@ logical_or_expression:
       logical_and_expression
     | logical_or_expression "|" logical_and_expression
     {
-        node = new BranchExprNode($2);
-        node.setChildren($1, $3);
+        BranchExprNode *node = new BranchExprNode("expression", $2);
+        node->setChildren( {$1, $3} );
         $$ = node;
     }
     ;
 
 argument_expression_list:
       logical_or_expression
+    {
+        BranchExprNode *node = new BranchExprNode("expression_list", "");
+        node->appendChild($1);
+        $$ = node;
+    }
     | argument_expression_list ',' logical_or_expression
     {
-        $1.appendChild($3);
+        $1->appendChild($3);
         $$ = $1;
     }
     ;
@@ -400,8 +421,8 @@ expression:
       logical_or_expression
     | IDENT assignment_operator logical_or_expression
     {
-        node = new BranchExprNode($2);
-        node.setChildren($1, $3);
+        BranchExprNode *node = new BranchExprNode("expression", $2);
+        node->setChildren( {$1, $3} );
         $$ = node;
     }
     ;
@@ -409,10 +430,13 @@ expression:
 expression_list:
       expression
     {
+        BranchExprNode *node = new BranchExprNode("expression_list", "");
+        node->appendChild($1);
+        $$ = node;
     }
-    | expression_list expression /* FIXME what's the base case? */
+    | expression_list expression
     {
-        $1.appendChild($2);
+        $1->appendChild($2);
         $$ = $1;
     }
     ;
@@ -426,11 +450,11 @@ expression_list:
 option_list:
       %empty
     {
-        $$ = new BranchExprNode("OptionList");
+        $$ = new BranchExprNode("option_list", "");
     }
     | option_list ',' option
     {
-        $1.appendChild($3);
+        $1->appendChild($3);
         $$ = $1;
     }
     ;
@@ -438,10 +462,15 @@ option_list:
 option:
       IDENT
     {
+        BranchExprNode *node = new BranchExprNode("option", "");
+        node->appendChild($1);
+        $$ = node;
     }
     | IDENT '(' expression_list ')'
     {
-        
+        BranchExprNode *node = new BranchExprNode("option", "");
+        node->setChildren( {$1, $3} );
+        $$ = node;
     }
     ;
 
@@ -454,12 +483,12 @@ option:
 weight_clause:
       %empty
     {
-        $$ = new BranchExprNode("WEIGHT");
+        $$ = new BranchExprNode("weight_clause", "");
     }
     | '[' IDENT '=' expression ']'
     {
-        node = new BranchExprNode("WEIGHT");
-        node.setChildren($2, $4);
+        BranchExprNode *node = new BranchExprNode("weight_clause", "");
+        node->setChildren( {$2, $4} );
         $$ = node;
     }
     ;
@@ -473,12 +502,12 @@ weight_clause:
 if_clause:
       %empty
     {
-        $$ = new BranchExprNode("IF");
+        $$ = new BranchExprNode("if_clause", "");
     }
     | IF expression
     {
-        node = new BranchExprNode("IF")
-        node.setChildren($2);
+        BranchExprNode *node = new BranchExprNode("if_clause", "")
+        node->appendChild($2);
         $$ = node;
     }
     ;
@@ -492,11 +521,12 @@ if_clause:
 in_clause:
       %empty
     {
+        $$ = new BranchExprNode("in_clause", "");
     }
     | IN NUMBER '/' NUMBER
     {
-        node = new BranchExprNode("IN");
-        node.setChildren($2, $4);
+        BranchExprNode *node = new BranchExprNode("in_clause", "");
+        node->setChildren( {$2, $4} );
         $$ = node;
     }
     ;
@@ -510,17 +540,18 @@ in_clause:
 using_clause:
       %empty
     {
+        $$ = new BranchExprNode("using_clause", "");
     }
     | USING STRING_LITERAL
     {
-        node = new BranchExprNode("USING")
-        node.setChildren($2);
+        BranchExprNode *node = new BranchExprNode("using_clause", "")
+        node->appendChild($2);
         $$ = node;
     }
     | USING IDENT
     {
-        node = new BranchExprNode("USING")
-        node.setChildren($2);
+        BranchExprNode *node = new BranchExprNode("using_clause", "")
+        node->appendChild($2);
         $$ = node;
     }
     ;

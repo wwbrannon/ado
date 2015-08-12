@@ -68,68 +68,35 @@ class DatetimeExprNode: public BaseExprNode
         Rcpp::Datetime dt;
 };
 
-// Options as they occur after commands, prefix or otherwise
-class OptionExprNode: public BaseExprNode
-{
-    public:
-        OptionExprNode(std::string _name, std::vector<std::string> _args);
-        
-        Rcpp::List as_R_object() const;
-
-    private:
-        std::string name;
-        std::vector<std::string> args;
-};
-
-// Option lists
-class OptionListExprNode: public BaseExprNode
-{
-    public:
-        OptionListExprNode(std::vector<OptionExprNode> _options);
-        Rcpp::List as_R_object() const;
-    
-    private:
-        std::vector<OptionExprNode> options;
-};
-
 // all other expressions: assignment expressions, logical expressions,
 // equality expressions, relational expressions, arithmetic expressions,
 // function calls, and even statement blocks
 class BranchExprNode: public BaseExprNode
 {
     public:
-        BranchExprNode(std::string _data);
-        void setChildren(std::vector<std::unique_ptr<BaseExprNode>> _children);
+        BranchExprNode(std::string _type, std::string _data);
+        
+        void setChildren(std::vector<BaseExprNode *> _children);
+        void setChildren(std::initializer_list<BaseExprNode *> children);
+        void appendChild(BaseExprNode *_child);
         
         Rcpp::List as_R_object() const;
     
     private:
-        std::vector<std::unique_ptr<BaseExprNode>> children;
+        std::vector<BaseExprNode *> children;
         std::string data;
-};
-
-// The "embedded R" block that the lexer recognizes and passes through
-class EmbeddedRCmd: public BaseExprNode
-{
-    private:
-        std::string text;
-
-    public:
-        std::string verb;
-        
-        Rcpp::List as_R_object() const;
-        EmbeddedRCmd(std::string _text);
+        std::string type;
 };
 
 // All non-compound Stata commands
-class GeneralStataCmd: public BaseExprNode
+class GeneralStataCmd: public BranchExprNode
 {
     private:
-        BaseExprNode *varlist;
-        BaseExprNode *assign_stmt; // "var = exp"
-        BaseExprNode *if_exp; // "if expression"
-        BaseExprNode *weight; // "weight"
-        OptionListExprNode    *options; // ", options"
+        BranchExprNode *varlist;
+        BranchExprNode *assign_stmt; // "var = exp"
+        BranchExprNode *if_exp; // "if expression"
+        BranchExprNode *weight; // "weight"
+        BranchExprNode *options; // ", options"
         
         int has_range;
         int range_lower; // the lower range limit
@@ -140,14 +107,28 @@ class GeneralStataCmd: public BaseExprNode
     public:
         std::string verb;
 
-        BaseExprNode *ChildCmd; // the command after a prefix command, incl another prefix command
         Rcpp::List as_R_object() const;
 
+        GeneralStataCmd(std::string _verb);
+
         GeneralStataCmd(std::string _verb,
-                   std::string _weight, std::string _using_filename,
+                   BranchExprNode *_weight, std::string _using_filename,
                    int _has_range, int _range_lower, int _range_upper,
-                   BaseExprNode *_varlist, BaseExprNode *_assign_stmt,
-                   BaseExprNode *_if_exp, OptionListExprNode *_options);
+                   BranchExprNode *_varlist,
+                   BranchExprNode *_assign_stmt,
+                   BranchExprNode *_if_exp,
+                   BranchExprNode *_options);
+};
+
+// The "embedded R" block that the lexer recognizes and passes through
+class EmbeddedRCmd: public GeneralStataCmd
+{
+    private:
+        std::string text;
+
+    public:
+        Rcpp::List as_R_object() const;
+        EmbeddedRCmd(std::string _text);
 };
 
 // A helper class to avoid typing out all the args to the GeneralStataCmd constructor.
@@ -159,28 +140,28 @@ class MakeGeneralStataCmd
         
         GeneralStataCmd create();
 
-        MakeGeneralStataCmd& verb(std::string const& _verb);
-        MakeGeneralStataCmd& varlist(BaseExprNode *_varlist);
-        MakeGeneralStataCmd& assign_stmt(BaseExprNode *_assign_stmt);
-        MakeGeneralStataCmd& if_exp(BaseExprNode *_if_exp);
-        MakeGeneralStataCmd& options(OptionListExprNode *_options);
+        MakeGeneralStataCmd& verb(std::string _verb);
+        MakeGeneralStataCmd& weight(BranchExprNode *_weight);
+        MakeGeneralStataCmd& varlist(BranchExprNode *_varlist);
+        MakeGeneralStataCmd& assign_stmt(BranchExprNode *_assign_stmt);
+        MakeGeneralStataCmd& if_exp(BranchExprNode *_if_exp);
+        MakeGeneralStataCmd& options(BranchExprNode *_options);
         MakeGeneralStataCmd& has_range(int _has_range);
         MakeGeneralStataCmd& range_upper(int _range_upper);
         MakeGeneralStataCmd& range_lower(int _range_lower);
-        MakeGeneralStataCmd& weight(std::string _weight);
         MakeGeneralStataCmd& using_filename(std::string _using_filename);
     
     private:
-        std::string __verb;
-        BaseExprNode *__varlist;
-        BaseExprNode *__assign_stmt;
-        BaseExprNode *__if_exp;
-        OptionListExprNode *__options;
-        int __has_range;
-        int __range_lower;
-        int __range_upper;
-        std::string __weight;
-        std::string __using_filename;
+        std::string _verb;
+        BranchExprNode *_weight;
+        BranchExprNode *_varlist;
+        BranchExprNode *_assign_stmt;
+        BranchExprNode *_if_exp;
+        BranchExprNode *_options;
+        int _has_range;
+        int _range_lower;
+        int _range_upper;
+        std::string _using_filename;
 };
 
 #endif /* RSTATA_H */

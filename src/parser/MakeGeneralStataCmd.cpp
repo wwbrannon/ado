@@ -1,89 +1,89 @@
 #include <Rcpp.h>
 #include "RStata.hpp"
 
-MakeGeneralStataCmd::MakeGeneralStataCmd(std::string _verb)
+MakeGeneralStataCmd::MakeGeneralStataCmd(std::string Nverb)
 {
-    __verb = _verb;
+    _verb = Nverb;
     
-    __varlist = NULL;
-    __assign_stmt = NULL;
-    __if_exp = NULL;
-    __options = NULL;
+    _weight = NULL;
+    _varlist = NULL;
+    _assign_stmt = NULL;
+    _if_exp = NULL;
+    _options = NULL;
 
-    __has_range = 0;
-    __range_lower = 0;
-    __range_upper = 0;
+    _has_range = 0;
+    _range_lower = 0;
+    _range_upper = 0;
 
-    __weight = NULL;
-    __using_filename = "";
+    _using_filename = "";
 }
 
 GeneralStataCmd MakeGeneralStataCmd::create()
 {
-    GeneralStataCmd *cmd = new GeneralStataCmd(__verb, __weight, __using_filename,
-                                               __has_range, __range_upper, __range_lower,
-                                               __varlist, __assign_stmt, __if_exp, __options);
+    GeneralStataCmd *cmd = new GeneralStataCmd(_verb, _weight, _using_filename,
+                                               _has_range, _range_upper, _range_lower,
+                                               _varlist, _assign_stmt, _if_exp, _options);
 
     return *cmd;
 }
 
-MakeGeneralStataCmd& MakeGeneralStataCmd::verb(std::string const& _verb)
+MakeGeneralStataCmd& MakeGeneralStataCmd::verb(std::string Nverb)
 {
-    __verb = _verb;
+    _verb = Nverb;
     return *this;
 }
 
-MakeGeneralStataCmd& MakeGeneralStataCmd::varlist(BaseExprNode *_varlist)
+MakeGeneralStataCmd& MakeGeneralStataCmd::varlist(BranchExprNode *Nvarlist)
 {
-    __varlist = _varlist;
+    _varlist = Nvarlist;
     return *this;
 }
 
-MakeGeneralStataCmd& MakeGeneralStataCmd::assign_stmt(BaseExprNode *_assign_stmt)
+MakeGeneralStataCmd& MakeGeneralStataCmd::assign_stmt(BranchExprNode *Nassign_stmt)
 {
-    __assign_stmt = _assign_stmt;
+    _assign_stmt = Nassign_stmt;
     return *this;
 }
 
-MakeGeneralStataCmd& MakeGeneralStataCmd::if_exp(BaseExprNode *_if_exp)
+MakeGeneralStataCmd& MakeGeneralStataCmd::if_exp(BranchExprNode *Nif_exp)
 {
-    __if_exp = _if_exp;
+    _if_exp = Nif_exp;
     return *this;
 }
 
-MakeGeneralStataCmd& MakeGeneralStataCmd::options(OptionListExprNode *_options)
+MakeGeneralStataCmd& MakeGeneralStataCmd::options(BranchExprNode *Noptions)
 {
-    __options = _options;
+    _options = Noptions;
     return *this;
 }
 
-MakeGeneralStataCmd& MakeGeneralStataCmd::has_range(int _has_range)
+MakeGeneralStataCmd& MakeGeneralStataCmd::weight(BranchExprNode *Nweight)
 {
-    __has_range = _has_range;
+    _weight = Nweight;
     return *this;
 }
 
-MakeGeneralStataCmd& MakeGeneralStataCmd::range_upper(int _range_upper)
+MakeGeneralStataCmd& MakeGeneralStataCmd::has_range(int Nhas_range)
 {
-    __range_upper = _range_upper;
+    _has_range = Nhas_range;
     return *this;
 }
 
-MakeGeneralStataCmd& MakeGeneralStataCmd::range_lower(int _range_lower)
+MakeGeneralStataCmd& MakeGeneralStataCmd::range_upper(int Nrange_upper)
 {
-    __range_lower = _range_lower;
+    _range_upper = Nrange_upper;
     return *this;
 }
 
-MakeGeneralStataCmd& MakeGeneralStataCmd::weight(BaseExprNode *_weight)
+MakeGeneralStataCmd& MakeGeneralStataCmd::range_lower(int Nrange_lower)
 {
-    __weight = _weight;
+    _range_lower = Nrange_lower;
     return *this;
 }
 
-MakeGeneralStataCmd& MakeGeneralStataCmd::using_filename(std::string _using_filename)
+MakeGeneralStataCmd& MakeGeneralStataCmd::using_filename(std::string Nusing_filename)
 {
-    __using_filename = _using_filename;
+    _using_filename = Nusing_filename;
     return *this;
 }
 
