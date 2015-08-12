@@ -1,9 +1,17 @@
+#include <cstdio>
 #include <string>
 #include <Rcpp.h>
 #include "RStata.hpp"
 
-class RStataDriver; // forward-declare this
+// A lot of messy forward declarations of type names to make flex and
+// bison play nicely together, and with this driver class
+class RStataDriver;
+typedef void* yyscan_t;
+
 #include "ado.tab.hpp"
+typedef yy::RStataParser::semantic_type YYSTYPE;
+
+#include "lex.yy.hpp"
 
 #include "RStataDriver.hpp"
 #include "RStataExceptions.hpp"
@@ -25,7 +33,7 @@ RStataDriver::RStataDriver(int _callbacks, Rcpp::Function _cmd_action,
                            Rcpp::Function _macro_value_accessor,
                            std::string _text, int _debug_level)
             : cmd_action(Rcpp::Function("identity")),
-              macro_value_accessor(Rcpp::Function("identity")) // FIXME
+              macro_value_accessor(Rcpp::Function("identity"))
 {
     text = _text;
     
@@ -43,29 +51,49 @@ RStataDriver::~RStataDriver()
     delete ast; // all the other members still get their destructors called
 }
 
+    // We should just be able to do this:
+    //     yy_scan_string(text.c_str());
+    // but there's a probable flex bug that overflows yytext on unput()
+    // when input comes from yy_scan_string(). Instead, let's create a
+    // tempfile, because that works correctly.
 int
 RStataDriver::parse()
 {
-    if(scan_begin())
+    // Initialize the reentrant scanner
+    yyscan_t yyscanner;
+    yylex_init(&yyscanner);
+
+    if( !(this->tmp = tmpfile()) )
     {
-        int res;
-    
-        yy::RStataParser parser(*this);
-        
-        if( (this->debug_level & DEBUG_PARSE_TRACE) != 0 )
-            parser.set_debug_level(1);
-        else
-            parser.set_debug_level(0);
-        
-        res = parser.parse();
-        
-        scan_end();
-    
-        return res;
-    } else
-    {
-        return 1; // failure on a low-level I/O error
+        this->error("Cannot open temp file for writing");
+        return 1; // failure
     }
+    
+    if(fputs( (this->text).c_str(), this->tmp)==0 && ferror(this->tmp))
+    {
+        this->error("Cannot write to temp file");
+        return 1; // failure
+    }
+    rewind(this->tmp);
+    
+    yy_switch_to_buffer(yy_create_buffer(this->tmp, YY_BUF_SIZE, yyscanner), yyscanner);
+
+    int res;
+
+    yy::RStataParser parser(*this, yyscanner);
+    
+    if( (this->debug_level & DEBUG_PARSE_TRACE) != 0 )
+        parser.set_debug_level(1);
+    else
+        parser.set_debug_level(0);
+    
+    res = parser.parse();
+    
+    // wrap up the scan
+    yylex_destroy(yyscanner);
+    fclose(this->tmp);
+
+    return res;
 }
 
 void

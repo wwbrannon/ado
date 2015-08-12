@@ -15,8 +15,11 @@
 #include <memory>
 #include "RStata.hpp"
 class RStataDriver;
+typedef void* yyscan_t;
 
-#define YY_DECL int yylex(yy::RStataParser::semantic_type* yylval_param, yy::RStataParser::location_type* llocp, RStataDriver& driver)
+#define YY_DECL int yylex(yy::RStataParser::semantic_type* yylval_param, \
+                          yy::RStataParser::location_type* llocp,        \
+                          RStataDriver& driver, yyscan_t yyscanner)      
 
 #define R_ACTION(node) \
     if(driver.callbacks == 1 && !(driver.error_seen)) \
@@ -27,6 +30,7 @@ class RStataDriver;
 }
 
 %param { RStataDriver& driver }
+%param { yyscan_t yyscanner }
 %locations
 
 %union

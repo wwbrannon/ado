@@ -2,11 +2,12 @@
 %option bison-bridge
 %option noyywrap
 
+%option reentrant
+
 %{ /* -*- C++ -*- */
 #include <cstring>
 #include <climits>
 #include <cstdlib>
-#include <cstdio>
 
 #include <algorithm>
 #include <stack>
@@ -21,6 +22,10 @@
 #include "ado.tab.hpp"
 #include "RStataDriver.hpp"
 
+#ifndef YYSTYPE
+#define YYSTYPE yy::RStataParser::semantic_type
+#endif
+
 // We really, really can't have the scanner calling exit() and
 // killing the R process, so let's use our own friendlier routine.
 // If the issue is memory exhaustion, the R interpreter overall will
@@ -30,10 +35,6 @@
 #endif
 
 #define YY_FATAL_ERROR(msg) rstata_yy_fatal_error(msg)
-
-#ifndef YYSTYPE
-#define YYSTYPE yy::RStataParser::semantic_type
-#endif
 
 // Make yytext big enough to hold a macro replacement text as large as
 // the ones Stata allows
@@ -97,11 +98,11 @@ std::stack<std::vector<std::string>> macro_stack;
                                     /* if you write {{{ ... }}}, the ... will be executed as R code */
 <INITIAL>"{{{"                      {
                                         embed_buf.clear();
-                                        yy_push_state(EMBED);
+                                        yy_push_state(EMBED, yyscanner);
                                     }
 <EMBED>{
     "}}}"                           {
-                                        yy_pop_state();
+                                        yy_pop_state(yyscanner);
 
                                         ExprNode *node = new ExprNode("rstata_embedded_code");
                                         node->addData("value", std::string(embed_buf));
@@ -121,7 +122,7 @@ std::stack<std::vector<std::string>> macro_stack;
 
     <<EOF>>                         {
                                         embed_buf.clear();
-                                        yy_pop_state();
+                                        yy_pop_state(yyscanner);
                                         
                                         driver.error(*llocp, "Unclosed embed block");
                                         yyterminate();
@@ -139,7 +140,7 @@ std::stack<std::vector<std::string>> macro_stack;
                                         std::vector<std::string> frame;
                                         macro_stack.push(frame);
 
-                                        yy_push_state(LOCAL_MACRO);
+                                        yy_push_state(LOCAL_MACRO, yyscanner);
                                     }
 <INITIAL>\$                         {
                                         while(!macro_stack.empty())
@@ -149,7 +150,7 @@ std::stack<std::vector<std::string>> macro_stack;
                                         std::vector<std::string> frame;
                                         macro_stack.push(frame);
 
-                                        yy_push_state(GLOBAL_MACRO);
+                                        yy_push_state(GLOBAL_MACRO, yyscanner);
                                     }
 
 <LOCAL_MACRO>{
@@ -158,14 +159,14 @@ std::stack<std::vector<std::string>> macro_stack;
                                         std::vector<std::string> frame;
                                         macro_stack.push(frame);
 
-                                        yy_push_state(LOCAL_MACRO);
+                                        yy_push_state(LOCAL_MACRO, yyscanner);
                                     }
     \$                              {
                                         // create and push a stack frame
                                         std::vector<std::string> frame;
                                         macro_stack.push(frame);
 
-                                        yy_push_state(GLOBAL_MACRO);
+                                        yy_push_state(GLOBAL_MACRO, yyscanner);
                                     }
 
     \n                              {
@@ -175,8 +176,8 @@ std::stack<std::vector<std::string>> macro_stack;
                                             macro_stack.pop();
                                         
                                         do {
-                                            yy_pop_state();
-                                        } while(yy_top_state() != INITIAL);
+                                            yy_pop_state(yyscanner);
+                                        } while(yy_top_state(yyscanner) != INITIAL);
                                         
                                         driver.error(*llocp, "Unclosed local macro");
                                         yyterminate();
@@ -202,13 +203,13 @@ std::stack<std::vector<std::string>> macro_stack;
                                             prev.push_back(replacement);
                                             macro_stack.push(prev);
                                             
-                                            yy_pop_state();
+                                            yy_pop_state(yyscanner);
                                         } else
                                         {
                                             for(size_t i = replacement.length(); i > 0; i--)
                                                 unput(replacement[i - 1]);
                                             
-                                            yy_pop_state();
+                                            yy_pop_state(yyscanner);
                                         }
                                     }
     
@@ -226,8 +227,8 @@ std::stack<std::vector<std::string>> macro_stack;
                                             macro_stack.pop();
                                         
                                         do {
-                                            yy_pop_state();
-                                        } while(yy_top_state() != INITIAL);
+                                            yy_pop_state(yyscanner);
+                                        } while(yy_top_state(yyscanner) != INITIAL);
                                         
                                         driver.error(*llocp, "Unclosed local macro");
                                         yyterminate();
@@ -240,14 +241,14 @@ std::stack<std::vector<std::string>> macro_stack;
                                         std::vector<std::string> frame;
                                         macro_stack.push(frame);
 
-                                        yy_push_state(LOCAL_MACRO);
+                                        yy_push_state(LOCAL_MACRO, yyscanner);
                                     }
     \$                              {
                                         // create and push a stack frame
                                         std::vector<std::string> frame;
                                         macro_stack.push(frame);
 
-                                        yy_push_state(GLOBAL_MACRO);
+                                        yy_push_state(GLOBAL_MACRO, yyscanner);
                                     }
 
                                     /* The delimiter characters that mean we're at the end of the macro */
@@ -270,13 +271,13 @@ std::stack<std::vector<std::string>> macro_stack;
                                             prev.push_back(replacement);
                                             macro_stack.push(prev);
                                             
-                                            yy_pop_state();
+                                            yy_pop_state(yyscanner);
                                         } else
                                         {
                                             for(size_t i = replacement.length(); i > 0; i--)
                                                 unput(replacement[i - 1]);
                                             
-                                            yy_pop_state();
+                                            yy_pop_state(yyscanner);
                                         }
                                     }
     
@@ -311,8 +312,8 @@ std::stack<std::vector<std::string>> macro_stack;
                                             macro_stack.pop();
                                         
                                         do {
-                                            yy_pop_state();
-                                        } while(yy_top_state() != INITIAL);
+                                            yy_pop_state(yyscanner);
+                                        } while(yy_top_state(yyscanner) != INITIAL);
                                         
                                         driver.error(*llocp, "Invalid global macro");
                                         yyterminate();
@@ -322,17 +323,17 @@ std::stack<std::vector<std::string>> macro_stack;
 
 
                                     /* Eat long comments */
-<INITIAL>"/*"                       { yy_push_state(LONG_COMMENT); }
+<INITIAL>"/*"                       { yy_push_state(LONG_COMMENT, yyscanner); }
 <LONG_COMMENT>{
                                     /* Got a close-comment marker, all done */
-    "*/"                            { yy_pop_state(); }
+    "*/"                            { yy_pop_state(yyscanner); }
 
     [^\*\n]+                        { /* Eat this chunk of comment */ }
     \*                              { /* Eat a single asterisk */ }
     [\n]+                           { llocp->lines(yyleng); }
     
     <<EOF>>                         {
-                                        yy_pop_state();
+                                        yy_pop_state(yyscanner);
                                         driver.error(*llocp, "Unclosed comment");
                                         yyterminate();
                                     }
@@ -346,12 +347,12 @@ std::stack<std::vector<std::string>> macro_stack;
 
 
                                     /* Eat short comments */
-<INITIAL>"//"                       { yy_push_state(SHORT_COMMENT); }
-<INITIAL>^\*                        { yy_push_state(SHORT_COMMENT); }
+<INITIAL>"//"                       { yy_push_state(SHORT_COMMENT, yyscanner); }
+<INITIAL>^\*                        { yy_push_state(SHORT_COMMENT, yyscanner); }
 <SHORT_COMMENT>{
     [^\n]*                          { /* eat anything but a newline */ }
     \n                              {
-                                         yy_pop_state();
+                                         yy_pop_state(yyscanner);
                                          llocp->lines(1);
                                          return token::TOK_NEWLINE;
                                     }
@@ -396,7 +397,7 @@ std::stack<std::vector<std::string>> macro_stack;
 {B}+                                { llocp->step(); }
 
 
-<INITIAL>\`\"                       { cdquote_buf.clear(); yy_push_state(CDQUOTE); }
+<INITIAL>\`\"                       { cdquote_buf.clear(); yy_push_state(CDQUOTE, yyscanner); }
 <CDQUOTE>{
     \"\'                            {
                                         /* Saw the matching close quote - all done */
@@ -404,7 +405,7 @@ std::stack<std::vector<std::string>> macro_stack;
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_string_literal"});
                                         yylval->node->addData("value", *s);
 
-                                        yy_pop_state();
+                                        yy_pop_state(yyscanner);
                                         return token::TOK_STRING_LITERAL;
                                     }
 
@@ -425,19 +426,19 @@ std::stack<std::vector<std::string>> macro_stack;
 
                                     /* Code run on seeing macro terminators will check if the new top state is CDQUOTE
                                        and append the macro replacement text to cdquote_buf if so. */
-    \`                              { yy_push_state(LOCAL_MACRO); }
-    \$                              { yy_push_state(GLOBAL_MACRO); }
+    \`                              { yy_push_state(LOCAL_MACRO, yyscanner); }
+    \$                              { yy_push_state(GLOBAL_MACRO, yyscanner); }
 
     <<EOF>>                         {
                                         cdquote_buf.clear();
-                                        yy_pop_state();
+                                        yy_pop_state(yyscanner);
 
                                         driver.error(*llocp, "Unclosed compound double quote");
                                         yyterminate();
                                     }
 }
 
-<INITIAL>\"                         { string_buf.clear(); yy_push_state(STRING); }
+<INITIAL>\"                         { string_buf.clear(); yy_push_state(STRING, yyscanner); }
 <STRING>{
     \"                              {
                                         /* Saw a close quote - all done */
@@ -445,7 +446,7 @@ std::stack<std::vector<std::string>> macro_stack;
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_string_literal"});
                                         yylval->node->addData("value", *s);
 
-                                        yy_pop_state();
+                                        yy_pop_state(yyscanner);
                                         return token::TOK_STRING_LITERAL;
                                     }
 
@@ -465,14 +466,14 @@ std::stack<std::vector<std::string>> macro_stack;
 
                                     /* Code run on seeing macro terminators will check if the new top state is STRING
                                        and append the macro replacement text to string_buf if so. */
-    \`                              { yy_push_state(LOCAL_MACRO); }
-    \$                              { yy_push_state(GLOBAL_MACRO); }
+    \`                              { yy_push_state(LOCAL_MACRO, yyscanner); }
+    \$                              { yy_push_state(GLOBAL_MACRO, yyscanner); }
 
     [^\\\n\"\`\$]+                  { string_buf += std::string(yytext); }
 
     <<EOF>>                         {
                                         string_buf.clear();
-                                        yy_pop_state();
+                                        yy_pop_state(yyscanner);
 
                                         driver.error(*llocp, "Unclosed string literal");
                                         yyterminate();
@@ -951,40 +952,5 @@ raise_condition(const std::string& msg, const std::string& type)
   cond.attr("class") = Rcpp::CharacterVector::create(type, "condition");
   Rcpp::Function stopper("stop");
   stopper(cond);
-}
-
-// The scanning-related functions of the driver class, which depend on lexer objects
-int
-RStataDriver::scan_begin()
-{
-    // We should just be able to do this:
-    //     yy_scan_string(text.c_str());
-    // but there's a probable flex bug that overflows yytext on unput()
-    // when input comes from yy_scan_string(). Instead, let's create a
-    // tempfile, because that works correctly.
-    
-    if( !(this->tmp = tmpfile()) )
-    {
-        this->error("Cannot open temp file for writing");
-        return 0; // failure
-    }
-    
-    if(fputs( (this->text).c_str(), this->tmp)==0 && ferror(this->tmp))
-    {
-        this->error("Cannot write to temp file");
-        return 0; // failure
-    }
-    rewind(this->tmp);
-    
-    yy_switch_to_buffer(yy_create_buffer(this->tmp, YY_BUF_SIZE));
-
-    return 1;
-}
-
-void
-RStataDriver::scan_end()
-{
-    yy_delete_buffer(YY_CURRENT_BUFFER);
-    fclose(this->tmp);
 }
 

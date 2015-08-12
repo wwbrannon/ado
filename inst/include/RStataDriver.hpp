@@ -23,9 +23,6 @@ class RStataDriver
         
         ExprNode *ast;
 
-        int scan_begin();
-        void scan_end();
-
         int parse();
 
         int callbacks;
