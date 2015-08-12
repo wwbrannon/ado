@@ -591,7 +591,10 @@ exit_cmd:
 insheet_cmd:
     INSHEET USING STRING_LITERAL
     {
-        StataCmd cmd = new StataCmd(n_verb = $1, n_using_filename == $3);
+        StataCmd cmd = MakeStataCmd($1)
+                         .using_filename($3)
+                         .create();
+        
         ADD_TO_CMD_LIST(cmd, cmdlist_ptr)
     }
     ;

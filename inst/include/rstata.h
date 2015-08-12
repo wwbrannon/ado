@@ -48,7 +48,7 @@ typedef struct ast_node
 class StataCmd
 {
     public:
-        std::string n_verb; // the command verb
+        std::string verb; // the command verb
         
         EXPR_T *modifiers; // "modifiers": a MODIFIER_LIST of the by, bysort, etc, applied
         EXPR_T *varlist; // a varlist is a left-deep tree of IDENTs
@@ -60,45 +60,158 @@ class StataCmd
         int range_lower; // the lower range limit
         int range_upper; // the upper range limit
         
-        std::string *weight; // "weight": the column name of the weight, or NULL
-        std::string *using_filename; // "using filename": the filename given after using, or NULL
+        std::string weight; // "weight": the column name of the weight, or NULL
+        std::string using_filename; // "using filename": the filename given after using, or NULL
         
-        StataCmd(std::string n_verb,
-                 std::string n_weight = "", std::string n_using_filename = "",
-                 int n_has_range = 0, int n_range_lower = 0, int n_range_upper = 0,
-                 EXPR_T *n_modifiers = NULL, EXPR_T *n_varlist = NULL,
-                 EXPR_T *n_assign_stmt = NULL, EXPR_T *n_if_exp = NULL,
-                 EXPR_T *n_options = NULL)
+        StataCmd(std::string _verb,
+                 std::string _weight, std::string _using_filename,
+                 int _has_range, int _range_lower, int _range_upper,
+                 EXPR_T *_modifiers, EXPR_T *_varlist,
+                 EXPR_T *_assign_stmt, EXPR_T *_if_exp,
+                 EXPR_T *_options)
         {
-            verb = n_verb;
+            verb = _verb;
 
-            modifiers = n_modifiers;
-            varlist = n_varlist;
-            assign_stmt = n_assign_stmt;
-            if_exp = n_if_exp;
-            options = n_options;
+            modifiers = _modifiers;
+            varlist = _varlist;
+            assign_stmt = _assign_stmt;
+            if_exp = _if_exp;
+            options = _options;
 
-            has_range = n_has_range;
-            range_lower = n_range_lower;
-            range_upper = n_range_upper;
+            has_range = _has_range;
+            range_lower = _range_lower;
+            range_upper = _range_upper;
 
-            weight = n_weight;
-            using_filename = n_using_filename;
+            weight = _weight;
+            using_filename = _using_filename;
         };
+};
+
+// positional-only parameters are garbage...
+class MakeStataCmd
+{
+    public:
+        MakeStataCmd(std::string _verb)
+        {
+            __verb = _verb;
+            
+            __modifiers = NULL;
+            __varlist = NULL;
+            __assign_stmt = NULL;
+            __if_exp = NULL;
+            __options = NULL;
+
+            __has_range = 0;
+            __range_lower = 0;
+            __range_upper = 0;
+
+            __weight = "";
+            __using_filename = "";
+        }
+
+        StataCmd create()
+        {
+            StataCmd *cmd = new StataCmd(__verb, __weight, __using_filename,
+                                        __has_range, __range_upper, __range_lower,
+                                        __modifiers, __varlist, __assign_stmt,
+                                        __if_exp, __options);
+
+            return *cmd;
+        }
+
+        MakeStataCmd& verb(std::string const& _verb)
+        {
+            __verb = _verb;
+            return *this;
+        }
+
+        MakeStataCmd& modifiers(EXPR_T *_modifiers)
+        {
+            __modifiers = _modifiers;
+            return *this;
+        }
+
+        MakeStataCmd& varlist(EXPR_T *_varlist)
+        {
+            __varlist = _varlist;
+            return *this;
+        }
+
+        MakeStataCmd& assign_stmt(EXPR_T *_assign_stmt)
+        {
+            __assign_stmt = _assign_stmt;
+            return *this;
+        }
+
+        MakeStataCmd& if_exp(EXPR_T *_if_exp)
+        {
+            __if_exp = _if_exp;
+            return *this;
+        }
+
+        MakeStataCmd& options(EXPR_T *_options)
+        {
+            __options = _options;
+            return *this;
+        }
+
+        MakeStataCmd& has_range(int _has_range)
+        {
+            __has_range = _has_range;
+            return *this;
+        }
+
+        MakeStataCmd& range_upper(int _range_upper)
+        {
+            __range_upper = _range_upper;
+            return *this;
+        }
+
+        MakeStataCmd& range_lower(int _range_lower)
+        {
+            __range_lower = _range_lower;
+            return *this;
+        }
+
+        MakeStataCmd& weight(std::string _weight)
+        {
+            __weight = _weight;
+            return *this;
+        }
+        
+        MakeStataCmd& using_filename(std::string _using_filename)
+        {
+            __using_filename = _using_filename;
+            return *this;
+        }
+        
+    private:
+        std::string __verb;
+        EXPR_T *__modifiers;
+        EXPR_T *__varlist;
+        EXPR_T *__assign_stmt;
+        EXPR_T *__if_exp;
+        EXPR_T *__options;
+        int __has_range;
+        int __range_lower;
+        int __range_upper;
+        std::string __weight;
+        std::string __using_filename;
+        
 };
 
 typedef struct STATA_CMD_LIST
 {
     StataCmd *current;
-    StataCmd *next;
+    struct STATA_CMD_LIST *next;
 } STATA_CMD_LIST_T;
 
 // the initial empty command list the update macro will work with,
 // and the head pointer to the list
 STATA_CMD_LIST_T cmdlist =
 {
-    .current = NULL,
-    .next = NULL
+    NULL, // current
+    NULL  // next
 };
 
 STATA_CMD_LIST_T *cur = &cmdlist;
@@ -115,8 +228,8 @@ STATA_CMD_LIST_T *head = &cmdlist;
         {                                           \
             STATA_CMD_LIST_T next_cmdlist =         \
             {                                       \
-                .current = &cmd;                    \
-                .next = NULL                        \
+                &cmd, /* current */                 \
+                NULL  /* next */                    \
             };                                      \
                                                     \
             cur->next = &next_cmdlist;              \
