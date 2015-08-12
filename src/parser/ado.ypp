@@ -344,7 +344,7 @@ nonmodifier_cmd:
     /* commands with unusual enough syntax to parse them separately */
     | MERGE MERGE_SPEC expression_list using_clause option_list
     {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_special_cmd"});
         node->appendChild("verb", $1);
         node->addData("merge_spec", *($2));
         
@@ -367,7 +367,7 @@ nonmodifier_cmd:
     }
     | GENERATE expression if_clause in_clause option_list
     {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_special_cmd"});
         node->appendChild("verb", $1);
         node->appendChild("expression", $2);
         
@@ -390,7 +390,7 @@ nonmodifier_cmd:
     }
     | GENERATE type_spec expression if_clause in_clause option_list
     {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_special_cmd"});
         node->appendChild("verb", $1);
         node->addData("type_spec", *($2));
         node->appendChild("expression", $3);
@@ -414,7 +414,7 @@ nonmodifier_cmd:
     }
     | RECAST type_spec expression_list option_list
     {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_special_cmd"});
         node->appendChild("verb", $1);
         node->addData("type_spec", *($2));
 
@@ -429,7 +429,7 @@ nonmodifier_cmd:
     }
     | DISPLAY format_spec expression
     {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_special_cmd"});
         node->appendChild("verb", $1);
         node->addData("format_spec", *($2));
         node->appendChild("expression", $3);
@@ -438,7 +438,7 @@ nonmodifier_cmd:
     }
     | DISPLAY expression
     {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_special_cmd"});
         node->appendChild("verb", $1);
         node->appendChild("expression", $2);
         
@@ -446,7 +446,7 @@ nonmodifier_cmd:
     }
     | FORMAT format_spec expression_list
     {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_special_cmd"});
         node->appendChild("verb", $1);
         node->addData("format_spec", *($2));
         node->appendChild("varlist", $3);
@@ -455,7 +455,7 @@ nonmodifier_cmd:
     }
     | FORMAT expression_list format_spec
     {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_special_cmd"});
         node->appendChild("verb", $1);
         node->addData("format_spec", *($3));
         node->appendChild("varlist", $2);
