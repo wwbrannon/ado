@@ -46,7 +46,8 @@ int yywrap()
 %token <str> STRING_FORMAT DATETIME_FORMAT NUMBER_FORMAT
 
 /* Command components and keywords */
-%token <str> USING IF IN_CLAUSE
+%token <str> USING IF IN_CLAUSE WITH IN
+%token <str> _LITTLE_N _BIG_N _ALL _B _COEF _CONS _PI _PRED _RC _SKIP
 
 /* Commands with unusual enough syntax they have to be parsed separately */
 %token <str> QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */

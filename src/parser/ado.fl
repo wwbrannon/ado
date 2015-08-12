@@ -32,6 +32,8 @@ F           [FLfl]
 
                             /* if you write {{{ ... }}}, the ... will be executed as R code */
 \{\{\{.*\}\}\}              {
+                                char *s;
+                                
                                 count();
                                 
                                 /* chop off the first and last three characters of yylval.str,
@@ -111,7 +113,7 @@ _N                          { count(); yylval.str = strdup(yytext); return _BIG_
 
                             /* logical operators and various single-character tokens */
 "&&"                        { count(); yylval.str = strdup(yytext); return AND_OP; }
-"&&"                        { count(); yylval.str = strdup(yytext); return AND_OP; }
+"&"                         { count(); yylval.str = strdup(yytext); return AND_OP; }
 "||"                        { count(); yylval.str = strdup(yytext); return OR_OP; }
 "|"                         { count(); yylval.str = strdup(yytext); return OR_OP; }
 ">="                        { count(); yylval.str = strdup(yytext); return GT_OP; }
