@@ -48,7 +48,13 @@ test_that("Assignment expressions parse", {
 })
 
 test_that("Short comments parse", {
-    #FIXME
+    expect_accept('disp "short comments parse" // at EOF')
+    expect_accept('disp "short comments parse" // and at EOL with a newline\n')
+    expect_accept('disp "short comments parse" // and with a semicolon;')
+    expect_accept('disp "short comments parse"\n// on a new line\n')
+    expect_accept('//short comments parse at the top of the script
+                  disp "short comments parse"
+                  // and again here\n')
 })
 
 test_that("Long comments parse", {
@@ -68,13 +74,13 @@ test_that("Both statement delimiters parse", {
 })
 
 test_that("Compound command blocks parse", {
-    expect_reject("{ }")
-    expect_accept("{ display 1+1; }")
+    expect_reject("{ }\n")
+    expect_accept("{ display 1+1; }\n")
     expect_accept("{
         local name=1+1;
         disp 45;
         qui sum foo;
-    }")
+    }\n")
 })
 
 test_that("General commands with no expression_list parse", {
@@ -83,40 +89,59 @@ test_that("General commands with no expression_list parse", {
 })
 
 test_that("General commands with an expression_list parse", {
-    expect_accept("gen foo = 1")
-    expect_accept("tab support treat")
-    expect_accept("gen byte foo = 10")
-    expect_accept("disp \"I'm a string\"")
+    expect_accept("gen foo = 1\n")
+    expect_accept("tab support treat\n")
+    expect_accept("gen byte foo = 10\n")
+    expect_accept("disp \"I'm a string\"\n")
+    expect_accept("logit y x1 x2##i.x3 x4 c.x5#x6")
 })
 
 test_that("General commands with an option list parse", {
-    expect_accept("exit, clear")
-    expect_accept("count, opt")
-    expect_accept("cmd, opt(arg) opt2(arg1) opt3(arg233) opt4")
+    expect_accept("exit, clear\n")
+    expect_accept("count, opt\n")
+    expect_accept("cmd, opt(arg) opt2(arg1) opt3(arg233) opt4\n")
 })
 
 test_that("General commands with an if clause and an option list parse", {
-    #FIXME
+    expect_accept("drop if in_universe == 0, force\n")
+    expect_accept("keep if good == 1, force\n")
+    expect_accept("cmd if good_case + 1, opt opt2(val)\n")
 })
 
 test_that("General commands with an expression list and an if clause parse", {
-    #FIXME
+    expect_accept("logit y x1 x2 x3 if treat != 3\n")
+    expect_accept("drop if hhid > 9999\n")
+    expect_accept("gen y = 1 if income > 50000\n")
+    expect_accept("replace income = 0 if income <= 50000")
 })
 
 test_that("General commands with an expression list and an in clause parse", {
-    #FIXME
+    expect_accept("logit y x1 x2 x3 in 3 / 4\n")
+    expect_accept("drop in -5 / 6\n")
+    expect_accept("gen y = 1 in 34 / L\n")
+    expect_accept("replace income = 0 in -24 / F\n")
 })
 
 test_that("General commands with an expression list and a weight clause parse", {
-    #FIXME
+    expect_accept("tab support treat [pweight=weight]\n")
+    expect_accept("reg y x1 x2 x3 [aweight=weight]\n")
+    expect_accept("logit z y1 y2##y10 y3 [iweight = wgt]")
+    expect_accept("mlogit z y2 y3 c.y5#y9 [aweight = wgt]\n")
 })
 
 test_that("General commands with an expression list and a using clause parse", {
-    #FIXME
+    expect_accept('insheet using "myfile.csv"\n')
+    expect_accept('insheet using "myfile.csv", comma clear\n')
+    expect_accept('save using "foobar.dta"\n')
+    expect_accept('save using "foobar.dta", replace\n')
 })
 
 test_that("General commands with an expression list and an option list parse", {
-    #FIXME
+    expect_accept("mlogit y x1 x2 x3, b(0)\n")
+    expect_accept("reg voted treat i.race, cluster(hhid)\n")
+    expect_accept("mlogit voted treat i.race, cluster(hhid) b(1)\n")
+    expect_accept("egen v = std(var1 + var2), missing\n")
+    expect_accept("egen v = mode(var3), minmode")
 })
 
 test_that("Embedded code blocks parse", {
