@@ -6,9 +6,9 @@ function(varlist=NULL, if_clause=NULL, in_clause=NULL,
     return(match.call())
 }
 
-#FIXME
 rstata_cmd_anova <-
-function(return.match.call=NULL)
+function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL, return.match.call=NULL)
 {
   if(!is.null(return.match.call) && return.match.call)
     return(match.call())
@@ -95,9 +95,9 @@ function(varlist, if_clause=NULL, in_clause=NULL, option_list=NULL,
     return(match.call())
 }
 
-#FIXME
 rstata_cmd_ivregress <-
-function(return.match.call=NULL)
+function(varlist, option_list, if_clause=NULL, in_clause=NULL,
+         weight_clause=NULL, return.match.call=NULL)
 {
   if(!is.null(return.match.call) && return.match.call)
     return(match.call())
@@ -135,9 +135,8 @@ function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
       return(match.call())
 }
 
-#FIXME
 rstata_cmd_lrtest <-
-function(return.match.call=NULL)
+function(expression_list, option_list=NULL, return.match.call=NULL)
 {
   if(!is.null(return.match.call) && return.match.call)
     return(match.call())
@@ -305,9 +304,8 @@ function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
       return(match.call())
 }
 
-#FIXME
 rstata_cmd_test <-
-function(return.match.call=NULL)
+function(expression_list, return.match.call=NULL)
 {
   if(!is.null(return.match.call) && return.match.call)
     return(match.call())
@@ -323,7 +321,7 @@ function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
 
 #FIXME
 rstata_cmd_power <-
-function(return.match.call=NULL)
+function(..., return.match.call=NULL)
 {
   if(!is.null(return.match.call) && return.match.call)
     return(match.call())

@@ -20,9 +20,9 @@ function(expression_list=NULL, if_clause=NULL, in_clause=NULL,
     return(match.call())
 }
 
-#FIXME
 rstata_cmd_collapse <-
-function(return.match.call=NULL)
+function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL, return.match.call=NULL)
 {
   if(!is.null(return.match.call) && return.match.call)
     return(match.call())
@@ -231,9 +231,9 @@ function(expression, option_list=NULL, return.match.call=NULL)
     return(match.call())
 }
 
-#FIXME
 rstata_cmd_recode <-
-function(return.match.call=NULL)
+function(expression_list, if_clause=NULL, in_clause=NULL, option_list=NULL,
+         return.match.call=NULL)
 {
   if(!is.null(return.match.call) && return.match.call)
     return(match.call())
