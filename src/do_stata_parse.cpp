@@ -26,7 +26,7 @@ List do_stata_parse(std::string line)
     {
         obj = parsed->current;
 
-        // ask the StataCmd object to give us its R form
+        // ask the BaseStataCmd object to give us its R form
         Language res = Language("as.call", obj->as_list());
         
         if(ret.length() == 0)
