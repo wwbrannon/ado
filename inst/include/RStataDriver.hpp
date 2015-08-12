@@ -32,9 +32,10 @@ class RStataDriver
         void error(const yy::location& l, const std::string& m);
         void error(const std::string& m);
 
+        int debug_level;
+        
     private:
         std::string text;
-        int debug_level;
 };
 
 #endif /* RSTATA_DRIVER_H */

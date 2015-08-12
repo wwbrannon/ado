@@ -7,7 +7,7 @@ class BadCommandException : public std::exception
 {
     const char *what() const noexcept
     {
-        return "Parse error or semantic error\n";
+        return "Semantic error\n";
     }
 };
 

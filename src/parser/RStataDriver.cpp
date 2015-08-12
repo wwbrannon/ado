@@ -83,7 +83,7 @@ RStataDriver::parse()
 void
 RStataDriver::wrap_cmd_action(Rcpp::List ast)
 {
-  int ret = Rcpp::as<int>(cmd_action(ast));
+  int ret = Rcpp::as<int>(cmd_action(ast, debug_level));
   
   // success
   if(ret == 0)

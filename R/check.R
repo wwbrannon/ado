@@ -3,7 +3,7 @@
 ### and raise error conditions if the checks fail.
 
 check <-
-function(node)
+function(node, debug_level=0)
 {
   #General checks all AST nodes should pass
   raiseifnot(node %is% "rstata_ast_node")
@@ -24,13 +24,13 @@ function(node)
 }
 
 verifynode <-
-function(node)
+function(node, debug_level=0)
 UseMethod("verifynode")
 
 ##############################################################################
 ## Literals
 verifynode.rstata_literal <-
-function(node)
+function(node, debug_level=0)
 {
   #Children - length, names, types
   raiseifnot(length(node$children) == 0)
@@ -43,7 +43,7 @@ function(node)
 }
 
 verifynode.rstata_ident <-
-function(node)
+function(node, debug_level=0)
 {
   raiseifnot(length(grep("^[A-Za-z_]+$", node$data["value"])) > 0)
   raiseifnot(!is.null(as.symbol(node$data["value"])))
@@ -52,7 +52,7 @@ function(node)
 }
 
 verifynode.rstata_number <-
-function(node)
+function(node, debug_level=0)
 {
   val <- as.numeric(node$data["value"])
   valid_missings <- c(".", paste0(".", LETTERS, sep=""))
@@ -63,7 +63,7 @@ function(node)
 }
 
 verifynode.rstata_string_literal <-
-function(node)
+function(node, debug_level=0)
 {
   val <- as.character(node$data["value"])
   raiseifnot(!is.na(val) && !is.null(val))
@@ -72,7 +72,7 @@ function(node)
 }
 
 verifynode.rstata_datetime <-
-function(node)
+function(node, debug_level=0)
 {
   val <- as.POSIXct(strptime(node$data["value"], format="%d%b%Y %H:%M:%S"))
   raiseifnot(!is.na(val) && !is.null(val))
@@ -83,7 +83,7 @@ function(node)
 ##############################################################################
 ## Command parts
 verifynode.rstata_if_clause <-
-function(node)
+function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 0)
@@ -102,7 +102,7 @@ function(node)
 }
 
 verifynode.rstata_in_clause <-
-function(node)
+function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 0)
@@ -122,7 +122,7 @@ function(node)
 }
 
 verifynode.rstata_using_clause <-
-function(node)
+function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 0)
@@ -142,7 +142,7 @@ function(node)
 }
 
 verifynode.rstata_weight_clause <-
-function(node)
+function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 0)
@@ -163,7 +163,7 @@ function(node)
 }
 
 verifynode.rstata_option_list <-
-function(node)
+function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 0)
@@ -177,7 +177,7 @@ function(node)
 }
 
 verifynode.rstata_option <-
-function(node)
+function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 0)
@@ -198,7 +198,7 @@ function(node)
 ##############################################################################
 ## Compound and atomic commands
 verifynode.rstata_compound_cmd <-
-function(node)
+function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 0)
@@ -216,7 +216,7 @@ function(node)
 }
 
 verifynode.rstata_modifier_cmd_list <-
-function(node)
+function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 0)
@@ -233,7 +233,7 @@ function(node)
 }
 
 verifynode.rstata_embedded_r <-
-function(node)
+function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 1)
@@ -247,7 +247,7 @@ function(node)
 }
 
 verifynode.rstata_cmd <-
-function(node)
+function(node, debug_level=0)
 {
   #Children - length, names, types
   raiseifnot(length(node$children) > 0)
@@ -263,7 +263,7 @@ function(node)
 }
 
 verifynode.rstata_modifier_cmd <-
-function(node)
+function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 0)
@@ -279,7 +279,7 @@ function(node)
 }
 
 verifynode.rstata_general_cmd <-
-function(node)
+function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 0)
@@ -313,12 +313,12 @@ function(node)
 }
 
 verifynode.rstata_special_cmd <-
-function(node)
+function(node, debug_level=0)
 {
   verb <- tolower(node$children$verb$data["value"])
   func <- paste0("rstata_", verb)
   
-  raiseifnot(verb %in% c("merge", "generate", "recast", "display", "format"))
+  raiseifnot(verb %in% c("merge", "generate", "recast", "display", "format", "xi"))
   raiseifnot(exists(func))
   
   args <- formals(get(func))
@@ -358,6 +358,10 @@ function(node)
     raiseifnot(length(node$data) == 1)
     raiseifnot(names(node$data) == c("format_spec"))
     raiseifnot(valid_format_spec(node$data["format_spec"]))
+  } else if(verb == "xi")
+  {
+    #FIXME what do I do about xi being both a cmd and a prefix cmd?
+    raiseifnot(length(node$data) == 0)
   }
 
   invisible(TRUE)
@@ -367,7 +371,7 @@ function(node)
 ## Lists of expressions
 
 verifynode.rstata_expression_list <-
-function(node)
+function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 0)
@@ -381,7 +385,7 @@ function(node)
 }
 
 verifynode.rstata_type_constructor <-
-function(node)
+function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 1)
@@ -398,7 +402,7 @@ function(node)
 }
 
 verifynode.rstata_argument_expression_list <-
-function(node)
+function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 0)
@@ -421,7 +425,7 @@ function(node)
 ## Expression branch nodes - literals are above
 
 verifynode.rstata_expression <-
-function(node)
+function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) > 0)
@@ -432,7 +436,7 @@ function(node)
 
 ## Tightly binding factor operators
 verifynode.rstata_factor_expression <-
-function(node)
+function(node, debug_level=0)
 {
   #Children - length, names, types
   raiseifnot(length(node$children) == 1)
@@ -444,7 +448,7 @@ function(node)
 }
 
 verifynode.rstata_continuous_expression <-
-function(node)
+function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 1)
@@ -453,7 +457,7 @@ function(node)
 }
 
 verifynode.rstata_indicator_expression <-
-function(node)
+function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(node$data["verb"] == "i.")
@@ -476,7 +480,7 @@ function(node)
 }
 
 verifynode.rstata_omit_expression <-
-function(node)
+function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) > 1)
@@ -498,7 +502,7 @@ function(node)
 }
 
 verifynode.rstata_baseline_expression <-
-function(node)
+function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 2)
@@ -513,7 +517,7 @@ function(node)
 }
 
 verifynode.rstata_cross_expression <-
-function(node)
+function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 1)
@@ -534,7 +538,7 @@ function(node)
 
 ## Arithmetic expressions
 verifynode.rstata_power_expression <-
-function(node)
+function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 1)
@@ -556,7 +560,7 @@ function(node)
 }
 
 verifynode.rstata_unary_expression <-
-function(node)
+function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 1)
@@ -575,7 +579,7 @@ function(node)
 
 
 verifynode.rstata_multiplication_expression <-
-function(node)
+function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 1)
@@ -597,7 +601,7 @@ function(node)
 }
 
 verifynode.rstata_additive_expression <-
-function(node)
+function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 1)
@@ -620,7 +624,7 @@ function(node)
 
 ## Logical, relational and other expressions
 verifynode.rstata_equality_expression <-
-function(node)
+function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 1)
@@ -662,7 +666,7 @@ function(node)
 }
 
 verifynode.rstata_logical_expression <-
-function(node)
+function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 1)
@@ -704,7 +708,7 @@ function(node)
 }
 
 verifynode.rstata_relational_expression <-
-function(node)
+function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 1)
@@ -746,7 +750,7 @@ function(node)
 }
 
 verifynode.rstata_postfix_expression <-
-function(node)
+function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 1)
@@ -776,7 +780,7 @@ function(node)
 }
 
 verifynode.rstata_assignment_expression <-
-function(node)
+function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 1)

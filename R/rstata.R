@@ -139,15 +139,15 @@ function(dta = NULL, filename=NULL, string=NULL,
 }
 
 process_cmd <-
-function(ast)
+function(ast, debug_level=0)
 {
   #Semantic analysis and code generation
   ret_p1 <-
   tryCatch(
   {
-    check(ast)
+    check(ast, debug_level=debug_level)
     
-    codegen(ast)
+    codegen(ast, debug_level=debug_level)
   },
   error=function(c) c,
   bad_command=function(c) c)
@@ -162,6 +162,7 @@ function(ast)
   ret_p2 <-
   tryCatch(
   {
+    #FIXME how to incorporate debug level?
     objs <- eval(ret_p1, envir=parent.frame())
   
     for(obj in objs)

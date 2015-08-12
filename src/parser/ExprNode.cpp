@@ -1,5 +1,3 @@
-/* Methods for most of the derived classes of ExprNode */
-
 #include <cstdio>
 #include <Rcpp.h>
 #include "RStata.hpp"
