@@ -516,7 +516,7 @@ i?"o("\ *{D}+\ *\/{D}+\ *")."       {
                                         return token::TOK_IDENT;
                                     }
 
-<<EOF>>                             { static int once = 0; return (once = !once) ? token::TOK_NEWLINE : token::TOK_END; }
+<<EOF>>                             { return token::TOK_END; }
 
 .                                   { yylval->str = new std::string(yytext); return token::TOK_ILLEGAL_CHARACTER;  }
 

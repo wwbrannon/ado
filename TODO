@@ -1,21 +1,30 @@
 Now:
+    o) better error messages
+        o) from check() and codegen() and ultimately raiseifnot
+        o) in general, attached to exceptions that propagate up from callback;
+           you'll have to give your exception classes constructors that take strings
+        o) a debug_level argument for the rstata() function
+
+    o) interactive toplevel should exit on pressing Ctrl-D
+    
     o) code generation: construct unevaluated calls and expression objects
         o) name abbreviation
 
-    o) insert a newline at the end of input, always
-    o) better error messages with exceptions that propagate up from callback
+    o) infrastructural R functions
+      o) for operators
+      o) for prefix commands - quietly, noisily, capture, by, xi
+    
+    o) R functions for initial general commands
 
-    o) functions for the initial set of commands
-
-    Debug:
+    Systematic debugging:
         o) use testthat and travis
         o) write a unit test suite
         o) test, test, test...
 
 Parser / lexer:
     o) Macros, without loops
-        o) just need to find a way to lex nested macros and recursively substitute
-           their values from the symbol table
+        o) need to find a way to lex nested macros and recursively substitute
+           their values from the symbol table - use flex start conditions
         o) "compound double quotes"
 
     o) Loops
@@ -28,10 +37,8 @@ Commands:
         o) a few more macro manipulation commands
         
 Documentation:
-    o) convert comments and NAMESPACE to use roxygen2
-    o) man entries, vignettes, examples, README
+    o) functions, examples, a vignette, update README
     o) document the R expression format the parser emits
-    o) better error messages from check()
 
 Misc:
     o) Makevars and Makefile have to come from a configure script for

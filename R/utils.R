@@ -70,6 +70,11 @@ function()
         
         #we got a non-continuing line
         res <- paste(res, inpt, sep="\n")
+        
+        #the grammar requires a newline or semicolon as a statement
+        #terminator, so add a few in case we didn't get one at EOF
+        res <- paste0(res, "\n\n\n")
+        
         break
     }
 

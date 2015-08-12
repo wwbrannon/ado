@@ -69,12 +69,12 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
               break
             } else if(inherits(val, "BadCommandException"))
             {
-              cat(paste0(val$message, "\n", sep=""))
+              cat(paste0(val$message, sep=""))
               
               next
             } else
             {
-              cat(paste0(val$message, "\n", sep=""))
+              cat(paste0(val$message, sep=""))
               
               on.exit()
               s <- substr(readline("Save dataset? "), 1, 1)
@@ -88,16 +88,22 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
     } else if(is.null(filename) && is.null(string))
     {   
         inpt <- readLines(con=stdin(), warn=FALSE)
+        inpt <- Reduce(function(x, y) paste(x, y, sep="\n"), inpt)
+        inpt <- paste0(inpt, "\n\n\n")
         
         do_parse_with_callbacks(inpt, process_cmd, get_macro_value)
     } else if(!is.null(filename))
     {
         inpt <- readLines(con=file(filename, "r"))
+        inpt <- Reduce(function(x, y) paste(x, y, sep="\n"), inpt)
+        inpt <- paste0(inpt, "\n\n\n")
         
         do_parse_with_callbacks(inpt, process_cmd, get_macro_value)
     } else
     {
         inpt <- readLines(con=textConnection(string))
+        inpt <- Reduce(function(x, y) paste(x, y, sep="\n"), inpt)
+        inpt <- paste0(inpt, "\n\n\n")
         
         do_parse_with_callbacks(inpt, process_cmd, get_macro_value)
     }
