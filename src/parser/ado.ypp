@@ -38,7 +38,9 @@
 
 %token END         0   "end of file"
 
-%token <std::string>
+%token <std::string> PLUS            "+"
+    LT_OP           "<"
+    GT_OP           ">"
     LBRACKET        "["
     RBRACKET        "]"
     LPAREN          "("
@@ -51,11 +53,16 @@
     COLON           ":"
     NEG_OP          "!"
     STAR            "*"
-    PLUS            "+"
     SLASH           "/"
     MINUS           "-"
     CARET           "^"
-    EQUALS          "="
+    ASSIGN          "="
+    GE_OP           ">="
+    LE_OP           "<="
+    EQ_OP           "=="
+    NE_OP           "!="
+    OR_OP           "|"
+    AND_OP          "&"
 ;
 
 %token <BaseExprNode> EMBEDDED_R;
@@ -71,7 +78,6 @@
 %token <BaseExprNode> MERGE
 
 /* Operators */
-%token <std::string> GT_OP LT_OP EQ_OP NE_OP OR_OP AND_OP
 %precedence RELATIONAL
 %precedence '+' '-'
 %precedence EXPONENT
@@ -83,7 +89,32 @@
 %token <std::string> MERGE_SPEC
 %token <std::string> NEWLINE
 
-%start translation_unit
+/* Nonterminal token types */
+%type <GeneralStataCmd> cmd nonmodifier_cmd
+
+%type <std::string> assignment_operator unary_operator power_operator equality_operator
+%type <std::string> multiplication_operator additive_operator relational_operator
+
+%type <BranchExprNode> if_clause in_clause weight_clause using_clause
+
+%type <BranchExprNode> expression
+%type <BranchExprNode> primary_expression postfix_expression power_expression
+%type <BranchExprNode> unary_expression multiplication_expression additive_expression
+%type <BranchExprNode> relational_expression equality_expression logical_and_expression logical_or_expression
+
+%type <Option> option
+%type <BranchExprNode> option_list argument_expression_list expression_list
+
+/*
+translation_unit
+external_statement
+compound_cmd
+cmds
+modifier_cmd_list
+nonmodifier_cmd
+*/
+
+%start expression
 %%
 
 /*
@@ -126,17 +157,13 @@ cmds:
     ;
 
 cmd:
-      embedded_r_cmd
-    | modifier_cmd_list nonmodifier_cmd
-    | modifier_cmd_list ':' nonmodifier_cmd
-    | modifier_cmd_list nonmodifier_cmd ':' nonmodifier_cmd
+      EMBEDDED_R
     {
 
     }
-    ;
-
-embedded_r_cmd:
-    EMBEDDED_R
+    | modifier_cmd_list nonmodifier_cmd
+    | modifier_cmd_list ':' nonmodifier_cmd
+    | modifier_cmd_list nonmodifier_cmd ':' nonmodifier_cmd
     {
 
     }
@@ -161,27 +188,20 @@ modifier_cmd_list:
 
 nonmodifier_cmd:
       compound_cmd
-    | special_cmd
+    
     | IDENT expression_list if_clause in_clause weight_clause using_clause option_list
     | IDENT
     {
 
     }
-    ;
-
-special_cmd:
-    merge_cmd
-    {
-
-    }
-    ;
-
-merge_cmd:
+    
+    /* commands with unusual enough syntax to parse them separately */
     MERGE MERGE_SPEC expression_list using_clause option_list
     {
-        
+
     }
     ;
+
 
 /*
  ************************************************************
@@ -191,41 +211,39 @@ merge_cmd:
 */
 
 assignment_operator:
-    '='
+    "="
     ;
 
 unary_operator:
-      '-'
-    | '+'
-    | '!'
-    | '~'
+      "-"
+    | "+"
+    | "!"
     ;
 
 power_operator:
-    '^'
+    "^"
     ;
 
 multiplication_operator:
-      '*'
-    | '/'
-    | '%'
+      "*"
+    | "/"
     ;
 
 additive_operator:
-      '+'
-    | '-'
+      "+"
+    | "-"
     ;
 
 relational_operator:
-      '<'
-    | '>'
-    | GT_OP
-    | LT_OP
+      "<"
+    | ">"
+    | ">="
+    | "<="
     ;
 
 equality_operator:
-      EQ_OP
-    | NE_OP
+      "=="
+    | "!="
     ;
 
 primary_expression:
@@ -351,7 +369,7 @@ equality_expression:
 
 logical_and_expression:
       equality_expression
-    | logical_and_expression AND_OP equality_expression
+    | logical_and_expression "&" equality_expression
     {
         node = new BranchExprNode($2);
         node.setChildren($1, $3);
@@ -361,7 +379,7 @@ logical_and_expression:
 
 logical_or_expression:
       logical_and_expression
-    | logical_or_expression OR_OP logical_and_expression
+    | logical_or_expression "|" logical_and_expression
     {
         node = new BranchExprNode($2);
         node.setChildren($1, $3);
@@ -407,7 +425,10 @@ expression_list:
 
 option_list:
       %empty
-    | option_list ',' option /* FIXME what's the base case? */
+    {
+        $$ = new BranchExprNode("OptionList");
+    }
+    | option_list ',' option
     {
         $1.appendChild($3);
         $$ = $1;
@@ -432,9 +453,12 @@ option:
 
 weight_clause:
       %empty
+    {
+        $$ = new BranchExprNode("WEIGHT");
+    }
     | '[' IDENT '=' expression ']'
     {
-        node = new BranchExprNode("weight");
+        node = new BranchExprNode("WEIGHT");
         node.setChildren($2, $4);
         $$ = node;
     }
@@ -448,9 +472,14 @@ weight_clause:
 
 if_clause:
       %empty
+    {
+        $$ = new BranchExprNode("IF");
+    }
     | IF expression
     {
-        $$ = $2;
+        node = new BranchExprNode("IF")
+        node.setChildren($2);
+        $$ = node;
     }
     ;
 
@@ -462,6 +491,8 @@ if_clause:
 
 in_clause:
       %empty
+    {
+    }
     | IN NUMBER '/' NUMBER
     {
         node = new BranchExprNode("IN");
@@ -478,13 +509,19 @@ in_clause:
 
 using_clause:
       %empty
+    {
+    }
     | USING STRING_LITERAL
     {
-        $$ = $2;
+        node = new BranchExprNode("USING")
+        node.setChildren($2);
+        $$ = node;
     }
     | USING IDENT
     {
-        $$ = $2;
+        node = new BranchExprNode("USING")
+        node.setChildren($2);
+        $$ = node;
     }
     ;
 

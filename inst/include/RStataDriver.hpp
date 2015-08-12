@@ -21,7 +21,7 @@ class RStataDriver
         RStataDriver(std::string text);
         virtual ~RStataDriver();
 
-        std::unique_ptr<BaseExprNode> ast;
+        std::vector<std::unique_ptr<BaseExprNode>> ast;
 
         void scan_begin();
         void scan_end();
