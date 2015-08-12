@@ -132,6 +132,9 @@ yy::RStataParser::error(const location_type& l, const std::string& m)
                 /* Factor variable operators */
 %token <node>   CONT_OPERATOR IND_OPERATOR BASE_OPERATOR OMIT_OPERATOR
 
+                /* Loops */
+%token <node>   FOREACH FORVALUES
+
                 /* Nonterminal token types */
 %type <node>    error cmd_sep
 %type <node>    translation_unit external_statement compound_cmd cmds modifier_cmd_list cmd

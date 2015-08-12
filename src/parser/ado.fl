@@ -90,6 +90,10 @@ typedef yy::RStataParser::token token;
 %x GMACRO_ALPHA
 %x GMACRO_BRACE
 
+%s FOREACH
+%s FORVALUES
+%x ACCUMULATE
+
 %x EMBED
 %x STRING
 %x CDQUOTE
@@ -112,6 +116,9 @@ llocp->step();
 std::string embed_buf;
 std::string cdquote_buf;
 std::string string_buf;
+
+// Loop objects
+std::string loop_buf;
 
 std::stack<std::vector<std::string>> macro_stack;
 
@@ -553,6 +560,111 @@ size_t macro_length = 0;
                                         
                                         driver.error(*llocp, "Unclosed brace-delimited global macro");
                                         yyterminate();
+                                    }
+}
+
+
+                                    /* Loops, which in Stata are not loops in the usual sense.
+                                     * A Stata loop is a directive to the macro processor (this
+                                     * scanner, in this case) to bind a macro name over a set of
+                                     * values and for each such value, reparse and execute a block
+                                     * of text containing that macro.
+                                     
+                                     * The basic idea here is this: once we see one of the looping
+                                     * keywords foreach or forvalues, specially lex a) the macro name,
+                                     * b) the set of values it should range over, c) the block of text
+                                     * and pass those things as appropriate tokens to the parser. The parser
+                                     * forms the appropriate productions from them, and their associated
+                                     * ExprNode objects will be passed up to the R layer for execution. The
+                                     * functions that implement them set up the macro context, and for each
+                                     * value of the macro, invoke a new parser/scanner instance to reparse
+                                     * and execute the text block. If there are nested loops, there can be
+                                     * three or more scanners running at once. (That's why it's so important
+                                     * that both the parser and the scanner be reentrant, even though R
+                                     * isn't multithreaded.) */
+<INITIAL>^{B}*foreach               {
+                                        R_ECHO(yytext);
+
+                                        loop_buf.clear();
+                                        yy_push_state(FOREACH, yyscanner);
+
+                                        yylval->node = new ExprNode({"rstata_loop", "rstata_foreach"});
+                                        return token::TOK_FOREACH;
+                                    }
+<INITIAL>^{B}*forvalues             {
+                                        R_ECHO(yytext);
+
+                                        loop_buf.clear();
+                                        yy_push_state(FORVALUES, yyscanner);
+
+                                        yylval->node = new ExprNode({"rstata_loop", "rstata_forvalues"});
+                                        return token::TOK_FORVALUES;
+                                    }
+<INITIAL>^{B}*forvalue              {
+                                        R_ECHO(yytext);
+
+                                        loop_buf.clear();
+                                        yy_push_state(FORVALUES, yyscanner);
+
+                                        yylval->node = new ExprNode({"rstata_loop", "rstata_forvalues"});
+                                        return token::TOK_FORVALUES;
+                                    }
+<INITIAL>^{B}*forvalu               {
+                                        R_ECHO(yytext);
+
+                                        loop_buf.clear();
+                                        yy_push_state(FORVALUES, yyscanner);
+
+                                        yylval->node = new ExprNode({"rstata_loop", "rstata_forvalues"});
+                                        return token::TOK_FORVALUES;
+                                    }
+<INITIAL>^{B}*forval                {
+                                        R_ECHO(yytext);
+
+                                        loop_buf.clear();
+                                        yy_push_state(FORVALUES, yyscanner);
+
+                                        yylval->node = new ExprNode({"rstata_loop", "rstata_forvalues"});
+                                        return token::TOK_FORVALUES;
+                                    }
+<INITIAL>^{B}*forva                 {
+                                        R_ECHO(yytext);
+
+                                        loop_buf.clear();
+                                        yy_push_state(FORVALUES, yyscanner);
+
+                                        yylval->node = new ExprNode({"rstata_loop", "rstata_forvalues"});
+                                        return token::TOK_FORVALUES;
+                                    }
+<INITIAL>^{B}*forv                  {
+                                        R_ECHO(yytext);
+
+                                        loop_buf.clear();
+                                        yy_push_state(FORVALUES, yyscanner);
+
+                                        yylval->node = new ExprNode({"rstata_loop", "rstata_forvalues"});
+                                        return token::TOK_FORVALUES;
+                                    }
+
+
+
+<FOREACH>{
+
+}
+
+
+
+<FORVALUES>{
+    \{$                             {
+                                        /* Start accumulating text */
+                                    }
+    
+    \n                              {
+                                        // In this state, a newline not immediately following
+                                        // a "{" is a syntax error
+                                    }
+    
+    {B}*\}{B}*                      {
                                     }
 }
 

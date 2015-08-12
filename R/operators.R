@@ -48,3 +48,9 @@ function(left, right)
 
 }
 
+#a version of "==" that handles NA the way Stata does
+`%==%` <-
+function(left, right)
+{
+  
+}
