@@ -750,7 +750,7 @@ function(node)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 1)
-  raseifnot(node$data["verb"] %in% c("()", "[]"))
+  raiseifnot(node$data["verb"] %in% c("()", "[]"))
   
   #Children - length, names, types
   raiseifnot(length(node$children) %in% c(1, 2))
