@@ -5,10 +5,9 @@ Now:
            you'll have to give your exception classes constructors that take strings
         o) a debug_level argument for the rstata() function
 
-    o) interactive toplevel should exit on pressing Ctrl-D
-    
     o) code generation: construct unevaluated calls and expression objects
-        o) name abbreviation
+    
+    o) name abbreviation
 
     o) infrastructural R functions
       o) for operators
@@ -46,6 +45,9 @@ Misc:
 
 ===============================================================================
 Wishlist functionality:
+    o) better interactive reading than readline() and readLines()
+      o) Ctrl-D isn't EOF
+
     o) A mechanism for the user to register an R function obeying the
        calling convention as a Stata command - the "registry" package?
     

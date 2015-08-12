@@ -49,8 +49,8 @@ function(expr, cls="bad_command", msg=errmsg)
     invisible(NULL)
 }
 
-#We're reading from the console, so we have to handle the /// construct
-#in this function as well as in the parser.
+#We're reading from the console one line at a time, so we have to handle
+#the /// construct in this function as well as in the parser
 read_interactive <-
 function()
 {
@@ -68,7 +68,7 @@ function()
             next;
         }
         
-        #we got a non-continuing line
+        #we got a line that doesn't continue onto the next line
         res <- paste(res, inpt, sep="\n")
         
         #the grammar requires a newline or semicolon as a statement

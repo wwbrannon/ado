@@ -4,7 +4,8 @@
 #' @useDynLib rstata
 #' @import Rcpp
 rstata <-
-function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
+function(dta = NULL, filename=NULL, string=NULL,
+         assign.back=TRUE, save.history=TRUE)
 {
     #Sanity checks: create an empty dataset if none provided,
     #but make sure we have a data frame
@@ -48,13 +49,27 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
     {
         #We're reading from stdin, interactively:
         #time for a read-eval-print loop
+        
+        #Save the command history before we get started
+        if(!is.null(save.history) && save.history)
+        {
+          cmdhist <- tempfile()
+          savehistory(cmdhist)
+        }
+      
         while(TRUE)
         {
           val <- 
           tryCatch(
           {
             inpt <- read_interactive()
-
+            
+            if(!is.null(save.history) && save.history)
+            {
+              cat(inpt, "\n", file=cmdhist, append=TRUE)
+              loadhistory(cmdhist) #it's brutal how much disk access this is
+            }
+            
             #Send the input to the bison parser, which, after reading
             #each command, invokes the process_cmd callback
             do_parse_with_callbacks(inpt, process_cmd, get_macro_value)
@@ -85,6 +100,9 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
             }
           }
         }
+      
+      if(!is.null(save.history) && save.history)
+        unlink(cmdhist)
     } else if(is.null(filename) && is.null(string))
     {   
         inpt <- readLines(con=stdin(), warn=FALSE)
@@ -107,7 +125,7 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
         
         do_parse_with_callbacks(inpt, process_cmd, get_macro_value)
     }
-
+    
     return(invisible(dta));
 }
 
@@ -130,14 +148,12 @@ function(ast)
   #the C++ code re-raise the exceptions in a more controllable way
   if(inherits(ret_p1, "bad_command") || inherits(ret_p1, "error"))
     return(1)
-  else
-    cl <- ret_p1
 
   #Evaluate the generated calls for their side effects and for printable objects
   ret_p2 <-
   tryCatch(
   {
-    objs <- eval(cl, envir=parent.frame())
+    objs <- eval(ret_p1, envir=parent.frame())
   
     for(obj in objs)
       print(obj) #dispatches to the custom print methods
