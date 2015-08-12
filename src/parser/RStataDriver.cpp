@@ -69,15 +69,22 @@ RStataDriver::delete_ast()
 int
 RStataDriver::parse()
 {
-    int res;
+    if(scan_begin())
+    {
+        int res;
     
-    scan_begin();
-    yy::RStataParser parser(*this);
-    parser.set_debug_level(debug_level);
-    res = parser.parse();
-    scan_end();
+        yy::RStataParser parser(*this);
+        parser.set_debug_level(debug_level);
+        
+        res = parser.parse();
+        
+        scan_end();
     
-    return res;
+        return res;
+    } else
+    {
+        return 1; // failure on a low-level I/O error
+    }
 }
 
 void

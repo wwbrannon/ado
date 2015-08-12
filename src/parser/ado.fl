@@ -183,10 +183,7 @@ std::stack<std::vector<std::string>> macro_stack;
                                         } else
                                         {
                                             for(size_t i = replacement.length(); i > 0; i--)
-                                            {
-                                                std::cout << i << "\n";
                                                 unput(replacement[i - 1]);
-                                            }
                                             
                                             yy_pop_state();
                                         }
@@ -911,15 +908,38 @@ trim(const std::string& str, const std::string& what)
 }
 
 // The scanning-related functions of the driver class, which depend on lexer objects
-void
+int
 RStataDriver::scan_begin()
 {
-    yy_scan_string(text.c_str());
+    // We should just be able to do this:
+    //     yy_scan_string(text.c_str());
+    // but there's a probable flex bug that overflows yytext on unput()
+    // when input comes from yy_scan_string(). Instead, let's create a
+    // tempfile, because that works correctly.
+    
+    if( !(this->tmp = tmpfile()) )
+    {
+        this->error("Cannot open temp file for writing");
+        return 0; // failure
+    }
+    
+    if(fputs(this->text.c_str(), this->tmp)==0 && ferror(this->tmp))
+    {
+        this->error("Cannot write to temp file");
+        return 0; // failure
+    }
+    rewind(this->tmp);
+    
+    yyin = this->tmp;
+    YY_FLUSH_BUFFER;
+
+    return 1;
 }
 
 void
 RStataDriver::scan_end()
 {
     yy_delete_buffer(YY_CURRENT_BUFFER);
+    // fclose(this->tmp);
 }
 

@@ -1,6 +1,7 @@
 #ifndef RSTATA_DRIVER_H
 #define RSTATA_DRIVER_H
 
+#include <cstdio>
 #include <string>
 #include <Rcpp.h>
 #include "RStata.hpp"
@@ -17,7 +18,7 @@ class RStataDriver
         ExprNode *ast;
         void delete_ast();
 
-        void scan_begin();
+        int scan_begin();
         void scan_end();
 
         int parse();
@@ -39,6 +40,9 @@ class RStataDriver
         
     private:
         std::string text;
+        
+        // See the comments in ado.fl for an explanation of this awful hack
+        FILE *tmp;
 };
 
 #endif /* RSTATA_DRIVER_H */
