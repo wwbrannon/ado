@@ -1,0 +1,4 @@
+#A partial EBNF grammar for Mata, the matrix-processing language
+#of the statistical package Stata.
+
+

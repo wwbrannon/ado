@@ -1,0 +1,85 @@
+#A partial EBNF grammar for the "ado" language of the statistical package Stata.
+#Stata's other integrated language, the matrix-processing language Mata, is
+#described in mata.txt. This grammar doesn't account for Stata's extensive practice
+#of abbreviating commands and variable names; seems best or perhaps necessary to handle
+#that at a level higher than the parser.
+
+#This grammar isn't except coincidentally LALR or indeed yet acceptable to any parser generator.
+
+#--------------------------------------------------------------------------------------------------------------
+#Top-level stuff.
+#Needs fleshing out with control-of-flow constructs, macros and other programming functionality.
+
+StataScript     ::= StataCmd, { StataCmd } ;
+StataCmd        ::= [ByExp, ":"] CmdVerb [Varlist] [AssignmentExp] [IfExp] [InExp] [Weight] [",", { Options}] ;
+
+#--------------------------------------------------------------------------------------------------------------
+#Constituents of a command
+
+ByExp           ::= "by", Varlist |
+                    "by", Varlist, "(", Varlist, ")" |
+                    "by", Varlist, ",", "sort" ;
+
+AssignmentExp   ::= "=", Expression ;
+
+IfExp           ::= "if", Expression ;
+
+InExp           ::= "in" Range ;
+Range           ::= (Integer | "f" | "F"), ["/", (Integer | "l" | "L")]
+
+Weight          ::= Weightword, "=", Expression
+weightword      ::= "weight" | ("fweight" | "frequency") | "pweight" | ("aweight" | "cellsize") | "iweight" ;
+
+#Seems undesirable to hard-code the acceptable commands into the grammar
+CmdVerb         ::= Word
+
+#--------------------------------------------------------------------------------------------------------------
+#Options
+
+Options         ::= Option, { Option } ;
+Option          ::= Word |
+                    Word, "(" OptionArgument, { OptionArgument }, ")" ;
+OptionArgument  ::= Numlist | Varlist |  
+
+#--------------------------------------------------------------------------------------------------------------
+#Expressions in all their various forms
+Expression      ::= 
+
+#--------------------------------------------------------------------------------------------------------------
+#Labels
+
+#--------------------------------------------------------------------------------------------------------------
+#Numbers
+
+Numlist         ::= Number, { Number } ;
+Number          ::= Integer |
+                    Integer, ".", PositiveInteger |
+		    [-], ".", PositiveInteger ;
+
+Integer         ::= PositiveInteger | NegativeInteger | "0"
+NegativeInteger ::= "-", PositiveInteger
+PositiveInteger ::= !"0" Digit, { Digit } ;
+
+Digit           ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+
+#--------------------------------------------------------------------------------------------------------------
+#Identifiers
+
+NewVarList      ::= Varname, "-", Varname ;
+Varlist         ::= AbbrevVar, { AbbrevVar } ;
+
+AbbrevVar       ::= 
+
+Varname         ::= Word, [":", ValueLabelName] ;
+Word            ::= (Letter | "_"), { Letter | Digit | "_" } ;
+
+Letter          ::= LowercaseLetter | UppercaseLetter ;
+UppercaseLetter ::= "A" | "B" | "C" | "D" | "E" | "F" | "G" |
+                    "H" | "I" | "J" | "K" | "L" | "M" | "N" |
+                    "O" | "P" | "Q" | "R" | "S" | "T" | "U" |
+                    "V" | "W" | "X" | "Y" | "Z" ;
+LowercaseLetter ::= "a" | "b" | "c" | "d" | "e" | "f" | "g" |
+                    "h" | "i" | "j" | "k" | "l" | "m" | "n" |
+		    "o" | "p" | "q" | "r" | "s" | "t" | "u" |
+		    "v" | "w" | "x" | "y" | "z" ;
+
