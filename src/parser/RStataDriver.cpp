@@ -28,7 +28,7 @@ raise_condition(const std::string& msg, const std::string& type)
 
 // ctor
 RStataDriver::RStataDriver(std::string _text, int _debug_level,
-                           int _batch=0, Rcpp::Function *_cmd_action=NULL)
+                           int _batch=0, Rcpp::Function _cmd_action=NULL)
 {
     text = _text;
     

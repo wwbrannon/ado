@@ -9,7 +9,7 @@ class RStataDriver
 {
     public:
         RStataDriver(std::string text, int debug_level,
-                     int batch, Rcpp::Function *cmd_action);
+                     int batch, Rcpp::Function cmd_action);
         virtual ~RStataDriver();
 
         ExprNode *ast;
@@ -21,7 +21,7 @@ class RStataDriver
         int parse();
 
         int batch;
-        Rcpp::Function *cmd_action;
+        Rcpp::Function cmd_action;
 
         // error-handling functions and state
         int error_seen;

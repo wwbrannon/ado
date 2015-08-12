@@ -13,7 +13,7 @@ do_stata_parse(std::string text, int debug_level=0,
 {
     Rcpp::List res;
     RStataDriver *driver = new RStataDriver(text, debug_level,
-                                            batch, &cmd_action);
+                                            batch, cmd_action);
 
     // parse the input
     if( driver->parse() != 0 || driver->error_seen != 0)

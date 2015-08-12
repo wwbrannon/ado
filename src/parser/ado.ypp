@@ -18,7 +18,7 @@ class RStataDriver;
 
 #define YY_DECL int yylex(yy::RStataParser::semantic_type* yylval_param, yy::RStataParser::location_type* llocp, RStataDriver& driver)
 
-#define R_ACTION(node) if(driver.batch != 0) { driver.(*cmd_action)(node->as_R_object())  }
+#define R_ACTION(node) if(driver.batch != 0) { driver.cmd_action(node->as_R_object()); }
 }
 
 %param { RStataDriver& driver }
@@ -90,7 +90,7 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 %token <node>   NUMBER NUMBER_MISSING
 %token <node>   IDENT
 %token <node>   STRING_LITERAL STRING_MISSING
-%token <node>   DATE TIME DATETIME
+%token <node>   DATE DATETIME
 
 /* Type specifiers */
 %token <str> BYTE INT LONG FLOAT DOUBLE STRING_TYPE_SPEC;
@@ -523,7 +523,6 @@ primary_expression:
     | STRING_LITERAL
     | STRING_MISSING
     | DATE
-    | TIME
     | DATETIME
     | "(" expression ")"
     {
