@@ -9,7 +9,7 @@ function(node)
 {
   #General checks all AST nodes should pass
   raiseifnot(node %is% "rstata_ast_node")
-  raiseifnot(every(c("type", "data", "children") %in% names(node)))
+  raiseifnot(every(c("data", "children") %in% names(node)))
   
   #Recursively check the children
   if(length(node$children) > 0)
@@ -46,9 +46,8 @@ function(node)
 verifynode.rstata_ident <-
 function(node)
 {
-  raiseifnot(length(grep("^[A-Za-z_]+$", node$data$value)) > 0)
-  raiseifnot(!is.na(as.symbol(node$data$value)) ||
-               !is.null(as.symbol(node$data$value)))
+  raiseifnot(length(grep("^[A-Za-z_]+$", node$data["value"])) > 0)
+  raiseifnot(!is.null(as.symbol(node$data["value"])))
   
   invisible(TRUE)
 }
@@ -56,10 +55,10 @@ function(node)
 verifynode.rstata_number <-
 function(node)
 {
-  val <- as.numeric(node$data$value)
+  val <- as.numeric(node$data["value"])
   valid_missings <- c(".", paste0(".", LETTERS, sep=""))
   raiseifnot((!is.na(val) && !is.null(val)) ||
-             node$data$value %in% valid_missings)
+             node$data["value"] %in% valid_missings)
   
   invisible(TRUE)
 }
@@ -67,7 +66,7 @@ function(node)
 verifynode.rstata_string_literal <-
 function(node)
 {
-  val <- as.character(node$data$value)
+  val <- as.character(node$data["value"])
   raiseifnot(!is.na(val) && !is.null(val))
 
   invisible(TRUE)
@@ -76,7 +75,7 @@ function(node)
 verifynode.rstata_datetime <-
 function(node)
 {
-  val <- as.POSIXct(strptime(node$data$value, format="%d%b%Y %H:%M:%S"))
+  val <- as.POSIXct(strptime(node$data["value"], format="%d%b%Y %H:%M:%S"))
   raiseifnot(!is.na(val) && !is.null(val))
 
   invisible(TRUE)
@@ -232,7 +231,7 @@ function(node)
   #Data members - length, names, values
   raiseifnot(length(node$data) == 1)
   raiseifnot("value" %in% names(node$data))
-  raiseifnot(!is.na(as.character(node$data$value)))
+  raiseifnot(!is.na(as.character(node$data["value"])))
   
   #Children - length, names, types
   raiseifnot(length(node$children) == 0)
@@ -267,7 +266,7 @@ function(node)
   raiseifnot(names(node$children) %in% c("verb", "main_cmd", "next_modifier"))
   raiseifnot("verb" %in% names(node$children))
   
-  raiseifnot(tolower(node$children$verb$value) %in% c("quietly", "noisily", "capture"))
+  raiseifnot(tolower(node$children$verb["value"]) %in% c("quietly", "noisily", "capture"))
   
   invisible(TRUE)
 }
@@ -279,7 +278,7 @@ function(node)
   raiseifnot(length(node$data) == 0)
 
   #Children - length, names, types
-  func <- paste0("rstata_", tolower(node$children$verb$value))
+  func <- paste0("rstata_", tolower(node$children$verb$data["value"]))
   raiseifnot(exists(func))
   
   args <- names(formals(get(func)))
@@ -294,7 +293,7 @@ function(node)
 verifynode.rstata_special_cmd <-
 function(node)
 {
-  verb <- tolower(node$children$verb$value)
+  verb <- tolower(node$children$verb["value"])
   func <- paste0("rstata_", verb)
   
   raiseifnot(verb %in% c("merge", "generate", "recast", "display", "format"))
@@ -312,7 +311,7 @@ function(node)
   {
     raiseifnot(length(node$data) == 1)
     raiseifnot(names(node$data) == c("merge_spec"))
-    raiseifnot(node$data$merge_spec %in% c("m:m", "m:1", "1:m", "1:1"))
+    raiseifnot(node$data["merge_spec"] %in% c("m:m", "m:1", "1:m", "1:1"))
   } else if(verb == "generate")
   {
     raiseifnot(length(node$data) %in% c(0, 1))
@@ -320,13 +319,13 @@ function(node)
     if(length(node$data == 1))
     {
       raiseifnot(names(node$data) == c("type_spec"))
-      raiseifnot(valid_data_type(node$data$type_spec))
+      raiseifnot(valid_data_type(node$data["type_spec"]))
     }
   } else if(verb == "recast")
   {
     raiseifnot(length(node$data) == 1)
     raiseifnot(names(node$data) == c("type_spec"))
-    raiseifnot(valid_data_type(node$data$type_spec))
+    raiseifnot(valid_data_type(node$data["type_spec"]))
   } else if(verb == "display")
   {
     #none needed
@@ -334,7 +333,7 @@ function(node)
   {
     raiseifnot(length(node$data) == 1)
     raiseifnot(names(node$data) == c("format_spec"))
-    raiseifnot(valid_format_spec(node$data$format_spec))
+    raiseifnot(valid_format_spec(node$data["format_spec"]))
   }
 
   invisible(TRUE)
@@ -364,7 +363,7 @@ function(node)
   #Data members - length, names, values
   raiseifnot(length(node$data) == 1)
   raiseifnot(names(node$data) == c("type_spec"))
-  raiseifnot(valid_data_type(node$data$type_spec))
+  raiseifnot(valid_data_type(node$data["type_spec"]))
   
   #Children - length, names, types
   raiseifnot(length(node$children) == 1)
@@ -431,21 +430,21 @@ verifynode.rstata_indicator_expression <-
 function(node)
 {
   #Data members - length, names, values
-  raiseifnot(node$data$verb == "i.")
+  raiseifnot(node$data["verb"] == "i.")
   
   nm <- setdiff(names(node$data), c("verb"))
   
   if(length(nm == 0))
     return(invisible(TRUE))
   else if(length(nm) == 1 && nm == c("level"))
-    raiseifnot(!is.na(as.numeric(node$data$level)))
+    raiseifnot(!is.na(as.numeric(node$data["level"])))
   else if(length(nm) == 2 && ("levelstart" %in% nm && "levelend" %in% nm))
-    raiseifnot(!is.na(as.numeric(node$data$levelstart)) &&
-               !is.na(as.numeric(node$data$levelend)))
+    raiseifnot(!is.na(as.numeric(node$data["levelstart"])) &&
+               !is.na(as.numeric(node$data["levelend"])))
   else if(length(grep("level[0-9]+", nm)) == length(nm))
     raiseifnot(every(vapply(nm, function(x) !is.na(as.numeric(x)), TRUE)))
   else
-    raiseifnot(1=0, msg="Bad levels for factor operator")
+    raiseifnot(1==0, msg="Bad levels for factor operator")
 
   invisible(TRUE)
 }
@@ -455,19 +454,19 @@ function(node)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) > 1)
-  raiseifnot(node$data$verb == "o.")
+  raiseifnot(node$data["verb"] == "o.")
   
   nm <- setdiff(names(node$data), c("verb"))
 
   if(length(nm) == 1 && nm == c("level"))
-    raiseifnot(!is.na(as.numeric(node$data$level)))
+    raiseifnot(!is.na(as.numeric(node$data["level"])))
   else if(length(nm) == 2 && ("levelstart" %in% nm && "levelend" %in% nm))
-    raiseifnot(!is.na(as.numeric(node$data$levelstart)) &&
-                 !is.na(as.numeric(node$data$levelend)))
+    raiseifnot(!is.na(as.numeric(node$data["levelstart"])) &&
+                 !is.na(as.numeric(node$data["levelend"])))
   else if(length(grep("level[0-9]+", nm)) == length(nm))
     raiseifnot(every(vapply(nm, function(x) !is.na(as.numeric(x)), TRUE)))
   else
-    raiseifnot(1=0, msg="Bad levels for factor operator")
+    raiseifnot(1==0, msg="Bad levels for factor operator")
   
   invisible(TRUE)
 }
@@ -477,12 +476,12 @@ function(node)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 2)
-  raiseifnot(node$data$verb == "ib.")
+  raiseifnot(node$data["verb"] == "ib.")
   
   raiseifnot("level" %in% names(node$data))
   
-  raiseifnot(node$data$level %in% c("n", "freq", "last", "first") ||
-             !is.na(as.numeric(node$data$level)))
+  raiseifnot(node$data["level"] %in% c("n", "freq", "last", "first") ||
+             !is.na(as.numeric(node$data["level"])))
   
   invisible(TRUE)
 }
@@ -492,7 +491,7 @@ function(node)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 1)
-  raiseifnot(node$data$verb %in% c("##", "#"))
+  raiseifnot(node$data["verb"] %in% c("##", "#"))
 
   #Children - length, names, types
   raiseifnot(length(node$children) == 2)
@@ -529,7 +528,7 @@ function(node)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 1)
-  raiseifnot(node$data$verb == "^")
+  raiseifnot(node$data["verb"] == "^")
   
   #Children - length, names, types
   raiseifnot(length(node$children) == 2)
@@ -551,7 +550,7 @@ function(node)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 1)
-  raiseifnot(node$data$verb %in% c("-", "+", "!"))
+  raiseifnot(node$data["verb"] %in% c("-", "+", "!"))
   
   #Children - length, names, types
   raiseifnot(length(node$children) == 1)
@@ -570,7 +569,7 @@ function(node)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 1)
-  raiseifnot(node$data$verb %in% c("*", "/"))
+  raiseifnot(node$data["verb"] %in% c("*", "/"))
   
   #Children - length, names, types
   raiseifnot(length(node$children) == 2)
@@ -592,7 +591,7 @@ function(node)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 1)
-  raiseifnot(node$data$verb %in% c("+", "-"))
+  raiseifnot(node$data["verb"] %in% c("+", "-"))
   
   #Children - length, names, types
   raiseifnot(length(node$children) == 2)
@@ -615,7 +614,7 @@ function(node)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 1)
-  raiseifnot(node$data$verb %in% c("=="))
+  raiseifnot(node$data["verb"] %in% c("=="))
   
   #Children - length, names, types
   raiseifnot(length(node$children) == 2)
@@ -632,7 +631,7 @@ function(node)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 1)
-  raiseifnot(node$data$verb %in% c("&", "|"))
+  raiseifnot(node$data["verb"] %in% c("&", "|"))
   
   #Children - length, names, types
   raiseifnot(length(node$children) == 2)
@@ -649,7 +648,7 @@ function(node)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 1)
-  raiseifnot(node$data$verb %in% c(">", "<", ">=", "<="))
+  raiseifnot(node$data["verb"] %in% c(">", "<", ">=", "<="))
 
   #Children - length, names, types
   raiseifnot(length(node$children) == 2)
@@ -666,7 +665,7 @@ function(node)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 1)
-  raseifnot(node$data$verb %in% c("()", "[]"))
+  raseifnot(node$data["verb"] %in% c("()", "[]"))
   
   #Children - length, names, types
   raiseifnot(length(node$children) %in% c(1, 2))
@@ -689,7 +688,7 @@ function(node)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 1)
-  raiseifnot(node$data$verb %in% c("="))
+  raiseifnot(node$data["verb"] %in% c("="))
   
   #Children - length, names, types
   raiseifnot(length(node$children) == 2)
