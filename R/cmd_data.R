@@ -5,7 +5,7 @@ function(using_clause, option_list=NULL)
 }
 
 rstata_cmd_clear <-
-function(expression_list=NULL)
+function(expression=NULL)
 {
   match.call()
 }
@@ -54,7 +54,7 @@ function(expression_list=NULL, option_list=NULL)
 }
 
 rstata_cmd_dir <-
-function(expression_list=NULL, option_list=NULL)
+function(expression=NULL, option_list=NULL)
 {
   match.call()
 }

@@ -1,9 +1,6 @@
 Now:
-  o) fill out calling signatures for cmd functions
-    o) mark functions byable which are
-    o) go back and make some expression_lists into expression or varlists
-
   o) function and option args should be separable by ',' or ' '
+    o) revert recent commits
   o) two modifier_cmd_lists, one on either side of a long_modifier_cmd
 
   o) better error messages from check()
@@ -13,19 +10,19 @@ Now:
   o) a couple macro backend FIXMEs
   o) the `=expr' syntax?
 
+  o) function to validate weight clause
+
 Backend:
   o) infrastructural R functions
+    o) for prefix commands - quietly, noisily, capture, by, xi
     o) varlist_to_formula
     o) for operators - how many of these even need to exist?
-    o) for prefix commands - quietly, noisily, capture, by, xi
 
   o) R functions for initial general commands
 
   o) Stata's "stored results"
 
   o) complete all the commands which now have stubs
-
-  o) hardcode "special" abreviations like tab
 
 Frontend:
   o) Loops: much harder, because of macros

@@ -9,7 +9,7 @@ function()
 }
 
 rstata_cmd_cd <-
-function(expression_list=NULL)
+function(expression=NULL)
 {
     match.call()
 }
@@ -59,7 +59,7 @@ function(option_list=NULL)
 }
 
 rstata_cmd_pwd <-
-function(expression_list=NULL)
+function()
 {
     match.call()
 }
@@ -95,7 +95,7 @@ function(expression_list)
 }
 
 rstata_cmd_sleep <-
-function(expression_list)
+function(expression)
 {
     match.call()
 }

@@ -1,9 +1,11 @@
 rstata_cmd_ameans <-
-function()
+function(varlist=NULL, if_clause=NULL, in_clause=NULL,
+         weight_clause=NULL, option_list=NULL, by_dta=NULL)
 {
   match.call()
 }
 
+#FIXME
 rstata_cmd_anova <-
 function()
 {
@@ -11,59 +13,75 @@ function()
 }
 
 rstata_cmd_areg <-
-function()
+function(varlist, option_list, if_clause=NULL, in_clause=NULL,
+         weight_clause=NULL, by_dta=NULL)
 {
   match.call()
 }
 
 rstata_cmd_binreg <-
-function()
+function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL, by_dta=NULL)
 {
   match.call()
 }
 
 rstata_cmd_bitest <-
-function()
+function(expression, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL, by_dta=NULL)
 {
   match.call()
 }
 
 rstata_cmd_ci <-
-function()
+function(varlist=NULL, if_clause=NULL, in_clause=NULL,
+         weight_clause=NULL, option_list=NULL, by_dta=NULL)
 {
   match.call()
 }
 
 rstata_cmd_correlate <-
-function()
+function(varlist=NULL, if_clause=NULL, in_clause=NULL,
+         weight_clause=NULL, option_list=NULL, by_dta=NULL)
 {
   match.call()
 }
 
 rstata_cmd_estimates <-
-function()
+function(expression_list, using_clause=NULL)
 {
   match.call()
 }
 
+#not interpretable as a formula, but still syntactically a varlist
 rstata_cmd_fvset <-
-function()
+function(varlist, option_list=NULL)
 {
   match.call()
 }
 
 rstata_cmd_glm <-
-function()
+function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL, by_dta=NULL)
 {
   match.call()
+}
+
+rstata_cmd_gnbreg <-
+function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL, by_dta=NULL)
+{
+    match.call()
 }
 
 rstata_cmd_icc <-
-function()
+function(varlist, if_clause=NULL, in_clause=NULL, option_list=NULL,
+         by_dta=NULL)
 {
   match.call()
 }
 
+#FIXME
 rstata_cmd_ivregress <-
 function()
 {
@@ -71,137 +89,179 @@ function()
 }
 
 rstata_cmd_ksmirnov <-
-function()
+function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL)
 {
   match.call()
 }
 
 rstata_cmd_kwallis <-
-function()
+function(expression, option_list, if_clause=NULL, in_clause=NULL)
 {
   match.call()
 }
 
 rstata_cmd_logistic <-
-function()
+function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL, by_dta=NULL)
 {
   match.call()
 }
 
 rstata_cmd_logit <-
-function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL, option_list=NULL)
+function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL, by_dta=NULL)
 {
     match.call()
 }
 
+#FIXME
 rstata_cmd_lrtest <-
 function()
 {
   match.call()
 }
 
+
 rstata_cmd_margins <-
-function()
+function(varlist=NULL, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL)
 {
   match.call()
 }
 
 rstata_cmd_mean <-
-function()
+function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL)
 {
   match.call()
 }
 
 rstata_cmd_nbreg <-
-function()
+function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL, by_dta=NULL)
 {
   match.call()
 }
 
 rstata_cmd_ologit <-
-function()
+function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL, by_dta=NULL)
 {
   match.call()
 }
 
 rstata_cmd_pctile <-
-function()
+function(expression, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL)
 {
     match.call()
 }
 
 rstata_cmd_poisson <-
-function()
+function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL, by_dta=NULL)
 {
   match.call()
 }
 
 rstata_cmd_predict <-
-function()
+function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL)
 {
   match.call()
 }
 
 rstata_cmd_probit <-
-function()
+function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL, by_dta=NULL)
 {
   match.call()
 }
 
 rstata_cmd_prtest <-
-function()
+function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
+         by_dta=NULL)
 {
   match.call()
 }
 
 rstata_cmd_pwcorr <-
-function()
+function(varlist=NULL, if_clause=NULL, in_clause=NULL,
+         weight_clause=NULL, option_list=NULL, by_dta=NULL)
 {
   match.call()
 }
 
 rstata_cmd_ranksum <-
-function()
+function(expression, option_list, if_clause=NULL, in_clause=NULL,
+         weight_clause=NULL, by_dta=NULL)
 {
   match.call()
 }
 
 rstata_cmd_regress <-
-function()
+function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL, by_dta=NULL)
 {
   match.call()
 }
 
 rstata_cmd_sktest <-
-function()
+function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL)
 {
   match.call()
 }
 
 rstata_cmd_summarize <-
-function()
+function(varlist=NULL, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL, by_dta=NULL)
 {
   match.call()
 }
 
+rstata_cmd_tab <-
+function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL, by_dta=NULL)
+{
+    match.call()
+}
+
+rstata_cmd_tab1 <-
+function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL, by_dta=NULL)
+{
+    match.call()
+}
+
+rstata_cmd_tab2 <-
+function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL, by_dta=NULL)
+{
+    match.call()
+}
+
 rstata_cmd_table <-
-function()
+function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL, by_dta=NULL)
 {
   match.call()
 }
 
 rstata_cmd_tabstat <-
-function()
+function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL, by_dta=NULL)
 {
   match.call()
 }
 
 rstata_cmd_tabulate <-
-function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL, option_list=NULL)
+function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL, by_dta=NULL)
 {
     match.call()
 }
 
+#FIXME
 rstata_cmd_test <-
 function()
 {
@@ -209,11 +269,13 @@ function()
 }
 
 rstata_cmd_ttest <-
-function()
+function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
+         by_dta=NULL)
 {
   match.call()
 }
 
+#FIXME
 rstata_cmd_power <-
 function()
 {
