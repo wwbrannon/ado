@@ -115,7 +115,7 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 
 %type <node>    if_clause in_clause weight_clause using_clause
 
-%type <node>    expression
+%type <node>    expression type_constructor
 %type <node>    primary_expression postfix_expression power_expression
 %type <node>    unary_expression multiplication_expression additive_expression
 %type <node>    relational_expression equality_expression logical_expression
@@ -624,6 +624,18 @@ expression_list:
     {
         $1->appendChild($2);
         $$ = $1;
+    }
+    ;
+
+/* Stata allows these without the parentheses */
+type_constructor:
+    type_spec '(' expression_list ')'
+    {
+        ExprNode *node = new ExprNode("type_constructor");
+        node->addData("type_spec", *($1));
+        node->appendChild("varlist", $3);
+        
+        $$ = node;
     }
     ;
 

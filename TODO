@@ -1,6 +1,10 @@
 Roadmap to v0.1:
 Immediate TODO:
-    o) expand the grammar to include fully general varlists
+    o) grammar expansion: fully general varlists
+        o) type constructor literals as expressions
+        o) factor variable operators ("i.", "c.", "o.", "#"/"##", "ib."/"b."/"X.varname")
+        o) time series support
+        o) :value_label_name
     o) error recovery + error if other character given
     o) make sure the location tracking works
     o) memory leaks
