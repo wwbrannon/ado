@@ -28,7 +28,8 @@ raise_condition(const std::string& msg, const std::string& type)
 
 // ctors
 RStataDriver::RStataDriver(std::string _text, int _debug_level)
-            : cmd_action(Rcpp::Function("identity"))
+            : cmd_action(Rcpp::Function("identity")),
+              get_macro_value(Rcpp::Function("identity"))
 {
     text = _text;
 
