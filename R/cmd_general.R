@@ -3,99 +3,121 @@
 ### other commands will eventually rely on.
 
 rstata_cmd_about <-
-function()
+function(return.match.call=NULL)
 {
-    match.call()
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
 }
 
 rstata_cmd_cd <-
-function(expression=NULL)
+function(expression=NULL, return.match.call=NULL)
 {
-    match.call()
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
 }
 
 rstata_cmd_display <-
-function(expression, format_spec=NULL)
+function(expression, format_spec=NULL, return.match.call=NULL)
 {
-    match.call()
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
 }
 
 rstata_cmd_do <-
-function(expression_list, options=NULL)
+function(expression_list, options=NULL, return.match.call=NULL)
 {
-    match.call()
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
 }
 
 rstata_cmd_exit <-
-function()
+function(return.match.call=NULL)
 {
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+
     raiseCondition("Exit requested", "ExitRequestedException")
 }
 
 
 rstata_cmd_help <-
-function(expression_list, option_list=NULL)
+function(expression_list, option_list=NULL, return.match.call=NULL)
 {
-    match.call()
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
 }
 
 #the if expr { } construct
 rstata_cmd_if <-
-function(expression, compound_cmd)
+function(expression, compound_cmd, return.match.call=NULL)
 {
-    match.call()
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
 }
 
 rstata_cmd_log <-
-function(expression_list=NULL, using_clause=NULL, option_list=NULL)
+function(expression_list=NULL, using_clause=NULL, option_list=NULL,
+         return.match.call=NULL)
 {
-    match.call()
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
 }
 
 rstata_cmd_preserve <-
-function(option_list=NULL)
+function(option_list=NULL, return.match.call=NULL)
 {
-    match.call()
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
 }
 
 rstata_cmd_pwd <-
-function()
+function(return.match.call=NULL)
 {
-    match.call()
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
 }
 
 rstata_cmd_query <-
-function()
+function(varlist, return.match.call=NULL)
 {
-    match.call()
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
 }
 
 rstata_cmd_quit <-
-function()
+function(return.match.call=NULL)
 {
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+
     raiseCondition("Exit requested", "ExitRequestedException")
 }
 
 rstata_cmd_restore <-
-function(option_list=NULL)
+function(option_list=NULL, return.match.call=NULL)
 {
-    match.call()
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
 }
 
 rstata_cmd_run <-
-function(expression_list, option_list=NULL)
+function(expression_list, option_list=NULL, return.match.call=NULL)
 {
-    match.call()
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
 }
 
 rstata_cmd_set <-
-function(expression_list)
+function(expression_list, return.match.call=NULL)
 {
-    match.call()
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
 }
 
 rstata_cmd_sleep <-
-function(expression)
+function(expression, return.match.call=NULL)
 {
-    match.call()
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
 }
+

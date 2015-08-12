@@ -1,4 +1,9 @@
 Now:
+  o) command-implementing functions should take a return.match.call argument for debugging
+    o) stats commands don't have them yet
+    o) codegen should take a debug_level argument and if it's > 0, set the return.match.call args of
+       command functions to TRUE
+
   o) function and option args should be separable by ',' or ' '
     o) does this require a GLR parser?
 
@@ -6,7 +11,7 @@ Now:
     o) the `=expr' syntax? can we just send this to R for evaluation as a string? need to check it if so
 
   o) syntax for weird commands
-    o) does this require a GLR parser?
+    o) does all this require a GLR parser?
 
     o) recode - define a varlist in the grammar and allow it as the LHS of an assignment
     o) ivregress - probably the same as with recode; the last expression_list member should be an
@@ -52,6 +57,7 @@ Documentation:
 
 Misc:
   o) figure out the NAMESPACE and what you have to export
+  o) clean up gitignore and Rbuildignore
   o) Makevars and Makefile have to come from a configure script for
      portability - autoconf?
 

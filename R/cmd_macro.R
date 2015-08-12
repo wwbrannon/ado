@@ -1,8 +1,11 @@
 ## Macro management commands
 
 rstata_cmd_local <-
-function(expression_list)
+function(expression_list, return.match.call=NULL)
 {
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+    
     env <- get("rstata_macro_env", envir=rstata_env)
     exprs <- expression_list
 
@@ -32,8 +35,11 @@ function(expression_list)
 }
 
 rstata_cmd_global <-
-function(expression_list)
+function(expression_list, return.match.call=NULL)
 {
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+    
     env <- get("rstata_macro_env", envir=rstata_env)
     exprs <- expression_list
 
@@ -61,8 +67,11 @@ function(expression_list)
 }
 
 rstata_cmd_tempfile <-
-function(expression_list)
+function(expression_list, return.match.call=NULL)
 {
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+    
     env <- get("rstata_macro_env", envir=rstata_env)
     exprs <- expression_list
 
@@ -79,8 +88,11 @@ function(expression_list)
 }
 
 rstata_cmd_macro <-
-function(expression_list)
+function(expression_list, return.match.call=NULL)
 {
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+    
     env <- get("rstata_macro_env", envir=rstata_env)
     exprs <- expression_list
 
@@ -119,3 +131,4 @@ function(expression_list)
 
     invisible(TRUE)
 }
+
