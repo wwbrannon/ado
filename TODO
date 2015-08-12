@@ -2,8 +2,8 @@
 Roadmap to v1.0:
 
 Immediate TODO:
-    o) finish expression-parsing code in ado.ypp, testing with gen
     o) finish the rest of the grammar
+    o) finish the actions for commands
     o) make sure it works
 
 Semantics:

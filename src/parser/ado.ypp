@@ -5,9 +5,7 @@
 #include <Rcpp.h>
 #include "rstata.hpp"
 
-using namespace std;
-
-void raise_condition(const string& msg, const string& type);
+void raise_condition(const std::string& msg, const std::string& type);
 
 extern "C" int yylex(void);
 
@@ -34,36 +32,91 @@ int yywrap()
 
 %token <str> EMBEDDED_R;
 
-%token <str> NUMBER
-%token <str> NUMBER_MISSING
-%token <str> BYTE INT LONG FLOAT DOUBLE;
+/* Literals of various fundamental types */
+%token <str> NUMBER IDENT STRING_LITERAL UNQUOTED_FILEPATH
+%token <str> NUMBER_MISSING STRING_MISSING
 
-%token <str> IDENT
+/* Type specifiers */
+%token <str> BYTE INT LONG FLOAT DOUBLE STRING_TYPE_SPEC;
 
-%token <str> STRING_LITERAL STRING_MISSING STRING_TYPE_SPEC
+/* Multi-character infix operators */
 %token <str> GT_OP LE_OP EQ_OP NE_OP OR_OP AND_OP
 
 /* Formats */
 %token <str> STRING_FORMAT DATETIME_FORMAT NUMBER_FORMAT
 
-/* Weight specifiers and command component keywords */
-%token <str> PWEIGHT AWEIGHT IWEIGHT FWEIGHT WEIGHT
-%token <str> USING IN IF
+/* Command components and keywords */
+%token <str> USING IF IN_CLAUSE
 
-/* Prefix commands */
-%token <str> BY BYSORT XI QUIETLY CAPTURE NOISILY
-
-/* Immediate commands */
-%token <str> DISPLAY POWER BITESTI CCI CSI IRI MCCI ESIZEI
-%token <str> PRTESTI SDTESTI SYMMI TABI TTESTI
-
-/* Other commands */
-%token <str> CD CLEAR COUNT DESCRIBE DROP DUPLICATES
-%token <str> EXIT GEN INSHEET KEEP LOG LOGIT LS MERGE MLOGIT
-%token <str> ORDER OUTSHEET REGRESS RENAME REPLACE SAVE SET SORT
-%token <str> SUM TABLE USE XTILE 
+/* Commands with unusual enough syntax they have to be parsed separately */
+%token <str> QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
+%token <str> SET LOG DUPLICATES MERGE
 
 %%
+
+/*
+ *************************************************
+ * The start symbol, a "command" and escaping to R
+ *************************************************
+ */
+
+commands:
+      %empty
+    | commands command
+    ;
+
+command:
+      embedded_r_cmd
+    | stata_cmd
+    ;
+
+embedded_r_cmd:
+    EMBEDDED_R
+    ;
+
+stata_cmd:
+      immediate_cmd
+    | prefix_cmd_list nonmodifier_cmd
+    ;
+
+immediate_cmd:
+      IDENT expression_list
+    | IDENT expression_list ',' option_list
+    ;
+
+prefix_cmd_list:
+      %empty
+    | modifier_cmd_list nonmodifier_cmd ':'
+    ;
+
+modifier_cmd:
+      CAPTURE
+    | QUIETLY
+    | NOISILY
+    ;
+
+modifier_cmd_list:
+      %empty
+    | modifier_cmd_list modifier_cmd
+    ;
+
+/* FIXME - everything after IDENT should be optional */
+nonmodifier_cmd:
+      special_cmd
+    
+    | IDENT filename
+    | IDENT filename ',' option_list
+    
+    | IDENT varlist assignment_expression if_clause IN_CLAUSE weight_clause using_clause
+    | IDENT varlist assignment_expression if_clause IN_CLAUSE weight_clause using_clause ',' option_list
+    ;
+
+special_cmd:
+      set_cmd
+    | log_cmd
+    | duplicates_cmd
+    | merge_cmd
+    ;
 
 /*
  ************************
@@ -71,16 +124,12 @@ int yywrap()
  ************************
  */
 
-missing:
-      STRING_MISSING
-    | NUMBER_MISSING
-    ;
-
 primary_expression:
       NUMBER
     | IDENT
     | STRING_LITERAL
-    | missing
+    | STRING_MISSING
+    | NUMBER_MISSING
     | '(' expression ')'
     ;
 
@@ -153,8 +202,7 @@ expression:
     ;
 
 expression_list:
-      %empty
-    | expression_list expression
+    expression_list expression
     ;
 
 /*
@@ -184,7 +232,7 @@ option:
     | IDENT '(' option_arguments ')'
     ;
 
-/* FIXME: option args are much more bespoke than this */
+/* FIXME: option args are much more baroque than this */
 option_arguments:
       expression
     | option_arguments expression
@@ -192,287 +240,71 @@ option_arguments:
 
 /*
  **************************************************
- * Other command parts
+ * The weight clause
  **************************************************
  */
 
-weight:
-    '[' weight_type '=' expression ']';
+weight_clause:
+    '[' IDENT '=' expression ']';
 
-weight_type:
-      WEIGHT
-    | PWEIGHT
-    | AWEIGHT
-    | FWEIGHT
-    | IWEIGHT
-    ;
+/*
+ **************************************************
+ * The if clause
+ **************************************************
+ */
 
-if_modifier:
+if_clause:
     IF expression
     ;
 
 /*
- *************************************************
- * The start symbol, a "command" and escaping to R
- *************************************************
+ **************************************************
+ * The using clause
+ **************************************************
  */
 
-commands:
-      %empty
-    | commands command
+filename:
+      STRING_LITERAL
+    | UNQUOTED_FILEPATH
+    | IDENT
     ;
 
-command:
-      embedded_r_cmd
-    | stata_cmd
-    ;
-
-stata_cmd:
-      immediate_cmd
-    | nonprefix_cmd_with_prefix
-    | nonprefix_cmd
-    ;
-
-immediate_cmd:
-    immediate_cmd_verb expression_list
-    ;
-
-immediate_cmd_verb:
-      DISPLAY
-    | POWER
-    | BITESTI
-    | CCI
-    | CSI
-    | IRI
-    | MCCI
-    | ESIZEI
-    | PRTESTI
-    | SDTESTI
-    | SYMMI
-    | TABI
-    | TTESTI
-    ;
-
-colonless_prefix_cmd:
-      CAPTURE
-    | QUIETLY
-    | NOISILY
-    ;
-
-colon_prefix_cmd:
-      xi_cmd
-    | by_cmd
-    | bysort_cmd
-    ;
-
-colonless_prefix_applied:
-      colonless_prefix_cmd nonprefix_cmd
-    | colonless_prefix_cmd ':' nonprefix_cmd
-    ;
-
-colon_prefix_with_colonless_prefix:
-      colonless_prefix_cmd colon_prefix_cmd
-      ;
-
-colon_prefix_applied:
-      colon_prefix_with_colonless_prefix ':' nonprefix_cmd
-    | colon_prefix_cmd ':' nonprefix_cmd
-    ;
-
-nonprefix_cmd_with_prefix:
-      colonless_prefix_applied
-    | colon_prefix_applied
-    ;
-
-nonprefix_cmd:
-      general_nonprefix_cmd
-    | special_nonprefix_cmd
-    ;
-
-general_nonprefix_cmd_verb:
-      COUNT
-    | DROP
-    | KEEP
-    | INSHEET
-    | GEN
-    | DESCRIBE
-    | LOGIT
-    | MLOGIT
-    | ORDER
-    | OUTSHEET
-    | SORT
-    | TABLE
-    | REGRESS
-    | REPLACE
-    | SUM
-    | XTILE
-    ;
-
-general_nonprefix_cmd:
-      general_nonprefix_cmd_verb varlist
-    | general_nonprefix_cmd_verb assignment_expression
-    | 
-
-special_nonprefix_cmd:
-      cd_cmd
-    | pwd_cmd
-    | clear_cmd
-    | exit_cmd
-    | use_cmd
-    | save_cmd
-    | ls_cmd
-    | rename_cmd
-    | set_cmd
-    
-    | log_cmd
-    | duplicates_cmd
-    | merge_cmd
-    ;
-
-embedded_r_cmd:
-    EMBEDDED_R
-    {
-        /* chop off the first and last three characters of yylval.str,
-           which are the {{{ and }}} that begin and end this command */
-        
-        s = strdup(yylval.str);
-        s[strlen(s) - 3] = '\0';
-        s += 3;
-        
-        EmbeddedRCmd cmd = EmbeddedRCmd(s);
-        ADD_TO_CMD_LIST(cmd, cmdlist_ptr)
-    }
+using_clause:
+    USING filename
     ;
 
 /*
- ******************************************
- * The colon-required Stata prefix commands
- ******************************************
+ ******************************
+ * The "special" Stata commands
+ ******************************
  */
-
-xi_cmd:
-    XI
-    {
-
-    }
-    ;
-
-by_cmd:
-    BY
-    {
-
-    }
-    ;
-
-bysort_cmd:
-    BYSORT
-    {
-
-    }
-    ;
-
-/*
- *************************************
- * The "special" Stata non-prefix commands
- *************************************
- */
-
-exit_cmd:
-    EXIT
-    {
-        raise_condition("Exit requested", "exit");
-    }
-    ;
-
-cd_cmd:
-    CD STRING_LITERAL
-    {
-
-    }
-    ;
-
-clear_cmd:
-      CLEAR
-    | CLEAR IDENT
-    {
-
-    }
-    ;
 
 duplicates_cmd:
     DUPLICATES
-    {
-
-    }
     ;
 
 log_cmd:
     LOG
-    {
-
-    }
-    ;
-
-ls_cmd:
-    LS
-    {
-
-    }
     ;
 
 merge_cmd:
     MERGE
-    {
-
-    }
-    ;
-
-rename_cmd:
-    RENAME
-    {
-
-    }
-    ;
-
-save_cmd:
-    SAVE
-    {
-
-    }
     ;
 
 set_cmd:
     SET
-    {
-
-    }
-    ;
-
-table_cmd:
-    TABLE IDENT
-    {
-
-    }
-    ;
-
-use_cmd:
-    USE
-    {
-
-    }
     ;
 
 %%
 
-using namespace Rcpp;
-
 void
-raise_condition(const string& msg, const string& type)
+raise_condition(const std::string& msg, const std::string& type)
 {
-  List cond;
+  Rcpp::List cond;
   cond["message"] = msg;
   cond["call"] = R_NilValue;
-  cond.attr("class") = CharacterVector::create(type, "condition");
-  Function stopper("stop");
+  cond.attr("class") = Rcpp::CharacterVector::create(type, "condition");
+  Rcpp::Function stopper("stop");
   stopper(cond);
 }
+

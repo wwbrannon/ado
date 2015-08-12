@@ -1,9 +1,5 @@
-D           [0-9]
-L           [a-zA-Z_]
-H           [a-fA-F0-9]
-E           [Ee][+-]?{D}+
-
 %{
+#include <cstring>
 #include <iostream>
 #include "rstata.hpp"
 #include "ado.tab.hpp"
@@ -18,6 +14,12 @@ void long_comment();
 void short_comment();
 void count();
 %}
+
+D           [0-9]
+L           [a-zA-Z_]
+H           [a-fA-F0-9]
+E           [Ee][+-]?{D}+
+F           [FLfl]
 
 %option noyywrap
 
@@ -38,20 +40,24 @@ void count();
                                 s[strlen(s) - 3] = '\0';
                                 s += 3;
                                 
-                                yylval.str = strdup(s); /* may not be necessary, but let's be safe */
+                                yylval.str = s;
 
                                 return EMBEDDED_R;
                             }
 
 
 
-                            /* string literals and string data types */
+                            /* string literals and string (or string-ish) data types */
 \"\"                        { count(); yylval.str = strdup(yytext); return STRING_MISSING; }
 \"(\\.|[^"\\])*\"           { count(); yylval.str = strdup(yytext); return STRING_LITERAL; }
 
 str                         { count(); yylval.str = strdup(yytext); return STRING_TYPE_SPEC; }
 str{D}+                     { count(); yylval.str = strdup(yytext); return STRING_TYPE_SPEC; }
 strL                        { count(); yylval.str = strdup(yytext); return STRING_TYPE_SPEC; }
+
+\/({L}+\/)*{L}+(\.{L}+)*    { count(); yylval.str = strdup(yytext); return UNQUOTED_FILEPATH; }
+({L}+\/)+{L}+(\.{L}+)*      { count(); yylval.str = strdup(yytext); return UNQUOTED_FILEPATH; }
+{L}+\.{L}+                  { count(); yylval.str = strdup(yytext); return UNQUOTED_FILEPATH; }
 
 
 
@@ -79,6 +85,27 @@ strL                        { count(); yylval.str = strdup(yytext); return STRIN
 %-?{D}+s                    { count(); yylval.str = strdup(yytext); return STRING_FORMAT; }
 %-?0?{D}+\.{D}+[efg]c?      { count(); yylval.str = strdup(yytext); return NUMBER_FORMAT; }
 %-?t[Ccdwmqh]{L}*           { count(); yylval.str = strdup(yytext); return DATETIME_FORMAT; }
+
+
+
+                            /* Other keywords */
+_n                          { count(); yylval.str = strdup(yytext); return _LITTLE_N; }
+_N                          { count(); yylval.str = strdup(yytext); return _BIG_N; }
+(?i:_all)                   { count(); yylval.str = strdup(yytext); return _ALL; }
+(?i:_b)                     { count(); yylval.str = strdup(yytext); return _B; }
+(?i:_coef)                  { count(); yylval.str = strdup(yytext); return _COEF; }
+(?i:_cons)                  { count(); yylval.str = strdup(yytext); return _CONS; }
+(?i:_pi)                    { count(); yylval.str = strdup(yytext); return _PI; }
+(?i:_pred)                  { count(); yylval.str = strdup(yytext); return _PRED; }
+(?i:_rc)                    { count(); yylval.str = strdup(yytext); return _RC; }
+(?i:_skip)                  { count(); yylval.str = strdup(yytext); return _SKIP; }
+(?i:using)                  { count(); yylval.str = strdup(yytext); return USING; }
+(?i:with)                   { count(); yylval.str = strdup(yytext); return WITH; }
+(?i:if)                     { count(); yylval.str = strdup(yytext); return IF; }
+(?i:in)                     { count(); yylval.str = strdup(yytext); return IN; }
+                            
+                            /* It's absolutely appalling we have to lex this to get it work right */
+(?i:in)[ \t]+[+-]?{D}+([ \t]?\/[ \t]?[+-]?{D}+)*   { count(); yylval.str = strdup(yytext); return IN_CLAUSE; }
 
 
 
@@ -112,63 +139,15 @@ strL                        { count(); yylval.str = strdup(yytext); return STRIN
 
 
 
-                            /* command verbs */
-(?i:exit)                   { count(); yylval.str = strdup(yytext); return EXIT; }
-(?i:quit)                   { count(); yylval.str = strdup(yytext); return EXIT; }
-(?i:insheet)                { count(); yylval.str = strdup(yytext); return INSHEET; }
-(?i:tab)                    { count(); yylval.str = strdup(yytext); return TABLE; }
-(?i:tabulate)               { count(); yylval.str = strdup(yytext); return TABLE; }
-(?i:outsheet)               { count(); yylval.str = strdup(yytext); return OUTSHEET; }
-(?i:sum)                    { count(); yylval.str = strdup(yytext); return SUM; }
-(?i:summarize)              { count(); yylval.str = strdup(yytext); return SUM; }
-(?i:di)                     { count(); yylval.str = strdup(yytext); return DI; }
-(?i:display)                { count(); yylval.str = strdup(yytext); return DI; }
-(?i:ls)                     { count(); yylval.str = strdup(yytext); return LS; }
-(?i:log)                    { count(); yylval.str = strdup(yytext); return LOG; }
-(?i:replace)                { count(); yylval.str = strdup(yytext); return REPLACE; }
-(?i:cd)                     { count(); yylval.str = strdup(yytext); return CD; }
-(?i:keep)                   { count(); yylval.str = strdup(yytext); return KEEP; }
-(?i:merge)                  { count(); yylval.str = strdup(yytext); return MERGE; }
-(?i:xtile)                  { count(); yylval.str = strdup(yytext); return XTILE; }
-(?i:rename)                 { count(); yylval.str = strdup(yytext); return RENAME; }
-(?i:sort)                   { count(); yylval.str = strdup(yytext); return SORT; }
-(?i:save)                   { count(); yylval.str = strdup(yytext); return SAVE; }
-(?i:drop)                   { count(); yylval.str = strdup(yytext); return DROP; }
-(?i:duplicates)             { count(); yylval.str = strdup(yytext); return DUPLICATES; }
-(?i:count)                  { count(); yylval.str = strdup(yytext); return COUNT; }
-(?i:describe)               { count(); yylval.str = strdup(yytext); return DESCRIBE; }
-(?i:generate)               { count(); yylval.str = strdup(yytext); return GEN; }
-(?i:order)                  { count(); yylval.str = strdup(yytext); return ORDER; }
-(?i:clear)                  { count(); yylval.str = strdup(yytext); return CLEAR; }
-(?i:use)                    { count(); yylval.str = strdup(yytext); return USE; }
-(?i:set)                    { count(); yylval.str = strdup(yytext); return SET; }
-(?i:mlogit)                 { count(); yylval.str = strdup(yytext); return MLOGIT; }
-(?i:logit)                  { count(); yylval.str = strdup(yytext); return LOGIT; }
-(?i:regress)                { count(); yylval.str = strdup(yytext); return REGRESS; }
-(?i:reg)                    { count(); yylval.str = strdup(yytext); return REGRESS; }
-
-
-
-                            /* modifiers that can be applied to commands */
-(?i:by)                     { count(); yylval.str = strdup(yytext); return BY; }
-(?i:bysort)                 { count(); yylval.str = strdup(yytext); return BYSORT; }
-(?i:xi)                     { count(); yylval.str = strdup(yytext); return XI; }
+                            /* command verbs that have to be hardcoded into the grammar */
 (?i:capture)                { count(); yylval.str = strdup(yytext); return CAPTURE; }
 (?i:quietly)                { count(); yylval.str = strdup(yytext); return QUIETLY; }
 (?i:qui)                    { count(); yylval.str = strdup(yytext); return QUIETLY; }
 (?i:noisily)                { count(); yylval.str = strdup(yytext); return NOISILY; }
-
-
-
-                            /* post-verb components of commands */
-(?i:pweight)                { count(); yylval.str = strdup(yytext); return PWEIGHT; }
-(?i:aweight)                { count(); yylval.str = strdup(yytext); return AWEIGHT; }
-(?i:fweight)                { count(); yylval.str = strdup(yytext); return FWEIGHT; }
-(?i:iweight)                { count(); yylval.str = strdup(yytext); return IWEIGHT; }
-(?i:weight)                { count(); yylval.str = strdup(yytext); return WEIGHT; }
-(?i:using)                  { count(); yylval.str = strdup(yytext); return USING; }
-(?i:in)                     { count(); yylval.str = strdup(yytext); return IN; }
-(?i:if)                     { count(); yylval.str = strdup(yytext); return IF; }
+(?i:duplicates)             { count(); yylval.str = strdup(yytext); return DUPLICATES; }
+(?i:set)                    { count(); yylval.str = strdup(yytext); return SET; }
+(?i:log)                    { count(); yylval.str = strdup(yytext); return LOG; }
+(?i:merge)                  { count(); yylval.str = strdup(yytext); return MERGE; }
 
 
 
