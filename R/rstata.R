@@ -47,53 +47,52 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
         #time for a read-eval-print loop
         while(TRUE)
         {
-            val <-
             tryCatch(
-            {
-                inpt <- read_interactive()
-
-                #Send the input to the bison parser, which, after reading
-                #each command, invokes the process_cmd callback defined at
-                #the end of this file to do a few things:
-                #    o) run post-parsing syntax and semantic checks on that
-                #       command's AST
-                #    o) recursively walk the AST to construct an R expression
-                #       object
-                #    o) finally, eval the expression object for its side
-                #       effects, including printing any output, and throw
-                #       away the value
-                do_parse_with_callbacks(inpt, process_cmd, get_macro_value)
-                                        
-            },
-            error = function(c) c,
-            exit = function(c) c)
-
-            #We got a bad command, but restart rather than abort
-            if(inherits(val, "bad_command"))
-            {
-                print(val$message)
-                next
-            }
-
-            #A different error - exit but save data
-            if(inherits(val, "error"))
-            {
+              {
+                  inpt <- read_interactive()
+  
+                  #Send the input to the bison parser, which, after reading
+                  #each command, invokes the process_cmd callback defined at
+                  #the end of this file to do a few things:
+                  #    o) run post-parsing syntax and semantic checks on that
+                  #       command's AST
+                  #    o) recursively walk the AST to construct an R expression
+                  #       object
+                  #    o) finally, eval the expression object for its side
+                  #       effects, including printing any output, and throw
+                  #       away the value
+                  do_parse_with_callbacks(inpt, process_cmd, get_macro_value)
+              },
+              
+              error =
+              function(c) c
+              {
                 cat(paste0(val$message), "\n", sep="")
                 
                 on.exit("")
                 s <- substr(readline("Will now exit. Save data? "), 1, 1)
                 if(s == "Y" || s == "y")
-                    assign(varname, dta, pos=parent.frame())
-
+                  assign(varname, dta, pos=parent.frame())
+                
                 break
-            }
-            
-            #The custom condition for ado-language exit commands
-            if(inherits(val, "exit"))
-            {
+              }
+              
+              exit =
+              function(c)
+              {
                 cat("\n")
                 break
-            }
+                
+              },
+              
+              bad_command =
+              function(c)
+              {
+                print(val$message)
+                next
+              }
+            )
+
         }
     } else if(is.null(filename) && is.null(string))
     {   
@@ -118,30 +117,22 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
 process_cmd <-
 function(ast)
 {
-    #for right now, don't do any of the stuff below...
-    print(ast); return(1);
-    
-    settings.env <- get("settings.env", envir=parent.frame())
-    macro.env    <- get("macro.env", envir=parent.frame())
-    
-    #don't throw an R exception into C++, not a good idea...
-    #instead, the C++ code will notice this return code and re-raise
-    #the condition
-    #FIXME: is this actually necessary?
-    val <-
-    tryCatch( 
-    {
-        #take the syntax tree and a) weed it, b) turn it into
-        #an expression object, throwing exceptions if anything goes wrong
-        walked <- walk(ast)
+    #possible FIXME: conditions raised here shouldn't be swallowed by
+    #the C++ layer - are they?
 
-        lapply(walked, eval)
-    },
-    bad_command = function(c) c)
+    #Do semantic analysis and run checks, including for things that Stata
+    #considers syntax, and raise error conditions if the checks fail.
+    weed(ast)
     
-    if(inherits(val, "bad_command"))
-        return(1) #failure, the parser re-raises the condition
-    else
-        return(0) #success
+    #Code generation: convert the raw AST into an R call object
+    cl <- codegen(ast)
+    
+    #Evaluate the generated call
+    #    a) for its side effects
+    #    b) for the printable object this tryCatch will return
+    eval(cl, envir=parent.frame())
+    
+    print(obj) #dispatches to the custom print methods
+
+    return(0); #a compatible type for the C++ layer
 }
-
