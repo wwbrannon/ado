@@ -6,7 +6,7 @@
 using namespace Rcpp;
 
 // do_parse_with_callbacks
-Rcpp::List do_parse_with_callbacks(std::string text, Rcpp::Function cmd_action, Rcpp::Function get_macro_value, int debug_level);
+SEXP do_parse_with_callbacks(std::string text, Rcpp::Function cmd_action, Rcpp::Function get_macro_value, int debug_level);
 RcppExport SEXP rstata_do_parse_with_callbacks(SEXP textSEXP, SEXP cmd_actionSEXP, SEXP get_macro_valueSEXP, SEXP debug_levelSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
