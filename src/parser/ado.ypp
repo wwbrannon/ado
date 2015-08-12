@@ -120,7 +120,7 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 %type <node>    translation_unit external_statement compound_cmd cmds modifier_cmd_list cmd
 %type <node>    error
 
-%type <node>    modifier_cmd nonmodifier_cmd long_modifier_cmd long_modifier_lede
+%type <node>    modifier_cmd nonmodifier_cmd long_modifier_cmd
 
 %type <node>    unary_factor_operator
 
@@ -252,19 +252,19 @@ cmd:
         
         $$ = $1;
     }
-    | modifier_cmd_list long_modifier_cmd nonmodifier_cmd
+    | modifier_cmd_list long_modifier_cmd ":" nonmodifier_cmd
     {
         $1->appendChild("next_modifier", $2);
-        $2->appendChild("main_cmd", $3);
+        $2->appendChild("main_cmd", $4);
         
         R_ACTION($1);
         
         $$ = $1;
     }
-    | modifier_cmd_list long_modifier_cmd compound_cmd
+    | modifier_cmd_list long_modifier_cmd ":" compound_cmd
     {
         $1->appendChild("next_modifier", $2);
-        $2->appendChild("main_cmd", $3);
+        $2->appendChild("main_cmd", $4);
         
         R_ACTION($1);
         
@@ -273,29 +273,26 @@ cmd:
     ;
 
 long_modifier_cmd:
-    long_modifier_lede option_list ":"
+      IDENT option_list
     {
         ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
-        node->appendChild("varlist", $1);
+        node->appendChild("verb", $1);
         
         if($2->nChildren() > 0)
-            node->appendChild("verb", $1);
+            node->appendChild("option_list", $2);
         
         $$ = node;
     }
-    ;
-
-long_modifier_lede:
-      IDENT
+    | IDENT expression_list option_list
     {
-        ExprNode *node = new ExprNode("rstata_expression_list");
-        node->appendChild($1);
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        node->appendChild("verb", $1);
+        node->appendChild("varlist", $2);
+        
+        if($3->nChildren() > 0)
+            node->appendChild("option_list", $3);
+        
         $$ = node;
-    }
-    | long_modifier_lede IDENT
-    {
-        $1->appendChild($2);
-        $$ = $1;
     }
     ;
 
