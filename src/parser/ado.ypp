@@ -88,7 +88,6 @@ yy::RStataParser::error(const location_type& l, const std::string& m)
 
 /* Operators or tokens whose values need to be passed up to the next layer */
 %token <str>
-    PERIOD          "."
     PLUS            "+"
     LT_OP           "<"
     GT_OP           ">"
@@ -108,8 +107,10 @@ yy::RStataParser::error(const location_type& l, const std::string& m)
 ;
 
                 /* Literals of various fundamental types */
-%token <node>   NUMBER NUMBER_MISSING
-%token <node>   IDENT STRING_LITERAL DATE DATETIME
+%token <node>   NUMBER IDENT STRING_LITERAL DATE DATETIME
+%token <node>
+    PERIOD          "."
+;
 
                 /* Type specifiers */
 %token <str>    BYTE INT LONG FLOAT DOUBLE STRING_TYPE_SPEC
@@ -881,13 +882,22 @@ gsort_varlist:
 /* Helper constructs for lrtest */
 modelspec:
       IDENT
-    {
-    }
     | "."
-    {
-    }
     | "(" varlist ")"
     {
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
+        node->addData("verb", std::string("()"));
+        node->appendChild("right", $2);
+        
+        ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
+        left->addData("value", *(new std::string("lrtest_term_list")));
+        node->appendChild("left", left);
+
+        ExprNode *arglist = new ExprNode("rstata_argument_expression_list");
+        arglist->appendChild($2);
+        
+        node->appendChild("right", arglist);
+        $$ = node;
     }
     ;
 
@@ -911,6 +921,27 @@ anova_nest_expression:
     | anova_nest_expression "|" unary_factor_expression
     {
         $2; // shut up, bison...
+
+        // yes, making these function calls rather than different operators is a
+        // bit of a hack. but there's not an elegant way to do it - just the fact
+        // that these commands with their special syntax exist is a hack.
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
+        node->addData("verb", std::string("()"));
+        
+        // the "left" child
+        ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
+        left->addData("value", *(new std::string("anova_nest")));
+        node->appendChild("left", left);
+        
+        // the "right" child
+        ExprNode *arglist = new ExprNode("rstata_argument_expression_list");
+        ExprNode *explist = new ExprNode("rstata_expression_list");
+        explist->appendChild($1);
+        explist->appendChild($3);
+        arglist->appendChild(explist);
+        
+        node->appendChild("right", arglist);
+        $$ = node;
     }
     ;
 
@@ -919,6 +950,23 @@ anova_error_expression:
     | anova_nest_expression "/"
     {
         $2; // shut up, bison...
+        
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
+        node->addData("verb", std::string("()"));
+        
+        // the "left" child
+        ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
+        left->addData("value", *(new std::string("anova_error")));
+        node->appendChild("left", left);
+        
+        // the "right" child
+        ExprNode *arglist = new ExprNode("rstata_argument_expression_list");
+        ExprNode *explist = new ExprNode("rstata_expression_list");
+        explist->appendChild($1);
+        arglist->appendChild(explist);
+        
+        node->appendChild("right", arglist);
+        $$ = node;
     }
     ;
 
@@ -1015,10 +1063,10 @@ format_spec:
 literal_expression:
       IDENT
     | NUMBER
-    | NUMBER_MISSING
     | STRING_LITERAL
     | DATE
     | DATETIME
+    | "." /* a numeric missing */
     | format_spec
     ;
 

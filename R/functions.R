@@ -71,3 +71,9 @@ function(args)
     #FIXME
 }
 
+rstata_func_lrtest_termlist <-
+function(args)
+{
+    #FIXME
+}
+
