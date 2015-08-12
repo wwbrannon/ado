@@ -9,11 +9,11 @@ using namespace Rcpp;
 List do_stata_parse(std::string line)
 {
     YY_BUFFER_STATE   buf;
-    StataCmd          *obj;
+    BaseStataCmd      *obj;
     List              ret;
     
-    STATA_CMD_LIST_T  start = { NULL, NULL };
-    STATA_CMD_LIST_T  *parsed = &start;
+    // yyparse takes a pointer to something
+    std::vector<BaseStataCmd> *parsed = new std::vector<BaseStataCmd>();
 
     // handle some buffers and parse the input
     buf = yy_scan_string(line.c_str());
@@ -21,10 +21,10 @@ List do_stata_parse(std::string line)
         return R_NilValue;
     yy_delete_buffer(buf);
 
-    // now take the resulting STATA_CMD_LIST_T and turn it into an R call object
-    while(true)
+    // now take the resulting std::vector and turn it into an R call object
+    for(int x = 0; x < v->size(); x++)
     {
-        obj = parsed->current;
+        obj = (*parsed)[x];
 
         // ask the BaseStataCmd object to give us its R form
         Language res = Language("as.call", obj->as_list());
@@ -33,11 +33,6 @@ List do_stata_parse(std::string line)
             ret.push_front(res);
         else
             ret = Language("list", ret, res).eval(); // append res to ret
-        
-        if(parsed->next != NULL)
-            parsed = parsed->next;
-        else
-            break;
     }
 
     return ret;

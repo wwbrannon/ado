@@ -4,7 +4,6 @@ Roadmap to v1.0:
 Immediate TODO:
     o) finish as_expr methods
     o) finish the Option and OptionList classes
-    o) convert STATA_CMD_LIST_T and macros to be a class and an std::vector
     
     o) finish expression-parsing code in ado.ypp, testing with gen
     o) finish the rest of the grammar

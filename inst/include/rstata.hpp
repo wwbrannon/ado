@@ -172,32 +172,5 @@ class MakeGeneralStataCmd
         std::string __using_filename;
 };
 
-typedef struct STATA_CMD_LIST
-{
-    BaseStataCmd *current;
-    struct STATA_CMD_LIST *next;
-} STATA_CMD_LIST_T;
-
-#ifndef ADD_TO_CMD_LIST
-#define ADD_TO_CMD_LIST(cmd, cur)              \
-{                                              \
-        if(cur->current == NULL)               \
-        {                                      \
-            cur->current = &cmd;               \
-        }                                      \
-        else                                   \
-        {                                      \
-            STATA_CMD_LIST_T next_cmdlist =    \
-            {                                  \
-                &cmd, /* current */            \
-                NULL  /* next */               \
-            };                                 \
-                                               \
-            cur->next = &next_cmdlist;         \
-            cur = &next_cmdlist;               \
-        }                                      \
-}
-#endif /* ADD_TO_CMD_LIST */
-
 #endif /* RSTATA_H */
 

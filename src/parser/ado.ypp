@@ -11,7 +11,7 @@ void raise_condition(const string& msg, const string& type);
 
 extern "C" int yylex(void);
 
-void yyerror(STATA_CMD_LIST_T *cmdlist_ptr, const char *str)
+void yyerror(std::vector<BaseStataCmd> *cmdlist_ptr, const char *str)
 {
         raise_condition(str, "error");
 }
@@ -27,7 +27,7 @@ int yywrap()
     char *str;
 }
 
-%parse-param {STATA_CMD_LIST_T *cmdlist_ptr}
+%parse-param {std::vector<BaseStataCmd> *cmdlist_ptr}
 %define parse.error verbose
 %start commands
 
