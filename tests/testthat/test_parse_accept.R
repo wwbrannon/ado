@@ -100,93 +100,100 @@ test_that("The recode command parses", {
     expect_accept('recode treat1 treat2 (missing = 1) (4/5 = 9), gen(newvar)\n')
 })
 
-##Prefix commands
-#'quietly gen foobar = 1'
-#'qui gen foobar = 1'
-#'qui cap gen foo = 1'
-#'by state: tab foo bar'
-#'qui by state: tab foo bar'
-#'qui cap by state: tab foo bar'
-#'qui by state: cap tab foo bar'
-#
-#'quietly ivregress y x1 x2 x3 (contact = treat)'
-#'qui ivregress y x1 x2 x3 (contact = treat)'
-#'qui cap ivregress y x1 x2 x3 (contact = treat)'
-#'by state: ivregress y x1 x2 x3 (contact = treat)'
-#'noisily by state: ivregress y x1 x2 x3 (contact = treat)'
-#'qui cap bysort state: ivregress y x1 x2 x3 (contact = treat)'
-#'noisily by state: cap ivregress y x1 x2 x3 (contact = treat)'
-#
-##Macro commands
-#'local foo "bar"'
-#'local mac'
-#'local foo = 1+1'
-#'global'
-#'tempfile foobar foo'
-#'tempfile foobar "foo"'
-#'macro drop'
-#'macro dir'
-#'macro dir, opt'
-#
-##Deeply nested expressions should work
-#'gen foo = -(1 + ((98/4^2) - (8.3+1)))'
-#'disp 87+.98-96/23^7'
-#'logit y score##i.state'
-#
-##Loops and if statements
-#'if 1 {
-#    di "foo"
-#}'
-#
-#"if `foo' + 3 >= 7 {
-#    disp \"it worked\"
-#}"
-#
-#"forvalues i = 45 / 98 {
-#    gen var`i' = `i'
-#}"
-#
-#"forvalues i = 45(2)98 {
-#    gen var`i' = `i'
-#}"
-#
-#"forvalues i = 45 2: 98 {
-#    gen var`i' = `i'
-#}"
-#
-#"forvalues i = 45 2 TO 98 {
-#    gen var`i' = `i'
-#}"
-#
-#"foreach i of 1 2 3 4 5 6 {
-#    disp `i'
-#}"
-#
-#"foreach i of bar baz foo quux {
-#    disp `i'
-#}"
-#
-#"foreach i of bar baz foo quux {
-#    disp `i'
-#}"
-#
-#"foreach i of local nums {
-#    disp `i'
-#}"
-#
-#"foreach i of global nums {
-#    disp `i'
-#}"
-#
-#"foreach i of varlist bar baz foo quux {
-#    disp `i'
-#}"
-#
-#"foreach i of newlist bar baz foo quux {
-#    disp `i'
-#}"
-#
-#"foreach i of numlist 1 2 3 4 {
-#    disp `i'
-#}"
-#
+test_that("Prefix commands parse with a general command", {
+    expect_accept('quietly gen foobar = 1\n')
+    expect_accept('qui gen foobar = 1\n')
+    expect_accept('qui cap gen foo = 1\n')
+    expect_accept('by state: tab foo bar\n')
+    expect_accept('qui by state: tab foo bar\n')
+    expect_accept('qui cap by state: tab foo bar\n')
+    expect_accept('qui by state: cap tab foo bar\n')
+})
+
+test_that("Prefix commands parse with a special command", {
+    expect_accept('quietly ivregress 2sls y x1 x2 x3 (contact = treat)\n')
+    expect_accept('qui ivregress 2sls y x1 x2 x3 (contact = treat)\n')
+    expect_accept('qui cap ivregress 2sls y x1 x2 x3 (contact = treat)\n')
+    expect_accept('by state: ivregress 2sls y x1 x2 x3 (contact = treat)\n')
+    expect_accept('noisily by state: ivregress 2sls y x1 x2 x3 (contact = treat)\n')
+    expect_accept('qui cap bysort state: ivregress 2sls y x1 x2 x3 (contact = treat)\n')
+    expect_accept('noisily by state: cap ivregress 2sls y x1 x2 x3 (contact = treat)\n')
+})
+
+test_that("Macro manipulation commands parse", {
+    expect_accept('local foo "bar"\n')
+    expect_accept('local mac\n')
+    expect_accept('local foo = 1+1\n')
+    expect_accept('tempfile foobar\n')
+    expect_accept('macro drop\n')
+    expect_accept('macro dir\n')
+})
+
+test_that("Deeply nested expressions parse", {
+    expect_accept('gen foo = -(1 + ((98/4^2) - (8.3+1)))\n')
+    expect_accept('disp 87+.98-96/23^7\n')
+    expect_accept('logit y score##i.state\n')
+})
+
+test_that("If statements parse", {
+    expect_accept('if 1 {
+        di "foo"
+    }\n')
+
+    expect_accept("if `foo' + 3 >= 7 {
+        disp \"it worked\"
+    }\n")
+})
+
+test_that("Forvalues loops parse", {
+    expect_accept("forvalues i = 45 / 98 {
+        gen var`i' = `i'
+    }\n")
+
+    expect_accept("forvalues i = 45(2)98 {
+        gen var`i' = `i'
+    }\n")
+
+    expect_accept("forvalues i = 45 2: 98 {
+        gen var`i' = `i'
+    }\n")
+
+    expect_accept("forvalues i = 45 2 to 98 {
+        gen var`i' = `i'
+    }\n")
+})
+
+test_that("Foreach loops parse", {
+    expect_accept("foreach i of 1 2 3 4 5 6 {
+        disp `i'
+    }\n")
+
+    expect_accept("foreach i of bar baz foo quux {
+        disp `i'
+    }\n")
+
+    expect_accept("foreach i of bar baz foo quux {
+        disp `i'
+    }\n")
+
+    expect_accept("foreach i of local nums {
+        disp `i'
+    }\n")
+
+    expect_accept("foreach i of global nums {
+        disp `i'
+    }\n")
+
+    expect_accept("foreach i of varlist bar baz foo quux {
+        disp `i'
+    }\n")
+
+    expect_accept("foreach i of newlist bar baz foo quux {
+        disp `i'
+    }\n")
+
+    expect_accept("foreach i of numlist 1 2 3 4 {
+        disp `i'
+    }\n")
+})
+
