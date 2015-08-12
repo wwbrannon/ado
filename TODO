@@ -1,25 +1,23 @@
 Roadmap to v0.1:
 Immediate TODO:
-    o) misc small parser fixes
-        o) fix the format:
-            list components should be named
-            omit components if empty
-        o) error if other character given
-        o) delete the random strings that don't become part of the AST,
-           to avoid a memory leak
-        o) make sure the location tracking works
+    o) error recovery + error if other character given
+    o) make sure the location tracking works
+    o) memory leaks
+        o) delete the random strings that don't become part of the AST
+        o) delete command parts if not added
         o) what about memory leaks during the error recovery stuff?
+    o) expand the grammar to include
+        o) formats
+        o) data types
+        o) fully general varlists
+    
     o) infrastructural R functions - AST walkers, name abbreviation support, etc
 
 Semantics:
-    o) write up stubs for the R functions implementing Stata commands
+    o) write up stubs for the initial 9 commands
     o) Stata-like output: how much is this worth imitating?
 
 Write a test suite and test
-
-* Edit the exports in 'NAMESPACE', and add necessary imports.
-* Run R CMD build to build the package tarball.
-* Run R CMD check to check the package tarball.
 
 Later functionality
     v0.2:
@@ -34,11 +32,6 @@ Later functionality
             o) basic stats
     
     v0.3:
-        o) Real varlists, with factors, interactions, globs, etc
-    
-        o) Formats / data types
-
-    v0.4:
         o) Loops + Macros
 
 Write documentation

@@ -1,10 +1,8 @@
 /* Methods for most of the derived classes of ExprNode */
 
-#include <utility>
+#include <cstdio>
 #include <Rcpp.h>
 #include "RStata.hpp"
-
-using namespace Rcpp;
 
 ExprNode::ExprNode(std::string _type)
 {
@@ -76,13 +74,30 @@ ExprNode::setChildren(std::vector<std::string> _names, std::vector<ExprNode *> _
 /*
  * Recursively convert to an R data structure
  */
-List
+size_t
+ExprNode::nChildren()
+{
+    return children.size();
+}
+
+size_t
+ExprNode::nData()
+{
+    return data.size();
+}
+
+
+
+/*
+ * Recursively convert to an R data structure
+ */
+Rcpp::List
 ExprNode::as_R_object() const
 {
-    List res, chld;
+    Rcpp::List res, chld;
     
-    CharacterVector node_data(data.size());
-    CharacterVector node_data_names(data.size());
+    Rcpp::CharacterVector node_data(data.size());
+    Rcpp::CharacterVector node_data_names(data.size());
     
     std::map<std::string, std::string>::const_iterator it;
     unsigned int x;

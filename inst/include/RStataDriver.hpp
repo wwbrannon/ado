@@ -4,8 +4,6 @@
 #include <string>
 #include "RStata.hpp"
 
-void raise_condition(const std::string& msg, const std::string& type);
-
 class RStataDriver
 {
     public:

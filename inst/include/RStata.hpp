@@ -1,7 +1,10 @@
 #ifndef RSTATA_H
 #define RSTATA_H
 
+#include <cstdio>
 #include <Rcpp.h>
+
+void raise_condition(const std::string& msg, const std::string& type);
 
 // The main class of node in the AST the parser generates
 class ExprNode
@@ -23,7 +26,11 @@ class ExprNode
         
         void setChildren(std::initializer_list<ExprNode *> _children); // lots of nameless children
         void setChildren(std::vector<std::string> _names, std::vector<ExprNode *> _children); // lots of named children
-    
+        
+        // accessor methods
+        size_t nChildren();
+        size_t nData();
+
     private:
         // the node's own data
         std::string type;
