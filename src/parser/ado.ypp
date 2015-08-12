@@ -1,73 +1,68 @@
-%skeleton "RStataParser.cpp" /* -*- C++ -*- */
+%skeleton "lalr1.cc" /* -*- C++ -*- */
 %require "3.0.2"
-%defines
-%define parser_class_name {RStataParser}
 
+%defines
+%define parser_class_name { RStataParser }
 %define api.token.constructor
 %define api.value.type variant
 %define parse.assert
+%define parse.trace
+%define parse.error verbose
+%define api.token.prefix {TOK_}
 
 %param { RStataDriver& driver }
 
 %locations
-%define parse.trace
-%define parse.error verbose
 
-%{
-#include <string>
-#include <cstdio>
-#include <cstring>
-#include <iostream>
-#include <Rcpp.h>
-#include "RStata.hpp"
-#include "RStataDriver.hpp"
-
-void raise_condition(const std::string& msg, const std::string& type);
-
-extern "C" int yylex(void);
-
-void yyerror(std::unique_ptr<BaseExprNode> **ast_root, const char *str)
+%code
 {
-        raise_condition(str, "error");
-}
- 
-int yywrap()
-{
-        return 1;
-} 
- 
-%}
+    #include <string>
+    #include <cstdio>
+    #include <cstring>
+    #include <iostream>
+    #include <Rcpp.h>
+    #include "RStata.hpp"
+    #include "RStataDriver.hpp"
 
-%union {
-    char *str;
+    void yy::RStataParser::error(const location_type& l, const std::string& m)
+    {
+            driver.error(l, m);
+    }
+     
+    int yywrap()
+    {
+            return 1;
+    } 
+ 
 }
 
-%start translation_unit
+%token
+    END 0   "end of file"
+    
 
-%token <str> NEWLINE
-
-%token <str> EMBEDDED_R;
+%token <BaseExprNode> NEWLINE
+%token <BaseExprNode> EMBEDDED_R;
 
 /* Literals of various fundamental types */
-%token <str> NUMBER IDENT STRING_LITERAL
-%token <str> NUMBER_MISSING STRING_MISSING DATE TIME DATETIME
+%token <BaseExprNode> NUMBER IDENT STRING_LITERAL
+%token <BaseExprNode> NUMBER_MISSING STRING_MISSING DATE TIME DATETIME
 
 /* Operators */
-%token <str> GT_OP LT_OP EQ_OP NE_OP OR_OP AND_OP
+%token <BaseExprNode> GT_OP LT_OP EQ_OP NE_OP OR_OP AND_OP
 %precedence RELATIONAL
 %precedence '+' '-'
 %precedence EXPONENT
 %precedence '['
 %precedence '('
 
-
 /* Command components and keywords */
-%token <str> USING IF IN
+%token <BaseExprNode> USING IF IN
 
 /* Commands with unusual enough syntax they have to be parsed separately */
-%token <str> QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
-%token <str> MERGE
+%token <BaseExprNode> QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
+%token <BaseExprNode> MERGE
 
+%start translation_unit
 %%
 
 /*
@@ -318,15 +313,4 @@ merge_cmd:
     ;
 
 %%
-
-void
-raise_condition(const std::string& msg, const std::string& type)
-{
-  Rcpp::List cond;
-  cond["message"] = msg;
-  cond["call"] = R_NilValue;
-  cond.attr("class") = Rcpp::CharacterVector::create(type, "condition");
-  Rcpp::Function stopper("stop");
-  stopper(cond);
-}
 

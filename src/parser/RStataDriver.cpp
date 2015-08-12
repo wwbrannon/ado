@@ -35,3 +35,14 @@ RStataDriver::error(const std::string& m)
 
 }
 
+void
+raise_condition(const std::string& msg, const std::string& type)
+{
+  Rcpp::List cond;
+  cond["message"] = msg;
+  cond["call"] = R_NilValue;
+  cond.attr("class") = Rcpp::CharacterVector::create(type, "condition");
+  Rcpp::Function stopper("stop");
+  stopper(cond);
+}
+

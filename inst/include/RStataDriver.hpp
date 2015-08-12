@@ -19,7 +19,7 @@ class RStataDriver
         int result;
 
         void scan_begin();
-        void scan_end;
+        void scan_end();
 
         int parse(const std::string& s);
         

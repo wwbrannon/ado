@@ -1,19 +1,22 @@
-%{
+%{ /* -*- C++ -*- */
 #include <cstring>
+#include <cerrno>
+#include <climits>
+#include <cstdlib>
 #include <iostream>
+#include <string>
+
 #include "RStata.hpp"
+#include "RStataDriver.hpp"
 #include "ado.tab.hpp"
-#define YY_DECL extern "C" int yylex()
-
-using namespace std;
-
-int line_num = 1;
-int col_num = 0;
 
 void long_comment();
 void short_comment();
-void count();
+
+static yy::location loc;
 %}
+
+%option noyywrap debug
 
 D           [0-9]
 L           [a-zA-Z_]
@@ -21,10 +24,24 @@ H           [a-fA-F0-9]
 E           [Ee][+-]?{D}+
 F           [FLfl]
 M           (?i:(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec))
+B           [ \t\v\r\f]
 
-%option noyywrap
+%{
+    // Code run each time a pattern is matched
+    # define YY_USER_ACTION  loc.columns(yyleng);
+%}
 
 %%
+
+%{
+    // Code run each time yylex is called
+    loc.step();
+%}
+
+                            /* ignore whitespace but track line and column numbers */
+[\n]+                       { loc.lines(yyleng); loc.step(); }
+{B}+                        { loc.step(); }
+
                             /* eat comments but track line and column numbers */
 "/*"                        { long_comment(); }
 \/\/                        { short_comment(); }
@@ -130,9 +147,6 @@ M           (?i:(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec))
 
 
 
-                            /* ignore whitespace but track line and column numbers */
-\n                          { count(); ++line_num; return NEWLINE; }
-[ \t\v\r\f]+                { count(); }
 %%
 
 void long_comment()
@@ -183,18 +197,5 @@ void short_comment()
 
     col_num = 0;
     line_num++;
-}
-
-void count()
-{
-    int i;
-
-    for (i = 0; yytext[i] != '\0'; i++)
-        if (yytext[i] == '\n')
-            col_num = 0;
-        else if (yytext[i] == '\t')
-            col_num += 8 - (col_num % 8);
-        else
-            col_num++;
 }
 
