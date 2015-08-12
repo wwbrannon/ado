@@ -88,7 +88,7 @@ ExprNode::setChildren(std::vector<std::string> _names, std::vector<ExprNode *> _
 
 
 /*
- * Counts of members
+ * Accessor methods
  */
 size_t
 ExprNode::nChildren()
@@ -100,6 +100,26 @@ size_t
 ExprNode::nData()
 {
     return data.size();
+}
+
+ExprNode *
+ExprNode::pop_at_index(unsigned int index)
+{
+    ExprNode *ret;
+    
+    if(index < 0 || index >= children.size())
+    {
+        ret = NULL;
+    }
+    else
+    {
+        ret = children[index];
+        
+        children.erase(children.begin() + index);
+        names.erase(names.begin() + index);
+    }
+
+    return ret;
 }
 
 

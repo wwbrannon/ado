@@ -32,6 +32,8 @@ class ExprNode
         size_t nChildren();
         size_t nData();
 
+        ExprNode *pop_at_index(unsigned int index);
+
     private:
         // the node's own data
         std::vector<std::string> types;
