@@ -2,6 +2,7 @@
 ### AST, do some semantic checks on it, including things that Stata considers syntax,
 ### and raise error conditions if the checks fail.
 
+#' @export
 check <-
 function(node, debug_level=0)
 {
@@ -16,19 +17,21 @@ function(node, debug_level=0)
    raiseifnot(length(named) == length(unique(named)))
    
    for(chld in node$children)
-     check(chld)
+     check(chld, debug_level)
   }
   
   #Check this node in a way appropriate to its type
-  verifynode(node)
+  verifynode(node, debug_level)
 }
 
+#' @export
 verifynode <-
 function(node, debug_level=0)
 UseMethod("verifynode")
 
 ##############################################################################
 ## Literals
+#' @export
 verifynode.rstata_literal <-
 function(node, debug_level=0)
 {
@@ -42,6 +45,7 @@ function(node, debug_level=0)
   NextMethod()
 }
 
+#' @export
 verifynode.rstata_ident <-
 function(node, debug_level=0)
 {
@@ -51,6 +55,7 @@ function(node, debug_level=0)
   invisible(TRUE)
 }
 
+#' @export
 verifynode.rstata_number <-
 function(node, debug_level=0)
 {
@@ -62,6 +67,7 @@ function(node, debug_level=0)
   invisible(TRUE)
 }
 
+#' @export
 verifynode.rstata_string_literal <-
 function(node, debug_level=0)
 {
@@ -71,6 +77,7 @@ function(node, debug_level=0)
   invisible(TRUE)
 }
 
+#' @export
 verifynode.rstata_datetime <-
 function(node, debug_level=0)
 {
@@ -82,6 +89,7 @@ function(node, debug_level=0)
 
 ##############################################################################
 ## Command parts
+#' @export
 verifynode.rstata_if_clause <-
 function(node, debug_level=0)
 {
@@ -101,6 +109,7 @@ function(node, debug_level=0)
   invisible(TRUE)
 }
 
+#' @export
 verifynode.rstata_in_clause <-
 function(node, debug_level=0)
 {
@@ -121,6 +130,7 @@ function(node, debug_level=0)
   invisible(TRUE)
 }
 
+#' @export
 verifynode.rstata_using_clause <-
 function(node, debug_level=0)
 {
@@ -141,6 +151,7 @@ function(node, debug_level=0)
   invisible(TRUE)
 }
 
+#' @export
 verifynode.rstata_weight_clause <-
 function(node, debug_level=0)
 {
@@ -162,6 +173,7 @@ function(node, debug_level=0)
   invisible(TRUE)  
 }
 
+#' @export
 verifynode.rstata_option_list <-
 function(node, debug_level=0)
 {
@@ -176,6 +188,7 @@ function(node, debug_level=0)
   invisible(TRUE)
 }
 
+#' @export
 verifynode.rstata_option <-
 function(node, debug_level=0)
 {
@@ -197,6 +210,7 @@ function(node, debug_level=0)
 
 ##############################################################################
 ## Compound and atomic commands
+#' @export
 verifynode.rstata_compound_cmd <-
 function(node, debug_level=0)
 {
@@ -215,6 +229,7 @@ function(node, debug_level=0)
   invisible(TRUE)
 }
 
+#' @export
 verifynode.rstata_modifier_cmd_list <-
 function(node, debug_level=0)
 {
@@ -230,8 +245,12 @@ function(node, debug_level=0)
 
   named <- names(node$children)[which(names(node$children) != "")]
   raiseifnot(length(named) == 1 && named == c("main_cmd"))
+  
+  pos <- match("main_cmd", names(node$children))
+  raiseifnot(pos == length(names(node$children)))
 }
 
+#' @export
 verifynode.rstata_embedded_r <-
 function(node, debug_level=0)
 {
@@ -246,6 +265,7 @@ function(node, debug_level=0)
   invisible(TRUE)
 }
 
+#' @export
 verifynode.rstata_cmd <-
 function(node, debug_level=0)
 {
@@ -262,6 +282,7 @@ function(node, debug_level=0)
   NextMethod()
 }
 
+#' @export
 verifynode.rstata_modifier_cmd <-
 function(node, debug_level=0)
 {
@@ -278,6 +299,7 @@ function(node, debug_level=0)
   invisible(TRUE)
 }
 
+#' @export
 verifynode.rstata_general_cmd <-
 function(node, debug_level=0)
 {
@@ -312,6 +334,7 @@ function(node, debug_level=0)
   invisible(TRUE)
 }
 
+#' @export
 verifynode.rstata_special_cmd <-
 function(node, debug_level=0)
 {
@@ -369,7 +392,7 @@ function(node, debug_level=0)
 
 ##############################################################################
 ## Lists of expressions
-
+#' @export
 verifynode.rstata_expression_list <-
 function(node, debug_level=0)
 {
@@ -384,6 +407,7 @@ function(node, debug_level=0)
   invisible(TRUE)
 }
 
+#' @export
 verifynode.rstata_type_constructor <-
 function(node, debug_level=0)
 {
@@ -401,6 +425,7 @@ function(node, debug_level=0)
   invisible(TRUE)
 }
 
+#' @export
 verifynode.rstata_argument_expression_list <-
 function(node, debug_level=0)
 {
@@ -423,7 +448,7 @@ function(node, debug_level=0)
 
 ##############################################################################
 ## Expression branch nodes - literals are above
-
+#' @export
 verifynode.rstata_expression <-
 function(node, debug_level=0)
 {
@@ -435,6 +460,7 @@ function(node, debug_level=0)
 }
 
 ## Tightly binding factor operators
+#' @export
 verifynode.rstata_factor_expression <-
 function(node, debug_level=0)
 {
@@ -447,6 +473,7 @@ function(node, debug_level=0)
   NextMethod()
 }
 
+#' @export
 verifynode.rstata_continuous_expression <-
 function(node, debug_level=0)
 {
@@ -456,6 +483,7 @@ function(node, debug_level=0)
   invisible(TRUE)
 }
 
+#' @export
 verifynode.rstata_indicator_expression <-
 function(node, debug_level=0)
 {
@@ -479,6 +507,7 @@ function(node, debug_level=0)
   invisible(TRUE)
 }
 
+#' @export
 verifynode.rstata_omit_expression <-
 function(node, debug_level=0)
 {
@@ -501,6 +530,7 @@ function(node, debug_level=0)
   invisible(TRUE)
 }
 
+#' @export
 verifynode.rstata_baseline_expression <-
 function(node, debug_level=0)
 {
@@ -516,6 +546,7 @@ function(node, debug_level=0)
   invisible(TRUE)
 }
 
+#' @export
 verifynode.rstata_cross_expression <-
 function(node, debug_level=0)
 {
@@ -537,6 +568,7 @@ function(node, debug_level=0)
 }
 
 ## Arithmetic expressions
+#' @export
 verifynode.rstata_power_expression <-
 function(node, debug_level=0)
 {
@@ -559,6 +591,7 @@ function(node, debug_level=0)
   invisible(TRUE)
 }
 
+#' @export
 verifynode.rstata_unary_expression <-
 function(node, debug_level=0)
 {
@@ -577,7 +610,7 @@ function(node, debug_level=0)
   invisible(TRUE)
 }
 
-
+#' @export
 verifynode.rstata_multiplication_expression <-
 function(node, debug_level=0)
 {
@@ -600,6 +633,7 @@ function(node, debug_level=0)
   invisible(TRUE)
 }
 
+#' @export
 verifynode.rstata_additive_expression <-
 function(node, debug_level=0)
 {
@@ -623,6 +657,7 @@ function(node, debug_level=0)
 }
 
 ## Logical, relational and other expressions
+#' @export
 verifynode.rstata_equality_expression <-
 function(node, debug_level=0)
 {
@@ -665,6 +700,7 @@ function(node, debug_level=0)
   invisible(TRUE)
 }
 
+#' @export
 verifynode.rstata_logical_expression <-
 function(node, debug_level=0)
 {
@@ -707,6 +743,7 @@ function(node, debug_level=0)
   invisible(TRUE)
 }
 
+#' @export
 verifynode.rstata_relational_expression <-
 function(node, debug_level=0)
 {
@@ -749,6 +786,7 @@ function(node, debug_level=0)
   invisible(TRUE)
 }
 
+#' @export
 verifynode.rstata_postfix_expression <-
 function(node, debug_level=0)
 {
@@ -779,6 +817,7 @@ function(node, debug_level=0)
   invisible(TRUE)
 }
 
+#' @export
 verifynode.rstata_assignment_expression <-
 function(node, debug_level=0)
 {
