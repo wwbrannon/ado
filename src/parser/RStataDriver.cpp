@@ -26,13 +26,25 @@ raise_condition(const std::string& msg, const std::string& type)
  * Everything else
  */
 
-// ctor
-RStataDriver::RStataDriver(std::string _text, int _debug_level,
-                           int _batch=0, Rcpp::Function _cmd_action=NULL)
+// ctors
+RStataDriver::RStataDriver(std::string _text, int _debug_level)
+            : cmd_action(Rcpp::Function("identity"))
+{
+    text = _text;
+
+    callbacks = 0;
+
+    debug_level = _debug_level;
+    error_seen = 0;
+}
+
+RStataDriver::RStataDriver(int _callbacks, Rcpp::Function _cmd_action,
+                           std::string _text, int _debug_level)
+            : cmd_action(Rcpp::Function("identity"))
 {
     text = _text;
     
-    batch = _batch;
+    callbacks = _callbacks;
     cmd_action = _cmd_action;
 
     debug_level = _debug_level;

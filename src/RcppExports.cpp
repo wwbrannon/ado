@@ -5,15 +5,28 @@
 
 using namespace Rcpp;
 
-// do_stata_parse
-Rcpp::List do_stata_parse(std::string text, int debug_level);
-RcppExport SEXP rstata_do_stata_parse(SEXP textSEXP, SEXP debug_levelSEXP) {
+// do_parse_with_callbacks
+Rcpp::List do_parse_with_callbacks(std::string text, Rcpp::Function cmd_action, int debug_level);
+RcppExport SEXP rstata_do_parse_with_callbacks(SEXP textSEXP, SEXP cmd_actionSEXP, SEXP debug_levelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< std::string >::type text(textSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Function >::type cmd_action(cmd_actionSEXP);
+    Rcpp::traits::input_parameter< int >::type debug_level(debug_levelSEXP);
+    __result = Rcpp::wrap(do_parse_with_callbacks(text, cmd_action, debug_level));
+    return __result;
+END_RCPP
+}
+// do_parse
+Rcpp::List do_parse(std::string text, int debug_level);
+RcppExport SEXP rstata_do_parse(SEXP textSEXP, SEXP debug_levelSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< std::string >::type text(textSEXP);
     Rcpp::traits::input_parameter< int >::type debug_level(debug_levelSEXP);
-    __result = Rcpp::wrap(do_stata_parse(text, debug_level));
+    __result = Rcpp::wrap(do_parse(text, debug_level));
     return __result;
 END_RCPP
 }

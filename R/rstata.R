@@ -39,7 +39,7 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
                 inpt <- read_interactive()
 
                 #Send the input to the bison parser
-                ast <- do_stata_parse(inpt)
+                ast <- do_parse(inpt)
                 
                 ##FIXME when API stabilizes
                 #Do post-parsing syntax and semantic checks on the AST,
@@ -69,19 +69,19 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
         #We're reading from stdin, in batch mode
         
         inpt <- readLines(con=stdin(), warn=FALSE)
-        ast <- do_stata_parse(inpt)
+        ast <- do_parse(inpt)
         
         ##FIXME when API stabilizes
     } else if(!is.null(filename))
     {
         inpt <- readLines(con=file(filename, "r"))
-        ast <- do_stata_parse(inpt)
+        ast <- do_parse(inpt)
         
         ##FIXME when API stabilizes
     } else #!is.null(string)
     {
         inpt <- readLines(con=textConnection(string))
-        ast <- do_stata_parse(inpt)
+        ast <- do_parse(inpt)
         
         ##FIXME when API stabilizes
     }
