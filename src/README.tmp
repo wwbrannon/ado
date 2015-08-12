@@ -1,4 +1,0 @@
-to be able to use sourceCpp for testing do_stata_parse.cpp, you need to do
-two hacky things:
-    o) symlink under src/ to the header files in parser/build/
-    o) start R with an environment variable PKG_LIBS="/home/will/projects/rstata/src/parser/ado.a"
