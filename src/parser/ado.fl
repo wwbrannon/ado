@@ -669,9 +669,8 @@ size_t macro_length = 0;
 <FOREACH>{
     \{                              {
                                         R_ECHO(yytext);
-
+                                        
                                         loop_buf.clear();
-                                        brace_count++;
                                         yy_push_state(ACCUMULATE, yyscanner);
 
                                         yylval->str = new std::string(yytext);
@@ -719,7 +718,6 @@ size_t macro_length = 0;
                                         R_ECHO(yytext);
 
                                         loop_buf.clear();
-                                        brace_count++;
                                         yy_push_state(ACCUMULATE, yyscanner);
                                         
                                         yylval->str = new std::string(yytext);
@@ -791,10 +789,17 @@ size_t macro_length = 0;
     "}"                             {
                                         R_ECHO(yytext);
 
+                                        // This is not a mistake: it should be -1 rather than 0, because the brace_count
+                                        // variable is set to 0 when yylex starts up, and we want to see one more closing
+                                        // brace than we've seen opening braces. (Its matching opening brace is consumed
+                                        // in the FOREACH or FORVALUES states before we get here, but setting brace_count
+                                        // there won't persist to this invocation unless we do something not thread-safe 
+                                        // and make brace_count static.)
                                         brace_count--;
-                                        if(brace_count != 0)
+                                        if(brace_count > -1)
+                                        {
                                             loop_buf += yytext[0];
-                                        else
+                                        } else if(brace_count == -1)
                                         {
                                             yy_pop_state(yyscanner); // back to FOREACH or FORVALUES
                                             yy_pop_state(yyscanner); // back to INITIAL
@@ -807,6 +812,15 @@ size_t macro_length = 0;
                                             yylval->node->addData("value", *s);
 
                                             return token::TOK_STRING_LITERAL;
+                                        } else // brace_count < -1
+                                        {
+                                            // too many braces
+                                            do {
+                                                yy_pop_state(yyscanner);
+                                            } while(yy_top_state(yyscanner) != INITIAL);
+                                            
+                                            driver.error(*llocp, "Invalid statement body for loop");
+                                            yyterminate();
                                         }
                                     }
     [^\{\}\"\n]+                    {
@@ -821,7 +835,7 @@ size_t macro_length = 0;
                                             yy_pop_state(yyscanner);
                                         } while(yy_top_state(yyscanner) != INITIAL);
                                         
-                                        driver.error(*llocp, "Foreach loop without a closing brace");
+                                        driver.error(*llocp, "Loop statement without a closing brace");
                                         yyterminate();
                                     }
 }
