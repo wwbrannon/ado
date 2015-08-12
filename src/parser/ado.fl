@@ -93,19 +93,18 @@ llocp->step();
                                                         /* datetime literals */
 {D}{D}{M}{D}+                                           {
                                                             yylval->node = new ExprNode("rstata_datetime");
-                                                            yylval->node->addData("date", *(new std::string(yytext)));
-                                                            yylval->node->addData("time", *(new std::string("")));
+                                                            
+                                                            std::string *s = new std::string(yytext);
+                                                            s->append(" 00:00:00");
+
+                                                            yylval->node->addData("value", *s);
                                                             return token::TOK_DATE;
-                                                        }
-{D}{D}:{D}{D}(:{D}{D}(\.{D}+)?)?                        {
-                                                            yylval->node = new ExprNode("rstata_datetime");
-                                                            yylval->node->addData("date", *(new std::string("")));
-                                                            yylval->node->addData("time", *(new std::string(yytext)));
-                                                            return token::TOK_TIME;
                                                         }
 {D}{D}{M}{D}+[ \t]+{D}{D}:{D}{D}(:{D}{D}(\.{D}+)?)?     {
                                                             yylval->node = new ExprNode("rstata_datetime");
-                                                            yylval->node->addData("datetime", *(new std::string(yytext)));
+                                                            
+                                                            std::string *s = new std::string(yytext);
+                                                            yylval->node->addData("value", *s);
                                                             return token::TOK_DATETIME;
                                                         }
 
@@ -133,48 +132,61 @@ strL                        { yylval->str = new std::string(yytext); return toke
 
 
 
-                            /* numbers and numeric data types */
+                            /* numeric literals in their various formats */
 \.                          {
                                 yylval->node = new ExprNode("rstata_number");
+
                                 yylval->node->addData("value", *(new std::string(yytext)));
                                 return token::TOK_NUMBER_MISSING;
                             }
-\.{L}                       {
+\.[a-zA-Z]                  {
                                 yylval->node = new ExprNode("rstata_number");
+
                                 yylval->node->addData("value", *(new std::string(yytext)));
                                 return token::TOK_NUMBER_MISSING;
                             }
 
 [+-]?0[xX]{H}+              { /* hex */
                                 yylval->node = new ExprNode("rstata_number");
+
                                 yylval->node->addData("value", *(new std::string(yytext)));
-                                return token::TOK_NUMBER_MISSING;
+                                return token::TOK_NUMBER;
                             }
 0{D}+                       { /* octal */
                                 yylval->node = new ExprNode("rstata_number");
-                                yylval->node->addData("value", *(new std::string(yytext)));
-                                return token::TOK_NUMBER_MISSING;
-                            }
-[+-]?{D}+(\.{D}+)?          { /* decimal */
-                                yylval->node = new ExprNode("rstata_number");
-                                yylval->node->addData("value", *(new std::string(yytext)));
-                                return token::TOK_NUMBER_MISSING;
-                            }
 
+                                yylval->node->addData("value", *(new std::string(yytext)));
+                                return token::TOK_NUMBER;
+                            }
+[+-]?{D}+                   { /* decimal integer */
+                                yylval->node = new ExprNode("rstata_number");
+
+                                yylval->node->addData("value", *(new std::string(yytext)));
+                                return token::TOK_NUMBER;
+                            }
+[+-]?{D}+\.({D}+)?          { /* decimal float */
+                                yylval->node = new ExprNode("rstata_number");
+
+                                yylval->node->addData("value", *(new std::string(yytext)));
+                                return token::TOK_NUMBER;
+                            }
 {D}+{E}                     { /* scientific notation */
                                 yylval->node = new ExprNode("rstata_number");
+
                                 yylval->node->addData("value", *(new std::string(yytext)));
-                                return token::TOK_NUMBER_MISSING;
+                                return token::TOK_NUMBER;
                             }
 {D}*"."{D}+({E})?           {
                                 yylval->node = new ExprNode("rstata_number");
+
                                 yylval->node->addData("value", *(new std::string(yytext)));
-                                return token::TOK_NUMBER_MISSING;
+                                return token::TOK_NUMBER;
                             }
 {D}+"."{D}*({E})?           {
                                 yylval->node = new ExprNode("rstata_number");
+
                                 yylval->node->addData("value", *(new std::string(yytext)));
-                                return token::TOK_NUMBER_MISSING;
+                                return token::TOK_NUMBER;
                             }
 
 

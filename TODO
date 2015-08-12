@@ -1,7 +1,4 @@
 Immediate TODO:
-    o) the lexer should format dates/times/datetimes and numbers into strings
-       in a way that R's as.typename functions can immediately convert
-    
     o) next, infrastructural R functions
         o) weeding for each type of node
         o) AST walkers to construct unevaluated calls and expression objects
