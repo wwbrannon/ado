@@ -8,39 +8,48 @@
 // The basic Stata command syntax is:
 // [ (modifier [arguments])+:] command [varlist | var = exp] [if expression] [in range] [weight] [using filename] [, options]
 
+#include <Rcpp.h>
+
 #ifndef __RSTATA_H__
 #define __RSTATA_H__
 
-typedef struct ast_node
+class StataExpr
 {
-    enum node_type
-    {
-        STRING_LITERAL_T,
-        NUMBER_T,
-        IDENT_T,
+    public:
+        enum node_type
+        {
+            STRING_LITERAL_T,
+            NUMBER_T,
+            IDENT_T,
 
-        MODIFIER_T,
-        MODIFIER_LIST_T,
-        
-        OPTION_T,
-        
-        ASSIGNMENT_EXPR_T,
-        LOGICAL_EXPR_T,
-        EQUALITY_EXPR_T,
-        RELATIONAL_EXPR_T,
-        ARITHMETIC_EXPR_T,
-        UNARY_EXPR_T,
-        CALL_EXPR_T
-    } node_type;
+            MODIFIER_T,
+            MODIFIER_LIST_T,
+            
+            OPTION_T,
+            
+            ASSIGNMENT_StataExpr,
+            LOGICAL_StataExpr,
+            EQUALITY_StataExpr,
+            RELATIONAL_StataExpr,
+            ARITHMETIC_StataExpr,
+            UNARY_StataExpr,
+            CALL_StataExpr
+        } node_type;
 
-    struct ast_node *left;
-    struct ast_node *right;
-    
-    union data {
-            char *str; // this is character for everything but NUMBER
-            int  num;
-          } op;
-} EXPR_T;
+        StataExpr *left;
+        StataExpr *right;
+        
+        union data {
+                std::string str; // this is character for everything but NUMBER
+                int  num;
+              } op;
+
+        // method that returns this StataExpr as an R expression or language or whatever
+        List as_list()
+        {
+            return List();
+        }
+};
 
 // We don't need to continue the parse tree all the way up to the level of a
 // translation unit because the command syntax is so constrained. Breaking it
@@ -50,11 +59,11 @@ class StataCmd
     public:
         std::string verb; // the command verb
         
-        EXPR_T *modifiers; // "modifiers": a MODIFIER_LIST of the by, bysort, etc, applied
-        EXPR_T *varlist; // a varlist is a left-deep tree of IDENTs
-        EXPR_T *assign_stmt; // "var = exp"
-        EXPR_T *if_exp; // "if expression"
-        EXPR_T *options; // ", options"
+        StataExpr *modifiers; // "modifiers": a MODIFIER_LIST of the by, bysort, etc, applied
+        StataExpr *varlist; // a varlist is a left-deep tree of IDENTs
+        StataExpr *assign_stmt; // "var = exp"
+        StataExpr *if_exp; // "if expression"
+        StataExpr *options; // ", options"
         
         int has_range;
         int range_lower; // the lower range limit
@@ -66,9 +75,9 @@ class StataCmd
         StataCmd(std::string _verb,
                  std::string _weight, std::string _using_filename,
                  int _has_range, int _range_lower, int _range_upper,
-                 EXPR_T *_modifiers, EXPR_T *_varlist,
-                 EXPR_T *_assign_stmt, EXPR_T *_if_exp,
-                 EXPR_T *_options)
+                 StataExpr *_modifiers, StataExpr *_varlist,
+                 StataExpr *_assign_stmt, StataExpr *_if_exp,
+                 StataExpr *_options)
         {
             verb = _verb;
 
@@ -85,6 +94,57 @@ class StataCmd
             weight = _weight;
             using_filename = _using_filename;
         };
+
+        List as_list()
+        {
+            char *verb, *weight, *using_filename;
+            int range_lower, range_upper;
+            modifiers, varlist, assign_stmt, if_exp, options; // have to find the right expression type
+            List res;
+           
+            // book-keeping for walking the list of commands
+            cur = cmdlist.current;
+            next = cmdlist.next;
+
+            // temp variables used to construct the R version of this object
+            verb = cur->verb; // this will always be set
+            
+            if(cur->has_using)
+                using_filename = cur->using_filename;
+            else
+                using_filename = R_NilValue;
+
+            if(cur->has_weight)
+                weight = cur->weight;
+            else
+                weight = R_NilValue;
+
+            if(cur->has_range)
+            {
+                range_upper = cur->range_upper;
+                range_lower = cur->range_lower;
+            }
+            else
+            {
+                range_upper = R_NilValue;
+                range_lower = R_Nilvalue;
+            }
+
+            // and the expression types here
+
+            res = List::create(_["verb"]            = verb,
+                               _["modifiers"]       = modifiers,
+                               _["varlist"]         = varlist,
+                               _["assign_stmt"]     = assign_stmt,
+                               _["if_exp"]          = if_exp,
+                               _["range_lower"]     = range_lower,
+                               _["range_upper"]     = range_upper,
+                               _["weight"]          = weight,
+                               _["using_filename"]  = using_filename,
+                               _["options"]         = options);
+            
+            return res;
+        }
 };
 
 // positional-only parameters are garbage...
@@ -125,31 +185,31 @@ class MakeStataCmd
             return *this;
         }
 
-        MakeStataCmd& modifiers(EXPR_T *_modifiers)
+        MakeStataCmd& modifiers(StataExpr *_modifiers)
         {
             __modifiers = _modifiers;
             return *this;
         }
 
-        MakeStataCmd& varlist(EXPR_T *_varlist)
+        MakeStataCmd& varlist(StataExpr *_varlist)
         {
             __varlist = _varlist;
             return *this;
         }
 
-        MakeStataCmd& assign_stmt(EXPR_T *_assign_stmt)
+        MakeStataCmd& assign_stmt(StataExpr *_assign_stmt)
         {
             __assign_stmt = _assign_stmt;
             return *this;
         }
 
-        MakeStataCmd& if_exp(EXPR_T *_if_exp)
+        MakeStataCmd& if_exp(StataExpr *_if_exp)
         {
             __if_exp = _if_exp;
             return *this;
         }
 
-        MakeStataCmd& options(EXPR_T *_options)
+        MakeStataCmd& options(StataExpr *_options)
         {
             __options = _options;
             return *this;
@@ -187,11 +247,11 @@ class MakeStataCmd
         
     private:
         std::string __verb;
-        EXPR_T *__modifiers;
-        EXPR_T *__varlist;
-        EXPR_T *__assign_stmt;
-        EXPR_T *__if_exp;
-        EXPR_T *__options;
+        StataExpr *__modifiers;
+        StataExpr *__varlist;
+        StataExpr *__assign_stmt;
+        StataExpr *__if_exp;
+        StataExpr *__options;
         int __has_range;
         int __range_lower;
         int __range_upper;
