@@ -1,5 +1,6 @@
 %{
 #include <stdio.h>
+#include "rstata.h"
 #include "y.tab.h"
 
 void long_comment();
@@ -10,53 +11,53 @@ void short_comment();
 "/*"                    { long_comment(); } /* the lexer eats comments */
 \/\/                    { short_comment(); }
 
--?[0-9]+(\.[0-9]+)?     return NUMBER;
-\*                      return '*';
-\+                      return '+';
-\/                      return '/';
-\-                      return '-';
+-?[0-9]+(\.[0-9]+)?     { yylval.str = strdup(yytext); yylval.num = atoi(yytext); return NUMBER; }
+\*                      { yylval.str = strdup(yytext); return '*'; }
+\+                      { yylval.str = strdup(yytext); return '+'; }
+\/                      { yylval.str = strdup(yytext); return '/'; }
+\-                      { yylval.str = strdup(yytext); return '-'; }
 
-(?i:insheet)            return INSHEET;
-(?i:tab)                return TABLE;
-(?i:sum)                return SUM;
-(?i:summarize)          return SUM;
-(?i:di)                 return DI;
-(?i:display)            return DI;
+(?i:insheet)            { yylval.str = strdup(yytext); return INSHEET; }
+(?i:tab)                { yylval.str = strdup(yytext); return TABLE; }
+(?i:sum)                { yylval.str = strdup(yytext); return SUM; }
+(?i:summarize)          { yylval.str = strdup(yytext); return SUM; }
+(?i:di)                 { yylval.str = strdup(yytext); return DI; }
+(?i:display)            { yylval.str = strdup(yytext); return DI; }
 
-(?i:using)              return USING;
-(?i:by)                 return BY;
-(?i:in)                 return IN;
-(?i:if)                 return IF;
-(?i:pweight)            return PWEIGHT;
-(?i:aweight)            return AWEIGHT;
+(?i:using)              { yylval.str = strdup(yytext); return USING; }
+(?i:by)                 { yylval.str = strdup(yytext); return BY; }
+(?i:in)                 { yylval.str = strdup(yytext); return IN; }
+(?i:if)                 { yylval.str = strdup(yytext); return IF; }
+(?i:pweight)            { yylval.str = strdup(yytext); return PWEIGHT; }
+(?i:aweight)            { yylval.str = strdup(yytext); return AWEIGHT; }
 
-\"(\\.|[^"\\])*\"       return STRING_LITERAL;
-\'(\\.|[^'\\])*\'       return STRING_LITERAL;
+\"(\\.|[^"\\])*\"       { yylval.str = strdup(yytext); return STRING_LITERAL; }
+\'(\\.|[^'\\])*\'       { yylval.str = strdup(yytext); return STRING_LITERAL; }
 
-"&&"                    return AND_OP;
-"&"                     return AND_OP;
-"||"                    return OR_OP;
-"|"                     return OR_OP;
-">="                    return GT_OP;
-"<="                    return LE_OP;
-"=="                    return EQ_OP;
-"!="                    return NE_OP;
+"&&"                    { yylval.str = strdup(yytext); return AND_OP; }
+"&"                     { yylval.str = strdup(yytext); return AND_OP; }
+"||"                    { yylval.str = strdup(yytext); return OR_OP; }
+"|"                     { yylval.str = strdup(yytext); return OR_OP; }
+">="                    { yylval.str = strdup(yytext); return GT_OP; }
+"<="                    { yylval.str = strdup(yytext); return LE_OP; }
+"=="                    { yylval.str = strdup(yytext); return EQ_OP; }
+"!="                    { yylval.str = strdup(yytext); return NE_OP; }
 
-\[                      return '[';
-\]                      return ']';
-\(                      return '(';
-\)                      return ')';
-\{                      return '{';
-\}                      return '}';
-\"                      return '"';
-\'                      return '\'';
-=                       return '=';
-%                       return '%';
-,                       return ',';
-:                       return ':';
+\[                      { yylval.str = strdup(yytext); return '['; }
+\]                      { yylval.str = strdup(yytext); return ']'; }
+\(                      { yylval.str = strdup(yytext); return '('; }
+\)                      { yylval.str = strdup(yytext); return ')'; }
+\{                      { yylval.str = strdup(yytext); return '{'; }
+\}                      { yylval.str = strdup(yytext); return '}'; }
+\"                      { yylval.str = strdup(yytext); return '"'; }
+\'                      { yylval.str = strdup(yytext); return '\''; }
+=                       { yylval.str = strdup(yytext); return '='; }
+%                       { yylval.str = strdup(yytext); return '%'; }
+,                       { yylval.str = strdup(yytext); return ','; }
+:                       { yylval.str = strdup(yytext); return ':'; }
 
 
-[_A-Za-z][A-Za-z0-9_]*  return IDENT;
+[_A-Za-z][A-Za-z0-9_]*  { yylval.str = strdup(yytext); return IDENT; }
 
 \n                      /* do nothing */;
 [ \t]+                  /* do nothing */;
