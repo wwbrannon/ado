@@ -1,0 +1,3 @@
+useDynLib(rstata)
+exportPattern("^[[:alpha:]]+")
+importFrom(Rcpp, evalCpp)
