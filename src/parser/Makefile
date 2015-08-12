@@ -4,16 +4,16 @@ CPFLAGS += "-I/usr/local/lib/R/site-library/Rcpp/include"
 CPFLAGS += "-I../../inst/include/"
 CPFLAGS += "-I./build"
 
-all: parse.o lex.o
+all: parse.o lex.o infra
 	ar -rcs ado.a build/parse.o build/lex.o \
 			build/GeneralStataCmd.o build/MakeGeneralStataCmd.o \
 			build/EmbeddedRCmd.o build/RStataDriver.o \
 			build/ExprNode.o
 
-parse.o: infra
+parse.o:
 	g++ $(CPFLAGS) $(CXFLAGS) build/ado.tab.cpp -o build/parse.o 
 
-lex.o: infra
+lex.o:
 	g++ $(CPFLAGS) $(CXFLAGS) build/lex.yy.cpp -o build/lex.o 
 
 infra: generate
