@@ -8,3 +8,25 @@
 * Run R CMD check to check the package tarball.
 
 Read "Writing R Extensions" for more information.
+
+======================================================================
+Things the grammar doesn't but should support:
+
+date and time literals
+varlists: factors, interactions, etc
+scientific notation numbers
+hex and binary numbers
+numeric storage types
+
+missing data
+
+basic flow control
+    capture
+    foreach
+    while
+    forvalues
+
+macros...
+
+a syntax for running R code within ado
+
