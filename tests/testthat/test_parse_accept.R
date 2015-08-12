@@ -9,12 +9,14 @@ expect_reject <- function(str) eval(bquote(expect_equal(parse_accept(.(str)), 0)
 #   (*) special commands
 #   (*) loops
 #   (*) embedded code blocks
+#   (*) prefix commands with special commands
+#   (*) prefix commands with general commands
+#   expressions, via e.g. the generate command
 #   general commands
 #   macros, all three varieties
 #   comments
 #   compound command blocks
 #   statement delimiters
-#   expressions, via e.g. the generate command
 #   command parts
 #       using clause
 #       weight clause
@@ -68,6 +70,9 @@ test_that("The gsort command parses", {
 
 test_that("The collapse command parses", {
     expect_accept('collapse support voteprop\n')
+    expect_accept('collapse support voteprop, by(track)\n')
+    expect_accept('collapse support voteprop id=id\n')
+    expect_accept('collapse support voteprop id=id, by(track)\n')
     expect_accept('collapse (mean) support voteprop\n')
     expect_accept('collapse (mean) support voteprop (first) state\n')
     expect_accept('collapse (mean) support voteprop (first) state id=id\n')

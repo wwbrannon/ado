@@ -710,6 +710,45 @@ nonmodifier_cmd:
 
         $$ = $1;
     }
+    | COLLAPSE collapse_spec_base_list if_clause in_clause weight_clause option_list
+    {
+        /* the components which are correct as-is */
+        if($3->nChildren() > 0)
+            $1->appendChild("if_clause", $3);
+
+        if($4->nChildren() > 0)
+            $1->appendChild("in_clause", $4);
+
+        if($5->nChildren() > 0)
+            $1->appendChild("weight_clause", $5);
+
+        if($6->nChildren() > 0)
+            $1->appendChild("option_list", $6);
+
+        /* the expression list we need to wrap in a function call */
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
+        node->addData("verb", *(new std::string("()")));
+        
+        // the "left" child
+        ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
+        left->addData("value", *(new std::string("collapse_stat")));
+        node->appendChild("left", left);
+        
+        // the "right" child
+        ExprNode *mean = new ExprNode({"rstata_literal", "rstata_ident"});
+        mean->addData("value", *(new std::string("mean")));
+
+        ExprNode *explist = new ExprNode("rstata_expression_list");
+        ExprNode *arglist = new ExprNode("rstata_argument_expression_list");
+        
+        explist->appendChild(mean); // stat goes first
+        arglist->appendChild(explist);
+        arglist->appendChild($2); // variable names or assignments follow
+        
+        node->appendChild("right", arglist);
+        
+        $$ = $1;
+    }
     | COLLAPSE collapse_list if_clause in_clause weight_clause option_list
     {
         $1->appendChild("expression_list", $2);
