@@ -2,8 +2,6 @@
 Roadmap to v1.0:
 
 Immediate TODO:
-    o) finish as_expr methods of StataExpr
-    
     o) finish expression-parsing code in ado.ypp, testing with gen
     o) finish the rest of the grammar
     o) make sure it works

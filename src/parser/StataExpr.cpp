@@ -65,6 +65,15 @@ Language StringStataExpr::as_expr() const
 
 Language BranchStataExpr::as_expr() const
 {
-    return Language("c", 1, 2); // FIXME
+    unsigned int x;
+    List res;
+
+    for(x = 0; x < children.size(); x++)
+    {
+        Language y = children[x]->as_expr();
+        res.push_back(y);
+    }
+
+    return Language("as.call", res);
 }
 
