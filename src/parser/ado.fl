@@ -168,11 +168,10 @@ std::stack<std::vector<std::string>> macro_stack;
 
                                         macro_stack.pop();
                                         
-                                        for(size_t i =0; i != frame.size(); i++)
+                                        for(size_t i = 0; i < frame.size(); i++)
                                             combined += frame[i];
                                         combined = std::string("_") + combined; // local macros start with a "_"
-                                        std::cout << combined;
-
+                                        
                                         replacement = driver.get_macro_value(combined);
 
                                         if(!macro_stack.empty())
@@ -194,7 +193,10 @@ std::stack<std::vector<std::string>> macro_stack;
                                                     string_buf += replacement;
                                                     break;
                                                 case INITIAL:
-                                                    yypush_buffer_state(yy_scan_string(replacement.c_str()));
+                                                    // don't try to scan from the empty string an undefined
+                                                    // macro returns as its replacement text
+                                                    if(replacement.length() > 0)
+                                                        yypush_buffer_state(yy_scan_string(replacement.c_str()));
                                                     break;
                                                 default:
                                                     driver.error(*llocp, "Macro in impossible location");
