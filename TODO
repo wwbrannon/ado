@@ -4,7 +4,6 @@ Immediate TODO:
         o) fix the format:
             list components should be named
             omit components if empty
-            what are those NAs?
         o) error if other character given
         o) delete the random strings that don't become part of the AST,
            to avoid a memory leak

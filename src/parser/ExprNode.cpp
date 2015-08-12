@@ -48,6 +48,7 @@ void
 ExprNode::appendChild(ExprNode *_child)
 {
     children.push_back(_child);
+    names.push_back(std::string(""));
 }
 
 void
@@ -59,6 +60,7 @@ ExprNode::setChildren(std::initializer_list<ExprNode *> _children)
     for(auto elem : _children)
     {
         children.push_back(elem);
+        names.push_back(std::string(""));
     }
 }
 
@@ -78,8 +80,9 @@ List
 ExprNode::as_R_object() const
 {
     List res, chld;
+    
     CharacterVector node_data(data.size());
-    CharacterVector data_names(data.size());
+    CharacterVector node_data_names(data.size());
     
     std::map<std::string, std::string>::const_iterator it;
     unsigned int x;
@@ -90,10 +93,10 @@ ExprNode::as_R_object() const
     // include the node data
     for(it = data.begin(); it != data.end(); it++)
     {
-        data_names.push_back(it->first);
+        node_data_names.push_back(it->first);
         node_data.push_back(it->second);
     }
-    node_data.attr("names") = data_names;
+    node_data.attr("names") = node_data_names;
     res["data"] = node_data;
 
     // include the children
