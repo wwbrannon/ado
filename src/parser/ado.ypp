@@ -165,8 +165,6 @@ yy::RStataParser::error(const location_type& l, const std::string& m)
 translation_unit:
       error
     {
-        driver.error_seen = 1; // keep parsing but don't take any further actions
-        
         $1; // shut up, bison...
         
         ExprNode *node = new ExprNode("rstata_compound_cmd");
@@ -205,8 +203,6 @@ translation_unit:
     {
         $2; // shut up, bison...
 
-        driver.error_seen = 1; // keep parsing but don't take any further actions
-        
         $$ = $1;
     }
     ;
