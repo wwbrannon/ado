@@ -31,7 +31,6 @@ infra:
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) GeneralStataCmd.cpp -o build/GeneralStataCmd.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) MakeGeneralStataCmd.cpp -o build/MakeGeneralStataCmd.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) EmbeddedRCmd.cpp -o build/EmbeddedRCmd.o
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) ImmediateStataCmd.cpp -o build/ImmediateStataCmd.o
 
 clean:
 	rm -rf build

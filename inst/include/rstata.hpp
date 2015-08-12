@@ -120,16 +120,6 @@ class EmbeddedRCmd: public BaseStataCmd
         EmbeddedRCmd(std::string _text);
 };
 
-class ImmediateStataCmd: public BaseStataCmd
-{
-    public:
-        virtual Rcpp::List as_list() const;
-        ImmediateStataCmd(std::vector<std::unique_ptr<BaseStataExpr>> _exprs);
-
-    private:
-        std::vector<std::unique_ptr<BaseStataExpr>> exprs;
-};
-
 class GeneralStataCmd: public BaseStataCmd
 {
     private:
