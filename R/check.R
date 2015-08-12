@@ -166,6 +166,8 @@ function(node, debug_level=0)
     raiseifnot(c("left", "right") %in% names(node$children))
 
     raiseifnot(node$children$left %is% "rstata_ident")
+    raiseifnot(node$children$left$data["value"] %in% c("aweight", "iweight", "pweight", "fweight"))
+
     raiseifnot(node$children$right %is% "rstata_expression" ||
                node$children$right %is% "rstata_literal")
   }
