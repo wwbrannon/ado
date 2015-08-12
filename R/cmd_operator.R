@@ -29,14 +29,14 @@ function(arg)
 }
 
 #the "#" operator
-op_cross <-
+`%#%` <-
 function(arg)
 {
   
 }
 
 #the "##" operator
-op_fact_cross <-
+`%##%` <-
 function(arg)
 {
   

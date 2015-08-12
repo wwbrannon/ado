@@ -319,7 +319,7 @@ function(node, debug_level=0)
   
   if(inherits(args, "error"))
   {
-    raiseCondition("bad_command", "command not found")
+    raiseCondition("Command not found", "BadCommandException")
     return(invisible(TRUE))
   }
   

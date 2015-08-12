@@ -24,7 +24,7 @@ function(str)
 }
 
 raiseCondition <-
-function(cls, msg)
+function(msg, cls="BadCommandException")
 {
     cond <- simpleCondition(msg)
     class(cond) <- c(class(cond), cls)
@@ -34,7 +34,7 @@ function(cls, msg)
 }
 
 raiseifnot <-
-function(expr, cls="bad_command", msg=errmsg)
+function(expr, cls="BadCommandException", msg=errmsg)
 {
     #Construct a message
     ch <- deparse(substitute(expr))
@@ -44,7 +44,7 @@ function(expr, cls="bad_command", msg=errmsg)
     
     #Check and raise a condition if it fails
     if (length(expr) == 0 || !is.logical(expr) || is.na(expr) || !expr)
-      raiseCondition(cls, msg)
+      raiseCondition(msg, cls)
 
     invisible(NULL)
 }
@@ -60,7 +60,7 @@ function()
         inpt <- readline(". ")
         
         if(length(inpt) == 0) #at EOF
-            raiseCondition("exit", "end of file")
+            raiseCondition("End of file", "ExitRequestedException")
         
         if(substring(rev_string(inpt), 1, 3) == "///")
         {
@@ -218,8 +218,8 @@ function(name)
     return(as.symbol("op_base"))
   
   if(name == "##")
-    return(as.symbol("op_fact_cross"))
+    return(as.symbol("%##%"))
   
   if(name == "#")
-    return(as.symbol("op_cross"))
+    return(as.symbol("%#%"))
 }

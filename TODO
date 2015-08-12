@@ -1,7 +1,7 @@
 Now:
-    o) finish code generation and finalize generated format
+    o) name abbreviation - options, variables, commands
 
-    o) name abbreviation
+    o) finish code generation and finalize generated format
 
     o) better error messages
         o) from check() and codegen()
