@@ -8,6 +8,9 @@
 // The basic Stata command syntax is:
 // [ (modifier [arguments])+:] command [varlist | var = exp] [if expression] [in range] [weight] [using filename] [, options]
 
+#ifndef __RSTATA_H__
+#define __RSTATA_H__
+
 typedef struct ast_node
 {
     enum node_type
@@ -78,4 +81,6 @@ typedef struct STATA_CMD
     int has_options; // 1 if any options were given, 0 otherwise
     EXPR_T *options;
 } STATA_CMD_T;
+
+#endif /* __RSTATA_H__ */
 

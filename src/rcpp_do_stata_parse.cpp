@@ -1,6 +1,7 @@
 #include <Rcpp.h>
 #include "rstata.h"
-#include "y.tab.h"
+#include "ado.tab.hpp"
+#include "lex.yy.hpp"
 
 using namespace Rcpp;
 
@@ -16,19 +17,19 @@ void raise_condition(const std::string& msg,
 }
 
 // [[Rcpp::export]]
-List rcpp_do_stata_parse(String line)
+List rcpp_do_stata_parse(std::string line)
 {
+    YY_BUFFER_STATE buf;
+    
     // handle some buffers and parse the input
-    YY_BUFFER_STATE temp = YY_CURRENT_BUFFER;
-    yy_scan_string(line.c_str());
+    buf = yy_scan_string(line.c_str());
     
     if( !yyparse() )
     {
-        raise_condition("syntax error", "error")
+        raise_condition("syntax error", "error");
     }
     
-    yy_delete_buffer(YY_CURRENT_BUFFER);
-    yy_switch_to_buffer(temp);
+    yy_delete_buffer(buf);
 
     // now take the resulting STATA_CMD_T** and turn it into an R object
 

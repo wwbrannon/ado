@@ -1,14 +1,18 @@
 %{
 #include <iostream>
 #include "rstata.h"
-#include "y.tab.h"
+#include "ado.tab.hpp"
+#define YY_DECL extern "C" int yylex()
 
 using namespace std;
-#define YY_DECL extern "C" int yylex()
 
 void long_comment();
 void short_comment();
+
+int lineno = 1;
 %}
+
+%option noyywrap
 
 %%
 "/*"                    { long_comment(); } /* the lexer eats comments */
@@ -62,7 +66,7 @@ void short_comment();
 
 [_A-Za-z][A-Za-z0-9_]*  { yylval.str = strdup(yytext); return IDENT; }
 
-\n                      /* do nothing */;
+\n                      { ++lineno; }
 [ \t]+                  /* do nothing */;
 %%
 
