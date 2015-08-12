@@ -27,25 +27,73 @@ function(dta = NULL, filename=NULL, string=NULL,
         stop("Cannot specify both the filename and string arguments")
     }
     
-    #Should we put the final dataset back into the variable
-    #we were given, pointer-style, on exit?
+    #Should we, on exit, put the final dataset back into the variable
+    #we were given as if we had a pointer to it?
     if(!is.null(assign.back) && assign.back)
         on.exit(assign(varname, dta, pos=parent.frame()))
     
     #Create two environments used to hold a) the symbol table for macro
     #substitution, b) settings and parameters that commands can see
     #or modify.
-    settings.env <- new.env()
-    macro.env <- new.env()
+    rstata_settings_env <- new.env(parent=emptyenv())
+    rstata_macro_env <- new.env(parent=emptyenv())
     
-    #A macro value accessor that closes over the macro environment, so
-    #we can pass it in to the parser as a callback.
+    #Callbacks: a macro value accessor that closes over the macro
+    #environment, so that the lexer can retrieve macro values.
     get_macro_value <-
     function(name)
     {
-        get(name, envir=macro.env, inherits=FALSE)
+        get(name, envir=rstata_macro_env, inherits=FALSE)
     }
 
+    #Callbacks: the main command-processing callback function for
+    #the parsing driver. The dta object and the settings environment
+    #are in lexical scope here.
+    #FIXME need to pass those objects down
+    process_cmd <-
+    function(ast, debug_level=0)
+    {
+      #Semantic analysis and code generation
+      ret_p1 <-
+        tryCatch(
+          {
+            check(ast, debug_level=debug_level)
+            
+            codegen(ast, debug_level=debug_level)
+          },
+          error=function(c) c,
+          BadCommandException=function(c) c)
+      
+      #Raising conditions with custom classes through an intervening
+      #C++ layer is quite tricky, so we're going to return ints and have
+      #the C++ code re-raise the exceptions in a more controllable way
+      if(inherits(ret_p1, "BadCommandException") || inherits(ret_p1, "error"))
+        return( list(1, ret_p1$message) )
+      
+      #Evaluate the generated calls for their side effects and for printable objects
+      ret_p2 <-
+        tryCatch(
+          {
+            #FIXME how to incorporate debug level?
+            objs <- eval(ret_p1, envir=parent.frame())
+            
+            for(obj in objs)
+              print(obj) #dispatches to the custom print methods
+          },
+          error=function(c) c,
+          ExitRequestedException=function(c) c)
+      
+      if(inherits(ret_p2, "error")) #raise an EvalErrorException in the C++
+        return( list(2, ret_p2$message) )
+      
+      if(inherits(ret_p2, "ExitRequestedException"))
+        return( list(3, ret_p2$message) )
+      
+      return( list(0, "Success") );
+    }
+    
+    # =========================================================================
+    #The actual work of parsing and executing commands is here
     if(interactive() && is.null(filename) && is.null(string))
     {
         #We're reading from stdin, interactively:
@@ -54,6 +102,9 @@ function(dta = NULL, filename=NULL, string=NULL,
         #Save the command history before we get started
         if(!is.null(save.history) && save.history)
         {
+          orig_cmdhist <- tempfile()
+          savehistory(orig_cmdhist)
+          
           cmdhist <- tempfile()
           savehistory(cmdhist)
         }
@@ -106,7 +157,11 @@ function(dta = NULL, filename=NULL, string=NULL,
         }
       
       if(!is.null(save.history) && save.history)
+      {
+        loadhistory(orig_cmdhist)
         unlink(cmdhist)
+        unlink(orig_cmdhist)
+      }
     } else if(is.null(filename) && is.null(string))
     {   
         inpt <- readLines(con=stdin(), warn=FALSE)
@@ -137,46 +192,4 @@ function(dta = NULL, filename=NULL, string=NULL,
     }
     
     return(invisible(dta));
-}
-
-process_cmd <-
-function(ast, debug_level=0)
-{
-  #Semantic analysis and code generation
-  ret_p1 <-
-  tryCatch(
-  {
-    check(ast, debug_level=debug_level)
-    
-    codegen(ast, debug_level=debug_level)
-  },
-  error=function(c) c,
-  BadCommandException=function(c) c)
-  
-  #Raising conditions with custom classes through an intervening
-  #C++ layer is quite tricky, so we're going to return ints and have
-  #the C++ code re-raise the exceptions in a more controllable way
-  if(inherits(ret_p1, "BadCommandException") || inherits(ret_p1, "error"))
-    return( list(1, ret_p1$message) )
-
-  #Evaluate the generated calls for their side effects and for printable objects
-  ret_p2 <-
-  tryCatch(
-  {
-    #FIXME how to incorporate debug level?
-    objs <- eval(ret_p1, envir=parent.frame())
-  
-    for(obj in objs)
-      print(obj) #dispatches to the custom print methods
-  },
-  error=function(c) c,
-  ExitRequestedException=function(c) c)
-  
-  if(inherits(ret_p2, "error")) #raise an EvalErrorException in the C++
-    return( list(2, ret_p2$message) )
-  
-  if(inherits(ret_p2, "ExitRequestedException"))
-    return( list(3, ret_p2$message) )
-  
-  return( list(0, "Success") );
 }
