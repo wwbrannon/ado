@@ -412,58 +412,91 @@ i?"o("\ *{D}+\ *\/{D}+\ *")."       {
 
                                     /* command verbs that have to be hardcoded into the grammar */
 (?i:capture)                        {
+                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        verb->addData("value", *(new std::string(yytext)));
+                                        
                                         yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
-                                        yylval->node->addData("verb", *(new std::string(yytext)));
+                                        yylval->node->appendChild("verb", verb);
                                         return token::TOK_CAPTURE;
                                     }
 (?i:cap)                            {
+                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        verb->addData("value", "capture");
+                                        
                                         yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
-                                        yylval->node->addData("verb", "capture");
+                                        yylval->node->appendChild("verb", verb);
                                         return token::TOK_CAPTURE;
                                     }
 (?i:quietly)                        {
+                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        verb->addData("value", *(new std::string(yytext)));
+                                        
                                         yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
-                                        yylval->node->addData("verb", *(new std::string(yytext)));
+                                        yylval->node->appendChild("verb", verb);
                                         return token::TOK_QUIETLY;
                                     }
 (?i:qui)                            {
+                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        verb->addData("value", "quietly");
+                                        
                                         yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
-                                        yylval->node->addData("verb", *(new std::string("quietly")));
+                                        yylval->node->appendChild("verb", verb);
                                         return token::TOK_QUIETLY;
                                     }
 (?i:noisily)                        {
+                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        verb->addData("value", *(new std::string(yytext)));
+                                        
                                         yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
-                                        yylval->node->addData("verb", *(new std::string(yytext)));
+                                        yylval->node->appendChild("verb", verb);
                                         return token::TOK_NOISILY;
                                     }
 (?i:merge)                          {
+                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        verb->addData("value", *(new std::string(yytext)));
+                                        
                                         yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
-                                        yylval->node->addData("verb", *(new std::string(yytext)));
+                                        yylval->node->appendChild("verb", verb);
                                         return token::TOK_MERGE;
                                     }
 (?i:generate)                       {
+                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        verb->addData("value", *(new std::string(yytext)));
+                                        
                                         yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
-                                        yylval->node->addData("verb", *(new std::string(yytext)));
+                                        yylval->node->appendChild("verb", verb);
                                         return token::TOK_GENERATE;
                                     }
 (?i:gen)                            {
+                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        verb->addData("value", "generate");
+                                        
                                         yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
-                                        yylval->node->addData("verb", "generate");
+                                        yylval->node->appendChild("verb", verb);
                                         return token::TOK_GENERATE;
                                     }
 (?i:recast)                         {
+                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        verb->addData("value", *(new std::string(yytext)));
+                                        
                                         yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
-                                        yylval->node->addData("verb", *(new std::string(yytext)));
+                                        yylval->node->appendChild("verb", verb);
                                         return token::TOK_RECAST;
                                     }
 (?i:display)                        {
+                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        verb->addData("value", *(new std::string(yytext)));
+                                        
                                         yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
-                                        yylval->node->addData("verb", *(new std::string(yytext)));
+                                        yylval->node->appendChild("verb", verb);
                                         return token::TOK_DISPLAY;
                                     }
 (?i:format)                         {
+                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        verb->addData("value", *(new std::string(yytext)));
+                                        
                                         yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
-                                        yylval->node->addData("verb", *(new std::string(yytext)));
+                                        yylval->node->appendChild("verb", verb);
                                         return token::TOK_FORMAT;
                                     }
 
