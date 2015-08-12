@@ -52,7 +52,8 @@ function(verb, ...)
 {
     args <- as.list(substitute(list(...)))[-1L]
     
-    return(capture.output(do.call(verb, args)))
+    fname <- paste0("rstata.", verb)
+    return(capture.output(do.call(fname, args)))
 }
 
 #The function to execute embedded R code
