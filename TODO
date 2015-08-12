@@ -1,41 +1,31 @@
 ======================================================================
-Roadmap:
+Roadmap to v1.0:
 
 Immediate TODO:
     o) finish as_expr methods, make refactored parser compile
+    o) edit the grammar to support
+        capture
+        formats
+        foreach / while / forvalues
+        missing data
+        other number formats
+        scientific notation numbers
+        hex and binary numbers
+        numeric storage types
     o) finish expression-parsing code in ado.ypp, testing with gen
     o) test
 
 Next up:
-    o) edit the grammar to support missings, dates, other number
-       formats, general varlists
+    o) a syntax for running R code within ado
     o) fill in syntax rules and actions for remaining commands
     o) grammar for flow control
 
 Semantics:
     o) start implementing eval_stata() and a semantics
-======================================================================
 
-======================================================================
-Things the grammar doesn't but should support:
+A test suite
 
-date and time literals
-varlists: factors, interactions, etc
-scientific notation numbers
-hex and binary numbers
-numeric storage types
-
-missing data
-
-basic flow control
-    capture
-    foreach
-    while
-    forvalues
-
-macros...
-
-a syntax for running R code within ado
+Documentation
 ======================================================================
 
 ======================================================================
@@ -51,5 +41,30 @@ Deploy checklist:
 * Run R CMD check to check the package tarball.
 
 Read "Writing R Extensions" for more information.
+======================================================================
+
+======================================================================
+Roadmap to version > 1.0:
+
+A mechanism for registering an arbitrary R function obeying the right
+calling convention as a Stata command
+
+Many more commands - egen, input, label
+
+Graphics
+
+Comments with "*"
+
+Things the grammar should support
+    datetime literals
+    datelists
+    varlists: factors, interactions, etc
+    numlists
+    all prefix commands
+    abbreviations for commands and other keywords (+ the * glob syntax)
+    filenames not in quotes
+    macros...
+
+    graphs
 ======================================================================
 
