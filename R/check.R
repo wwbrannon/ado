@@ -206,7 +206,11 @@ function(node)
   #Children - length, names, types
   #No name requirements for children
   raiseifnot(length(node$children) > 0)
-  raiseifnot(every(vapply(node$children, function(x) x %is% "rstata_cmd", TRUE)))
+  raiseifnot(every(vapply(node$children,
+                          function(x) x %is% "rstata_embedded_r" ||       #embedded R code
+                                      x %is% "rstata_cmd" ||              #a usual Stata cmd
+                                      x %is% "rstata_modifier_cmd_list",  #a Stata cmd with modifiers
+                          TRUE)))
   
   invisible(TRUE)
 }
@@ -219,8 +223,13 @@ function(node)
   
   #Children - length, names, types
   raiseifnot(length(node$children) > 0)
+  raiseifnot(every(vapply(node$children,
+                          function(x) x %is% "rstata_modifier_cmd" ||
+                                      x %is% "rstata_general_cmd",
+                          TRUE)))
 
-  raiseifnot(every(vapply(node$children, function(x) x %is% "rstata_modifier_cmd", TRUE)))
+  named <- names(node$children)[which(names(node$children) != "")]
+  raiseifnot(length(named) == 1 && named == c("main_cmd"))
 }
 
 verifynode.rstata_embedded_r <-
@@ -260,11 +269,11 @@ function(node)
   raiseifnot(length(node$data) == 0)
   
   #Children - length, names, types
-  raiseifnot(length(node$children) == 2)
-  raiseifnot(names(node$children) %in% c("verb", "main_cmd", "next_modifier"))
-  raiseifnot("verb" %in% names(node$children))
+  raiseifnot(length(node$children) == 1)
+  raiseifnot(names(node$children) == c("verb"))
+  raiseifnot(node$children$verb %is% "rstata_ident")
   
-  raiseifnot(tolower(node$children$verb["value"]) %in% c("quietly", "noisily", "capture"))
+  raiseifnot(tolower(node$children$verb$data["value"]) %in% c("quietly", "noisily", "capture"))
   
   invisible(TRUE)
 }
@@ -279,7 +288,19 @@ function(node)
   func <- paste0("rstata_", tolower(node$children$verb$data["value"]))
   raiseifnot(exists(func))
   
-  args <- formals(get(func))
+  args <-
+  tryCatch(
+  {
+    formals(get(func))
+  },
+  error=function(c) c)
+  
+  if(inherits(args, "error"))
+  {
+    raiseCondition("bad_command", "command not found")
+    return(invisible(TRUE))
+  }
+  
   given <- setdiff(names(node$children), c("verb"))
   raiseifnot(every(given %in% names(args)))
   raiseifnot(every(vapply(names(args),
@@ -371,6 +392,7 @@ function(node)
   raiseifnot(length(node$children) == 1)
   raiseifnot(names(node$children) == c("varlist"))
   raiseifnot(node$children[[1]] %is% "rstata_expression_list")
+  raiseifnot(every(vapply(node$children[[1]], function(x) x %is% "rstata_ident", TRUE)))
   
   invisible(TRUE)
 }
@@ -404,7 +426,7 @@ function(node)
   NextMethod()
 }
 
-## Labels and tightly binding factor operators
+## Tightly binding factor operators
 verifynode.rstata_factor_expression <-
 function(node)
 {
@@ -502,22 +524,6 @@ function(node)
   
   raiseifnot(node$children$right %is% "rstata_ident" ||
                node$children$right %is% "rstata_factor_expression")
-  
-  invisible(TRUE)
-}
-
-verifynode.rstata_label_expression <-
-function(node)
-{
-  #Data members - length, names, values
-  raiseifnot(length(node$data) == 1)
-  
-  #Children - length, names, types
-  raiseifnot(length(node$children) == 2)
-  raiseifnot(every(c("left", "right") %in% names(node$children)))
-  
-  raiseifnot(node$children$left %is% "rstata_ident")
-  raiseifnot(node$children$right %is% "rstata_ident")
   
   invisible(TRUE)
 }
