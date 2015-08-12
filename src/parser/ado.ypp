@@ -124,6 +124,7 @@ yy::RStataParser::error(const location_type& l, const std::string& m)
 %token <node>   BY XI BYSORT
 %token <node>   QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
 %token <node>   MERGE COLLAPSE IVREGRESS RECODE GSORT LRTEST ANOVA
+%token <node>    TSLS /* this is an awful hack */
 
                 /* Command components and keywords */
 %token          USING IF IN
@@ -522,18 +523,19 @@ nonmodifier_cmd:
 
         $$ = $1;
     }
-    | IVREGRESS varlist "(" varlist "=" varlist ")" if_clause in_clause weight_clause option_list
+    | IVREGRESS TSLS varlist "(" varlist "=" varlist ")" if_clause in_clause weight_clause option_list
     {
-        $1->appendChild("expression_list", $2);
-
-        if($8->nChildren() > 0)
-            $1->appendChild("if_clause", $8);
+        $3->prependChild($2);
+        $1->appendChild("expression_list", $3);
 
         if($9->nChildren() > 0)
-            $1->appendChild("in_clause", $9);
+            $1->appendChild("if_clause", $9);
 
         if($10->nChildren() > 0)
-            $1->appendChild("weight_clause", $10);
+            $1->appendChild("in_clause", $10);
+
+        if($11->nChildren() > 0)
+            $1->appendChild("weight_clause", $11);
 
         // We're going to make the other two varlists into options
         ExprNode *endogenous_opt = new ExprNode("rstata_option");
@@ -542,7 +544,7 @@ nonmodifier_cmd:
         endogenous_opt->appendChild("name", endogenous_name);
         
         ExprNode *endogenous_args = new ExprNode("rstata_argument_expression_list");
-        endogenous_args->appendChild($4);
+        endogenous_args->appendChild($5);
         endogenous_opt->appendChild("args", endogenous_args);
 
         ExprNode *instrumental_opt = new ExprNode("rstata_option");
@@ -551,12 +553,12 @@ nonmodifier_cmd:
         instrumental_opt->appendChild("name", instrumental_name);
         
         ExprNode *instrumental_args = new ExprNode("rstata_argument_expression_list");
-        instrumental_args->appendChild($6);
+        instrumental_args->appendChild($7);
         instrumental_opt->appendChild("args", instrumental_args);
         
         $11->appendChild(endogenous_opt);
         $11->appendChild(instrumental_opt);
-        $1->appendChild("option_list", $11);
+        $1->appendChild("option_list", $12);
 
         $$ = $1;
     }

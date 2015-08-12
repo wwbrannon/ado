@@ -1151,6 +1151,16 @@ strL                                {
                                         return token::TOK_STRING_TYPE_SPEC;
                                     }
 
+                                    /* We need to specially lex this token to get it recognized,
+                                     * before we lex numbers */
+2sls                                {
+                                        R_ECHO(yytext);
+                                        
+                                        yylval->node = new ExprNode({"rstata_literal", "rstata_ident"});
+
+                                        yylval->node->addData("value", *(new std::string("tsls")));
+                                        return token::TOK_TSLS;
+                                    }
 
 
                                     /* numeric literals in their various formats */
