@@ -1,26 +1,25 @@
 Now:
-  o) better error messages from check()
-    o) test it with a few known valid and invalid commands afterward
+  o) function and option args should be separable by ',' or ' '
+    o) does this require a GLR parser?
+
+  o) Macro substitution and compound double quotes
+    o) the `=expr' syntax? can we just send this to R for evaluation as a string? need to check it if so
 
   o) syntax for weird commands
+    o) does this require a GLR parser?
+
     o) recode - define a varlist in the grammar and allow it as the LHS of an assignment
-    o) collapse - just parse it as a varlist but interpret the "stats" differently; parens become optional
-        o) if you want to use a stat as a varname, just give the target=varname form
-    o) gsort - need an algorithm to turn a parse tree of vars, + and - into a list of two-element pairs
     o) ivregress - probably the same as with recode; the last expression_list member should be an
        assignment, optionally parenthesized, required to be parenthesized for non-ambiguity if LHS has
        more than one var
-
+    o) collapse - just parse it as a varlist but interpret the "stats" differently; parens become optional
+        o) if you want to use a stat as a varname, just give the target=varname form
+    o) gsort - or need an algorithm to turn a parse tree of vars, + and - into a list of two-element pairs
     o) lrtest
     o) test
     o) anova
 
     o) fill out their function signatures
-
-  o) function and option args should be separable by ',' or ' '
-
-  o) Macro substitution and compound double quotes
-    o) the `=expr' syntax? can we just send this to R for evaluation as a string?
 
 Backend:
   o) infrastructural R functions
@@ -31,6 +30,7 @@ Backend:
   o) R functions for initial general commands
 
   o) Stata's "stored results"
+    o) creturn
 
   o) complete all the commands which now have stubs
 
