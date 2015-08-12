@@ -1,19 +1,22 @@
-/* Methods for the derived classes of BaseStataExpr */
+/* Methods for the OptionList class */
 
 #include <Rcpp.h>
 #include "rstata.hpp"
 
-using namespace Rcpp;
-
-OptionStataExpr::OptionStataExpr(std::string _data, BaseStataExpr **_children)
+OptionList::OptionList(std::vector<StataOption> _options)
 {
-    data = _data;
-    children = _children;
+    options = _options
 }
 
-// The as_expr methods for conversion to R expressions
-Language OptionStataExpr::as_expr() const
+// The as_list method for conversion to R expressions
+Rcpp::Language OptionList::as_list() const
 {
-    
+    Rcpp::List res;
+
+    res = List::create(_["name"] = name);
+    for(x = 0; x < options.size(); x++)
+        List.push_back(options[x]);
+
+    return res;
 }
 

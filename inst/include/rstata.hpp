@@ -16,8 +16,13 @@
 // Options as they occur after commands, prefix or otherwise
 class StataOption
 {
-   
+    public:
+        StataOption(std::string _name, std::vector<std::string> _args);
+        Rcpp::Language as_list() const;
 
+    private:
+        std::string name;
+        std::vector<std::string> args
 };
 
 // Option lists

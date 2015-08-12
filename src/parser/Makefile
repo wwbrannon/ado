@@ -9,7 +9,9 @@ CPPFLAGS += -I/usr/local/lib/R/site-library/Rcpp/include
 CPPFLAGS += -I../../inst/include/ -Ibuild
 
 all: parse.o lex.o
-	ar -rcs ado.a build/parse.o build/lex.o build/GeneralStataCmd.o build/MakeGeneralStataCmd.o build/StataExpr.o
+	ar -rcs ado.a build/parse.o build/lex.o \
+            build/GeneralStataCmd.o build/MakeGeneralStataCmd.o build/StataExpr.o \
+            build/OptionList.o build/StataOption.o
 
 parse.o: infra
 	bison -d -Wall -b build/ado ado.ypp
@@ -24,6 +26,8 @@ infra:
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) GeneralStataCmd.cpp -o build/GeneralStataCmd.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) MakeGeneralStataCmd.cpp -o build/MakeGeneralStataCmd.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) StataExpr.cpp -o build/StataExpr.o
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) OptionList.cpp -o build/OptionList.o
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) StataOption.cpp -o build/StataOption.o
 
 clean:
 	rm -rf build
