@@ -1,8 +1,6 @@
 Now:
   o) a couple FIXMEs
 
-  o) segfaults on misused "///" - all the dereferences in the ado.ypp file are unsafe
-
   o) gen is saying "incorrect arg types for command"
 
   o) better error messages

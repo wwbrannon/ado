@@ -1,3 +1,4 @@
+%option stack
 %option bison-bridge
 %option noyywrap
 
@@ -7,6 +8,7 @@
 #include <climits>
 #include <cstdlib>
 #include <iostream>
+#include <cstdio>
 #include <sstream>
 #include <string>
 #include "RStata.hpp"
@@ -16,10 +18,6 @@
 #ifndef YYSTYPE
 #define YYSTYPE yy::RStataParser::semantic_type
 #endif
-
-// Functions to eat comments
-void long_comment(yy::RStataParser::location_type* llocp);
-void short_comment();
 
 // String utility functions used below
 std::vector<std::string> split(const std::string &s, char delim);
@@ -31,6 +29,9 @@ typedef yy::RStataParser::token token;
 // Code run each time a pattern is matched
 # define YY_USER_ACTION  llocp->columns(yyleng);
 %}
+
+%x LONG_COMMENT
+%x SHORT_COMMENT
 
 D           [0-9]
 L           [a-zA-Z_]
@@ -47,15 +48,34 @@ B           [ \t\v\r\f]
 llocp->step();
 %}
 
-                                    /* Allow a triple slash at EOL as a line extender */
-\/\/\/\n                            { llocp->lines(yyleng); llocp->step();  }
+                                    /* Eat long comments */
+<INITIAL>"/*"                       { yy_push_state(LONG_COMMENT); }
+<LONG_COMMENT>{
+    "/*"                            { yy_push_state(LONG_COMMENT); }
+    "/"+[^\n]                       { llocp->lines(1); }
+    "/"+[^\*]                       { /* skip "/" if not followed by "*" */ }
+    [^/\*\n]*                       { /* skip anything but "*", "/" and newline */ }
+    "*"+[^*/\n]*                    { /* skip "*"s not followed by a "/" or newline */ }
+    \n                              { llocp->lines(1); }
+    "*"+"/"                         { yy_pop_state(); }
+    <<EOF>>                         { driver.error(*llocp, "Unclosed comment"); yyterminate(); }
+}
+
+
+                                    /* Allow a triple slash at EOL as a line extender.
+                                       We could just use the comment rules below, but this is clearer. */
+\/\/\/\n                            { llocp->lines(yyleng); llocp->step(); }
 
 
 
-                                    /* eat comments */
-\/\*                                { long_comment(llocp); }
-\/\/                                { llocp->lines(1); llocp->step(); short_comment(); }
-^\*                                 { llocp->lines(1); llocp->step(); short_comment(); }
+                                    /* Eat short comments */
+<INITIAL>"//"                       BEGIN(SHORT_COMMENT);
+<INITIAL>^\*                        BEGIN(SHORT_COMMENT);
+<SHORT_COMMENT>{
+    [^\n]*                          { /* eat anything but a newline */ }
+    \n                              { llocp->lines(1); BEGIN(INITIAL); }
+}
+
 
 
                                     /* if you write {{{ ... }}}, the ... will be executed as R code */
@@ -529,46 +549,6 @@ i?"o("\ *{D}+\ *\/{D}+\ *")."       {
 .                                   { yylval->str = new std::string(yytext); return token::TOK_ILLEGAL_CHARACTER;  }
 
 %%
-
-// Functions to eat comments
-void long_comment(yy::RStataParser::location_type* llocp)
-{
-    char c, c1;
-
-loop:
-    while ((c = getc(yyin)) != '*' && c != '\0')
-    {
-        if(c == '\n')
-        {
-            llocp->lines(1);
-            llocp->step();
-        }
-
-        putchar(c);
-    }
-
-    if(c != '\0')
-    {
-        llocp->step(); // for the '*'
-
-        if( (c1 = getc(yyin)) != '/')
-        {
-            unput(c1);
-            goto loop;
-        }
-
-        llocp->step(); // for the '/'
-        putchar(c1);
-    }
-}
-
-void short_comment()
-{
-    char c;
-    
-    while ((c = getc(yyin)) != '\n' && c != 0)
-        putchar(c);
-}
 
 // String utility functions used above
 std::vector<std::string> &
