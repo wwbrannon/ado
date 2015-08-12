@@ -129,7 +129,7 @@ yy::RStataParser::error(const location_type& l, const std::string& m)
                 /* Command components and keywords */
 %token          USING IF IN
 %token <node>   WEIGHT_SPEC
-%token <str>    MERGE_SPEC
+%token <node>   MERGE_SPEC
 
                 /* Factor variable operators */
 %token <node>   CONT_OPERATOR IND_OPERATOR BASE_OPERATOR OMIT_OPERATOR
@@ -501,16 +501,26 @@ nonmodifier_cmd:
      * we can do about it. */
     | MERGE MERGE_SPEC expression_list using_clause option_list
     {
-        $1->addData("merge_spec", *($2));
-
         if($3->nChildren() > 0)
             $1->appendChild("expression_list", $3);
 
         if($4->nChildren() > 0)
             $1->appendChild("using_clause", $4);
 
-        if($5->nChildren() > 0)
-            $1->appendChild("option_list", $5);
+        // we're going to make the merge_spec an option
+        ExprNode *opt = new ExprNode("rstata_option");
+        ExprNode *name = new ExprNode({"rstata_literal", "rstata_ident"});
+        name->addData("value", *(new std::string("merge_spec")));
+        opt->appendChild("name", name);
+        
+        ExprNode *arglist = new ExprNode("rstata_argument_expression_list");
+        ExprNode *explist = new ExprNode("rstata_expression_list");
+        explist->appendChild($2);
+        arglist->appendChild(explist);
+        opt->appendChild("args", arglist);
+        
+        $5->appendChild(opt);
+        $1->appendChild("option_list", $5);
 
         $$ = $1;
     }
@@ -892,16 +902,15 @@ modelspec:
     {
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
         node->addData("verb", *(new std::string("()")));
-        node->appendChild("right", $2);
-        
+
         ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
         left->addData("value", *(new std::string("lrtest_term_list")));
         node->appendChild("left", left);
 
         ExprNode *arglist = new ExprNode("rstata_argument_expression_list");
         arglist->appendChild($2);
-        
         node->appendChild("right", arglist);
+        
         $$ = node;
     }
     ;

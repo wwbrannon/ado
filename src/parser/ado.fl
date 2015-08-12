@@ -1245,9 +1245,10 @@ in                                  {
 (1\:1|1\:m|m\:1|m\:m)               {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext);
+                                        yylval->node = new ExprNode({"rstata_literal", "rstata_string_literal"});
+                                        yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_MERGE_SPEC;
-                                    }
+                                        }
 
 
 

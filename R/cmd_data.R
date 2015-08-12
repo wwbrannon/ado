@@ -204,7 +204,7 @@ function(expression, option_list=NULL, return.match.call=NULL)
 }
 
 rstata_cmd_merge <-
-function(varlist, using_clause, merge_spec, option_list=NULL, return.match.call=NULL)
+function(varlist, using_clause, option_list=NULL, return.match.call=NULL)
 {
   if(!is.null(return.match.call) && return.match.call)
     return(match.call())
