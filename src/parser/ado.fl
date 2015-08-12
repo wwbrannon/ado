@@ -1022,10 +1022,12 @@ size_t macro_length = 0;
                                         return token::TOK_NEWLINE;
                                     }
     <<EOF>>                         {
-                                        // these can be the last thing in the file
+                                        // one-line comments can be the last thing in the file
                                         yy_pop_state(yyscanner);
                                         llocp->lines(1);
-                                        return token::TOK_END;
+                                        
+                                        // unput the newline that the grammar expects will be here
+                                        unput('\n');
                                     }
 }
 
@@ -1335,18 +1337,18 @@ size_t macro_length = 0;
 
 
 
-                                                        /* datetime literals */
-{D}{D}{M}{D}+                                           {
-                                                            R_ECHO(yytext);
-                                        
-                                                            yylval->node = new ExprNode({"rstata_literal", "rstata_datetime"});
+                                   /* datetime literals */
+{D}{D}{M}{D}+                      {
+                                       R_ECHO(yytext);
+                                   
+                                       yylval->node = new ExprNode({"rstata_literal", "rstata_datetime"});
 
-                                                            std::string *s = new std::string(yytext);
-                                                            s->append(" 00:00:00");
+                                       std::string *s = new std::string(yytext);
+                                       s->append(" 00:00:00");
 
-                                                            yylval->node->addData("value", *s);
-                                                            return token::TOK_DATE;
-                                                        }
+                                       yylval->node->addData("value", *s);
+                                       return token::TOK_DATE;
+                                   }
 {D}{D}{M}{D}+[ \t]+{D}{D}:{D}{D}(:{D}{D}(\.{D}+)?)?     {
                                                             R_ECHO(yytext);
                                         
