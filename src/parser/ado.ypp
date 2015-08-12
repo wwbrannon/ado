@@ -255,6 +255,19 @@ cmd:
         
         $$ = $1;
     }
+    | long_modifier_cmd ":" nonmodifier_cmd cmd_sep
+    {
+        ExprNode *node = new ExprNode("rstata_modifier_cmd_list");
+        
+        $4; // suppressing a stupid bison warning
+        
+        node->appendChild($1);
+        node->appendChild("main_cmd", $3);
+        
+        R_ACTION(node);
+        
+        $$ = node;
+    }
     | modifier_cmd_list nonmodifier_cmd cmd_sep
     {
         $3; // suppressing a stupid bison warning
