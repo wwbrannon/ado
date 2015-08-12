@@ -1,220 +1,214 @@
-ameans <-
+rstata_cmd_ameans <-
 function()
 {
 
 }
 
-anova <-
+rstata_cmd_anova <-
 function()
 {
 
 }
 
-areg <-
+rstata_cmd_areg <-
 function()
 {
 
 }
 
-binreg <-
+rstata_cmd_binreg <-
 function()
 {
 
 }
 
-bitest <-
+rstata_cmd_bitest <-
 function()
 {
 
 }
 
-ci <-
+rstata_cmd_ci <-
 function()
 {
 
 }
 
-correlate <-
+rstata_cmd_correlate <-
 function()
 {
 
 }
 
-display <-
+rstata_cmd_display <-
 function()
 {
 
 }
 
-estimates <-
+rstata_cmd_estimates <-
 function()
 {
 
 }
 
-fvset <-
+rstata_cmd_fvset <-
 function()
 {
 
 }
 
-glm <-
+rstata_cmd_glm <-
 function()
 {
 
 }
 
-icc <-
+rstata_cmd_icc <-
 function()
 {
 
 }
 
-ivregress <-
+rstata_cmd_ivregress <-
 function()
 {
 
 }
 
-ksmirnov <-
+rstata_cmd_ksmirnov <-
 function()
 {
 
 }
 
-kwallis <-
+rstata_cmd_kwallis <-
 function()
 {
 
 }
 
-logistic <-
+rstata_cmd_logistic <-
 function()
 {
 
 }
 
-logit <-
+rstata_cmd_logit <-
 function()
 {
 
 }
 
-lrtest <-
+rstata_cmd_lrtest <-
 function()
 {
 
 }
 
-margins <-
+rstata_cmd_margins <-
 function()
 {
 
 }
 
-mean <-
+rstata_cmd_mean <-
 function()
 {
 
 }
 
-meta <-
+rstata_cmd_meta <-
 function()
 {
 
 }
 
-nbreg <-
+rstata_cmd_nbreg <-
 function()
 {
 
 }
 
-ologit <-
+rstata_cmd_ologit <-
 function()
 {
 
 }
 
-poisson <-
+rstata_cmd_poisson <-
 function()
 {
 
 }
 
-predict <-
+rstata_cmd_predict <-
 function()
 {
 
 }
 
-probit <-
+rstata_cmd_probit <-
 function()
 {
 
 }
 
-prtest <-
+rstata_cmd_prtest <-
 function()
 {
 
 }
 
-ranksum <-
+rstata_cmd_ranksum <-
 function()
 {
 
 }
 
-regress <-
+rstata_cmd_regress <-
 function()
 {
 
 }
 
-sktest <-
+rstata_cmd_sktest <-
 function()
 {
 
 }
 
-summarize <-
+rstata_cmd_summarize <-
 function()
 {
 
 }
 
-table <-
+rstata_cmd_table <-
 function()
 {
 
 }
 
-tabstat <-
+rstata_cmd_tabstat <-
 function()
 {
 
 }
 
-tabulate <-
+rstata_cmd_test <-
 function()
 {
 
 }
 
-test <-
+rstata_cmd_ttest <-
 function()
 {
 
 }
 
-ttest <-
-function()
-{
-
-}
-
-power <-
+rstata_cmd_power <-
 function()
 {
 

@@ -1,250 +1,250 @@
-append <-
+rstata_cmd_append <-
 function()
 {
 
 }
 
-cd <-
+rstata_cmd_cd <-
 function()
 {
 
 }
 
-clear <-
+rstata_cmd_clear <-
 function()
 {
 
 }
 
-codebook <-
+rstata_cmd_codebook <-
 function()
 {
 
 }
 
-collapse <-
+rstata_cmd_collapse <-
 function()
 {
 
 }
 
-compare <-
+rstata_cmd_compare <-
 function()
 {
 
 }
 
-count <-
+rstata_cmd_count <-
 function()
 {
 
 }
 
-describe <-
+rstata_cmd_describe <-
 function()
 {
 
 }
 
-destring <-
+rstata_cmd_destring <-
 function()
 {
 
 }
 
-dir <-
+rstata_cmd_dir <-
 function()
 {
 
 }
 
-drop <-
+rstata_cmd_drop <-
 function()
 {
 
 }
 
-duplicates <-
+rstata_cmd_duplicates <-
 function()
 {
 
 }
 
-egen <-
+rstata_cmd_egen <-
 function()
 {
 
 }
 
-encode <-
+rstata_cmd_encode <-
 function()
 {
 
 }
 
-erase <-
+rstata_cmd_erase <-
 function()
 {
 
 }
 
-expand <-
+rstata_cmd_expand <-
 function()
 {
 
 }
 
-format <-
+rstata_cmd_format <-
 function()
 {
 
 }
 
-generate <-
+rstata_cmd_generate <-
 function()
 {
 
 }
 
-gsort <-
+rstata_cmd_gsort <-
 function()
 {
 
 }
 
-insheet <-
+rstata_cmd_insheet <-
 function()
 {
 
 }
 
-isid <-
+rstata_cmd_isid <-
 function()
 {
 
 }
 
-keep <-
+rstata_cmd_keep <-
 function()
 {
 
 }
 
-label <-
+rstata_cmd_label <-
 function()
 {
 
 }
 
-list <-
+rstata_cmd_list <-
 function()
 {
 
 }
 
-lookfor <-
+rstata_cmd_lookfor <-
 function()
 {
 
 }
 
-merge <-
+rstata_cmd_merge <-
 function()
 {
 
 }
 
-mkdir <-
+rstata_cmd_mkdir <-
 function()
 {
 
 }
 
-order <-
+rstata_cmd_order <-
 function()
 {
 
 }
 
-pctile <-
+rstata_cmd_pctile <-
 function()
 {
 
 }
 
-recast <-
+rstata_cmd_recast <-
 function()
 {
 
 }
 
-recode <-
+rstata_cmd_recode <-
 function()
 {
 
 }
 
-rename <-
+rstata_cmd_rename <-
 function()
 {
 
 }
 
-reshape <-
+rstata_cmd_reshape <-
 function()
 {
 
 }
 
-rmdir <-
+rstata_cmd_rmdir <-
 function()
 {
 
 }
 
-sample <-
+rstata_cmd_sample <-
 function()
 {
 
 }
 
-save <-
+rstata_cmd_save <-
 function()
 {
 
 }
 
-separate <-
+rstata_cmd_separate <-
 function()
 {
 
 }
 
-shell <-
+rstata_cmd_shell <-
 function()
 {
 
 }
 
-sort <-
+rstata_cmd_sort <-
 function()
 {
 
 }
 
-split <-
+rstata_cmd_split <-
 function()
 {
 
 }
 
-type <-
+rstata_cmd_type <-
 function()
 {
 
 }
 
-use <-
+rstata_cmd_use <-
 function()
 {
 

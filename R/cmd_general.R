@@ -61,68 +61,68 @@ function(expression_list)
   match.call()
 }
 
+rstata_cmd_macro <- #for macro drop
+function()
+{
+
+}
+
 #Others
-about <-
+rstata_cmd_about <-
 function()
 {
 
 }
 
-help <-
+rstata_cmd_help <-
 function()
 {
 
 }
 
-log <-
+rstata_cmd_log <-
 function()
 {
 
 }
 
-set <-
+rstata_cmd_set <-
 function()
 {
 
 }
 
-file <-
+rstata_cmd_file <-
 function()
 {
 
 }
 
-macro <- #for macro drop
+rstata_cmd_preserve <-
 function()
 {
 
 }
 
-preserve <-
+rstata_cmd_restore <-
 function()
 {
 
 }
 
-restore <-
+rstata_cmd_sleep <-
 function()
 {
 
 }
 
-sleep <-
+rstata_cmd_tempfile <-
 function()
 {
 
 }
 
-tempfile <-
-function()
-{
-
-}
-
-do <-
+rstata_cmd_do <-
 function()
 {
 
