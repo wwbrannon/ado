@@ -1,5 +1,6 @@
 /* Methods for the derived classes of BaseStataExpr */
 
+#include <utility>
 #include <Rcpp.h>
 #include "rstata.hpp"
 
@@ -40,10 +41,10 @@ StringStataExpr::StringStataExpr(std::string _data)
     data = _data;
 }
 
-BranchStataExpr::BranchStataExpr(std::string _data, std::vector<BaseStataExpr> _children)
+BranchStataExpr::BranchStataExpr(std::string _data, std::vector<std::unique_ptr<BaseStataExpr>> _children)
 {
     data = _data;
-    children = _children;
+    children = std::move(_children);
 }
 
 // The as_expr methods for conversion to R expressions
@@ -64,6 +65,6 @@ Language StringStataExpr::as_expr() const
 
 Language BranchStataExpr::as_expr() const
 {
-    
+    return Language("c", 1, 2); // FIXME
 }
 

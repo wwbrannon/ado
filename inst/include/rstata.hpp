@@ -11,6 +11,7 @@
 #ifndef RSTATA_H
 #define RSTATA_H
 
+#include <memory>
 #include <Rcpp.h>
 
 // Options as they occur after commands, prefix or otherwise
@@ -22,7 +23,7 @@ class StataOption
 
     private:
         std::string name;
-        std::vector<std::string> args
+        std::vector<std::string> args;
 };
 
 // Option lists
@@ -85,12 +86,12 @@ class StringStataExpr: public BaseStataExpr
 class BranchStataExpr: public BaseStataExpr
 {
     public:
-        BranchStataExpr(std::string _data, std::vector<BaseStataExpr> _children);
+        BranchStataExpr(std::string _data, std::vector<std::unique_ptr<BaseStataExpr>> _children);
         
         virtual Rcpp::Language as_expr() const;
     
     private:
-        std::vector<BaseStataExpr> children;
+        std::vector<std::unique_ptr<BaseStataExpr>> children;
         std::string data;
 };
 
@@ -122,10 +123,10 @@ class EmbeddedRCmd: public BaseStataCmd
 class GeneralStataCmd: public BaseStataCmd
 {
     private:
-        BaseStataExpr *varlist; // a varlist is a left-deep tree of IDENTs
+        BaseStataExpr *varlist;
         BaseStataExpr *assign_stmt; // "var = exp"
         BaseStataExpr *if_exp; // "if expression"
-        BaseStataExpr *options; // ", options"
+        OptionList    *options; // ", options"
         
         int has_range;
         int range_lower; // the lower range limit
@@ -139,10 +140,10 @@ class GeneralStataCmd: public BaseStataCmd
         virtual Rcpp::List as_list() const;
 
         GeneralStataCmd(std::string _verb,
-                        std::string _weight, std::string _using_filename,
-                        int _has_range, int _range_lower, int _range_upper,
-                        BaseStataExpr *_varlist, BaseStataExpr *_options
-                        BaseStataExpr *_assign_stmt, BaseStataExpr *_if_exp);
+                   std::string _weight, std::string _using_filename,
+                   int _has_range, int _range_lower, int _range_upper,
+                   BaseStataExpr *_varlist, BaseStataExpr *_assign_stmt,
+                   BaseStataExpr *_if_exp, OptionList *_options);
 };
 
 // positional-only parameters are garbage...
@@ -157,7 +158,7 @@ class MakeGeneralStataCmd
         MakeGeneralStataCmd& varlist(BaseStataExpr *_varlist);
         MakeGeneralStataCmd& assign_stmt(BaseStataExpr *_assign_stmt);
         MakeGeneralStataCmd& if_exp(BaseStataExpr *_if_exp);
-        MakeGeneralStataCmd& options(BaseStataExpr *_options);
+        MakeGeneralStataCmd& options(OptionList *_options);
         MakeGeneralStataCmd& has_range(int _has_range);
         MakeGeneralStataCmd& range_upper(int _range_upper);
         MakeGeneralStataCmd& range_lower(int _range_lower);
@@ -169,7 +170,7 @@ class MakeGeneralStataCmd
         BaseStataExpr *__varlist;
         BaseStataExpr *__assign_stmt;
         BaseStataExpr *__if_exp;
-        BaseStataExpr *__options;
+        OptionList *__options;
         int __has_range;
         int __range_lower;
         int __range_upper;

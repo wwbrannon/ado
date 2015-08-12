@@ -5,7 +5,6 @@ MakeGeneralStataCmd::MakeGeneralStataCmd(std::string _verb)
 {
     __verb = _verb;
     
-    __modifiers = NULL;
     __varlist = NULL;
     __assign_stmt = NULL;
     __if_exp = NULL;
@@ -23,8 +22,7 @@ GeneralStataCmd MakeGeneralStataCmd::create()
 {
     GeneralStataCmd *cmd = new GeneralStataCmd(__verb, __weight, __using_filename,
                                                __has_range, __range_upper, __range_lower,
-                                               __modifiers, __varlist, __assign_stmt,
-                                               __if_exp, __options);
+                                               __varlist, __assign_stmt, __if_exp, __options);
 
     return *cmd;
 }
@@ -32,12 +30,6 @@ GeneralStataCmd MakeGeneralStataCmd::create()
 MakeGeneralStataCmd& MakeGeneralStataCmd::verb(std::string const& _verb)
 {
     __verb = _verb;
-    return *this;
-}
-
-MakeGeneralStataCmd& MakeGeneralStataCmd::modifiers(BaseStataExpr *_modifiers)
-{
-    __modifiers = _modifiers;
     return *this;
 }
 
@@ -59,7 +51,7 @@ MakeGeneralStataCmd& MakeGeneralStataCmd::if_exp(BaseStataExpr *_if_exp)
     return *this;
 }
 
-MakeGeneralStataCmd& MakeGeneralStataCmd::options(BaseStataExpr *_options)
+MakeGeneralStataCmd& MakeGeneralStataCmd::options(OptionList *_options)
 {
     __options = _options;
     return *this;

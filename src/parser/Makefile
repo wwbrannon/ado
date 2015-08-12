@@ -2,11 +2,12 @@
 
 CXX = g++
 
-CXXFLAGS += -c -g -O3 -Wall -fPIC -pedantic -pipe -Wno-unused
+CXXFLAGS += -std=c++11 -c -g -O3 -fPIC -Wall -pedantic
 
 CPPFLAGS += -I/usr/share/R/include
 CPPFLAGS += -I/usr/local/lib/R/site-library/Rcpp/include 
-CPPFLAGS += -I../../inst/include/ -Ibuild
+CPPFLAGS += -I../../inst/include/
+CPPFLAGS += -Ibuild
 
 all: parse.o lex.o
 	ar -rcs ado.a build/parse.o build/lex.o \

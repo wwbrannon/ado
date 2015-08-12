@@ -2,8 +2,7 @@
 Roadmap to v1.0:
 
 Immediate TODO:
-    o) finish as_expr methods
-    o) finish the Option and OptionList classes
+    o) finish as_expr methods of StataExpr
     
     o) finish expression-parsing code in ado.ypp, testing with gen
     o) finish the rest of the grammar

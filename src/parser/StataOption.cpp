@@ -3,15 +3,18 @@
 #include <Rcpp.h>
 #include "rstata.hpp"
 
+using namespace Rcpp;
+
 StataOption::StataOption(std::string _name, std::vector<std::string> _args)
 {
     name = _name;
     args = _args;
 }
 
-Rcpp::List as_list() const
+List StataOption::as_list() const
 {
-    Rcpp::List res;
+    unsigned int x;
+    List res;
 
     res = List::create(_["name"] = name);
     for(x = 0; x < args.size(); x++)
