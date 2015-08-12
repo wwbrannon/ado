@@ -189,7 +189,7 @@ codegen.rstata_expression <-
 function(node, debug_level=0)
 {
   #Get the function to call
-  op <- node$children$verb$data["value"]
+  op <- node$data["verb"]
   op <- function_for_ado_operator(op)
   
   #Get the operator's arguments - one, two, or at least in principle, more
