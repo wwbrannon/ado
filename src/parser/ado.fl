@@ -92,7 +92,10 @@ typedef yy::RStataParser::token token;
 
 %s FOREACH
 %s FORVALUES
+
 %x ACCUMULATE
+%x STRING_ACCUMULATE
+%x CDQUOTE_ACCUMULATE
 
 %x EMBED
 %x STRING
@@ -119,6 +122,7 @@ std::string string_buf;
 
 // Loop objects
 std::string loop_buf;
+int brace_count = 0;
 
 std::stack<std::vector<std::string>> macro_stack;
 
@@ -305,8 +309,22 @@ size_t macro_length = 0;
                                         frame.push_back(std::string("\\"));
                                         macro_stack.push(frame);
                                     }
-   
-    [^\\\`\'\n]+                    {
+    \{|\}                           {
+                                        // These macros can't contain braces because the braces might
+                                        // not be balanced, which would greatly complicate parsing loops
+                                        R_ECHO(yytext);
+                                        
+                                        while(!macro_stack.empty())
+                                            macro_stack.pop();
+                                        
+                                        do {
+                                            yy_pop_state(yyscanner);
+                                        } while(yy_top_state(yyscanner) != INITIAL);
+                                        
+                                        driver.error(*llocp, "Invalid character in local macro");
+                                        yyterminate();
+                                    }
+    [^\\\`\'\n\{\}]+                {
                                         R_ECHO(yytext);
                                         
                                         // push yytext to the back of the current frame
@@ -649,8 +667,15 @@ size_t macro_length = 0;
 
 
 <FOREACH>{
-    \n                              {
-                                        /* shift into the ACCUMULATE state */
+    \{                              {
+                                        R_ECHO(yytext);
+
+                                        loop_buf.clear();
+                                        brace_count++;
+                                        yy_push_state(ACCUMULATE, yyscanner);
+
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_LBRACE;
                                     }
     local                           {
                                         R_ECHO(yytext);
@@ -690,8 +715,15 @@ size_t macro_length = 0;
 
 
 <FORVALUES>{
-    \n                              {
-                                        /* shift into the ACCUMULATE state */
+    \{                              {
+                                        R_ECHO(yytext);
+
+                                        loop_buf.clear();
+                                        brace_count++;
+                                        yy_push_state(ACCUMULATE, yyscanner);
+                                        
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_LBRACE;
                                     }
     to                              {
                                         R_ECHO(yytext);
@@ -711,13 +743,192 @@ size_t macro_length = 0;
 
 
 <ACCUMULATE>{
+                                    /* We never need to execute comments, and they can contain unmatched braces,
+                                     * so just eat them now, exactly as usual */
+    "/*"                            {
+                                        R_ECHO(yytext);
+                                        yy_push_state(LONG_COMMENT, yyscanner);
+                                    }
+    "//"                            {
+                                        R_ECHO(yytext);
+                                        yy_push_state(SHORT_COMMENT, yyscanner);
+                                    }
+    ^\*                             {
+                                        R_ECHO(yytext);
+                                        yy_push_state(SHORT_COMMENT, yyscanner);
+                                    }
+                                    
+    \`\"                            {
+                                        R_ECHO(yytext);
+                                        
+                                        cdquote_buf.clear();
+                                        yy_push_state(CDQUOTE_ACCUMULATE, yyscanner);
+                                    }
+                                    
+                                    /* Strings may contain unbalanced braces, so we need some subsidiary states
+                                     * to handle them without confusing the brace counting code. We can't use the
+                                     * usual string states because a) they don't append to loop_buf, but more
+                                     * fundamentally because b) they'll process backslash escapes, which in this context
+                                     * we want to defer until the subsequent reinvocation of the frontend on this text block. */
+    \"                              {
+                                        R_ECHO(yytext);
+                                        
+                                        string_buf.clear();
+                                        yy_push_state(STRING_ACCUMULATE, yyscanner);
+                                    }
+    [\n]+                           {
+                                        R_ECHO(yytext);
+                                        
+                                        llocp->lines(yyleng);
+                                        loop_buf += std::string(yytext);
+                                    }
+    "{"                             {
+                                        R_ECHO(yytext);
+
+                                        brace_count++;
+                                        loop_buf += yytext[0];
+                                    }
+    "}"                             {
+                                        R_ECHO(yytext);
+
+                                        brace_count--;
+                                        if(brace_count != 0)
+                                            loop_buf += yytext[0];
+                                        else
+                                        {
+                                            yy_pop_state(yyscanner); // back to FOREACH or FORVALUES
+                                            yy_pop_state(yyscanner); // back to INITIAL
+
+                                            yyless(0); // we want to re-scan this because the parser expects it
+
+                                            // construct a string literal token from loop_buf and return it
+                                            std::string *s = new std::string(loop_buf);
+                                            yylval->node = new ExprNode({"rstata_literal", "rstata_string_literal"});
+                                            yylval->node->addData("value", *s);
+
+                                            return token::TOK_STRING_LITERAL;
+                                        }
+                                    }
+    [^\{\}\"\n]+                    {
+                                        R_ECHO(yytext);
+
+                                        loop_buf += std::string(yytext);
+                                    }
+
     <<EOF>>                         {
                                         // getting to EOF in this state is an error
                                         do {
                                             yy_pop_state(yyscanner);
                                         } while(yy_top_state(yyscanner) != INITIAL);
                                         
-                                        driver.error(*llocp, "Foreach loop without a statement body");
+                                        driver.error(*llocp, "Foreach loop without a closing brace");
+                                        yyterminate();
+                                    }
+}
+
+
+
+<STRING_ACCUMULATE>{
+                                    /* Saw the matching close quote - all done */
+    \"                              {
+                                        R_ECHO(yytext);
+                                        loop_buf += std::string(yytext);
+
+                                        yy_pop_state(yyscanner);
+                                    }
+
+    [\n]+                           {
+                                        // getting to EOF in this state is an error
+                                        R_ECHO(yytext);
+                                        llocp->lines(yyleng);
+                                        
+                                        do {
+                                            yy_pop_state(yyscanner);
+                                        } while(yy_top_state(yyscanner) != INITIAL);
+                                        
+                                        driver.error(*llocp, "Unclosed string literal");
+                                        yyterminate();
+                                    }
+
+    \\\"                            {
+                                        R_ECHO(yytext);
+                                        loop_buf += std::string(yytext);
+                                    }
+    \\                              {
+                                        R_ECHO(yytext);
+                                        loop_buf += std::string(yytext);
+                                    }
+
+    [^\\\n\"]+                      {
+                                        // this rule is the entire reason for this state - it matches
+                                        // opening curly braces but doesn't increment brace_count
+                                        R_ECHO(yytext);
+                                        loop_buf += std::string(yytext);
+                                    }
+
+    <<EOF>>                         {
+                                        // getting to EOF in this state is an error
+                                        do {
+                                            yy_pop_state(yyscanner);
+                                        } while(yy_top_state(yyscanner) != INITIAL);
+                                        
+                                        driver.error(*llocp, "Unclosed string literal");
+                                        yyterminate();
+                                    }
+}
+
+
+
+<CDQUOTE_ACCUMULATE>{
+                                    /* Saw the matching close quote - all done */
+    \"\'                            {
+                                        R_ECHO(yytext);
+                                        loop_buf += std::string(yytext);
+
+                                        yy_pop_state(yyscanner);
+                                    }
+
+    \"/[^\']+                       {
+                                        R_ECHO(yytext);
+                                        loop_buf += std::string(yytext);
+                                    }
+
+    [\n]+                           {
+                                        // getting to EOF in this state is an error
+                                        R_ECHO(yytext);
+                                        llocp->lines(yyleng);
+                                        
+                                        do {
+                                            yy_pop_state(yyscanner);
+                                        } while(yy_top_state(yyscanner) != INITIAL);
+                                        
+                                        driver.error(*llocp, "Unclosed compound double quote");
+                                        yyterminate();
+                                    }
+
+    \\\"                            {
+                                        R_ECHO(yytext);
+                                        loop_buf += std::string(yytext);
+                                    }
+    \\                              {
+                                        R_ECHO(yytext);
+                                        loop_buf += std::string(yytext);
+                                    }
+
+    [^\\\n\"]+                      {
+                                        // once again, the fact that this rule matches the "{" character
+                                        // but doesn't increment brace_count is why we have this state
+                                        R_ECHO(yytext);
+                                        loop_buf += std::string(yytext);
+                                    }
+
+    <<EOF>>                         {
+                                        // getting to EOF in this state is an error
+                                        do {
+                                            yy_pop_state(yyscanner);
+                                        } while(yy_top_state(yyscanner) != INITIAL);
+                                        
+                                        driver.error(*llocp, "Unclosed compound double quote");
                                         yyterminate();
                                     }
 }
@@ -893,7 +1104,6 @@ size_t macro_length = 0;
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_string_literal"});
                                         yylval->node->addData("value", *s);
 
-                                        yy_pop_state(yyscanner);
                                         return token::TOK_STRING_LITERAL;
                                     }
 
@@ -1016,12 +1226,10 @@ size_t macro_length = 0;
     \"                              {
                                         R_ECHO(yytext);
                                         
-                                        /* Saw a close quote - all done */
                                         std::string *s = new std::string(string_buf);
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_string_literal"});
                                         yylval->node->addData("value", *s);
 
-                                        yy_pop_state(yyscanner);
                                         return token::TOK_STRING_LITERAL;
                                     }
 
