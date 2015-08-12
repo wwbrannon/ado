@@ -106,6 +106,6 @@ List BranchExprNode::as_R_object() const
 
 List BaseExprNode::as_R_object() const
 {
-
+    return R_NilValue; // this will never be called
 }
 
