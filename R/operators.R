@@ -54,3 +54,18 @@ function(left, right)
 {
   
 }
+
+#a pair of infix operators allowed only in expressions given
+#to the anova command
+`%anova_nest%` <-
+function(left, right)
+{
+
+}
+
+`%anova_error%` <-
+function(left, right)
+{
+
+}
+

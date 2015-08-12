@@ -278,7 +278,7 @@ function(name)
     return(as.symbol(name))
 
   #Logical, relational and other expressions
-  if(name %in% c("==", "&", "|", "!", ">", "<", ">=", "<="))
+  if(name %in% c("&", "|", "!", ">", "<", ">=", "<="))
     return(as.symbol(name))
 
   if(name == "()")
@@ -289,6 +289,9 @@ function(name)
 
   if(name == "[]")
     return(as.symbol("["))
+
+  if(name == "==")
+    return(as.symbol("%==%"))
 
   #Factor operators
   if(name == "c.")
@@ -308,6 +311,12 @@ function(name)
 
   if(name == "#")
     return(as.symbol("%#%"))
+
+  if(name == "%anova_nest%")
+    return(as.symbol("%anova_nest%"))
+
+  if(name == "%anova_error%")
+    return(as.symbol("%anova_error%"))
 
   if(valid_data_type(name))
     return(as.symbol(name))

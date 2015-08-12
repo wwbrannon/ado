@@ -931,30 +931,16 @@ modelspec_list:
 
 /* Helper constructs for anova */
 anova_nest_expression:
-      unary_factor_expression
-    | anova_nest_expression "|" unary_factor_expression
+      cross_expression
+    | anova_nest_expression "|" cross_expression
     {
         $2; // shut up, bison...
-
-        // yes, making these function calls rather than different operators is a
-        // bit of a hack. but there's not an elegant way to do it - just the fact
-        // that these commands with their special syntax exist is a hack.
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
-        node->addData("verb", *(new std::string("()")));
         
-        // the "left" child
-        ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
-        left->addData("value", *(new std::string("anova_nest")));
-        node->appendChild("left", left);
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_anova_nest_expression"});
+        node->addData("verb", *(new std::string("%anova_nest%")));
+        node->appendChild("left", $1);
+        node->appendChild("right", $3);
         
-        // the "right" child
-        ExprNode *arglist = new ExprNode("rstata_argument_expression_list");
-        ExprNode *explist = new ExprNode("rstata_expression_list");
-        explist->appendChild($1);
-        explist->appendChild($3);
-        arglist->appendChild(explist);
-        
-        node->appendChild("right", arglist);
         $$ = node;
     }
     ;
@@ -965,21 +951,10 @@ anova_error_expression:
     {
         $2; // shut up, bison...
         
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
-        node->addData("verb", *(new std::string("()")));
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_anova_error_expression"});
+        node->addData("verb", *(new std::string("%anova_error%")));
+        node->appendChild("left", $1);
         
-        // the "left" child
-        ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
-        left->addData("value", *(new std::string("anova_error")));
-        node->appendChild("left", left);
-        
-        // the "right" child
-        ExprNode *arglist = new ExprNode("rstata_argument_expression_list");
-        ExprNode *explist = new ExprNode("rstata_expression_list");
-        explist->appendChild($1);
-        arglist->appendChild(explist);
-        
-        node->appendChild("right", arglist);
         $$ = node;
     }
     ;

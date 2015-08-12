@@ -1089,3 +1089,52 @@ function(node, debug_level=0)
   invisible(TRUE)
 }
 
+##A pair of operators that are only allowed in arguments to the anova command.
+##We're not going to verify that this is an anova command, but the only way
+##the parser will generate these classes is if it's seen an ANOVA token.
+#' @export
+verifynode.rstata_anova_nest_expression <-
+function(node, debug_level=0)
+{
+  #Data members - length, names, values
+  raiseifnot(length(node$data) == 1,
+             msg=if(debug_level) NULL else "Malformed anova expression")
+  raiseifnot(node$data["verb"] == "%anova_nest%",
+             msg=if(debug_level) NULL else "Malformed anova expression")
+
+  #Children - length, names, types
+  raiseifnot(length(node$children) == 2,
+             msg=if(debug_level) NULL else "Malformed anova expression")
+  raiseifnot(every(c("left", "right") %in% names(node$children)),
+             msg=if(debug_level) NULL else "Malformed anova expression")
+  
+  raiseifnot(node$children$left %is% "rstata_ident" ||
+             node$children$left %is% "rstata_factor_expression" ||
+             node$children$left %is% "rstata_cross_expression" ||
+             node$children$left %is% "rstata_anova_nest_expression",
+             msg=if(debug_level) NULL else "Incorrect varlist specification in anova command")
+}
+
+#' @export
+verifynode.rstata_anova_error_expression <-
+function(node, debug_level=0)
+{
+  #Data members - length, names, values
+  raiseifnot(length(node$data) == 1,
+             msg=if(debug_level) NULL else "Malformed anova expression")
+  raiseifnot(node$data["verb"] == "%anova_error%",
+             msg=if(debug_level) NULL else "Malformed anova expression")
+  
+  #Children - length, names, types
+  raiseifnot(length(node$children) == 1,
+             msg=if(debug_level) NULL else "Malformed anova expression")
+  raiseifnot(every(names(node$children) %in% c("left", "right")),
+             msg=if(debug_level) NULL else "Malformed anova expression")
+  
+  raiseifnot(node$children$left %is% "rstata_ident" ||
+             node$children$left %is% "rstata_factor_expression" ||
+             node$children$left %is% "rstata_cross_expression" ||
+             node$children$left %is% "rstata_anova_nest_expression",
+             msg=if(debug_level) NULL else "Incorrect varlist specification in anova command")
+}
+
