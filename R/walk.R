@@ -8,55 +8,55 @@
 ### This shouldn't actually be recursive, because R doesn't / can't eliminate
 ### tail calls. What can we do instead?
 
-evaluate <-
+walk <-
 function(node)
-UseMethod("evaluate")
+UseMethod("walk")
 
 ## Literals
-evaluate.rstata_ident <-
+walk.rstata_ident <-
 function(node)
 {
     as.symbol(node$data$value)
 }
 
-evaluate.rstata_number <-
+walk.rstata_number <-
 function(node)
 {
     as.numeric(node$data$value)
 }
 
-evaluate.rstata_string_literal <-
+walk.rstata_string_literal <-
 function(node)
 {
     as.character(node$data$value)
 }
 
-evaluate.rstata_datetime <-
+walk.rstata_datetime <-
 function(node)
 {
     
 }
 
-evaluate.rstata_type_constructor <-
+walk.rstata_type_constructor <-
 function(node)
 {
 
 }
 
 ## Compound and atomic commands
-evaluate.rstata_compound_cmd <-
+walk.rstata_compound_cmd <-
 function(node)
 {
 
 }
 
-evaluate.rstata_modifier_cmd_list <- #should this exist either?
+walk.rstata_modifier_cmd_list <- #should this exist?
 function(node)
 {
 
 }
 
-evaluate.rstata_embedded_r_cmd <-
+walk.rstata_embedded_r_cmd <-
 function(node)
 {
     #A stub from an older function - expand
@@ -66,62 +66,62 @@ function(node)
 
 }
 
-evaluate.rstata_general_cmd <-
+walk.rstata_general_cmd <-
 function(node)
 {
 
 }
 
 ## Command parts and expressions
-evaluate.rstata_expression <-
+walk.rstata_expression <-
 function(node)
 {
 
 }
 
-evaluate.rstata_expression_list <-
+walk.rstata_expression_list <-
 function(node)
 {
 
 }
 
-evaluate.rstata_argument_expression_list <-
+walk.rstata_argument_expression_list <-
 function(node)
 {
 
 }
 
-evaluate.rstata_if_clause <-
+walk.rstata_if_clause <-
 function(node)
 {
 
 }
 
-evaluate.rstata_in_clause <-
+walk.rstata_in_clause <-
 function(node)
 {
 
 }
 
-evaluate.rstata_option_list <-
+walk.rstata_option_list <-
 function(node)
 {
 
 }
 
-evaluate.rstata_option <-
+walk.rstata_option <-
 function(node)
 {
 
 }
 
-evaluate.rstata_using_clause <-
+walk.rstata_using_clause <-
 function(node)
 {
 
 }
 
-evaluate.rstata_weight_clause <-
+walk.rstata_weight_clause <-
 function(node)
 {
 
