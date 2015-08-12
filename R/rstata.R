@@ -198,7 +198,10 @@ function(dta = NULL, filename=NULL, string=NULL,
                                 debug_level=debug_level, echo=1)
     } else if(!is.null(filename))
     {
-        inpt <- readLines(con=file(filename, "r"))
+        con = file(filename, "r")
+        on.exit(close(con), add=TRUE)
+        
+        inpt <- readLines(con)
         inpt <- Reduce(function(x, y) paste(x, y, sep="\n"), inpt)
         inpt <- paste0(inpt, "\n\n\n")
 
@@ -207,7 +210,10 @@ function(dta = NULL, filename=NULL, string=NULL,
                                 debug_level=debug_level, echo=1)
     } else
     {
-        inpt <- readLines(con=textConnection(string))
+        con = textConnection(string)
+        on.exit(close(con), add=TRUE)
+        
+        inpt <- readLines(con)
         inpt <- Reduce(function(x, y) paste(x, y, sep="\n"), inpt)
         inpt <- paste0(inpt, "\n\n\n")
 

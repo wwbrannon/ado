@@ -147,8 +147,6 @@ std::stack<std::vector<std::string>> macro_stack;
                                     }
 
     <<EOF>>                         {
-                                        R_ECHO("\n");
-                                        
                                         embed_buf.clear();
                                         yy_pop_state(yyscanner);
                                         
@@ -214,7 +212,6 @@ std::stack<std::vector<std::string>> macro_stack;
                                     /* Local macros can't include newlines */
     \n                              {
                                         R_ECHO(yytext);
-                                        R_ECHO("\n");
                                         
                                         llocp->lines(1);
                                         
@@ -275,8 +272,6 @@ std::stack<std::vector<std::string>> macro_stack;
    
                                     /* This is an error (failing to close the macro) */
     <<EOF>>                         {
-                                        R_ECHO("\n");
-                                        
                                         while(!macro_stack.empty())
                                             macro_stack.pop();
                                         
@@ -454,7 +449,6 @@ std::stack<std::vector<std::string>> macro_stack;
                                     /* newline here is an error - these macros can't cross lines */
     \n                              {
                                         R_ECHO(yytext);
-                                        R_ECHO("\n");
                                         
                                         llocp->lines(1);
                                         
@@ -471,8 +465,6 @@ std::stack<std::vector<std::string>> macro_stack;
                                     
                                     /* EOF here is an error - the user forgot the closing "}" */
     <<EOF>>                         {
-                                        R_ECHO("\n");
-                                        
                                         while(!macro_stack.empty())
                                             macro_stack.pop();
                                         
@@ -518,8 +510,6 @@ std::stack<std::vector<std::string>> macro_stack;
                                     }
     
     <<EOF>>                         {
-                                        R_ECHO("\n");
-                                        
                                         yy_pop_state(yyscanner);
                                         driver.error(*llocp, "Unclosed comment");
                                         yyterminate();
@@ -722,8 +712,6 @@ std::stack<std::vector<std::string>> macro_stack;
                                     }
 
     <<EOF>>                         {
-                                        R_ECHO("\n");
-                                        
                                         cdquote_buf.clear();
                                         yy_pop_state(yyscanner);
 
@@ -847,8 +835,6 @@ std::stack<std::vector<std::string>> macro_stack;
                                     }
 
     <<EOF>>                         {
-                                        R_ECHO("\n");
-                                        
                                         string_buf.clear();
                                         yy_pop_state(yyscanner);
 
