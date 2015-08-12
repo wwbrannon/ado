@@ -116,8 +116,8 @@ yy::RStataParser::error(const location_type& l, const std::string& m)
 %token <str>    BYTE INT LONG FLOAT DOUBLE STRING_TYPE_SPEC
 
                 /* Formats */
-%token <node>    STRING_FORMAT DATETIME_FORMAT NUMBER_FORMAT
-%type  <node>    format_spec
+%token <node>   STRING_FORMAT DATETIME_FORMAT NUMBER_FORMAT
+%type  <node>   format_spec
 
                 /* Commands with unusual enough syntax they have to be parsed separately */
 %token <node>   EMBEDDED_CODE
@@ -354,7 +354,7 @@ forvalues_cmd:
     ;
 
 foreach_sep:
-      TO
+      IN
     | OF
     ;
 
