@@ -19,21 +19,21 @@ DEBUG_NO_PARSE_ERROR <- 32
 rstata <-
 function(dta = NULL, filename=NULL, string=NULL,
          assign.back=TRUE, save.history=TRUE,
-         debug_level=0)
+         debug_level=0, echo=NULL)
 {
     #We have a package-wide environment because of scoping issues,
-    #but data in it shouldn't persist across calls to this function
+    #but the data in it shouldn't persist across calls to this function
     rm(list=ls(rstata_env), envir=rstata_env)
 
-    #(re-)create the settings cache and macro symbol table
+    #Create the settings cache and macro symbol table
     assign("rstata_macro_env", new.env(parent=emptyenv()), envir=rstata_env)
     assign("rstata_settings_env", new.env(parent=emptyenv()), envir=rstata_env)
-
-    #create environments to represent Stata's e() and r() "class" objects
+  
+    #Create environments to represent Stata's "e-class" and "r-class" objects
     #for stored results
     assign("rstata_eclass_env", new.env(parent=emptyenv()), envir=rstata_env)
     assign("rstata_rclass_env", new.env(parent=emptyenv()), envir=rstata_env)
-
+  
     #Sanity checks: create an empty dataset if none provided,
     #but make sure we have a data frame
     if(is.null(dta))
@@ -113,7 +113,8 @@ function(dta = NULL, filename=NULL, string=NULL,
                 #each command, invokes the process_cmd callback
                 do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
                                         macro_value_accessor=macro_value_accessor,
-                                        debug_level=debug_level, echo=0)
+                                        debug_level=debug_level,
+                                        echo=ifelse(is.null(echo), 0, echo))
             },
             error = function(c) c)
 
@@ -152,7 +153,8 @@ function(dta = NULL, filename=NULL, string=NULL,
 
         do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
                                 macro_value_accessor=macro_value_accessor,
-                                debug_level=debug_level, echo=1)
+                                debug_level=debug_level,
+                                echo=ifelse(is.null(echo), 1, echo))
     } else if(!is.null(filename))
     {
         #We should read from a do-file
@@ -165,7 +167,8 @@ function(dta = NULL, filename=NULL, string=NULL,
 
         do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
                                 macro_value_accessor=macro_value_accessor,
-                                debug_level=debug_level, echo=1)
+                                debug_level=debug_level,
+                                echo=ifelse(is.null(echo), 1, echo))
     } else
     {
         #We should read from a string
@@ -178,7 +181,8 @@ function(dta = NULL, filename=NULL, string=NULL,
 
         do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
                                 macro_value_accessor=macro_value_accessor,
-                                debug_level=debug_level, echo=1)
+                                debug_level=debug_level,
+                                echo=ifelse(is.null(echo), 1, echo))
     }
 
     return(invisible(get("rstata_dta", envir=rstata_env)));
