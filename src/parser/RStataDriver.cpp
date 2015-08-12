@@ -8,25 +8,6 @@ class RStataDriver;
 #include "RStataDriver.hpp"
 #include "RStataExceptions.hpp"
 
-/*
- * Free-standing utility functions
- */
-
-void
-raise_condition(const std::string& msg, const std::string& type)
-{
-  Rcpp::List cond;
-  cond["message"] = msg;
-  cond["call"] = R_NilValue;
-  cond.attr("class") = Rcpp::CharacterVector::create(type, "condition");
-  Rcpp::Function stopper("stop");
-  stopper(cond);
-}
-
-/*
- * Everything else
- */
-
 // ctors
 RStataDriver::RStataDriver(std::string _text, int _debug_level)
             : cmd_action(Rcpp::Function("identity")),
@@ -54,6 +35,12 @@ RStataDriver::RStataDriver(int _callbacks, Rcpp::Function _cmd_action,
 
     debug_level = _debug_level;
     error_seen = 0;
+}
+
+// dtor
+RStataDriver::~RStataDriver()
+{
+    delete ast; // all the other members still get their destructors called
 }
 
 int

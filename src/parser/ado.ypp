@@ -174,7 +174,7 @@ translation_unit:
     {
         ExprNode *node = new ExprNode("rstata_compound_cmd");
         node->appendChild($1);
-        driver.ast = *node;
+        driver.ast = node;
 
         if( !($1->isDummy()) )
             R_ACTION(node);
@@ -190,11 +190,11 @@ translation_unit:
             ExprNode *node = new ExprNode("rstata_compound_cmd");
             node->appendChild($2);
 
-            driver.ast = *node;
+            driver.ast = node;
             R_ACTION(node);
         } else
         {
-            driver.ast = *($1);
+            driver.ast = $1;
         }
 
         $$ = $1;

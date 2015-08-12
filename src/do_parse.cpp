@@ -45,7 +45,7 @@ do_parse(std::string text, int debug_level=0)
         return R_NilValue;
 
     // now take the resulting AST and recursively turn it into an R object
-    res = driver->ast.as_R_object();
+    res = driver->ast->as_R_object();
     
     return res;
   } catch(std::exception const & e)
