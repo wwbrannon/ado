@@ -118,21 +118,91 @@ function(node, debug_level=0)
 verifynode.rstata_loop <-
 function(node, debug_level=0)
 {
-    #FIXME
+  #Data members - length, names, values
+  raiseifnot(length(node$data) == 0,
+             msg=if(debug_level) NULL else "Malformed loop statement")
+
+  #Children - length, names, types
+  raiseifnot(length(node$children) > 2,
+             msg=if(debug_level) NULL else "Malformed loop statement")
+  raiseifnot(every(c("macro_name", "text") %in% names(node$children)),
+             msg=if(debug_level) NULL else "Malformed loop statement")
+  raiseifnot(node$children$macro_name %is% "rstata_ident",
+             msg=if(debug_level) NULL else "Malformed loop statement")
+  raiseifnot(node$children$text %is% "rstata_string_literal",
+             msg=if(debug_level) NULL else "Malformed loop statement")
+  
+  NextMethod()
 }
 
 #' @export
 verifynode.rstata_foreach <-
 function(node, debug_level=0)
 {
-    #FIXME
+  raiseifnot(length(node$children) == 3,
+             msg=if(debug_level NULL else "Malformed foreach statement"))
+  raiseifnot("numlist" %in% names(node$children) ||
+             "varlist" %in% names(node$children) ||
+             "local_macro_source" %in% names(node$children) ||
+             "global_macro_source" %in% names(node$children),
+             msg=if(debug_level) NULL else "Malformed foreach statement")
+  
+  if("numlist" %in% names(node$children))
+  {
+    raiseifnot(node$children$varlist %is% "rstata_expression_list",
+               msg=if(debug_level) NULL else "Invalid numlist given to foreach statement")
+    
+    raiseifnot(every(vapply(node$children$numlist, function(v) v %is% "rstata_number", logical(1))),
+               msg=if(debug_level) NULL else "Invalid numlist given to foreach statement")
+  } else if("varlist" %in% names(node$children))
+  {
+    raiseifnot(node$children$varlist %is% "rstata_expression_list",
+               msg=if(debug_level) NULL else "")
+    
+    raiseifnot(every(vapply(node$children$varlist, function(v) v %is% "rstata_ident", logical(1))),
+               msg=if(debug_level) NULL else "Invalid varlist given to foreach statement")
+  } else if("local_macro_source" %in% names(node$children))
+  {
+    raiseifnot(node$children$numlist %is% "rstata_ident",
+               msg=if(debug_level) NULL else "Invalid source macro name in foreach statement")
+  } else if("global_macro_source" %in% names(node$children))
+  {
+    raiseifnot(node$children$numlist %is% "rstata_ident",
+               msg=if(debug_level) NULL else "Invalid source macro name in foreach statement")
+  }
+
+  invisible(TRUE)
 }
 
 #' @export
 verifynode.rstata_forvalues <-
 function(node, debug_level=0)
 {
-    #FIXME
+  raiseifnot(length(node$children) %in% c(4,5),
+             msg=if(debug_level) NULL else "Malformed forvalues statement")
+  raiseifnot(every(c("upper", "lower") %in% names(node$children)),
+             msg=if(debug_level) NULL else "Malformed forvalues statement")
+  
+  raiseifnot(node$children$upper %is% "rstata_number",
+             msg=if(debug_level) NULL else "Invalid upper bound for forvalues statement")
+  raiseifnot(node$children$lower %is% "rstata_number",
+             msg=if(debug_level) NULL else "Invalid lower bound for forvalues statement")
+
+  if(length(node$children) == 5)
+  {
+    raiseifnot("increment" %in% names(node$children) ||
+               "increment_t" %in% names(node$children),
+               msg=if(debug_level) NULL else "Malformed forvalues statement")
+    
+    if("increment" %in% names(node$children))
+      raiseifnot(node$children$increment %is% "rstata_number",
+                 msg=if(debug_level) NULL else "Invalid increment for forvalues statement")
+    if("increment_t" %in% names(node$children))
+      raiseifnot(node$children$increment_t %is% "rstata_number",
+                 msg=if(debug_level) NULL else "Invalid increment for forvalues statement")
+  }
+
+  invisible(TRUE)
 }
 
 ##############################################################################
