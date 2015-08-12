@@ -228,7 +228,7 @@ std::stack<std::vector<std::string>> macro_stack;
                                     }
 
                                     /* The delimiter characters that mean we're at the end of the macro */
-    [{B}|\n|\;]+                    {
+    {B}+|\;+|\n                     {
                                         std::vector<std::string> frame = macro_stack.top();
                                         std::string combined, replacement;
 
@@ -256,7 +256,7 @@ std::stack<std::vector<std::string>> macro_stack;
                                             yy_pop_state();
                                         }
                                     }
-
+    
                                     /* The ${...} syntax. These are balanced delimiters, but they can't be nested, so
                                        we can match them with one regex. */
     \{[^\{\}\n\$\`]+\}              {
