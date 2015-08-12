@@ -1,5 +1,5 @@
 Now:
-  o) cmd sep handling is bad: need a newline before each }
+  o) expression, expression_list and varlist as args / cmd arg types and type checking
 
   o) infrastructural R functions
     o) varlist_to_formula
@@ -45,6 +45,8 @@ Misc:
 
 ===============================================================================
 Wishlist functionality:
+  o) don't require a newline before each }
+
   o) better interactive reading
     o) Ctrl-D isn't EOF
     o) the way it stores ado command history is a godawful hack, probably

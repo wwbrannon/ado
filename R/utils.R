@@ -10,7 +10,12 @@ function(vec)
 }
 
 deep_eval <-
-function(expr, print.results=TRUE)
+function(expr, envir=parent.frame(),
+         enclos=if(is.list(envir) || is.pairlist(envir))
+                    parent.frame()
+                else
+                    baseenv(),
+         print.results=TRUE)
 {
     raiseifnot(is.expression(expr))
 
@@ -18,9 +23,9 @@ function(expr, print.results=TRUE)
     for(chld in expr)
     {
         if(is.expression(chld))
-            ret[[length(ret)+1]] <- deep_eval(chld)
+            ret[[length(ret)+1]] <- deep_eval(chld, envir=envir, enclos=enclos)
         else
-            ret[[length(ret)+1]] <- eval(chld)
+            ret[[length(ret)+1]] <- eval(chld, envir=envir, enclos=enclos)
 
         if(print.results)
             print(ret[[length(ret)]])
@@ -267,8 +272,9 @@ function(name, cls="error")
 }
 
 #Those commands which take a varlist and interpret it as an R formula
-#can call this function to convert
+#can call this function to convert it to one
 varlist_to_formula <-
-function(varlist)
+function(varlist, dv=TRUE)
 {
+
 }

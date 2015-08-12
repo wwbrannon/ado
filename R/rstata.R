@@ -59,45 +59,6 @@ function(dta = NULL, filename=NULL, string=NULL,
         get(name, envir=env, inherits=FALSE)
     }
 
-    #Callbacks: the main command-processing callback function for the parser
-    process_cmd <-
-    function(ast, debug_level=0)
-    {
-        #Semantic analysis and code generation
-        ret_p1 <-
-        tryCatch(
-        {
-            check(ast, debug_level=debug_level)
-
-            codegen(ast, debug_level=debug_level)
-        },
-        error=function(c) c,
-        BadCommandException=function(c) c)
-
-        #Raising conditions with custom classes through an intervening
-        #C++ layer is quite tricky, so we're going to return ints and have
-        #the C++ code re-raise the exceptions in a more controllable way
-        if(inherits(ret_p1, "BadCommandException") || inherits(ret_p1, "error"))
-            return( list(1, ret_p1$message) )
-
-        #Evaluate the generated calls for their side effects and for printable objects
-        ret_p2 <-
-        tryCatch(
-        {
-            deep_eval(ret_p1)
-        },
-        error=function(c) c,
-        ExitRequestedException=function(c) c)
-
-        if(inherits(ret_p2, "error")) #raise an EvalErrorException in the C++
-            return( list(2, ret_p2$message) )
-
-        if(inherits(ret_p2, "ExitRequestedException"))
-            return( list(3, ret_p2$message) )
-
-        return( list(0, "Success") );
-    }
-
     # =========================================================================
     #The actual work of parsing and executing commands is here
     if(interactive() && is.null(filename) && is.null(string))
@@ -201,4 +162,43 @@ function(dta = NULL, filename=NULL, string=NULL,
     }
 
     return(invisible(get("rstata_dta", envir=rstata_env)));
+}
+
+#Callbacks: the main command-processing callback function for the parser
+process_cmd <-
+function(ast, debug_level=0)
+{
+    #Semantic analysis and code generation
+    ret_p1 <-
+    tryCatch(
+    {
+        check(ast, debug_level=debug_level)
+
+        codegen(ast, debug_level=debug_level)
+    },
+    error=function(c) c,
+    BadCommandException=function(c) c)
+
+    #Raising conditions with custom classes through an intervening
+    #C++ layer is quite tricky, so we're going to return ints and have
+    #the C++ code re-raise the exceptions in a more controllable way
+    if(inherits(ret_p1, "BadCommandException") || inherits(ret_p1, "error"))
+        return( list(1, ret_p1$message) )
+
+    #Evaluate the generated calls for their side effects and for printable objects
+    ret_p2 <-
+    tryCatch(
+    {
+        deep_eval(ret_p1, envir=parent.env(environment()), enclos=rstata_env)
+    },
+    error=function(c) c,
+    ExitRequestedException=function(c) c)
+
+    if(inherits(ret_p2, "error")) #raise an EvalErrorException in the C++
+        return( list(2, ret_p2$message) )
+
+    if(inherits(ret_p2, "ExitRequestedException"))
+        return( list(3, ret_p2$message) )
+
+    return( list(0, "Success") );
 }
