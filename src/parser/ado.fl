@@ -58,9 +58,11 @@ llocp->step();
 ^\*                                 { llocp->lines(1); llocp->step(); short_comment(); }
 
 
+                                    /* Statement separators; consider more than one in a row to be one */
+[\n]+                               { llocp->lines(yyleng); return token::TOK_NEWLINE; }
+[;]+                                { return token::TOK_SEMICOLON; }
 
-                                    /* ignore whitespace but track line and column numbers */
-[\n]+                               { yylval->str = new std::string(yytext); llocp->lines(yyleng); return token::TOK_NEWLINE; }
+                                    /* ignore whitespace but track column numbers */
 {B}+                                { llocp->step(); }
 
 
@@ -232,7 +234,6 @@ strL                                { yylval->str = new std::string(yytext); ret
 \}                                  { yylval->str = new std::string(yytext); return token::TOK_RBRACE; }
 ,                                   { yylval->str = new std::string(yytext); return token::TOK_COMMA; }
 :                                   { yylval->str = new std::string(yytext); return token::TOK_COLON; }
-;                                   { yylval->str = new std::string(yytext); return token::TOK_SEMICOLON; }
 
                                     /* Factor variable operators and level-restricted virtual variables */
 "c."                                {
