@@ -21,7 +21,6 @@ H           [a-fA-F0-9]
 E           [Ee][+-]?{D}+
 F           [FLfl]
 M           (?i:(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec))
-T           
 
 %option noyywrap
 
@@ -60,16 +59,12 @@ str                         { count(); yylval.str = strdup(yytext); return STRIN
 str{D}+                     { count(); yylval.str = strdup(yytext); return STRING_TYPE_SPEC; }
 strL                        { count(); yylval.str = strdup(yytext); return STRING_TYPE_SPEC; }
 
-\/({L}+\/)*{L}+(\.{L}+)*    { count(); yylval.str = strdup(yytext); return UNQUOTED_FILEPATH; }
-({L}+\/)+{L}+(\.{L}+)*      { count(); yylval.str = strdup(yytext); return UNQUOTED_FILEPATH; }
-{L}+\.{L}+                  { count(); yylval.str = strdup(yytext); return UNQUOTED_FILEPATH; }
 
 
-
-                            /* datetime literals */
-{T}{M}{D}+                  { count(); yylval.str = strdup(yytext); return DATE; }
-                 { count(); yylval.str = strdup(yytext); return TIME; }
-{T}{M}{D}+                  { count(); yylval.str = strdup(yytext); return DATETIME; }
+                                                        /* datetime literals */
+{D}{D}{M}{D}+                                           { count(); yylval.str = strdup(yytext); return DATE; }
+{D}{D}:{D}{D}(:{D}{D}(\.{D}+)?)?                        { count(); yylval.str = strdup(yytext); return TIME; }
+{D}{D}{M}{D}+[ \t]+{D}{D}:{D}{D}(:{D}{D}(\.{D}+)?)?     { count(); yylval.str = strdup(yytext); return DATETIME; }
 
 
 
@@ -170,9 +165,6 @@ _N                          { count(); yylval.str = strdup(yytext); return _BIG_
 (?i:quietly)                { count(); yylval.str = strdup(yytext); return QUIETLY; }
 (?i:qui)                    { count(); yylval.str = strdup(yytext); return QUIETLY; }
 (?i:noisily)                { count(); yylval.str = strdup(yytext); return NOISILY; }
-(?i:duplicates)             { count(); yylval.str = strdup(yytext); return DUPLICATES; }
-(?i:set)                    { count(); yylval.str = strdup(yytext); return SET; }
-(?i:log)                    { count(); yylval.str = strdup(yytext); return LOG; }
 (?i:merge)                  { count(); yylval.str = strdup(yytext); return MERGE; }
 
 

@@ -29,11 +29,13 @@ int yywrap()
 %define parse.error verbose
 %start translation_unit
 
+%token <str> NEWLINE
+
 %token <str> EMBEDDED_R;
 
 /* Literals of various fundamental types */
-%token <str> NUMBER IDENT STRING_LITERAL UNQUOTED_FILEPATH
-%token <str> NUMBER_MISSING STRING_MISSING
+%token <str> NUMBER IDENT STRING_LITERAL
+%token <str> NUMBER_MISSING STRING_MISSING DATE TIME DATETIME
 
 /* Flow control constructs */
 %token <str> WHILE FORVALUES FOREACH
@@ -41,7 +43,7 @@ int yywrap()
 /* Type specifiers */
 %token <str> BYTE INT LONG FLOAT DOUBLE STRING_TYPE_SPEC;
 
-/* Multi-character infix operators */
+/* Operators */
 %token <str> GT_OP LT_OP EQ_OP NE_OP OR_OP AND_OP
 
 /* Formats */
@@ -54,9 +56,7 @@ int yywrap()
 
 /* Commands with unusual enough syntax they have to be parsed separately */
 %token <str> QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
-%token <str> SET LOG DUPLICATES MERGE
-
-%token <str> NEWLINE
+%token <str> MERGE
 
 %%
 
@@ -64,36 +64,33 @@ int yywrap()
  *************************************************
  * The start symbol, a "command" and escaping to R
  *************************************************
-
-
-shift/reduce conflicts appearing in relation to:
-    the expression grammar (subtle issue probably)
-    the prefix_cmd_list rule that can match empty
  */
 
 translation_unit:
-      block
-    | translation_unit NEWLINE block
+      external_statement
+    | translation_unit external_statement
     ;
 
-block:
+external_statement:
       cmd
     | compound_cmd
     ;
 
 compound_cmd:
-      '{' '}'
-    | '{' cmds '}'
+    '{' cmds '}'
+    ;
 
 cmds:
       cmd
-    | cmds NEWLINE cmd
+    | cmds cmd
     ;
 
 cmd:
       embedded_r_cmd
     | flow_control_statement
-    | modifier_cmd_list nonmodifier_cmd_list
+    | modifier_cmd_list nonmodifier_cmd
+    | modifier_cmd_list ':' nonmodifier_cmd
+    | modifier_cmd_list nonmodifier_cmd ':' nonmodifier_cmd
     ;
 
 embedded_r_cmd:
@@ -101,8 +98,8 @@ embedded_r_cmd:
     ;
 
 flow_control_statement:
-      WHILE expression compound_cmd
-    | FORVALUES IDENT '=' expression compound_cmd
+      WHILE NUMBER '/' NUMBER compound_cmd
+    | FORVALUES IDENT '=' NUMBER '/' NUMBER compound_cmd
     | foreach
     ;
 
@@ -115,11 +112,6 @@ foreach:
     | FOREACH IDENT OF NUMLIST expression_list compound_cmd
     ;
 
-nonmodifier_cmd_list:
-      ':' nonmodifier_cmd
-    | nonmodifier_cmd_list ':' nonmodifier_cmd
-    ;
-
 modifier_cmd:
       CAPTURE
     | QUIETLY
@@ -127,24 +119,19 @@ modifier_cmd:
     ;
 
 modifier_cmd_list:
-      %empty
-    | modifier_cmd
+      modifier_cmd
     | modifier_cmd_list modifier_cmd
     ;
 
-/* FIXME - everything after IDENT should be optional */
 nonmodifier_cmd:
-    compound_cmd
+      compound_cmd
     | special_cmd
-    | IDENT expression_list if_clause in_clause weight_clause using_clause
     | IDENT expression_list if_clause in_clause weight_clause using_clause option_list
+    | IDENT
     ;
 
 special_cmd:
-      set_cmd
-    | log_cmd
-    | duplicates_cmd
-    | merge_cmd
+    merge_cmd
     ;
 
 /*
@@ -192,17 +179,15 @@ equality_operator:
     | NE_OP
     ;
 
-literal:
-      NUMBER
-    | IDENT
+primary_expression:
+      IDENT
+    | NUMBER
+    | NUMBER_MISSING
     | STRING_LITERAL
     | STRING_MISSING
-    | NUMBER_MISSING
-    | UNQUOTED_FILEPATH
-    ;
-
-primary_expression:
-      literal
+    | DATE
+    | TIME
+    | DATETIME
     | '(' expression ')'
     ;
 
@@ -211,11 +196,6 @@ postfix_expression:
     | postfix_expression '[' expression ']'
     | postfix_expression '(' ')'
     | postfix_expression '(' argument_expression_list ')'
-    ;
-
-argument_expression_list:
-      logical_or_expression
-    | argument_expression_list ',' logical_or_expression
     ;
 
 power_expression:
@@ -258,6 +238,11 @@ logical_or_expression:
     | logical_or_expression OR_OP logical_and_expression
     ;
 
+argument_expression_list:
+      logical_or_expression
+    | argument_expression_list ',' logical_or_expression
+    ;
+
 expression:
       logical_or_expression
     | IDENT assignment_operator logical_or_expression
@@ -275,18 +260,13 @@ expression_list:
  */
 
 option_list:
-      ',' option
-    | ',' option_list option
+      %empty
+    | option_list ',' option
     ;
 
 option:
       IDENT
-    | IDENT '(' option_arguments ')'
-    ;
-
-option_arguments:
-      expression
-    | option_arguments expression
+    | IDENT '(' expression_list ')'
     ;
 
 /*
@@ -296,7 +276,8 @@ option_arguments:
  */
 
 weight_clause:
-    '[' IDENT '=' expression ']';
+      %empty
+    | '[' IDENT '=' expression ']';
 
 /*
  **************************************************
@@ -305,7 +286,8 @@ weight_clause:
  */
 
 if_clause:
-    IF expression
+      %empty
+    | IF expression
     ;
 
 /*
@@ -315,7 +297,8 @@ if_clause:
  */
 
 in_clause:
-    IN expression
+      %empty
+    | IN NUMBER '/' NUMBER
     ;
 
 /*
@@ -325,8 +308,8 @@ in_clause:
  */
 
 using_clause:
-      USING STRING_LITERAL
-    | USING UNQUOTED_FILEPATH
+      %empty
+    | USING STRING_LITERAL
     | USING IDENT
     ;
 
@@ -335,18 +318,6 @@ using_clause:
  * The "special" Stata commands
  ******************************
  */
-
-set_cmd:
-    SET IDENT expression
-    ;
-
-duplicates_cmd:
-    DUPLICATES
-    ;
-
-log_cmd:
-    LOG
-    ;
 
 merge_cmd:
     MERGE

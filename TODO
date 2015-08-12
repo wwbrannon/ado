@@ -2,10 +2,8 @@ Roadmap to v1.0:
 
 Immediate TODO:
     o) finish the rest of the grammar
-	    datetime literals
-	    datelists
-	    real general varlists: factors, interactions, etc
-	    numlists
+    o) incorporate most of the currently unused keyword tokens
+       into the right places in the grammar
     o) finish the actions for commands
 
 Semantics:

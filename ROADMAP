@@ -4,13 +4,12 @@ Functionality to add:
     A mechanism for registering an arbitrary R function obeying the
     calling convention as a Stata command
     
-    Statement grouping / blocks
-    Loops - foreach, while, forvalues
-
     Many more commands - egen, input, label
     Formats
     
     Graphics?
 
+    real varlists, with factors, interactions, etc
     abbreviations for commands and other keywords (+ the * glob syntax)
     macros...
+
