@@ -95,7 +95,7 @@ std::stack<std::vector<std::string>> macro_stack;
 
     \n                              { llocp->lines(1); driver.error(*llocp, "Unclosed local macro"); yyterminate(); }
     <<EOF>>                         { driver.error(*llocp, "Unclosed local macro"); yyterminate(); }
-    
+
     [^\`\']*                        { /* something with macro_stack */ }
     \'                              { yy_pop_state(); }
 }
@@ -192,24 +192,18 @@ std::stack<std::vector<std::string>> macro_stack;
 <INITIAL>\`\"                       { cdquote_buf.clear(); yy_push_state(CDQUOTE); }
 <CDQUOTE>{
     \"\'                            {
-                                        std::string *s = new std::string(cdquote_buf);
-                                        
                                         /* Saw the matching close quote - all done */
-                                        yy_pop_state();
-                                        
+                                        std::string *s = new std::string(cdquote_buf);
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_string_literal"});
                                         yylval->node->addData("value", *s);
+
+                                        yy_pop_state();
                                         return token::TOK_STRING_LITERAL;
                                     }
 
-                                    /* Code run on seeing macro terminators will check if the new top state is CDQUOTE
-                                       and append the macro replacement text to cdquote_buf if so. */
-    \`                              { yy_push_state(LOCAL_MACRO); } 
-    \$                              { yy_push_state(GLOBAL_MACRO); }
-
                                     /* Unlike in Stata, strings can continue over multiple lines */
     [\n]+                           { llocp->lines(yyleng); cdquote_buf += std::string(yytext); }
-    
+
     \\\$                            { cdquote_buf += '$'; }
     \\\`                            { cdquote_buf += '`'; }
     \\n                             { cdquote_buf += '\n'; }
@@ -219,33 +213,38 @@ std::stack<std::vector<std::string>> macro_stack;
     \\f                             { cdquote_buf += '\f'; }
     \\.                             { cdquote_buf += yytext[1]; }
     \\                              { cdquote_buf += '\\'; }
-    
+
     [^\\\n\"\`\$]+                  { cdquote_buf += std::string(yytext); }
 
-    <<EOF>>                         { driver.error(*llocp, "Unclosed compound double quote"); yyterminate(); }
+                                    /* Code run on seeing macro terminators will check if the new top state is CDQUOTE
+                                       and append the macro replacement text to cdquote_buf if so. */
+    \`                              { yy_push_state(LOCAL_MACRO); }
+    \$                              { yy_push_state(GLOBAL_MACRO); }
+
+    <<EOF>>                         {
+                                        cdquote_buf.clear();
+                                        yy_pop_state();
+                                        
+                                        driver.error(*llocp, "Unclosed compound double quote");
+                                        yyterminate();
+                                    }
 }
 
 <INITIAL>\"                         { string_buf.clear(); yy_push_state(STRING); }
 <STRING>{
     \"                              {
-                                        std::string *s = new std::string(string_buf);
-
                                         /* Saw a close quote - all done */
-                                        yy_pop_state();
-                                        
+                                        std::string *s = new std::string(string_buf);
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_string_literal"});
                                         yylval->node->addData("value", *s);
+
+                                        yy_pop_state();
                                         return token::TOK_STRING_LITERAL;
                                     }
-    
-                                    /* Code run on seeing macro terminators will check if the new top state is STRING
-                                       and append the macro replacement text to string_buf if so. */
-    \`                              { yy_push_state(LOCAL_MACRO); }
-    \$                              { yy_push_state(GLOBAL_MACRO); }
-  
+
                                     /* Unlike in Stata, strings can continue over multiple lines */
     [\n]+                           { llocp->lines(yyleng); string_buf += std::string(yytext); }
-    
+
     \\\"                            { string_buf += '"'; }
     \\\`                            { string_buf += '`'; }
     \\\$                            { string_buf += '$'; }
@@ -256,10 +255,21 @@ std::stack<std::vector<std::string>> macro_stack;
     \\f                             { string_buf += '\f'; }
     \\.                             { string_buf += yytext[1]; }
     \\                              { string_buf += '\\'; }
-    
+
+                                    /* Code run on seeing macro terminators will check if the new top state is STRING
+                                       and append the macro replacement text to string_buf if so. */
+    \`                              { yy_push_state(LOCAL_MACRO); }
+    \$                              { yy_push_state(GLOBAL_MACRO); }
+
     [^\\\n\"\`\$]+                  { string_buf += std::string(yytext); }
-   
-    <<EOF>>                         { driver.error(*llocp, "Unclosed string literal"); yyterminate(); }
+
+    <<EOF>>                         {
+                                        string_buf.clear();
+                                        yy_pop_state();
+                                        
+                                        driver.error(*llocp, "Unclosed string literal");
+                                        yyterminate();
+                                    }
 }
 
 
