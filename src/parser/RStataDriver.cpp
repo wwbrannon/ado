@@ -27,9 +27,10 @@ raise_condition(const std::string& msg, const std::string& type)
  */
 
 // ctor
-RStataDriver::RStataDriver(std::string _text)
+RStataDriver::RStataDriver(std::string _text, int _debug_level)
 {
     text = _text;
+    debug_level = _debug_level;
 }
 
 // dtor
@@ -49,7 +50,7 @@ RStataDriver::parse()
     
     scan_begin();
     yy::RStataParser parser(*this);
-    parser.set_debug_level(true);
+    parser.set_debug_level(debug_level);
     res = parser.parse();
     scan_end();
     

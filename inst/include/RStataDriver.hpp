@@ -7,7 +7,7 @@
 class RStataDriver
 {
     public:
-        RStataDriver(std::string text);
+        RStataDriver(std::string text, int debug_level);
         virtual ~RStataDriver();
 
         ExprNode *ast;
@@ -17,12 +17,13 @@ class RStataDriver
         void scan_end();
 
         int parse();
-        
+
         void error(const yy::location& l, const std::string& m);
         void error(const std::string& m);
 
     private:
         std::string text;
+        int debug_level;
 };
 
 #endif /* RSTATA_DRIVER_H */

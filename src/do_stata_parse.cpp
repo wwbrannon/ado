@@ -7,10 +7,11 @@
 // [[Rcpp::plugins("cpp11")]]
 
 // [[Rcpp::export]]
-Rcpp::List do_stata_parse(std::string text)
+Rcpp::List
+do_stata_parse(std::string text, int debug_level=0)
 {
     Rcpp::List res;
-    RStataDriver *driver = new RStataDriver(text);
+    RStataDriver *driver = new RStataDriver(text, debug_level);
 
     // parse the input
     if( driver->parse() != 0 )

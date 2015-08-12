@@ -6,13 +6,14 @@
 using namespace Rcpp;
 
 // do_stata_parse
-Rcpp::List do_stata_parse(std::string text);
-RcppExport SEXP rstata_do_stata_parse(SEXP textSEXP) {
+Rcpp::List do_stata_parse(std::string text, int debug_level);
+RcppExport SEXP rstata_do_stata_parse(SEXP textSEXP, SEXP debug_levelSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< std::string >::type text(textSEXP);
-    __result = Rcpp::wrap(do_stata_parse(text));
+    Rcpp::traits::input_parameter< int >::type debug_level(debug_levelSEXP);
+    __result = Rcpp::wrap(do_stata_parse(text, debug_level));
     return __result;
 END_RCPP
 }
