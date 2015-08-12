@@ -124,16 +124,18 @@ function(dta = NULL, filename=NULL, string=NULL,
                 {
                     break
                 } else if(inherits(val, "BadCommandException") ||
-                          inherits(val, "EvalErrorException"))
+                          inherits(val, "EvalErrorException") ||
+                          inherits(val, "ContinueException") ||
+                          inherits(val, "BreakException"))
                 {
-                    cat(paste0(val$message, "\n\n", sep=""))
+                    cat(paste0(val$message, "\n\n"))
 
                     next
                 } else
                 {
-                    cat(paste0(val$message, "\n\n", sep=""))
+                    cat(paste0(val$message, "\n\n"))
 
-                    s <- substr(readline("Save dataset? "), 1, 1)
+                    s <- substr(readline("Save dataset to R workspace? "), 1, 1)
                     if(s == "Y" || s == "y")
                         assign.back <- TRUE
 

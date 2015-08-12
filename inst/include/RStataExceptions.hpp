@@ -34,7 +34,7 @@ class EvalErrorException : public std::exception
   public:
     explicit EvalErrorException()
     {
-      msg = "Unknown runtime error in evaluation\n";
+      msg = "Unknown runtime error in evaluation";
     }
     
     explicit EvalErrorException(const std::string& what_arg)
@@ -60,7 +60,7 @@ class ExitRequestedException : public std::exception
   public:
     explicit ExitRequestedException()
     {
-      msg = "Exit requested\n";
+      msg = "Exit requested";
     }
     
     explicit ExitRequestedException(const std::string& what_arg)
@@ -86,7 +86,7 @@ class ContinueException : public std::exception
   public:
     explicit ContinueException()
     {
-      msg = "Continue\n";
+      msg = "Statement can only be used within a loop";
     }
     
     explicit ContinueException(const std::string& what_arg)
@@ -112,7 +112,7 @@ class BreakException : public std::exception
   public:
     explicit BreakException()
     {
-      msg = "Break\n";
+      msg = "Statement can only be used within a loop";
     }
     
     explicit BreakException(const std::string& what_arg )
