@@ -12,10 +12,11 @@ function(node)
   #Recursively check the children
   if(length(node$children) > 0)
   {
-    raiseifnot(length(names(node$children)) == length(unique(names(node$children))))
-    
-    for(chld in node$children)
-      check(chld)
+   named <- names(node$children)[which(names(node$children) != "")]
+   raiseifnot(length(named) == length(unique(named)))
+   
+   for(chld in node$children)
+    check(chld)
   }
   
   #Check this node in a way appropriate to its type
