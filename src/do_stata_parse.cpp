@@ -13,9 +13,7 @@ List do_stata_parse(std::string line)
     List              ret;
     
     STATA_CMD_LIST_T  start = { NULL, NULL };
-    STATA_CMD_LIST_T  *parsed;
-
-    parsed = &start;
+    STATA_CMD_LIST_T  *parsed = &start;
 
     // handle some buffers and parse the input
     buf = yy_scan_string(line.c_str());
@@ -29,9 +27,12 @@ List do_stata_parse(std::string line)
         obj = parsed->current;
 
         // ask the StataCmd object to give us its R form
-        List res = obj->as_list();
+        Language res = Language("as.call", obj->as_list());
         
-        ret = Language("list", ret, res).eval(); // append res to ret
+        if(ret.length() == 0)
+            ret.push_front(res);
+        else
+            ret = Language("list", ret, res).eval(); // append res to ret
         
         if(parsed->next != NULL)
             parsed = parsed->next;
