@@ -12,7 +12,7 @@ List do_stata_parse(std::string line)
     StataCmd          *obj;
     List              ret;
     
-    STATA_CMD_LIST_T  start;
+    STATA_CMD_LIST_T  start = { NULL, NULL };
     STATA_CMD_LIST_T  *parsed;
 
     parsed = &start;
@@ -29,7 +29,7 @@ List do_stata_parse(std::string line)
         obj = parsed->current;
 
         // ask the StataCmd object to give us its R form
-        List res = (*obj).as_list();
+        List res = obj->as_list();
         
         ret = Language("list", ret, res).eval(); // append res to ret
         

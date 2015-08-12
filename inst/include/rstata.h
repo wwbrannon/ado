@@ -139,9 +139,9 @@ class MakeStataCmd
         StataCmd create()
         {
             StataCmd *cmd = new StataCmd(__verb, __weight, __using_filename,
-                                        __has_range, __range_upper, __range_lower,
-                                        __modifiers, __varlist, __assign_stmt,
-                                        __if_exp, __options);
+                                     __has_range, __range_upper, __range_lower,
+                                     __modifiers, __varlist, __assign_stmt,
+                                     __if_exp, __options);
 
             return *cmd;
         }
@@ -234,24 +234,23 @@ typedef struct STATA_CMD_LIST
 } STATA_CMD_LIST_T;
 
 #ifndef ADD_TO_CMD_LIST
-#define ADD_TO_CMD_LIST(cmd, cur, head, cmdlist_ptr)     \
-{                                                        \
-        if(cur->current == NULL)                         \
-        {                                                \
-            cur->current = &cmd;                         \
-        }                                                \
-        else                                             \
-        {                                                \
-            STATA_CMD_LIST_T next_cmdlist =              \
-            {                                            \
-                &cmd, /* current */                      \
-                NULL  /* next */                         \
-            };                                           \
-                                                         \
-            cur->next = &next_cmdlist;                   \
-            cur = &next_cmdlist;                         \
-        }                                                \
-        cmdlist_ptr = head;                              \
+#define ADD_TO_CMD_LIST(cmd, cur)              \
+{                                              \
+        if(cur->current == NULL)               \
+        {                                      \
+            cur->current = &cmd;               \
+        }                                      \
+        else                                   \
+        {                                      \
+            STATA_CMD_LIST_T next_cmdlist =    \
+            {                                  \
+                &cmd, /* current */            \
+                NULL  /* next */               \
+            };                                 \
+                                               \
+            cur->next = &next_cmdlist;         \
+            cur = &next_cmdlist;               \
+        }                                      \
 }
 #endif /* ADD_TO_CMD_LIST */
 
