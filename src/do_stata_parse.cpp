@@ -8,12 +8,12 @@ using namespace Rcpp;
 // [[Rcpp::export]]
 List do_stata_parse(std::string line)
 {
-    YY_BUFFER_STATE   buf;
-    BaseStataCmd      *obj;
-    List              ret;
+    YY_BUFFER_STATE                    buf;
+    std::unique_ptr<BaseStataCmd>      obj;
+    List                               ret;
     
-    // yyparse takes a pointer to something
-    std::vector<BaseStataCmd> *parsed = new std::vector<BaseStataCmd>();
+    // yyparse takes a C pointer to something
+    std::vector<std::unique_ptr<BaseStataCmd>> *parsed = new std::vector<std::unique_ptr<BaseStataCmd>>();
 
     // handle some buffers and parse the input
     buf = yy_scan_string(line.c_str());
