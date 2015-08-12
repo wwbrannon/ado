@@ -1,3 +1,15 @@
+flatten <-
+function(x)
+{
+    repeat
+    {
+        if(!any(vapply(x, is.list, logical(1))))
+            return(x)
+
+        x <- Reduce(c, x)
+    }
+}
+
 every <-
 function(vec)
 {

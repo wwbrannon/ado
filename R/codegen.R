@@ -221,7 +221,7 @@ function(node, debug_level=0)
 codegen.rstata_argument_expression_list <-
 function(node, debug_level=0)
 {
-  lapply(node$children, function(x) codegen(x, debug_level))
+  flatten(lapply(node$children, function(x) codegen(x, debug_level)))
 }
 
 ##############################################################################

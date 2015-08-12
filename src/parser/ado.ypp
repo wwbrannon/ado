@@ -804,21 +804,6 @@ expression:
     }
     ;
 
-argument_expression_list:
-      logical_expression
-    {
-        ExprNode *node = new ExprNode("rstata_argument_expression_list");
-        node->appendChild($1);
-        $$ = node;
-    }
-    | argument_expression_list "," logical_expression
-    {
-        $1->appendChild($3);
-
-        $$ = $1;
-    }
-    ;
-
 expression_list:
       expression
     {
@@ -829,6 +814,21 @@ expression_list:
     | expression_list expression
     {
         $1->appendChild($2);
+        $$ = $1;
+    }
+    ;
+
+argument_expression_list:
+      expression_list
+    {
+        ExprNode *node = new ExprNode("rstata_argument_expression_list");
+        node->appendChild($1);
+        $$ = node;
+    }
+    | argument_expression_list "," expression_list
+    {
+        $1->appendChild($3);
+
         $$ = $1;
     }
     ;
@@ -872,7 +872,7 @@ option:
 
         $$ = node;
     }
-    | IDENT "(" expression_list ")"
+    | IDENT "(" argument_expression_list ")"
     {
         ExprNode *node = new ExprNode("rstata_option");
         node->appendChild("name", $1);
@@ -971,4 +971,3 @@ using_clause:
     ;
 
 %%
-

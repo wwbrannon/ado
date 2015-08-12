@@ -240,7 +240,7 @@ function(node, debug_level=0)
   {
     raiseifnot("args" %in% names(node$children),
                msg=if(debug_level) NULL else "Bad arguments to option")
-    raiseifnot(node$children[[2]] %is% "rstata_expression_list",
+    raiseifnot(node$children[[2]] %is% "rstata_argument_expression_list",
                msg=if(debug_level) NULL else "Bad arguments to option")
   }
 
@@ -568,21 +568,24 @@ function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 0,
-             msg=if(debug_level) NULL else "Malformed expression or variable list")
+             msg=if(debug_level) NULL else "Malformed function or option argument list")
 
   #Children - length, names, types
   raiseifnot(length(node$children) > 0,
-             msg=if(debug_level) NULL else "Empty expression or variable list")
+             msg=if(debug_level) NULL else "Empty function or option argument list")
 
-  raiseifnot(every(vapply(node$children, function(x) x %is% "rstata_expression" || x %is% "rstata_literal", TRUE)),
-             msg=if(debug_level) NULL else "Non-expression in expression or variable list")
+  raiseifnot(every(vapply(node$children, function(x) x %is% "rstata_expression_list", TRUE)),
+             msg=if(debug_level) NULL else "Invalid argument to function or option")
 
-  raiseifnot(every(vapply(node$children,
-                          function(x) !(x %is% "rstata_assignment_expression") &&
-                                      !(x %is% "rstata_factor_expression") &&
-                                      !(x %is% "rstata_cross_expression"),
-                          TRUE)),
-             msg=if(debug_level) NULL else "Incorrect type of expression in argument expression list")
+  for(n in node$children)
+  {
+      raiseifnot(every(vapply(n$children,
+                              function(x) !(x %is% "rstata_assignment_expression") &&
+                                          !(x %is% "rstata_factor_expression") &&
+                                          !(x %is% "rstata_cross_expression"),
+                              TRUE)),
+                 msg=if(debug_level) NULL else "Incorrect type of expression in argument expression list")
+  }
 
   invisible(TRUE)
 }
