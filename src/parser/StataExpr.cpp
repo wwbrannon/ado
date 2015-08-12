@@ -76,16 +76,16 @@ Language StringStataExpr::as_expr() const
 
 Language ModifierStataExpr::as_expr() const
 {
-   return Language("c", 1);
+    
 }
 
 Language OptionStataExpr::as_expr() const
 {
-   return Language("c", 1);
+    
 }
 
 Language BranchStataExpr::as_expr() const
 {
-   return Language("c", 1);
+    
 }
 

@@ -604,9 +604,9 @@ gen_cmd:
 insheet_cmd:
     INSHEET USING STRING_LITERAL
     {
-        StataCmd cmd = MakeStataCmd($1)
-                         .using_filename($3)
-                         .create();
+        GeneralStataCmd cmd = MakeGeneralStataCmd($1)
+                                .using_filename($3)
+                                .create();
         
         ADD_TO_CMD_LIST(cmd, cmdlist_ptr)
     }
