@@ -6,7 +6,10 @@
 
 ExprNode::ExprNode(std::string _type)
 {
-    std::vector<std::string> type = { _type }; // all other members' default constructors make them empty
+    types.clear();
+    
+    types.push_back("rstata_ast_node");
+    types.push_back(_type);
 }
 
 
@@ -15,6 +18,7 @@ ExprNode::ExprNode(std::initializer_list<std::string> _types)
 {
     types.clear();
 
+    types.push_back("rstata_ast_node");
     for(auto elem : _types)
     {
         types.push_back(elem);
@@ -115,14 +119,6 @@ ExprNode::as_R_object() const
     std::map<std::string, std::string>::const_iterator it;
     unsigned int x;
     
-    // set classes for S3 method dispatch
-    classes.push_back("rstata_ast_node");
-    for(auto elem : types)
-    {
-        classes.push_back(elem);
-    }
-    res.attr("class") = classes;
-
     // include the node data
     for(it = data.begin(); it != data.end(); it++)
     {
@@ -139,6 +135,9 @@ ExprNode::as_R_object() const
     }
     chld.attr("names") = names;
     res["children"] = chld;
+
+    // set classes for S3 method dispatch
+    res.attr("class") = types;
 
     return res;
 }
