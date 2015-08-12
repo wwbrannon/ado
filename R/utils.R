@@ -25,10 +25,14 @@ function(expr, envir=parent.frame(),
         if(is.expression(chld))
             ret[[length(ret)+1]] <- deep_eval(chld, envir=envir, enclos=enclos)
         else
-            ret[[length(ret)+1]] <- eval(chld, envir=envir, enclos=enclos)
+        {
+            tmp <- withVisible(eval(chld, envir=envir, enclos=enclos))
+            ret[[length(ret)+1]] <- tmp$value
 
-        if(print.results)
-            print(ret[[length(ret)]])
+            if(print.results)
+                if(tmp$visible)
+                    print(tmp$value)
+        }
     }
 
     ret
