@@ -1,5 +1,5 @@
 ### Code generation. At this point, we've "weeded" the AST and know it satisfies
-### our assumptions. Now it's time to generate an expression object containing
+### our assumptions. Now it's time to generate a list containing
 ### one unevaluated call for each Stata command. Next, we'll evaluate these objects
 ### for a) their side effects, b) values which are objects with print() methods.
 
@@ -16,15 +16,10 @@ function(node, debug_level=0)
 {
   lst <- list()
   chlds <- lapply(node$children, codegen)
-  
+
   for(chld in chlds)
-  {
-    if(!is.expression(chld))
-      lst <- c(lst, chld)
-    else #we have an "embedded R" cmd, which we should unpack
-      lst <- c(lst, as.list(chld))
-  }
-  
+    lst[[length(lst)+1]] <- chld
+
   do.call(expression, lst)
 }
 
@@ -49,19 +44,19 @@ function(node, debug_level=0)
   verb <- as.character(codegen(node$children$verb))
   verb <- unabbreviateCommand(paste0("rstata_cmd_", verb))
   verb <- get(verb, mode="function")
-  
+
   args <- node$children
   args <- args[names(args) != "verb"]
-  
+
   nm <- names(args)
   args <- lapply(args, codegen)
   names(args) <- nm
-  
+
   #No data elements in a general command
-  
+
   ret <- c(verb, args)
   ret <- as.call(ret)
-  
+
   ret
 }
 
@@ -72,17 +67,17 @@ function(node, debug_level=0)
   verb <- as.character(codegen(node$children$verb))
   verb <- unabbreviateCommand(paste0("rstata_cmd_", verb))
   verb <- get(verb, mode="function")
-  
+
   args <- node$children
   args <- args[names(args) != "verb"]
-  
+
   nm <- names(args)
   args <- lapply(args, codegen)
   names(args) <- nm
-  
+
   ret <- c(verb, args, node$data)
   ret <- as.call(ret)
-  
+
   ret
 }
 
@@ -93,7 +88,7 @@ function(node, debug_level=0)
   verb <- as.character(codegen(node$children$verb))
   verb <- unabbreviateCommand(paste0("rstata_cmd_", verb))
   verb <- get(verb, mode="function")
-  
+
   as.call(list(verb))
 }
 
@@ -102,14 +97,14 @@ codegen.rstata_modifier_cmd_list <-
 function(node, debug_level=0)
 {
   lst <- lapply(node$children, codegen)
-  
+
   Reduce(function(x, y)
   {
     x[[length(x)+1]] <- y
-    
+
     #length(x) is one larger now
     names(x)[length(x)] <- "to_call"
-    
+
     x
   }, lst)
 }
@@ -163,7 +158,7 @@ function(node, debug_level=0)
   nm <- names(node$children)
   ret <- lapply(node$children, codegen)
   names(ret) <- nm
-  
+
   ret
 }
 
@@ -199,11 +194,11 @@ function(node, debug_level=0)
   #Get the function to call
   op <- node$data["verb"]
   op <- function_for_ado_operator(op)
-  
+
   #Get the operator's arguments - one, two, or at least in principle, more
   args <- node$children[names(node$children) != "verb"]
   args <- lapply(args, codegen)
-  
+
   as.call(c(list(op), args))
 }
 

@@ -9,6 +9,26 @@ function(vec)
         return(TRUE)
 }
 
+deep_eval <-
+function(expr, print.results=TRUE)
+{
+    raiseifnot(is.expression(expr))
+
+    ret <- list()
+    for(chld in expr)
+    {
+        if(is.expression(chld))
+            ret[[length(ret)+1]] <- deep_eval(chld)
+        else
+            ret[[length(ret)+1]] <- eval(chld)
+
+        if(print.results)
+            print(ret[[length(ret)]])
+    }
+
+    ret
+}
+
 `%is%` <-
 function(x, y)
 every(y %in% class(x))
@@ -38,10 +58,10 @@ function(expr, cls="BadCommandException", msg=errmsg)
 {
     #Construct a message
     ch <- deparse(substitute(expr))
-    if (length(ch) > 1L) 
+    if (length(ch) > 1L)
         ch <- paste(ch[1L], "....")
     errmsg <- sprintf("%s is not TRUE", ch)
-    
+
     #Check and raise a condition if it fails
     if (length(expr) == 0 || !is.logical(expr) || is.na(expr) || !expr)
       raiseCondition(msg, cls)
@@ -58,23 +78,23 @@ function()
     while(TRUE)
     {
         inpt <- readline(". ")
-        
+
         if(length(inpt) == 0) #at EOF
             raiseCondition("End of file", "ExitRequestedException")
-        
+
         if(substring(rev_string(inpt), 1, 3) == "///")
         {
             res <- paste(res, inpt, sep="\n")
             next;
         }
-        
+
         #we got a line that doesn't continue onto the next line
         res <- paste(res, inpt, sep="\n")
-        
+
         #the grammar requires a newline or semicolon as a statement
         #terminator, so add a few in case we didn't get one at EOF
         res <- paste0(res, "\n\n\n")
-        
+
         break
     }
 
@@ -94,7 +114,7 @@ correct_arg_types_for_cmd <-
 function(children)
 {
   ns <- setdiff(names(children), c("verb"))
-  
+
   for(n in ns)
   {
     if(n == "if_clause")
@@ -102,36 +122,36 @@ function(children)
       if(!children[[n]] %is% "rstata_if_clause")
         return(FALSE)
     }
-    
+
     if(n == "in_clause")
     {
       if(!children[[n]] %is% "rstata_in_clause")
         return(FALSE)
     }
-    
+
     if(n == "weight_clause")
     {
       if(!children[[n]] %is% "rstata_weight_clause")
         return(FALSE)
     }
-    
+
     if(n == "using_clause")
     {
       if(!children[[n]] %is% "rstata_using_clause")
         return(FALSE)
     }
-    
+
     if(n == "option_list")
     {
       if(!children[[n]] %is% "rstata_option_list")
         return(FALSE)
     }
-    
+
     if(n == "varlist")
     {
       if(!children[[n]] %is% "rstata_expression_list")
         return(FALSE)
-      
+
       types <- vapply(children[[n]]$children,
                       function(x) x %is% "rstata_ident" ||
                                   x %is% "rstata_label_expression" ||
@@ -141,14 +161,14 @@ function(children)
       if(length(which(types)) != length(types))
         return(FALSE)
     }
-    
+
     if(n == "expression")
     {
       if(!(children[[n]] %is% "rstata_expression"))
         return(FALSE)
     }
   }
-  
+
   return(TRUE)
 }
 
@@ -157,14 +177,14 @@ function(name)
 {
   if(name %in% c("byte", "int", "long", "float", "double"))
     return(TRUE)
-  
+
   if(name %in% c("str", "strL"))
     return(TRUE)
-  
+
   if(length(grep("str[0-9]+", name)) > 0)
     if(name != "str0")
       return(TRUE)
-  
+
   return(FALSE)
 }
 
@@ -173,13 +193,13 @@ function(fmt)
 {
   if(length(grep("%-?[0-9]+s", fmt)) > 0)
     return(TRUE)
-  
+
   if(length(grep("%-?0?[1-9][0-9]+\\.[0-9]+[efg]c?", fmt)) > 0)
     return(TRUE)
-  
+
   if(length(grep("%-?t[Ccdwmqh][A-Za-z_]*", fmt)) > 0)
     return(TRUE)
-  
+
   return(FALSE)
 }
 
@@ -190,36 +210,36 @@ function(name)
   #Arithmetic expressions
   if(name %in% c("^", "-", "+", "*", "/", "+", "-"))
     return(as.symbol(name))
-  
+
   #Logical, relational and other expressions
   if(name %in% c("==", "&", "|", "!", ">", "<", ">=", "<="))
     return(as.symbol(name))
-  
+
   if(name == "()")
     return(as.symbol("do.call"))
-  
+
   if(name == "=")
-    return(as.symbol("<-")) #FIXME this is probably wrong
-  
+    return(as.symbol("<-"))
+
   if(name == "[]")
     return(as.symbol("["))
-  
+
   #Factor operators
   if(name == "c.")
     return(as.symbol("op_cont"))
-  
+
   if(name == "i.")
     return(as.symbol("op_ind"))
-  
+
   if(name == "o.")
     return(as.symbol("op_omit"))
-  
+
   if(name == "ib.")
     return(as.symbol("op_base"))
-  
+
   if(name == "##")
     return(as.symbol("%##%"))
-  
+
   if(name == "#")
     return(as.symbol("%#%"))
 }
@@ -231,7 +251,7 @@ function(name, choices, cls="error")
 {
   matched <- charmatch(name, choices)
   raiseifnot(length(matched) == 1, cls=cls)
-  
+
   choices[matched]
 }
 
@@ -242,7 +262,7 @@ function(name, cls="error")
 {
   funcs <- ls(envir=parent.env(environment()))
   funcs <- funcs[grep("^rstata_cmd_", funcs)]
-  
+
   unabbreviateName(name, funcs, cls=cls)
 }
 
@@ -251,5 +271,4 @@ function(name, cls="error")
 varlist_to_formula <-
 function(varlist)
 {
-  #FIXME
 }
