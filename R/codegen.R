@@ -131,7 +131,8 @@ function(node)
 codegen.rstata_modifier_cmd_list <-
 function(node)
 {
-  lst <- rev(lapply(node$children, codegen))
+  lst <- unlist(lapply(node$children, codegen))
+  lst <- rev(lst)
 
   Reduce(function(y, x)
   {

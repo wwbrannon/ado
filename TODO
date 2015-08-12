@@ -1,11 +1,8 @@
 Now:
   o) better error messages from check()
 
-  o) two modifier_cmd_lists, one on either side of a long_modifier_cmd
-
   o) some other grammatical things
     o) weight clauses aren't parsing correctly - conflicting with the var[exp] syntax
-    o) if, in clauses should be checked as well
     o) function and option args should be separable by ',' or ' '
     o) syntax for weird commands
         o) collapse

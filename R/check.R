@@ -306,18 +306,27 @@ function(node, debug_level=0)
   raiseifnot(length(node$children) > 0,
              msg=if(debug_level) "" else NULL)
   raiseifnot(every(vapply(node$children,
-                          function(x) x %is% "rstata_modifier_cmd" ||
+                          function(x) x %is% "rstata_modifier_cmd_list" ||
+                                      x %is% "rstata_modifier_cmd" ||
                                       x %is% "rstata_general_cmd" ||
+                                      x %is% "rstata_special_cmd" ||
                                       x %is% "rstata_compound_cmd",
-                          TRUE)), msg=if(debug_level) "" else NULL)
+                          TRUE)),
+             msg=if(debug_level) "" else NULL)
 
   named <- names(node$children)[which(names(node$children) != "")]
-  raiseifnot(length(named) == 1 && named == c("main_cmd"),
+  raiseifnot(length(named) %in% c(0,1),
              msg=if(debug_level) "" else NULL)
 
-  pos <- match("main_cmd", names(node$children))
-  raiseifnot(pos == length(names(node$children)),
-             msg=if(debug_level) "" else NULL)
+  if(length(named) == 1)
+  {
+      raiseifnot(named == c("main_cmd"),
+                 msg=if(debug_level) "" else NULL)
+
+      pos <- match("main_cmd", names(node$children))
+      raiseifnot(pos == length(names(node$children)),
+                 msg=if(debug_level) "" else NULL)
+  }
 
   invisible(TRUE)
 }

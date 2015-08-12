@@ -263,7 +263,7 @@ cmd:
     {
         $3->prependChild($1);
         $3->appendChild("main_cmd", $4);
-        
+
         $5; // suppressing a stupid bison warning
 
         $$ = $3;
@@ -272,7 +272,7 @@ cmd:
     {
         $3->prependChild($1);
         $3->appendChild("main_cmd", $4);
-        
+
         $5; // suppressing a stupid bison warning
 
         $$ = $3;
@@ -335,6 +335,26 @@ cmd:
 
         $1->appendChild($2);
         $1->appendChild("main_cmd", $4);
+
+        $$ = $1;
+    }
+    | modifier_cmd_list long_modifier_cmd ":" modifier_cmd_list nonmodifier_cmd cmd_sep
+    {
+        $6; // suppressing a stupid bison warning
+
+        $1->appendChild($2);
+        $1->appendChild($4);
+        $1->appendChild("main_cmd", $5);
+
+        $$ = $1;
+    }
+    | modifier_cmd_list long_modifier_cmd ":" modifier_cmd_list compound_cmd cmd_sep
+    {
+        $6; // suppressing a stupid bison warning
+
+        $1->appendChild($2);
+        $1->appendChild($4);
+        $1->appendChild("main_cmd", $5);
 
         $$ = $1;
     }
@@ -622,7 +642,7 @@ primary_expression:
     {
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_type_expression"});
         node->addData("verb", *($1));
-        
+
         ExprNode *lst = new ExprNode("rstata_expression_list");
         lst->appendChild($2);
         node->appendChild("left", lst);
