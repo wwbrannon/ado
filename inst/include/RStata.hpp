@@ -128,13 +128,13 @@ class GeneralStataCmd: public BaseExprNode
         BaseExprNode *varlist;
         BaseExprNode *assign_stmt; // "var = exp"
         BaseExprNode *if_exp; // "if expression"
+        BaseExprNode *weight; // "weight"
         OptionListExprNode    *options; // ", options"
         
         int has_range;
         int range_lower; // the lower range limit
         int range_upper; // the upper range limit
         
-        std::string weight; // "weight": the column name of the weight, or NULL
         std::string using_filename; // "using filename": the filename given after using, or NULL
     
     public:

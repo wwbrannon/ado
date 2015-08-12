@@ -4,7 +4,7 @@
 using namespace Rcpp;
 
 GeneralStataCmd::GeneralStataCmd(std::string _verb,
-                   std::string _weight, std::string _using_filename,
+                   BaseExprNode *_weight, std::string _using_filename,
                    int _has_range, int _range_lower, int _range_upper,
                    BaseExprNode *_varlist, BaseExprNode *_assign_stmt,
                    BaseExprNode *_if_exp, OptionListExprNode *_options)
@@ -38,7 +38,7 @@ List GeneralStataCmd::as_R_object() const
                        _["options"]         = options->as_R_object(),
                        _["range_lower"]     = range_lower,
                        _["range_upper"]     = range_upper,
-                       _["weight"]          = weight,
+                       _["weight"]          = weight->as_R_object(),
                        _["using_filename"]  = using_filename);
     
     return res;

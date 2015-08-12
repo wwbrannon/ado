@@ -14,7 +14,7 @@ MakeGeneralStataCmd::MakeGeneralStataCmd(std::string _verb)
     __range_lower = 0;
     __range_upper = 0;
 
-    __weight = "";
+    __weight = NULL;
     __using_filename = "";
 }
 
@@ -75,7 +75,7 @@ MakeGeneralStataCmd& MakeGeneralStataCmd::range_lower(int _range_lower)
     return *this;
 }
 
-MakeGeneralStataCmd& MakeGeneralStataCmd::weight(std::string _weight)
+MakeGeneralStataCmd& MakeGeneralStataCmd::weight(BaseExprNode *_weight)
 {
     __weight = _weight;
     return *this;
