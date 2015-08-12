@@ -43,9 +43,9 @@ function(expr, cls="bad_command", msg=errmsg)
     errmsg <- sprintf("%s is not TRUE", ch)
     
     #Check and raise a condition if it fails
-    if (!(is.logical(expr) && !is.na(expr) && expr))
-        raiseCondition(cls, msg)
-    
+    if (length(expr) == 0 || !is.logical(expr) || is.na(expr) || !expr)
+      raiseCondition(cls, msg)
+
     invisible(NULL)
 }
 
