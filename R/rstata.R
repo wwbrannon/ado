@@ -1,21 +1,17 @@
 #the REPL loop and environment-handling logic for rstata
-
 library(Rcpp)
 
-cppFunction('
-List do_stata_parse(String line)
+do_stata_parse <-
+function()
 {
-    my_string_buffer = yy_scan_string (my_string);
-    my_parse_result  = yyparse ();
-    yy_delete_buffer (my_string_buffer);
+    .Call('rcpp_do_stata_parse', PACKAGE = 'rstata')
 }
-')
 
-#need documentation of the format of expr_list - how to encode
-#the parsed stata commands for handling by R? a proper AST?
 eval_stata <-
 function(expr_list)
-    TRUE;
+{
+    TRUE; #TBD
+}
 
 rstata <-
 function(dta = NULL, assign.back=TRUE)
