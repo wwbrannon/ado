@@ -152,7 +152,7 @@ function(node, debug_level=0)
     raiseifnot(node$children$numlist %is% "rstata_expression_list",
                msg=if(debug_level) NULL else "Invalid numlist given to foreach statement")
     
-    raiseifnot(every(vapply(node$children$numlist, function(v) v %is% "rstata_number", logical(1))),
+    raiseifnot(every(vapply(node$children$numlist$children, function(v) v %is% "rstata_number", logical(1))),
                msg=if(debug_level) NULL else "Invalid numlist given to foreach statement")
   } else if("varlist" %in% names(node$children))
   {
@@ -373,6 +373,7 @@ function(node, debug_level=0)
                                       x %is% "rstata_embedded_code" ||    #embedded R or sh code
                                       x %is% "rstata_cmd" ||              #a usual Stata cmd
                                       x %is% "rstata_if_cmd" ||           #an if expr { } block
+                                      x %is% "rstata_loop" ||             #a foreach or forvalues loop
                                       x %is% "rstata_modifier_cmd_list",  #a Stata cmd with modifiers
                           TRUE)), msg=if(debug_level) NULL else "Non-command in compound/block command")
 
