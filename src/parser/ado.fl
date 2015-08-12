@@ -24,10 +24,8 @@
 #define YYSTYPE yy::RStataParser::semantic_type
 #endif
 
-// A macro buffer that needs to persist across calls to yylex().
-// Obviously this isn't thread-safe, but R isn't multithreaded
-// so it doesn't matter at all.
-std::string macro_buf;
+#undef YYLMAX
+#define YYLMAX 8192
 
 // String utility functions used and defined below
 std::vector<std::string> split(const std::string &s, char delim);
@@ -36,56 +34,11 @@ std::string trim(const std::string& str, const std::string& what = " ");
 
 typedef yy::RStataParser::token token;
 
-// Because of macro expansion, we can't use flex's buffer stack. (The
-// reason being that if each macro and the main source were a buffer,
-// tokens would have to be able to cross buffer boundaries.) So we'll
-// redefine YY_INPUT instead.
-// 
-// Read from a) the macro_buf buffer if it has length greater than 0,
-// and then from yyin, or b) just yyin if macro_buf is empty. If we
-// read some text from macro_buf, erase() that text so that it's not
-// read again.
-#define YY_INPUT(buf,result,max_size) \
-{ \
-    size_t to_read = std::min(max_size, macro_buf.length()); \
-    std::string tmp; \
-    \
-    if(to_read > 0) \
-    { \
-        tmp = macro_buf.substr(0, to_read); \
-        macro_buf.erase(0, to_read); \
-    } \
-    \
-    if(to_read < max_size) \
-    { \
-        int res; \
-        char *mem = new char[max_size - to_read + 1]; \
-        \
-        errno = 0; \
-		while ( (res = fread(mem, 1, max_size - to_read, yyin))==0 && ferror(yyin)) \
-        { \
-            if( errno != EINTR) \
-            { \
-                YY_FATAL_ERROR( "input in flex scanner failed" ); \
-                break; \
-            } \
-             \
-            errno=0; \
-            clearerr(yyin); \
-        } \
-        mem[res + 1] = '\0'; \
-        \
-        tmp += std::string(mem); \
-        delete mem; \
-    } \
-    \
-    std::strcpy(buf, tmp.c_str()); \
-    result = std::strlen(tmp.c_str()); \
-}
-
 // Code run each time a pattern is matched
 #define YY_USER_ACTION  { llocp->columns(yyleng); }
 %}
+
+%array
 
 %x LONG_COMMENT
 %x SHORT_COMMENT
@@ -209,7 +162,7 @@ std::stack<std::vector<std::string>> macro_stack;
     \'                              {
                                         std::vector<std::string> frame = macro_stack.top();
                                         std::string combined, replacement;
-
+                                        
                                         macro_stack.pop();
                                         
                                         for(size_t i = 0; i < frame.size(); i++)
@@ -240,10 +193,11 @@ std::stack<std::vector<std::string>> macro_stack;
                                                     string_buf += replacement;
                                                     break;
                                                 case INITIAL:
-                                                    // don't try to scan from the empty string an undefined
-                                                    // macro returns as its replacement text
-                                                    if(replacement.length() > 0)
-                                                        macro_buf = std::string(replacement);
+                                                    for(size_t i = replacement.length(); i > 0; i--)
+                                                    {
+                                                        std::cout << i << "\n";
+                                                        unput(replacement[i - 1]);
+                                                    }
                                                     break;
                                                 default:
                                                     driver.error(*llocp, "Macro in impossible location");
@@ -324,10 +278,8 @@ std::stack<std::vector<std::string>> macro_stack;
                                                     string_buf += replacement;
                                                     break;
                                                 case INITIAL:
-                                                    // don't try to scan from the empty string an undefined
-                                                    // macro returns as its replacement text
-                                                    if(replacement.length() > 0)
-                                                        macro_buf = std::string(replacement);
+                                                    for(size_t i = replacement.length(); i > 0; i--)
+                                                        unput(replacement[i - 1]);
                                                     break;
                                                 default:
                                                     driver.error(*llocp, "Macro in impossible location");
