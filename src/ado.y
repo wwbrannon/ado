@@ -1,6 +1,7 @@
 %{
 #include <stdio.h>
 #include <string.h>
+#include "rstata.h"
  
 void yyerror(const char *str)
 {
@@ -24,10 +25,32 @@ int main(int argc, const char **argv)
 %token USING BY IN IF PWEIGHT AWEIGHT
 %token GT_OP LE_OP EQ_OP NE_OP OR_OP AND_OP
 
+%union {
+    EXPR_T * node;
+    STATA_CMD_T *cmd;
+    char *str;
+    int num;
+}
+
+%type <str> INSHEET
+%type <str> USING
+%type <str> STRING_LITERAL
+
 %define parse.error verbose
 %start commands
 
 %%
+
+commands:
+    | commands command
+    ;
+
+command:
+      insheet_cmd
+    | table_cmd
+    | sum_cmd
+    | di_cmd
+    ;
 
 primary_expression:
       NUMBER
@@ -108,21 +131,26 @@ varlist:
     | varlist IDENT
     ;
 
-command:
-    insheet_cmd
-    | table_cmd
-    | sum_cmd
-    | di_cmd
-    ;
-
-commands:
-    | commands command
-    ;
-
 insheet_cmd:
     INSHEET USING STRING_LITERAL
     {
-        printf("displaying insheet\n");
+        STATA_CMD_T cmd = 
+        {
+            .verb = $1,
+            
+            .has_using = 1,
+            .using_filename = $3,
+
+            .has_modifiers = 0,
+            .has_varlist = 0,
+            .has_assign = 0,
+            .has_if = 0,
+            .has_range = 0,
+            .has_weight = 0,
+            .has_options = 0
+        };
+        
+        printf("%s %s %s", $1, $2, $3);
     }
     ;
 
@@ -130,21 +158,18 @@ table_cmd:
       TABLE IDENT
     | TABLE IDENT IDENT
     {
-        printf("displaying table\n");
     }
     ;
 
 sum_cmd:
    SUM varlist 
     {
-        printf("displaying sum\n");
     }
     ;
 
 di_cmd:
     DI expression
     {
-        printf("displaying expression\n");
     }
     ;
 %%
