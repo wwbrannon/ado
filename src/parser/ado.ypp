@@ -114,13 +114,14 @@ yy::RStataParser::error(const location_type& l, const std::string& m)
 %token <str>    BYTE INT LONG FLOAT DOUBLE STRING_TYPE_SPEC
 
                 /* Formats */
-%token <str>    STRING_FORMAT DATETIME_FORMAT NUMBER_FORMAT
+%token <node>    STRING_FORMAT DATETIME_FORMAT NUMBER_FORMAT
+%type  <node>    format_spec
 
                 /* Commands with unusual enough syntax they have to be parsed separately */
 %token <node>   EMBEDDED_CODE
 %token <node>   BY XI BYSORT
 %token <node>   QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
-%token <node>   DISPLAY FORMAT MERGE
+%token <node>   MERGE
 
                 /* Command components and keywords */
 %token          USING IF IN
@@ -140,7 +141,6 @@ yy::RStataParser::error(const location_type& l, const std::string& m)
 %type <str>     unary_operator power_operator equality_operator
 %type <str>     multiplication_operator additive_operator relational_operator logical_operator
 %type <str>     cross_operator type_operator
-%type <str>     format_spec
 
 %type <node>    if_clause in_clause weight_clause using_clause
 
@@ -501,49 +501,6 @@ nonmodifier_cmd:
 
         $$ = node;
     }
-    | DISPLAY format_spec expression
-    {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_special_cmd"});
-        node->appendChild("verb", $1);
-        node->addData("format_spec", *($2));
-
-        ExprNode *lst = new ExprNode("rstata_expression_list");
-        lst->appendChild($3);
-
-        node->appendChild("expression_list", lst);
-
-        $$ = node;
-    }
-    | DISPLAY expression
-    {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_special_cmd"});
-        node->appendChild("verb", $1);
-
-        ExprNode *lst = new ExprNode("rstata_expression_list");
-        lst->appendChild($2);
-
-        node->appendChild("expression_list", lst);
-
-        $$ = node;
-    }
-    | FORMAT format_spec expression_list
-    {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_special_cmd"});
-        node->appendChild("verb", $1);
-        node->addData("format_spec", *($2));
-        node->appendChild("expression_list", $3);
-
-        $$ = node;
-    }
-    | FORMAT expression_list format_spec
-    {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_special_cmd"});
-        node->appendChild("verb", $1);
-        node->addData("format_spec", *($3));
-        node->appendChild("expression_list", $2);
-
-        $$ = node;
-    }
     | XI expression_list option_list /* only necessary because this is a keyword */
     {
         ExprNode *node = new ExprNode({"rstata_cmd", "rstata_special_cmd"});
@@ -553,12 +510,6 @@ nonmodifier_cmd:
 
         $$ = node;
     }
-    ;
-
-format_spec:
-      STRING_FORMAT
-    | NUMBER_FORMAT
-    | DATETIME_FORMAT
     ;
 
 /*
@@ -630,6 +581,12 @@ cross_operator:
     | "#"
     ;
 
+format_spec:
+      STRING_FORMAT
+    | NUMBER_FORMAT
+    | DATETIME_FORMAT
+    ;
+
 literal_expression:
       IDENT
     | NUMBER
@@ -637,6 +594,7 @@ literal_expression:
     | STRING_LITERAL
     | DATE
     | DATETIME
+    | format_spec
     ;
 
 primary_expression:

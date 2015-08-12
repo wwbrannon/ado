@@ -24,13 +24,13 @@ function(expression, return.match.call=NULL)
 }
 
 rstata_cmd_di <-
-function(expression=NULL, format_spec=NULL, return.match.call=NULL)
+function(expression_list=NULL, return.match.call=NULL)
 {
-    rstata_cmd_display(expression, format_spec, return.match.call)
+    rstata_cmd_display(expression, return.match.call)
 }
 
 rstata_cmd_display <-
-function(expression=NULL, format_spec=NULL, return.match.call=NULL)
+function(expression_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())

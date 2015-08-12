@@ -129,7 +129,7 @@ function(expression_list=NULL, if_clause=NULL, in_clause=NULL, option_list=NULL,
 }
 
 rstata_cmd_format <-
-function(expression_list=NULL, format_spec=NULL, return.match.call=NULL)
+function(expression_list=NULL, return.match.call=NULL)
 {
   if(!is.null(return.match.call) && return.match.call)
     return(match.call())

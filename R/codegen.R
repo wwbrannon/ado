@@ -291,3 +291,13 @@ function(node, debug_level=0)
 {
   as.POSIXct(node$data["value"])
 }
+
+#' @export
+codegen.rstata_format_spec <-
+function(node, debug_level=0)
+{
+    val <- as.character(node$data["value"])
+
+    structure(val, class=c(class(val), "format_spec"))
+}
+

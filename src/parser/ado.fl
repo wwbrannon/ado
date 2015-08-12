@@ -899,17 +899,29 @@ size_t macro_length = 0;
 %-?{D}+s                            {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_STRING_FORMAT;
+                                        yylval->node = new ExprNode({"rstata_literal", "rstata_format_spec"});
+
+                                        std::string *s = new std::string(yytext);
+                                        yylval->node->addData("value", *s);
+                                        return token::TOK_STRING_FORMAT;
                                     }
 %-?0?{D}+\.{D}+[efg]c?              {
                                         R_ECHO(yytext);
+                                        yylval->node = new ExprNode({"rstata_literal", "rstata_format_spec"});
+
+                                        std::string *s = new std::string(yytext);
+                                        yylval->node->addData("value", *s);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_NUMBER_FORMAT;
+                                        return token::TOK_NUMBER_FORMAT;
                                     }
 %-?t[Ccdwmqh]{L}*                   {
                                         R_ECHO(yytext);
+                                        yylval->node = new ExprNode({"rstata_literal", "rstata_format_spec"});
+
+                                        std::string *s = new std::string(yytext);
+                                        yylval->node->addData("value", *s);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_DATETIME_FORMAT;
+                                        return token::TOK_DATETIME_FORMAT;
                                     }
 
 
@@ -918,27 +930,32 @@ size_t macro_length = 0;
 byte                                {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_BYTE;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_BYTE;
                                     }
 int                                 {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_INT;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_INT;
                                     }
 long                                {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_LONG;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_LONG;
                                     }
 float                               {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_FLOAT;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_FLOAT;
                                     }
 double                              {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_DOUBLE;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_DOUBLE;
                                     }
 
 
@@ -947,17 +964,20 @@ double                              {
 str                                 {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_STRING_TYPE_SPEC;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_STRING_TYPE_SPEC;
                                     }
 str{D}+                             {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_STRING_TYPE_SPEC;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_STRING_TYPE_SPEC;
                                     }
 strL                                {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_STRING_TYPE_SPEC;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_STRING_TYPE_SPEC;
                                     }
 
 
@@ -1026,22 +1046,26 @@ strL                                {
 using                               {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_USING;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_USING;
                                     }
 if                                  {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_IF;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_IF;
                                     }
 in                                  {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_IN;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_IN;
                                     }
 (1\:1|1\:m|m\:1|m\:m)               {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_MERGE_SPEC;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_MERGE_SPEC;
                                     }
 
 
@@ -1071,129 +1095,153 @@ in                                  {
 "&"                                 {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_AND_OP;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_AND_OP;
                                     }
 "|"                                 {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_OR_OP;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_OR_OP;
                                     }
 ">"                                 {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_GT_OP;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_GT_OP;
                                     }
 "<"                                 {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_LT_OP;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_LT_OP;
                                     }
 ">="                                {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_GE_OP;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_GE_OP;
                                     }
 "<="                                {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_LE_OP;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_LE_OP;
                                     }
 "=="                                {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_EQ_OP;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_EQ_OP;
                                     }
 "!="                                {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_NE_OP;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_NE_OP;
                                     }
 "~="                                {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_NE_OP;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_NE_OP;
                                     }
 "!"                                 {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_NEG_OP;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_NEG_OP;
                                     }
 "~"                                 {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_NEG_OP;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_NEG_OP;
                                     }
 
 \*                                  {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_STAR;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_STAR;
                                     }
 \+                                  {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_PLUS;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_PLUS;
                                     }
 \/                                  {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_SLASH;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_SLASH;
                                     }
 \-                                  {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_MINUS;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_MINUS;
                                     }
 \^                                  {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_CARET;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_CARET;
                                     }
 =                                   {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_ASSIGN;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_ASSIGN;
                                     }
-
 \[                                  {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_LBRACKET;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_LBRACKET;
                                     }
 \]                                  {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_RBRACKET;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_RBRACKET;
                                     }
 \(                                  {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_LPAREN;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_LPAREN;
                                     }
 \)                                  {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_RPAREN;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_RPAREN;
                                     }
 \{                                  {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_LBRACE;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_LBRACE;
                                     }
 \}                                  {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_RBRACE;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_RBRACE;
                                     }
 ,                                   {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_COMMA;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_COMMA;
                                     }
 \:                                  {
                                         R_ECHO(yytext);
                                         
-                                        yylval->str = new std::string(yytext); return token::TOK_COLON;
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_COLON;
                                     }
 
                                     /* Factor variable operators and level-restricted virtual variables */
@@ -1485,40 +1533,6 @@ merge                               {
                                         yylval->node->addData("value", *(new std::string(yytext)));
 
                                         return token::TOK_MERGE;
-                                    }
-display                             {
-                                        R_ECHO(yytext);
-                                        
-                                        R_ECHO(yytext);
-
-                                        yylval->node = new ExprNode({"rstata_literal", "rstata_ident"});
-                                        yylval->node->addData("value", *(new std::string(yytext)));
-
-                                        return token::TOK_DISPLAY;
-                                    }
-disp                                {
-                                        R_ECHO(yytext);
-                                        
-                                        yylval->node = new ExprNode({"rstata_literal", "rstata_ident"});
-                                        yylval->node->addData("value", *(new std::string(yytext)));
-
-                                        return token::TOK_DISPLAY;
-                                    }
-di                                  {
-                                        R_ECHO(yytext);
-                                        
-                                        yylval->node = new ExprNode({"rstata_literal", "rstata_ident"});
-                                        yylval->node->addData("value", *(new std::string(yytext)));
-
-                                        return token::TOK_DISPLAY;
-                                    }
-format                              {
-                                        R_ECHO(yytext);
-                                        
-                                        yylval->node = new ExprNode({"rstata_literal", "rstata_ident"});
-                                        yylval->node->addData("value", *(new std::string(yytext)));
-
-                                        return token::TOK_FORMAT;
                                     }
 
 

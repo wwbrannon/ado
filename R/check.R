@@ -102,6 +102,16 @@ function(node, debug_level=0)
   invisible(TRUE)
 }
 
+#' @export
+verifynode.rstata_format_spec <-
+function(node, debug_level=0)
+{
+    raiseifnot(valid_format_spec(node$data["value"]),
+               msg=if(debug_level) NULL else "Invalid format specifier")
+    
+    invisible(TRUE)
+}
+
 ##############################################################################
 ## Command parts
 #' @export
@@ -454,7 +464,7 @@ function(node, debug_level=0)
              msg=if(debug_level) NULL else "Required clause or option missing for command")
 
   raiseifnot(every(correct_arg_types_for_cmd(chlds)),
-             msg=if(debug_level) NULL else "Malformed clause or option given for command")
+             msg=if(debug_level) NULL else "Incorrect argument given to command")
 
   invisible(TRUE)
 }
@@ -478,26 +488,6 @@ function(node, debug_level=0)
                  msg=if(debug_level) NULL else "Type of merge required and not given")
       raiseifnot(node$data["merge_spec"] %in% c("m:m", "m:1", "1:m", "1:1"),
                  msg=if(debug_level) NULL else "Incorrect merge type given")
-  } else if(func == "display")
-  {
-      raiseifnot(length(node$data) %in% c(0, 1),
-                 msg=if(debug_level) NULL else "Malformed command object")
-
-      if(length(node$data == 1))
-      {
-          raiseifnot(names(node$data) == c("format_spec"),
-                     msg=if(debug_level) NULL else "Missing format specifier for command")
-          raiseifnot(valid_format_spec(node$data["format_spec"]),
-                     msg=if(debug_level) NULL else "Invalid format specifier given for command")
-      }
-  } else if(func == "rstata_cmd_format")
-  {
-      raiseifnot(length(node$data) == 1,
-                 msg=if(debug_level) NULL else "Malformed command object")
-      raiseifnot(names(node$data) == c("format_spec"),
-                 msg=if(debug_level) NULL else "Missing format specifier for command")
-      raiseifnot(valid_format_spec(node$data["format_spec"]),
-                 msg=if(debug_level) NULL else "Invalid format specifier for command")
   } else if(func == "rstata_cmd_xi")
   {
       raiseifnot(length(node$data) == 0,
@@ -538,7 +528,7 @@ function(node, debug_level=0)
              msg=if(debug_level) NULL else "Required clause or option missing for command")
 
   raiseifnot(every(correct_arg_types_for_cmd(chlds)),
-             msg=if(debug_level) NULL else "Malformed clause or option given for command")
+             msg=if(debug_level) NULL else "Incorrect argument given to command")
 
   invisible(TRUE)
 }
