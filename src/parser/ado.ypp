@@ -163,14 +163,23 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 translation_unit:
       external_statement
     {
-        driver.ast = $1;
-        $$ = $1;
+        ExprNode *node = new ExprNode("rstata_compound_cmd");
+        
+        if($1 != NULL)
+            node->appendChild($1);
+        
+        $$ = node;
+        
+        driver.ast = node;
     }
     | translation_unit external_statement
     {
-        $1->appendChild($2);
-        driver.ast = $1;
+        if($2 != NULL)
+            $1->appendChild($2);
+        
         $$ = $1;
+        
+        driver.ast = $1;
     }
     | error
     ;
@@ -196,7 +205,10 @@ cmds:
       cmd
     {
         ExprNode *node = new ExprNode("rstata_compound_cmd");
-        node->appendChild($1);
+        
+        if($1 != NULL)
+            node->appendChild($1);
+        
         $$ = node;
     }
     | compound_cmd
@@ -205,7 +217,8 @@ cmds:
     }
     | cmds cmd
     {
-        $1->appendChild($2);
+        if($2 != NULL)
+            $1->appendChild($2);
 
         $$ = $1;
     }
@@ -219,6 +232,9 @@ cmds:
 
 cmd:
       cmd_sep
+    {
+        $$ = NULL; // or an ExprNode?
+    }
     | EMBEDDED_R cmd_sep
     {
         R_ACTION($1);
