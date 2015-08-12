@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <cstdio>
 
+#include <algorithm>
 #include <stack>
 #include <vector>
 #include <iostream>
@@ -23,6 +24,11 @@
 #define YYSTYPE yy::RStataParser::semantic_type
 #endif
 
+// A macro buffer that needs to persist across calls to yylex().
+// Obviously this isn't thread-safe, but R isn't multithreaded
+// so it doesn't matter at all.
+std::string macro_buf;
+
 // String utility functions used and defined below
 std::vector<std::string> split(const std::string &s, char delim);
 std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems);
@@ -36,12 +42,46 @@ typedef yy::RStataParser::token token;
 // redefine YY_INPUT instead.
 // 
 // Read from a) the macro_buf buffer if it has length greater than 0,
-// or b) yyin if not. If we read some text from macro_buf, erase() that
-// text so that it's not read again.
-#define YY_INPUT(buf,result,max_size)
-   {
-      
-   }
+// and then from yyin, or b) just yyin if macro_buf is empty. If we
+// read some text from macro_buf, erase() that text so that it's not
+// read again.
+#define YY_INPUT(buf,result,max_size) \
+{ \
+    size_t to_read = std::min(max_size, macro_buf.length()); \
+    std::string tmp; \
+    \
+    if(to_read > 0) \
+    { \
+        tmp = macro_buf.substr(0, to_read); \
+        macro_buf.erase(0, to_read); \
+    } \
+    \
+    if(to_read < max_size) \
+    { \
+        int res; \
+        char *mem = new char[max_size - to_read + 1]; \
+        \
+        errno = 0; \
+		while ( (res = fread(mem, 1, max_size - to_read, yyin))==0 && ferror(yyin)) \
+        { \
+            if( errno != EINTR) \
+            { \
+                YY_FATAL_ERROR( "input in flex scanner failed" ); \
+                break; \
+            } \
+             \
+            errno=0; \
+            clearerr(yyin); \
+        } \
+        mem[res + 1] = '\0'; \
+        \
+        tmp += std::string(mem); \
+        delete mem; \
+    } \
+    \
+    std::strcpy(buf, tmp.c_str()); \
+    result = std::strlen(tmp.c_str()); \
+}
 
 // Code run each time a pattern is matched
 #define YY_USER_ACTION  { llocp->columns(yyleng); }
@@ -77,7 +117,6 @@ std::string cdquote_buf;
 std::string string_buf;
 
 std::stack<std::vector<std::string>> macro_stack;
-std::string macro_buf;
 %}
                                     /* if you write {{{ ... }}}, the ... will be executed as R code */
 <INITIAL>"{{{"                      {
@@ -338,7 +377,6 @@ std::string macro_buf;
 
 
                                     /* Eat long comments */
-                                    /* FIXME */
 <INITIAL>"/*"                       { yy_push_state(LONG_COMMENT); }
 <LONG_COMMENT>{
     "/*"                            { yy_push_state(LONG_COMMENT); }
@@ -379,9 +417,7 @@ std::string macro_buf;
                                     /* similarly, lines that start with "!" or "shell" are sh commands */
 ^\![^\n]*$                          {
                                         std::string *s = new std::string(yytext);
-
                                         std::string n = s->substr(1, s->size());
-                                        delete s;
 
                                         yylval->node = new ExprNode("rstata_embedded_code");
                                         yylval->node->addData("value", n);
@@ -390,9 +426,7 @@ std::string macro_buf;
                                     }
 ^shell[^\n]*$                       {
                                         std::string *s = new std::string(yytext);
-
                                         std::string n = s->substr(5, s->size());
-                                        delete s;
 
                                         yylval->node = new ExprNode("rstata_embedded_code");
                                         yylval->node->addData("value", n);
@@ -417,7 +451,6 @@ std::string macro_buf;
 {B}+                                { llocp->step(); }
 
 
-                                    /* FIXME */
 <INITIAL>\`\"                       { cdquote_buf.clear(); yy_push_state(CDQUOTE); }
 <CDQUOTE>{
     \"\'                            {
@@ -608,7 +641,6 @@ in                                  { yylval->str = new std::string(yytext); ret
                                         // remove the first and last characters of the string
                                         s->pop_back();
                                         std::string n0 = s->substr(1, s->size());
-                                        delete s;
 
                                         kind->addData("value", trim(n0));
                                         clause->appendChild("left", kind);
@@ -701,8 +733,6 @@ i?"b"{D}+"."                        {
                                         else
                                           yylval->node->addData("level", s->substr(1, s->length() - 1));
 
-                                        delete s;
-
                                         return token::TOK_BASE_OPERATOR;
                                     }
 i?"b(#"{D}+")."                     {
@@ -716,8 +746,6 @@ i?"b(#"{D}+")."                     {
                                         else
                                           yylval->node->addData("level", s->substr(3, s->length() - 2));
 
-                                        delete s;
-
                                         return token::TOK_BASE_OPERATOR;
                                     }
 
@@ -728,14 +756,11 @@ i?{D}+"."                          {
                                         yylval->node->addData("verb", "i.");
                                         yylval->node->addData("level", s->substr(1, s->length() - 1));
 
-                                        delete s;
-
                                         return token::TOK_IND_OPERATOR;
                                     }
 "i("{D}+(\ +{D}+)*")."              {
                                         std::string *s = new std::string(yytext);
                                         std::vector<std::string> x = split(s->substr(2, s->length() - 2), ' ');
-                                        delete s;
 
                                         yylval->node = new ExprNode({"rstata_expression", "rstata_factor_expression", "rstata_indicator_expression"});
                                         yylval->node->addData("verb", "i.");
@@ -757,8 +782,6 @@ i?{D}+"."                          {
                                         yylval->node->addData("levelstart", trim(x[0]));
                                         yylval->node->addData("levelend", trim(x[1]));
 
-                                        delete s;
-
                                         return token::TOK_IND_OPERATOR;
                                     }
 
@@ -772,8 +795,6 @@ i?"o"{D}+"."                        {
                                           yylval->node->addData("level", s->substr(2, s->length() - 1));
                                         else
                                           yylval->node->addData("level", s->substr(1, s->length() - 1));
-
-                                        delete s;
 
                                         return token::TOK_OMIT_OPERATOR;
                                     }
@@ -795,8 +816,6 @@ i?"o("{D}+(\ +{D}+)*")."            {
                                                 yylval->node->addData("level" + elem, elem); // hacky, but oh well
                                         }
 
-                                        delete s;
-
                                         return token::TOK_IND_OPERATOR;
                                     }
 i?"o("\ *{D}+\ *\/{D}+\ *")."       {
@@ -813,8 +832,6 @@ i?"o("\ *{D}+\ *\/{D}+\ *")."       {
 
                                         yylval->node->addData("levelstart", trim(x[0]));
                                         yylval->node->addData("levelend", trim(x[1]));
-
-                                        delete s;
 
                                         return token::TOK_IND_OPERATOR;
                                     }
