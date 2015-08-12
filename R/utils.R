@@ -110,7 +110,7 @@ function()
 valid_cmd_part <-
 function(name)
 {
-  name %in% c("main_cmd", "next_modifier", "verb", "varlist",
+  name %in% c("verb", "varlist", "expression_list",
               "if_clause", "in_clause", "weight_clause",
               "using_clause", "option_list", "expression")
 }
@@ -167,6 +167,19 @@ function(children)
         return(FALSE)
     }
 
+    if(n == "expression_list")
+    {
+        if(!children[[n]] %is% "rstata_expression_list")
+            return(FALSE)
+
+        types <- vapply(children[[n]]$children,
+                        function(x) x %is% "rstata_expression" ||
+                                    x %is% "rstata_literal",
+                        TRUE)
+
+        if(length(which(types)) != length(types))
+            return(FALSE)
+    }
     if(n == "expression")
     {
       if(!(children[[n]] %is% "rstata_expression"))

@@ -1,12 +1,8 @@
 Now:
-  o) expression, expression_list and varlist as args / cmd arg types and type checking
-    o) edit semantic analyzer to take "expression_list" and check whether it should
-       be a varlist or a list of expressions or a single expression depending on arg
-       function actually takes
-    o) edit existing parser actions to give expression_list instead of the others
-
   o) Parser / lexer:
     o) syntax for collapse
+
+  o) if block construct
 
 Backend:
   o) infrastructural R functions
@@ -32,8 +28,6 @@ Parser / lexer:
 
   o) Loops
       o) much harder, because of macros
-
-  o) if block construct
 
 Systematic debugging:
   o) use testthat and travis
@@ -61,3 +55,5 @@ Wishlist functionality:
      calling convention as a Stata command - the "registry" package?
 
   o) graphics
+
+  o) "special" abreviations like tab

@@ -31,7 +31,7 @@ function(node, debug_level=0)
     return(parse(text=node$data["value"]))
 
   if(node$data["type"] == "shell")
-    return as.call(list(as.symbol("system", command=node$data["value"])))
+    return(as.call(list(as.symbol("system", command=node$data["value"]))))
 }
 
 #' @export
@@ -53,6 +53,17 @@ function(node, debug_level=0)
   args <- args[names(args) != "verb"]
 
   nm <- names(args)
+  forms <- names(formals(verb))
+  if("expression_list" %in% nm)
+  {
+      if("expression_list" %in% forms)
+          TRUE #do nothing
+      if("varlist" %in% forms)
+          nm[nm == "expression_list"] <- "varlist"
+      if("expression" %in% forms)
+          nm[nm == "expression_list"] <- "expression"
+  }
+
   args <- lapply(args, codegen)
   names(args) <- nm
 
@@ -76,6 +87,17 @@ function(node, debug_level=0)
   args <- args[names(args) != "verb"]
 
   nm <- names(args)
+  forms <- names(formals(verb))
+  if("expression_list" %in% nm)
+  {
+      if("expression_list" %in% forms)
+          TRUE #do nothing
+      if("varlist" %in% forms)
+          nm[nm == "expression_list"] <- "varlist"
+      if("expression" %in% forms)
+          nm[nm == "expression_list"] <- "expression"
+  }
+
   args <- lapply(args, codegen)
   names(args) <- nm
 
@@ -91,7 +113,7 @@ function(node, debug_level=0)
 {
   verb <- as.character(codegen(node$children$verb))
   verb <- unabbreviateCommand(paste0("rstata_cmd_", verb))
-  verb <- get(verb, mode="function")
+  verb <- get(verb, mode="function") #FIXME is this right?
 
   as.call(list(verb))
 }

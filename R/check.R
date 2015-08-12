@@ -256,10 +256,10 @@ function(node, debug_level=0)
 {
   #Data members - length, names, values
   raiseifnot(length(node$data) == 2)
-  
+
   raiseifnot("value" %in% names(node$data))
   raiseifnot(!is.na(as.character(node$data["value"])))
-  
+
   raiseifnot("type" %in% names(node$data))
   raiseifnot(!is.na(as.character(node$data["type"])))
 
@@ -332,13 +332,24 @@ function(node, debug_level=0)
     return(invisible(TRUE))
   }
 
-  given <- setdiff(names(node$children), c("verb"))
+  chlds <- node$children
+  if("expression_list" %in% names(chlds))
+  {
+      if("expression_list" %in% names(args))
+          TRUE #do nothing
+      if("varlist" %in% names(args))
+          names(chlds)[names(chlds) == "expression_list"] <- "varlist"
+      if("expression" %in% names(args))
+          names(chlds)[names(chlds) == "expression_list"] <- "expression"
+  }
+  given <- setdiff(names(chlds), c("verb"))
+
   raiseifnot(every(given %in% names(args)))
   raiseifnot(every(vapply(names(args),
                           function(x) is.null(args[[x]]) || x %in% given,
                           TRUE)))
 
-  raiseifnot(every(correct_arg_types_for_cmd(node$children)))
+  raiseifnot(every(correct_arg_types_for_cmd(chlds)))
 
   invisible(TRUE)
 }
@@ -355,14 +366,36 @@ function(node, debug_level=0)
                               c("merge", "generate", "recast", "display", "format", "xi")))
   raiseifnot(exists(func))
 
-  args <- formals(get(func))
-  given <- setdiff(names(node$children), c("verb"))
+  args <-
+  tryCatch(
+  {
+      formals(get(func))
+  },
+  error=function(c) c)
+
+  if(inherits(args, "error"))
+  {
+      raiseCondition("Command not found", "BadCommandException")
+      return(invisible(TRUE))
+  }
+
+  chlds <- node$children
+  if("expression_list" %in% names(chlds))
+  {
+      if("expression_list" %in% names(args))
+          TRUE #do nothing
+      if("varlist" %in% names(args))
+          names(chlds)[names(chlds) == "expression_list"] <- "varlist"
+      if("expression" %in% names(args))
+          names(chlds)[names(chlds) == "expression_list"] <- "expression"
+  }
+  given <- setdiff(names(chlds), c("verb"))
   raiseifnot(every(given %in% names(args)))
   raiseifnot(every(vapply(names(args),
                           function(x) is.null(args[[x]]) || x %in% given,
                           TRUE)))
 
-  raiseifnot(every(correct_arg_types_for_cmd(node$children)))
+  raiseifnot(every(correct_arg_types_for_cmd(chlds)))
 
   #checks of node-specific data
   if(func == "rstata_cmd_merge")
@@ -434,7 +467,7 @@ function(node, debug_level=0)
 
   #Children - length, names, types
   raiseifnot(length(node$children) == 1)
-  raiseifnot(names(node$children) == c("varlist"))
+  raiseifnot(names(node$children) == c("expression_list")) #this is a varlist
   raiseifnot(node$children[[1]] %is% "rstata_expression_list")
   raiseifnot(every(vapply(node$children[[1]], function(x) x %is% "rstata_ident", TRUE)))
 
