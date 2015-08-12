@@ -63,17 +63,23 @@ function(msg, cls="BadCommandException")
 }
 
 raiseifnot <-
-function(expr, cls="BadCommandException", msg=errmsg)
+function(expr, cls="BadCommandException", msg=NULL)
 {
-    #Construct a message
-    ch <- deparse(substitute(expr))
-    if (length(ch) > 1L)
-        ch <- paste(ch[1L], "....")
-    errmsg <- sprintf("%s is not TRUE", ch)
+    if(is.null(msg))
+    {
+      #Construct a message
+      ch <- deparse(substitute(expr))
+      if (length(ch) > 1L)
+          ch <- paste(ch[1L], "....")
+      errmsg <- sprintf("%s is not TRUE", ch)
+    } else
+    {
+      errmsg <- msg
+    }
 
     #Check and raise a condition if it fails
     if (length(expr) == 0 || !is.logical(expr) || is.na(expr) || !expr)
-      raiseCondition(msg, cls)
+      raiseCondition(errmsg, cls)
 
     invisible(NULL)
 }
