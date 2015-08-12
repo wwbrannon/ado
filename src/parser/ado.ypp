@@ -54,6 +54,7 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 %precedence "("
 
 %token <str> END 0 "end of file"
+%token <str> ILLEGAL_CHARACTER /* Not used, but invokes error handling if seen */
 
 %token <str>
     PLUS            "+"
@@ -115,13 +116,17 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 
 %type <node>    if_clause in_clause weight_clause using_clause
 
-%type <node>    expression type_constructor
+%type <node>    expression
 %type <node>    primary_expression postfix_expression power_expression
 %type <node>    unary_expression multiplication_expression additive_expression
 %type <node>    relational_expression equality_expression logical_expression
 
 %type <node>    option options
 %type <node>    option_list argument_expression_list expression_list
+
+%destructor { }            translation_unit
+%destructor { delete $$; } <str>
+%destructor { delete $$; } <node>
 
 %start translation_unit
 %%
@@ -142,8 +147,12 @@ translation_unit:
     {
         $1->appendChild($3);
         driver.ast = $1;
+
+        delete $2;
+
         $$ = $1;
     }
+    | translation_unit cmd_sep error
     ;
 
 cmd_sep:
@@ -172,10 +181,14 @@ external_statement:
     ;
 
 compound_cmd:
-    "{" cmds "}"
+      "{" cmds "}"
     {
+        delete $1;
+        delete $3;
+
         $$ = $2;
     }
+    | "{" error "}"
     ;
 
 cmds:
@@ -188,6 +201,9 @@ cmds:
     | cmds cmd_sep cmd
     {
         $1->appendChild($3);
+
+        delete $2;
+
         $$ = $1;
     }
     ;
@@ -203,12 +219,18 @@ cmd:
     | modifier_cmd_list ":" nonmodifier_cmd
     {
         $1->appendChild("main_cmd", $3);
+
+        delete $2;
+
         $$ = $1;
     }
     | modifier_cmd_list nonmodifier_cmd ":" nonmodifier_cmd
     {
         $1->appendChild("next_modifier", $2);
         $2->appendChild("main_cmd", $4);
+        
+        delete $3;
+        
         $$ = $1;
     }
     | modifier_cmd_list compound_cmd
@@ -219,12 +241,18 @@ cmd:
     | modifier_cmd_list ":" compound_cmd
     {
         $1->appendChild("main_cmd", $3);
+        
+        delete $2;
+        
         $$ = $1;
     }
     | modifier_cmd_list nonmodifier_cmd ":" compound_cmd
     {
         $1->appendChild("next_modifier", $2);
         $2->appendChild("main_cmd", $4);
+        
+        delete $3;
+        
         $$ = $1;
     }
     ;
@@ -473,8 +501,12 @@ primary_expression:
     | DATETIME
     | "(" expression ")"
     {
+        delete $1;
+        delete $3;
+        
         $$ = $2;
     }
+    | "(" error ")"
     ;
 
 postfix_expression:
@@ -482,26 +514,40 @@ postfix_expression:
     | postfix_expression "[" expression "]" %prec "["
     {
         ExprNode *node = new ExprNode("expression");
-        node->addData("value", *($2));
+        node->addData("value", std::string("[]"));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
+        
+        delete $2;
+        delete $4;
+
         $$ = node;
     }
     | postfix_expression "(" ")" %prec "("
     {
         ExprNode *node = new ExprNode("expression");
-        node->addData("value", *($2));
+        node->addData("value", std::string("()"));
         node->appendChild("left", $1);
+        
+        delete $2;
+        delete $3;
+        
         $$ = node;
     }
     | postfix_expression "(" argument_expression_list ")"
     {
         ExprNode *node = new ExprNode("expression");
-        node->addData("value", *($2));
+        node->addData("value", std::string("()"));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
+        
+        delete $2;
+        delete $4;
+
         $$ = node;
     }
+    | postfix_expression "[" error "]" %prec "["
+    | postfix_expression "(" error ")"
     ;
 
 power_expression:
@@ -597,6 +643,9 @@ argument_expression_list:
     | argument_expression_list "," logical_expression
     {
         $1->appendChild($3);
+        
+        delete $2;
+        
         $$ = $1;
     }
     ;
@@ -625,18 +674,18 @@ expression_list:
         $1->appendChild($2);
         $$ = $1;
     }
-    ;
-
-/* Stata allows these without the parentheses */
-type_constructor:
-    type_spec '(' expression_list ')'
+    | type_spec "(" expression_list ")"
     {
         ExprNode *node = new ExprNode("type_constructor");
         node->addData("type_spec", *($1));
         node->appendChild("varlist", $3);
         
+        delete $2;
+        delete $4;
+
         $$ = node;
     }
+    | type_spec "(" error ")"
     ;
 
 /*
@@ -652,6 +701,8 @@ option_list:
     }
     | "," options
     {
+        delete $1;
+
         $$ = $2;
     }
     ;
@@ -675,6 +726,10 @@ option:
     | IDENT "(" expression_list ")"
     {
         $1->appendChild("args", $3);
+        
+        delete $2;
+        delete $4;
+        
         $$ = $1;
     }
     ;
@@ -695,6 +750,11 @@ weight_clause:
         ExprNode *node = new ExprNode("weight_clause");
         node->appendChild("left", $2);
         node->appendChild("right", $4);
+        
+        delete $1;
+        delete $3;
+        delete $5;
+
         $$ = node;
     }
     ;
@@ -714,6 +774,9 @@ if_clause:
     {
         ExprNode *node = new ExprNode("if_clause");
         node->appendChild("if_expression", $2);
+        
+        delete $1;
+
         $$ = node;
     }
     ;
@@ -734,6 +797,10 @@ in_clause:
         ExprNode *node = new ExprNode("in_clause");
         node->appendChild("upper", $2);
         node->appendChild("lower", $4);
+        
+        delete $1;
+        delete $3;
+
         $$ = node;
     }
     ;
@@ -753,12 +820,18 @@ using_clause:
     {
         ExprNode *node = new ExprNode("using_clause");
         node->appendChild("filename", $2);
+        
+        delete $1;
+
         $$ = node;
     }
     | USING IDENT
     {
         ExprNode *node = new ExprNode("using_clause");
         node->appendChild("filename", $2);
+        
+        delete $1;
+
         $$ = node;
     }
     ;

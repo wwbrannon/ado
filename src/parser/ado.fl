@@ -278,6 +278,8 @@ strL                        { yylval->str = new std::string(yytext); return toke
                             }
 
 <<EOF>>                     { yylval->str = new std::string("END"); return token::TOK_END; }
+
+.                           { return token::TOK_ILLEGAL_CHARACTER;  }
 %%
 
 void long_comment()
