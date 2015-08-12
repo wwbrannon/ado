@@ -3,16 +3,15 @@ Roadmap to v0.1:
 Immediate TODO:
     o) finish the grammar
         o) shift/reduce conflicts in the expression sections
-        o) incorporate the currently unused keyword tokens, or have them raise a not implemented error
-        o) abbreviations for abbreviate-able keywords
     o) finish the actions for commands
         o) the parser should be a C++ class, not yyparse
+        o) rewrite do_stata_parse to suit
 
 Semantics:
     o) write up stubs for the R functions implementing Stata commands
     o) abbreviations for commands, varnames, other things that aren't
        hardcoded into the grammar
-    o) Stata-like output: how much is it worth imitating that?
+    o) Stata-like output: how much is this worth imitating?
 
 Write a test suite and test
 
