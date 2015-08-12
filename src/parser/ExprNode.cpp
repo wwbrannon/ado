@@ -155,9 +155,6 @@ ExprNode::as_R_object() const
     if(dummy)
         return R_NilValue;
 
-    // set classes for S3 method dispatch
-    res.attr("class") = types;
-
     // include the children
     for(auto elem : children)
     {
@@ -177,6 +174,9 @@ ExprNode::as_R_object() const
     }
     node_data.attr("names") = node_data_names;
     res["data"] = node_data;
+
+    // set classes for S3 method dispatch
+    res.attr("class") = types;
 
     return res;
 }
