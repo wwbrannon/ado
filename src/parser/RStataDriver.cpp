@@ -148,8 +148,9 @@ RStataDriver::error(const yy::location& l, const std::string& m)
 {
     if( (this->debug_level & DEBUG_NO_PARSE_ERROR) == 0 )
     {
-        const std::string msg = "Error: line " + std::to_string(l.begin.line) +
-              ", column " + std::to_string(l.begin.column) + ": " + m;
+        const std::string msg = std::string("Error: line ") + std::to_string(l.begin.line) +
+                                std::string(", column ") + std::to_string(l.begin.column) +
+                                std::string(": ") + m;
         
         Rcpp::Rcerr << msg << std::endl;
     }
@@ -161,7 +162,7 @@ RStataDriver::error(const std::string& m)
 {
     if( (this->debug_level & DEBUG_NO_PARSE_ERROR) == 0 )
     {
-        const std::string msg = "Error: line unknown, column unknown: " + m;
+        const std::string msg = std::string("Error: line unknown, column unknown: ") + m;
     
         Rcpp::Rcerr << msg << std::endl;
     }
