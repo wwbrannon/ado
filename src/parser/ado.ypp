@@ -154,6 +154,12 @@ yy::RStataParser::error(const location_type& l, const std::string& m)
 %type <node>    option options
 %type <node>    option_list argument_expression_list expression_list
 
+                /* Non-terminals for the syntax of special commands */
+%type <node>    anova_term anova_term_list collapse_list collapse_spec
+%type <node>    collapse_spec_element collapse_spec_element_base gsort_var
+%type <node>    gsort_varlist modelspec modelspec_list numlist recode_rule_lhs
+%type <node>    recode_rule_or_var recode_rule_or_var_list test_spec_list varlist
+
 %destructor { }                 translation_unit
 %destructor { delete $$; }      <str>
 %destructor { delete $$; }      <node>
@@ -506,92 +512,297 @@ nonmodifier_cmd:
     | XI expression_list option_list /* only necessary because this is a keyword */
     {
         $1->appendChild("expression_list", $2);
-        $1->appendChild("option_list", $3);
+        
+        if($3->nChildren() > 0)
+            $1->appendChild("option_list", $3);
 
         $$ = $1;
     }
     | COLLAPSE collapse_list if_clause in_clause weight_clause option_list
-    | IVREGRESS varlist "(" varlist "=" varlist ")" if_clause in_clause weight_clause option_list
-    | RECODE varlist recode_rule_list if_clause in_clause option_list
+    {
+        $1->appendChild("expression_list", $2);
+
+        if($3->nChildren() > 0)
+            $1->appendChild("if_clause", $3);
+
+        if($4->nChildren() > 0)
+            $1->appendChild("in_clause", $4);
+
+        if($5->nChildren() > 0)
+            $1->appendChild("weight_clause", $5);
+
+        if($6->nChildren() > 0)
+            $1->appendChild("option_list", $6);
+
+        $$ = $1;
+    }
     | GSORT gsort_varlist option_list
+    {
+        $1->appendChild("expression_list", $2);
+
+        if($3->nChildren() > 0)
+            $1->appendChild("option_list", $3);
+
+        $$ = $1;
+    }
     | LRTEST modelspec_list option_list
+    {
+        $1->appendChild("expression_list", $2);
+
+        if($3->nChildren() > 0)
+            $1->appendChild("option_list", $3);
+
+        $$ = $1;
+    }
+    | IVREGRESS varlist "(" varlist "=" varlist ")" if_clause in_clause weight_clause option_list
+    {
+        $1->appendChild("expression_list", $2);
+
+        if($8->nChildren() > 0)
+            $1->appendChild("if_clause", $8);
+
+        if($9->nChildren() > 0)
+            $1->appendChild("in_clause", $9);
+
+        if($10->nChildren() > 0)
+            $1->appendChild("weight_clause", $10);
+
+        // we're going to make the other two varlists into options
+        ExprNode *endogenous_opt = new ExprNode("rstata_option");
+        ExprNode *endogenous_name = new ExprNode({"rstata_literal", "rstata_ident"});
+        endogenous_name->addData("value", *(new std::string("endogenous_vars")));
+        endogenous_opt->appendChild("name", endogenous_name);
+        endogenous_opt->appendChild("args", $4);
+
+        ExprNode *instrumental_opt = new ExprNode("rstata_option");
+        ExprNode *instrumental_name = new ExprNode({"rstata_literal", "rstata_dent"});
+        instrumental_name->addData("value", *(new std::string("instrumental_vars")));
+        instrumental_opt->appendChild("name", instrumental_name);
+        instrumental_opt->appendChild("args", $6);
+        
+        $11->appendChild(endogenous_opt);
+        $11->appendChild(instrumental_opt);
+        $1->appendChild("option_list", $11);
+
+        $$ = $1;
+    }
+    | TEST test_spec_list option_list
+    {
+        $1->appendChild("expression_list", $2);
+        
+        if($3->nChildren() > 0)
+            $1->appendChild("option_list", $3);
+        
+        $$ = $1;
+    }
+    | ANOVA IDENT anova_term_list if_clause in_clause weight_clause option_list
+    {
+        $3->prependChild($2);
+        $1->appendChild("expression_list", $3);
+        
+        if($4->nChildren() > 0)
+            $1->appendChild("if_clause", $4);
+
+        if($5->nChildren() > 0)
+            $1->appendChild("in_clause", $5);
+
+        if($6->nChildren() > 0)
+            $1->appendChild("weight_clause", $6);
+
+        if($7->nChildren() > 0)
+            $1->appendChild("option_list", $7);
+        
+        $$ = $1;
+    }
+    | RECODE recode_rule_or_var_list if_clause in_clause option_list
+    {
+        $1->appendChild("expression_list", $3);
+
+        if($3->nChildren() > 0)
+            $1->appendChild("if_clause", $3);
+
+        if($4->nChildren() > 0)
+            $1->appendChild("in_clause", $4);
+
+        if($5->nChildren() > 0)
+            $1->appendChild("option_list", $5);
+        
+        $$ = $1;
+    }
     ;
 
 /* Helper constructs for multiple special commands */
 varlist:
       IDENT
+    {
+        ExprNode *node = new ExprNode("rstata_expression_list");
+        node->appendChild($1);
+        $$ = node;
+    }
     | varlist IDENT
+    {
+        $1->appendChild($2);
+        $$ = $1;
+    }
     ;
 
 numlist:
       NUMBER
+    {
+        ExprNode *node = new ExprNode("rstata_expression_list");
+        node->appendChild($1);
+        $$ = node;
+    }
     | numlist NUMBER
+    {
+        $1->appendChild($2);
+        $$ = $1;
+    }
     ;
 
 /* Helper constructs for collapse */
 collapse_spec_element_base:
       IDENT
+    {
+    }
     | IDENT "=" IDENT
+    {
+    }
     ;
 
 collapse_spec_element:
       collapse_spec_element_base
+    {
+    }
     | collapse_spec_element collapse_spec_element_base
-    ;
+    {
+    }
+;
 
 collapse_spec:
     "(" IDENT ")" collapse_spec_element
+    {
+    }
     ;
 
 collapse_list:
       collapse_spec
+    {
+        ExprNode *node = new ExprNode("rstata_expression_list");
+        node->appendChild($1);
+        $$ = node;
+    }
     | collapse_list collapse_spec
+    {
+        $1->appendChild($2);
+        $$ = $1;
+    }
     ;
 
 /* Helper constructs for recode */
 recode_rule_lhs:
       IDENT
+    {
+    }
     | NUMBER "/" NUMBER
+    {
+    }
     | numlist
+    {
+    }
     ;
 
-recode_rule:
-    "(" recode_rule_lhs "=" NUMBER ")" 
+recode_rule_or_var:
+      IDENT
+    {
+    }
+    | "(" recode_rule_lhs "=" NUMBER ")" 
+    {
+    }
 
-recode_rule_list:
-      recode_rule
-    | recode_rule_list recode_rule
+recode_rule_or_var_list:
+      recode_rule_or_var
+    {
+    }
+    | recode_rule_or_var_list recode_rule_or_var
+    {
+    }
     ;
 
 /* Helper constructs for gsort */
 gsort_var:
       IDENT
+    {
+    }
     | "+" IDENT
+    {
+    }
     | "-" IDENT
+    {
+    }
     ;
 
 gsort_varlist:
       gsort_var
+    {
+    }
     | gsort_varlist gsort_var
+    {
+    }
     ;
 
 /* Helper constructs for lrtest */
 modelspec:
       IDENT
+    {
+    }
     | "."
+    {
+    }
     | "(" varlist ")"
+    {
+    }
     ;
 
 modelspec_list:
       modelspec
+    {
+    }
     | modelspec_list modelspec
+    {
+    }
+    ;
+
+/* Helper constructs for test */
+test_spec_list:
+      %empty
+    |
+    ;
+
+/* Helper constructs for anova */
+anova_term_list:
+      anova_term
+    {
+        ExprNode *node = new ExprNode("rstata_expression_list");
+        node->appendChild($1);
+        $$ = node;
+    }
+    | anova_term_list anova_term
+    {
+        $1->appendChild($2);
+        $$ = $1;
+    }
+    ;
+
+anova_term:
     ;
 
 /*
- ************************************************************
- * The expression grammar. Note that varlists are expressions
+ **************************************************************
+ * The main expression grammar. Note that with the exception of
+ * the special commands above, varlists are expressions
  * syntactically, even if they're not semantically.
- ************************************************************
+ **************************************************************
 */
 
 type_operator:
@@ -1016,3 +1227,4 @@ using_clause:
     ;
 
 %%
+
