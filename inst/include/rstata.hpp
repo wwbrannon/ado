@@ -85,17 +85,16 @@ class OptionListExprNode: public BaseExprNode
 
 // all other expressions: assignment expressions, logical expressions,
 // equality expressions, relational expressions, arithmetic expressions,
-// unary expressions and 'postfix' expressions like function calls
+// function calls, and even statement blocks
 class BranchExprNode: public BaseExprNode
 {
     public:
-        BranchExprNode(std::string _data, BaseExprNode *_left, BaseExprNode *_right);
+        BranchExprNode(std::string _data, std::vector<std::unique_ptr<BaseExprNode>> _children);
         
         virtual Rcpp::List as_R_object() const;
     
     private:
-        BaseExprNode *left;
-        BaseExprNode *right;
+        std::vector<std::unique_ptr<BaseExprNode>> children;
         std::string data;
 };
 
@@ -139,15 +138,6 @@ class GeneralStataCmd: public BaseExprNode
                    int _has_range, int _range_lower, int _range_upper,
                    BaseExprNode *_varlist, BaseExprNode *_assign_stmt,
                    BaseExprNode *_if_exp, OptionListExprNode *_options);
-};
-
-class CmdBlock: public BaseExprNode
-{
-    private:
-        
-
-    public:
-        virtual Rcpp::List as_R_object() const;
 };
 
 // A helper class to avoid typing out all the args to the GeneralStataCmd constructor.
