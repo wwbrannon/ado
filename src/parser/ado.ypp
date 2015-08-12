@@ -21,6 +21,17 @@ int yywrap()
         return 1;
 } 
  
+// the initial empty command list the update macro will work with,
+// the head pointer to the list, and the current position pointer
+STATA_CMD_LIST_T cmdlist =
+{
+    NULL, // current
+    NULL  // next
+};
+
+STATA_CMD_LIST_T *cur = &cmdlist;
+STATA_CMD_LIST_T *head = &cmdlist;
+
 %}
 
 %union {
@@ -591,11 +602,12 @@ exit_cmd:
 insheet_cmd:
     INSHEET USING STRING_LITERAL
     {
+        printf("%s\n%s\n%s", $1, $2, $3);
         StataCmd cmd = MakeStataCmd($1)
                          .using_filename($3)
                          .create();
         
-        ADD_TO_CMD_LIST(cmd, cmdlist_ptr)
+        ADD_TO_CMD_LIST(cmd, cur, head, cmdlist_ptr)
     }
     ;
 

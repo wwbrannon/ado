@@ -8,10 +8,10 @@
 // The basic Stata command syntax is:
 // [ (modifier [arguments])+:] command [varlist | var = exp] [if expression] [in range] [weight] [using filename] [, options]
 
-#include <Rcpp.h>
+#ifndef RSTATA_H
+#define RSTATA_H
 
-#ifndef __RSTATA_H__
-#define __RSTATA_H__
+#include <Rcpp.h>
 
 class StataExpr
 {
@@ -39,15 +39,14 @@ class StataExpr
         StataExpr *left;
         StataExpr *right;
         
-        union data {
-                std::string str; // this is character for everything but NUMBER
-                int  num;
-              } op;
+        // value fields
+        std::string str;
+        int         num;
 
         // method that returns this StataExpr as an R expression or language or whatever
-        List as_list()
+        Rcpp::List as_list()
         {
-            return List();
+            return Rcpp::List();
         }
 };
 
@@ -95,53 +94,21 @@ class StataCmd
             using_filename = _using_filename;
         };
 
-        List as_list()
+        Rcpp::List as_list()
         {
-            char *verb, *weight, *using_filename;
-            int range_lower, range_upper;
-            modifiers, varlist, assign_stmt, if_exp, options; // have to find the right expression type
-            List res;
+            // modifiers, varlist, assign_stmt, if_exp, options; // have to find the right expression type
+            Rcpp::List res;
            
-            // book-keeping for walking the list of commands
-            cur = cmdlist.current;
-            next = cmdlist.next;
-
-            // temp variables used to construct the R version of this object
-            verb = cur->verb; // this will always be set
-            
-            if(cur->has_using)
-                using_filename = cur->using_filename;
-            else
-                using_filename = R_NilValue;
-
-            if(cur->has_weight)
-                weight = cur->weight;
-            else
-                weight = R_NilValue;
-
-            if(cur->has_range)
-            {
-                range_upper = cur->range_upper;
-                range_lower = cur->range_lower;
-            }
-            else
-            {
-                range_upper = R_NilValue;
-                range_lower = R_Nilvalue;
-            }
-
-            // and the expression types here
-
-            res = List::create(_["verb"]            = verb,
-                               _["modifiers"]       = modifiers,
-                               _["varlist"]         = varlist,
-                               _["assign_stmt"]     = assign_stmt,
-                               _["if_exp"]          = if_exp,
-                               _["range_lower"]     = range_lower,
-                               _["range_upper"]     = range_upper,
-                               _["weight"]          = weight,
-                               _["using_filename"]  = using_filename,
-                               _["options"]         = options);
+            res = Rcpp::List::create(Rcpp::_["verb"]            = verb,
+                                     // Rcpp::_["modifiers"]       = modifiers,
+                                     // Rcpp::_["varlist"]         = varlist,
+                                     // Rcpp::_["assign_stmt"]     = assign_stmt,
+                                     // Rcpp::_["if_exp"]          = if_exp,
+                                     // Rcpp::_["options"]         = options,
+                                     Rcpp::_["range_lower"]     = range_lower,
+                                     Rcpp::_["range_upper"]     = range_upper,
+                                     Rcpp::_["weight"]          = weight,
+                                     Rcpp::_["using_filename"]  = using_filename);
             
             return res;
         }
@@ -266,38 +233,27 @@ typedef struct STATA_CMD_LIST
     struct STATA_CMD_LIST *next;
 } STATA_CMD_LIST_T;
 
-// the initial empty command list the update macro will work with,
-// and the head pointer to the list
-STATA_CMD_LIST_T cmdlist =
-{
-    NULL, // current
-    NULL  // next
-};
-
-STATA_CMD_LIST_T *cur = &cmdlist;
-STATA_CMD_LIST_T *head = &cmdlist;
-
 #ifndef ADD_TO_CMD_LIST
-#define ADD_TO_CMD_LIST(cmd, cmdlist_ptr)           \
-{                                                   \
-        if(cur->current == NULL)                    \
-        {                                           \
-            cur->current = &cmd;                    \
-        }                                           \
-        else                                        \
-        {                                           \
-            STATA_CMD_LIST_T next_cmdlist =         \
-            {                                       \
-                &cmd, /* current */                 \
-                NULL  /* next */                    \
-            };                                      \
-                                                    \
-            cur->next = &next_cmdlist;              \
-            cur = &next_cmdlist;                    \
-        }                                           \
-        cmdlist_ptr = head;                         \
+#define ADD_TO_CMD_LIST(cmd, cur, head, cmdlist_ptr)     \
+{                                                        \
+        if(cur->current == NULL)                         \
+        {                                                \
+            cur->current = &cmd;                         \
+        }                                                \
+        else                                             \
+        {                                                \
+            STATA_CMD_LIST_T next_cmdlist =              \
+            {                                            \
+                &cmd, /* current */                      \
+                NULL  /* next */                         \
+            };                                           \
+                                                         \
+            cur->next = &next_cmdlist;                   \
+            cur = &next_cmdlist;                         \
+        }                                                \
+        cmdlist_ptr = head;                              \
 }
 #endif /* ADD_TO_CMD_LIST */
 
-#endif /* __RSTATA_H__ */
+#endif /* RSTATA_H */
 
