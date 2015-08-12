@@ -1,6 +1,4 @@
-#the REPL loop and environment-handling logic for rstata
-library(Rcpp)
-
+#The REPL and environment-handling logic for rstata
 rstata <-
 function(dta = NULL, conn=stdin(), assign.back=TRUE)
 {
@@ -22,7 +20,9 @@ function(dta = NULL, conn=stdin(), assign.back=TRUE)
         tryCatch(
         {
             expr_list <- do_stata_parse(inpt)
-            val <- eval_stata(expr_list, envir=dta, enclos=environment())
+            
+            res <- lapply(expr_list, function(x) eval(x, dta, environment))
+            res <- do.call(paste0, c(res, list(collapse="\n")))
         },
         error = function(c) c,
         exit = function(c) c)
@@ -43,4 +43,18 @@ function(dta = NULL, conn=stdin(), assign.back=TRUE)
     
     return(invisible(dta));
 }
+
+#The dispatcher function for rstata commands.
+#The parser constructs calls to this function with one character argument
+#named "verb" and the arguments to the particular Stata command named by verb.
+dispatch.rstata.cmd <-
+function(verb, ...)
+{
+    args <- as.list(substitute(list(...)))[-1L]
+    
+    return(capture.output(do.call(verb, args)))
+}
+
+#The function to execute embedded R code
+embedded_r <- function(txt) lapply(lapply(parse(text=txt), eval), capture.output)
 
