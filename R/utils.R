@@ -37,8 +37,7 @@ raiseifnot <-
 function(expr, cls="bad_command", msg=errmsg)
 {
     #Construct a message
-    mc <- match.call()
-    ch <- deparse(mc[[1]], width.cutoff = 60L)
+    ch <- deparse(substitute(expr))
     if (length(ch) > 1L) 
         ch <- paste(ch[1L], "....")
     errmsg <- sprintf("%s is not TRUE", ch)
