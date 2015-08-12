@@ -514,8 +514,7 @@ nonmodifier_cmd:
     | IVREGRESS varlist "(" varlist "=" varlist ")" if_clause in_clause weight_clause option_list
     | RECODE varlist recode_rule_list if_clause in_clause option_list
     | GSORT gsort_varlist option_list
-    | LRTEST modelspec option_list
-    | LRTEST modelspec modelspec option_list
+    | LRTEST modelspec_list option_list
     ;
 
 /* Helper constructs for multiple special commands */
@@ -581,6 +580,11 @@ modelspec:
       IDENT
     | "."
     | "(" varlist ")"
+    ;
+
+modelspec_list:
+      modelspec
+    | modelspec_list modelspec
     ;
 
 /*
