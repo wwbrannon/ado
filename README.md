@@ -6,8 +6,8 @@ A Stata-like shell for R, implemented as a loadable package. It's intended to se
 An example of the intended usage:
     
     user@host:~$ R -q
-    > require(statashell)
-    > statashell("data")
+    > require(rstata)
+    > rstata("data")
     . insheet using "/home/user/data.csv"
     . count
       48473
