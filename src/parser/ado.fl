@@ -198,7 +198,5 @@ void count()
             col_num += 8 - (col_num % 8);
         else
             col_num++;
-
-    ECHO;
 }
 
