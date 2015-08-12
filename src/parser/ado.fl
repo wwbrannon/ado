@@ -58,11 +58,23 @@ std::string trim(const std::string& str, const std::string& what = " ");
 
 typedef yy::RStataParser::token token;
 
-// Should we echo the matched text to Rcpp::Rcout?
-// It's necessary for logging and for printing the commands
-// run in do-files. There's no semicolon because correct
-// usage is "R_ECHO(val);".
-#define R_ECHO(val) if(driver.echo) Rcpp::Rcout << val
+// Should we echo the matched text to Rcpp::Rcout? It's
+// necessary for logging and for printing commands run in do-files.
+#define R_ECHO(val) if(driver.echo) \
+                    { \
+                        std::string tmp = std::string(val); \
+                        \
+                        if(tmp.length() >= macro_length) \
+                        { \
+                            tmp = tmp.erase(0, macro_length); \
+                            macro_length = 0; \
+                        } else \
+                        { \
+                            macro_length -= tmp.length(); \
+                        } \
+                        \
+                        Rcpp::Rcout << tmp; \
+                    }
 
 // Code run each time a pattern is matched
 #define YY_USER_ACTION  { llocp->columns(yyleng); }
@@ -102,6 +114,11 @@ std::string cdquote_buf;
 std::string string_buf;
 
 std::stack<std::vector<std::string>> macro_stack;
+
+// We don't want to echo text resulting from macro expansions, so
+// let's keep track of how much of it there is so the R_ECHO macro can
+// avoid outputting it.
+size_t macro_length = 0;
 %}
                                     /* if you write {{{ ... }}}, the ... will be executed as R code */
 <INITIAL>"{{{"                      {
@@ -254,6 +271,8 @@ std::stack<std::vector<std::string>> macro_stack;
                                         {
                                             for(size_t i = replacement.length(); i > 0; i--)
                                                 unput(replacement[i - 1]);
+
+                                            macro_length += replacement.length();
                                             
                                             yy_pop_state(yyscanner);
                                         }
@@ -307,7 +326,9 @@ std::stack<std::vector<std::string>> macro_stack;
                                         R_ECHO(yytext);
                                         
                                         if(yyleng == 1 && yytext[0] == '\n')
+                                        {
                                             llocp->lines(1);
+                                        }
                                         
                                         std::vector<std::string> frame = macro_stack.top();
                                         std::string combined, replacement;
@@ -332,6 +353,8 @@ std::stack<std::vector<std::string>> macro_stack;
                                         {
                                             for(size_t i = replacement.length(); i > 0; i--)
                                                 unput(replacement[i - 1]);
+                                            
+                                            macro_length += replacement.length();
                                             
                                             yy_pop_state(yyscanner);
                                         }
@@ -362,6 +385,8 @@ std::stack<std::vector<std::string>> macro_stack;
                                         {
                                             for(size_t i = replacement.length(); i > 0; i--)
                                                 unput(replacement[i - 1]);
+                                            
+                                            macro_length += replacement.length();
                                             
                                             yy_pop_state(yyscanner);
                                         }
@@ -441,6 +466,8 @@ std::stack<std::vector<std::string>> macro_stack;
                                         {
                                             for(size_t i = replacement.length(); i > 0; i--)
                                                 unput(replacement[i - 1]);
+                                            
+                                            macro_length += replacement.length();
                                             
                                             yy_pop_state(yyscanner);
                                         }
@@ -582,7 +609,7 @@ std::stack<std::vector<std::string>> macro_stack;
 
 
                                     /* Statement separators; consider more than one in a row to be one */
-[\n]+                               {
+[\n]                                {
                                         R_ECHO(yytext);
                                         
                                         yylval->str = new std::string(yytext);

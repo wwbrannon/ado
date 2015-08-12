@@ -119,7 +119,7 @@ function()
 
         #the grammar requires a newline or semicolon as a statement
         #terminator, so add a few in case we didn't get one at EOF
-        res <- paste0(res, "\n\n\n")
+        res <- paste0(res, "\n")
 
         break
     }

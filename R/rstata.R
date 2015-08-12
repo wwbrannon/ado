@@ -191,7 +191,7 @@ function(dta = NULL, filename=NULL, string=NULL,
     {
         inpt <- readLines(con=stdin(), warn=FALSE)
         inpt <- Reduce(function(x, y) paste(x, y, sep="\n"), inpt)
-        inpt <- paste0(inpt, "\n\n\n")
+        inpt <- paste0(inpt, "\n")
 
         do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
                                 macro_value_accessor=macro_value_accessor,
@@ -200,10 +200,10 @@ function(dta = NULL, filename=NULL, string=NULL,
     {
         con = file(filename, "r")
         on.exit(close(con), add=TRUE)
-        
+
         inpt <- readLines(con)
         inpt <- Reduce(function(x, y) paste(x, y, sep="\n"), inpt)
-        inpt <- paste0(inpt, "\n\n\n")
+        inpt <- paste0(inpt, "\n")
 
         do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
                                 macro_value_accessor=macro_value_accessor,
@@ -212,10 +212,10 @@ function(dta = NULL, filename=NULL, string=NULL,
     {
         con = textConnection(string)
         on.exit(close(con), add=TRUE)
-        
+
         inpt <- readLines(con)
         inpt <- Reduce(function(x, y) paste(x, y, sep="\n"), inpt)
-        inpt <- paste0(inpt, "\n\n\n")
+        inpt <- paste0(inpt, "\n")
 
         do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
                                 macro_value_accessor=macro_value_accessor,
