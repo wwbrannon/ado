@@ -224,7 +224,7 @@ strL                        { yylval->str = new std::string(yytext); return toke
                             }
 (?i:qui)                    {
                                 yylval->node = new ExprNode("GeneralStataCmd");
-                                yylval->node->addData("verb", *(new std::string(yytext)));
+                                yylval->node->addData("verb", *(new std::string("quietly")));
                                 return token::TOK_QUIETLY;
                             }
 (?i:noisily)                {
@@ -236,6 +236,31 @@ strL                        { yylval->str = new std::string(yytext); return toke
                                 yylval->node = new ExprNode("GeneralStataCmd");
                                 yylval->node->addData("verb", *(new std::string(yytext)));
                                 return token::TOK_MERGE;
+                            }
+(?i:generate)               {
+                                yylval->node = new ExprNode("GeneralStataCmd");
+                                yylval->node->addData("verb", *(new std::string(yytext)));
+                                return token::TOK_GENERATE;
+                            }
+(?i:gen)                    {
+                                yylval->node = new ExprNode("GeneralStataCmd");
+                                yylval->node->addData("verb", *(new std::string(yytext)));
+                                return token::TOK_GENERATE;
+                            }
+(?i:recast)                 {
+                                yylval->node = new ExprNode("GeneralStataCmd");
+                                yylval->node->addData("verb", *(new std::string(yytext)));
+                                return token::TOK_RECAST;
+                            }
+(?i:display)                {
+                                yylval->node = new ExprNode("GeneralStataCmd");
+                                yylval->node->addData("verb", *(new std::string(yytext)));
+                                return token::TOK_DISPLAY;
+                            }
+(?i:format)                 {
+                                yylval->node = new ExprNode("GeneralStataCmd");
+                                yylval->node->addData("verb", *(new std::string(yytext)));
+                                return token::TOK_FORMAT;
                             }
 
 

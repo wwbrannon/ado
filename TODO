@@ -1,19 +1,16 @@
 Roadmap to v0.1:
 Immediate TODO:
-    o) expand the grammar to include
-        o) formats
-        o) data types
-        o) fully general varlists
+    o) expand the grammar to include fully general varlists
     o) error recovery + error if other character given
     o) make sure the location tracking works
     o) memory leaks
         o) delete the random string tokens that don't become part of the AST
         o) what about memory leaks during the error recovery stuff?
     
-    o) infrastructural R functions - AST walkers, name abbreviation support, etc
+    o) next, infrastructural R functions - AST walkers, name abbreviation support, etc
 
 Semantics:
-    o) write up stubs for the initial 9 commands
+    o) write up stubs for the initial 9 commands (+ other special ones?)
     o) Stata-like output: how much is this worth imitating?
 
 Write a test suite and test

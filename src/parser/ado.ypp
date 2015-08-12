@@ -98,7 +98,7 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 /* Commands with unusual enough syntax they have to be parsed separately */
 %token <node>   EMBEDDED_R;
 %token <node>   QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
-%token <node>   MERGE
+%token <node>   GENERATE RECAST DISPLAY FORMAT MERGE
 
 /* Command components and keywords */
 %token <str>    USING IF IN
@@ -111,6 +111,7 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 
 %type <str>     assignment_operator unary_operator power_operator equality_operator
 %type <str>     multiplication_operator additive_operator relational_operator logical_operator
+%type <str>     cmd_sep type_spec format_spec
 
 %type <node>    if_clause in_clause weight_clause using_clause
 
@@ -148,6 +149,21 @@ translation_unit:
 cmd_sep:
       "\n"
     | ";"
+    ;
+
+type_spec:
+      BYTE
+    | INT
+    | LONG
+    | FLOAT
+    | DOUBLE
+    | STRING_TYPE_SPEC
+    ;
+
+format_spec:
+      STRING_FORMAT
+    | NUMBER_FORMAT
+    | DATETIME_FORMAT
     ;
 
 external_statement:
@@ -296,6 +312,103 @@ nonmodifier_cmd:
         else
             delete $5;
         
+        $$ = node;
+    }
+    | GENERATE expression if_clause in_clause option_list
+    {
+        ExprNode *node = new ExprNode("GeneralStataCmd");
+        node->appendChild("verb", $1);
+        node->appendChild("newvar", $2);
+        
+        if($3->nChildren() > 0)
+            node->appendChild("if_clause", $3);
+        else
+            delete $3;
+
+        if($4->nChildren() > 0)
+            node->appendChild("in_clause", $4);
+        else
+            delete $4;
+
+        if($5->nChildren() > 0)
+            node->appendChild("option_list", $5);
+        else
+            delete $5;
+        
+        $$ = node;
+    }
+    | GENERATE type_spec expression if_clause in_clause option_list
+    {
+        ExprNode *node = new ExprNode("GeneralStataCmd");
+        node->appendChild("verb", $1);
+        node->addData("type_spec", *($2));
+        node->appendChild("newvar", $3);
+        
+        if($4->nChildren() > 0)
+            node->appendChild("if_clause", $4);
+        else
+            delete $4;
+
+        if($5->nChildren() > 0)
+            node->appendChild("in_clause", $5);
+        else
+            delete $5;
+        
+        if($6->nChildren() > 0)
+            node->appendChild("option_list", $6);
+        else
+            delete $6;
+        
+        $$ = node;
+    }
+    | RECAST type_spec expression_list option_list
+    {
+        ExprNode *node = new ExprNode("GeneralStataCmd");
+        node->appendChild("verb", $1);
+        node->addData("type_spec", *($2));
+
+        node->appendChild("varlist", $3);
+        
+        if($4->nChildren() > 0)
+            node->appendChild("option_list", $4);
+        else
+            delete $4;
+        
+        $$ = node;
+    }
+    | DISPLAY format_spec expression
+    {
+        ExprNode *node = new ExprNode("GeneralStataCmd");
+        node->appendChild("verb", $1);
+        node->addData("format_spec", *($2));
+        node->appendChild("expression", $3);
+
+        $$ = node;
+    }
+    | DISPLAY expression
+    {
+        ExprNode *node = new ExprNode("GeneralStataCmd");
+        node->appendChild("verb", $1);
+        node->appendChild("expression", $2);
+        
+        $$ = node;
+    }
+    | FORMAT format_spec expression_list
+    {
+        ExprNode *node = new ExprNode("GeneralStataCmd");
+        node->appendChild("verb", $1);
+        node->addData("format_spec", *($2));
+        node->appendChild("varlist", $3);
+
+        $$ = node;
+    }
+    | FORMAT expression_list format_spec
+    {
+        ExprNode *node = new ExprNode("GeneralStataCmd");
+        node->appendChild("verb", $1);
+        node->addData("format_spec", *($3));
+        node->appendChild("varlist", $2);
+
         $$ = node;
     }
     ;
