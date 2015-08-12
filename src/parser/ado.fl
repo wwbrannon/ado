@@ -1017,9 +1017,15 @@ size_t macro_length = 0;
     \n                              {
                                         R_ECHO(yytext);
                                         
-                                         yy_pop_state(yyscanner);
-                                         llocp->lines(1);
-                                         return token::TOK_NEWLINE;
+                                        yy_pop_state(yyscanner);
+                                        llocp->lines(1);
+                                        return token::TOK_NEWLINE;
+                                    }
+    <<EOF>>                         {
+                                        // these can be the last thing in the file
+                                        yy_pop_state(yyscanner);
+                                        llocp->lines(1);
+                                        return token::TOK_END;
                                     }
 }
 
