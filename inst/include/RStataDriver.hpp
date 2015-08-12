@@ -4,6 +4,9 @@
 #include <memory>
 #include <string>
 
+#include "RStata.hpp"
+
+// forward-declare this to break a circular dependency
 typedef struct yy_buffer_state *YY_BUFFER_STATE;
 
 // define the YY_DECL macro for flex
@@ -15,7 +18,7 @@ void raise_condition(const std::string& msg, const std::string& type);
 class RStataDriver
 {
     public:
-        RStataDriver(const std::string text);
+        RStataDriver(std::string text);
         virtual ~RStataDriver();
 
         std::unique_ptr<BaseExprNode> ast;

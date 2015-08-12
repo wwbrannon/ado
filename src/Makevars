@@ -1,3 +1,5 @@
+.PHONY: all parser
+
 CC=ccache gcc
 CXX=ccache g++
 SHLIB_CXXLD=g++
@@ -7,11 +9,9 @@ PKG_CPPGLAGS += -I./parser/build
 PKG_CXXFLAGS += -c -g -O3 -Wall -fPIC -pedantic -pipe -Wno-unused
 PKG_LIBS += "./parser/ado.a"
 
-.PHONY: all parser
-
 all: $(SHLIB)
 $(SHLIB): parser
 
 parser:
-    (cd parser; make)
+	(cd parser; make)
 

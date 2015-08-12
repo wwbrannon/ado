@@ -18,7 +18,7 @@ raise_condition(const std::string& msg, const std::string& type)
   stopper(cond);
 }
 
-RStataDriver::RStataDriver(const std::string _text)
+RStataDriver::RStataDriver(std::string _text)
 {
     text = _text;
 }
