@@ -99,7 +99,7 @@ class StataCmd
             // modifiers, varlist, assign_stmt, if_exp, options; // have to find the right expression type
             Rcpp::List res;
            
-            res = Rcpp::List::create(Rcpp::_["verb"]            = verb,
+            res = Rcpp::List::create(Rcpp::_["verb"]            = Rcpp::Symbol(verb),
                                      // Rcpp::_["modifiers"]       = modifiers,
                                      // Rcpp::_["varlist"]         = varlist,
                                      // Rcpp::_["assign_stmt"]     = assign_stmt,
