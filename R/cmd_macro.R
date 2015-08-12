@@ -25,8 +25,10 @@ function(expression_list, return.match.call=NULL)
             raiseifnot(nchar(as.character(stmt[[2]])) <= 31, cls="EvalErrorException",
                        msg="Macro name too long")
 
-            #set the macro
+            #Disallow macros long enough to overflow yylex's buffer
             val <- as.character(eval(stmt[[3]])) #the RHS
+            raiseifnot(nchar(val) <= 65436, cls="EvalErrorException",
+                       msg="Macro value too long")
 
             nm <- paste0("_", as.character(stmt[[2]]))
             assign(nm, val, envir=env)
@@ -42,6 +44,8 @@ function(expression_list, return.match.call=NULL)
                    msg="Attempt to set macro to non-string value")
         raiseifnot(nchar(as.character(exprs[[1]])) <= 31, cls="EvalErrorException",
                    msg="Macro name too long")
+        raiseifnot(nchar(exprs[[2]]) <= 65436, cls="EvalErrorException",
+                   msg="Macro value too long")
 
         nm <- paste0("_", as.character(exprs[[1]]))
         assign(nm, exprs[[2]], envir=env)
@@ -77,6 +81,8 @@ function(expression_list, return.match.call=NULL)
             
             #set the macro
             val <- as.character(eval(stmt[[3]])) #the RHS
+            raiseifnot(nchar(val) <= 65436, cls="EvalErrorException",
+                       msg="Macro value too long")
 
             assign(as.character(stmt[[2]]), val, envir=env)
         } else
@@ -91,6 +97,8 @@ function(expression_list, return.match.call=NULL)
                    msg="Attempt to set macro to non-string value")
         raiseifnot(nchar(as.character(exprs[[1]])) <= 32, cls="EvalErrorException",
                    msg="Macro name too long")
+        raiseifnot(nchar(exprs[[2]]) <= 65436, cls="EvalErrorException",
+                   msg="Macro value too long")
 
         assign(as.character(exprs[[1]]), exprs[[2]], envir=env)
     } else
