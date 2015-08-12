@@ -467,8 +467,6 @@ function(node, debug_level=0)
   func <- unabbreviateCommand(func, cls="BadCommandException",
                               msg=if(debug_level) NULL else "Cannot unabbreviate command")
 
-  raiseifnot(func %in% paste0("rstata_cmd_", c("merge", "display", "format", "xi")),
-             msg=if(debug_level) NULL else "Malformed command")
   raiseifnot(exists(func), msg=if(debug_level) NULL else "Command not found")
 
   #checks of node-specific data

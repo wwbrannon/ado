@@ -1,8 +1,22 @@
 Now:
-  o) there should be more than one debug level
+  o) a macro backend fix
 
-  o) Macro substitution and compound double quotes
-    o) the `=expr' syntax? can we just send this to R for evaluation as a string? need to check it if so
+  o) Lexer fixes
+    o) fix compound double quotes
+    o) are long comments subtly broken?
+    o) macro substitution, local and global
+        o) the `=expr' syntax?
+        o) the ++ and -- operators for macros
+        o) the c(), e() and r() pseudo-operators
+
+  o) Stata's "stored results"
+    o) creturn
+
+  o) code in a {{{.....}}} block should execute in a specially prepared environment
+
+  o) Loops: much harder, because of macros
+
+  o) there should be more than one debug level
 
   o) syntax for weird commands
     o) does all this require a GLR parser?
@@ -20,20 +34,16 @@ Now:
 
     o) fill out their functions' calling signatures
 
-  o) Loops: much harder, because of macros
-
 Backend:
   o) infrastructural R functions
     o) for prefix commands - quietly, noisily, capture, by, bysort, xi
     o) varlist_to_formula
     o) for operators - how many of these even need to exist?
 
-  o) R functions for initial general commands
-
-  o) Stata's "stored results"
-    o) creturn
-
   o) complete all the commands which now have stubs
+
+  o) comparisons with string and numeric missings will yield NA, like R, rather
+     than booleans like Stata
 
 ===============================================================================
 Systematic debugging:
