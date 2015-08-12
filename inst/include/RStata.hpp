@@ -88,15 +88,11 @@ class GeneralStataCmd: public BranchExprNode
     private:
         BranchExprNode *varlist;
         BranchExprNode *assign_stmt; // "var = exp"
-        BranchExprNode *if_exp; // "if expression"
+        BranchExprNode *if_clause; // "if expression"
+        BranchExprNode *in_clause; // "if expression"
         BranchExprNode *weight; // "weight"
         BranchExprNode *options; // ", options"
-        
-        int has_range;
-        int range_lower; // the lower range limit
-        int range_upper; // the upper range limit
-        
-        std::string using_filename; // "using filename": the filename given after using, or NULL
+        BranchExprNode *using_clause; // "using filename.ext"
     
     public:
         IdentExprNode *verb;
@@ -106,11 +102,11 @@ class GeneralStataCmd: public BranchExprNode
         GeneralStataCmd(std::string _verb); // for EmbeddedRCmd
         
         GeneralStataCmd(IdentExprNode *_verb,
-                   BranchExprNode *_weight, std::string _using_filename,
-                   int _has_range, int _range_lower, int _range_upper,
+                   BranchExprNode *_weight, BranchExprNode *_using_clause,
                    BranchExprNode *_varlist,
                    BranchExprNode *_assign_stmt,
-                   BranchExprNode *_if_exp,
+                   BranchExprNode *_if_clause,
+                   BranchExprNode *_in_clause,
                    BranchExprNode *_options);
 };
 
@@ -140,24 +136,20 @@ class MakeGeneralStataCmd
         MakeGeneralStataCmd& weight(BranchExprNode *_weight);
         MakeGeneralStataCmd& varlist(BranchExprNode *_varlist);
         MakeGeneralStataCmd& assign_stmt(BranchExprNode *_assign_stmt);
-        MakeGeneralStataCmd& if_exp(BranchExprNode *_if_exp);
+        MakeGeneralStataCmd& if_clause(BranchExprNode *_if_clause);
+        MakeGeneralStataCmd& in_clause(BranchExprNode *_in_clause);
         MakeGeneralStataCmd& options(BranchExprNode *_options);
-        MakeGeneralStataCmd& has_range(int _has_range);
-        MakeGeneralStataCmd& range_upper(int _range_upper);
-        MakeGeneralStataCmd& range_lower(int _range_lower);
-        MakeGeneralStataCmd& using_filename(std::string _using_filename);
+        MakeGeneralStataCmd& using_clause(BranchExprNode *_using_clause);
     
     private:
         IdentExprNode *_verb;
         BranchExprNode *_weight;
         BranchExprNode *_varlist;
         BranchExprNode *_assign_stmt;
-        BranchExprNode *_if_exp;
+        BranchExprNode *_if_clause;
+        BranchExprNode *_in_clause;
         BranchExprNode *_options;
-        int _has_range;
-        int _range_lower;
-        int _range_upper;
-        std::string _using_filename;
+        BranchExprNode *_using_clause;
 };
 
 #endif /* RSTATA_H */

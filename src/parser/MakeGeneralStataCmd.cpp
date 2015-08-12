@@ -8,14 +8,10 @@ MakeGeneralStataCmd::MakeGeneralStataCmd(std::string Nverb)
     _weight = NULL;
     _varlist = NULL;
     _assign_stmt = NULL;
-    _if_exp = NULL;
+    _if_clause = NULL;
+    _in_clause = NULL;
     _options = NULL;
-
-    _has_range = 0;
-    _range_lower = 0;
-    _range_upper = 0;
-
-    _using_filename = "";
+    _using_clause = NULL;
 }
 
 MakeGeneralStataCmd::MakeGeneralStataCmd(IdentExprNode *Nverb)
@@ -25,21 +21,16 @@ MakeGeneralStataCmd::MakeGeneralStataCmd(IdentExprNode *Nverb)
     _weight = NULL;
     _varlist = NULL;
     _assign_stmt = NULL;
-    _if_exp = NULL;
+    _if_clause = NULL;
+    _in_clause = NULL;
     _options = NULL;
-
-    _has_range = 0;
-    _range_lower = 0;
-    _range_upper = 0;
-
-    _using_filename = "";
+    _using_clause = NULL;
 }
 
 GeneralStataCmd *MakeGeneralStataCmd::create()
 {
-    GeneralStataCmd *cmd = new GeneralStataCmd(_verb, _weight, _using_filename,
-                                               _has_range, _range_upper, _range_lower,
-                                               _varlist, _assign_stmt, _if_exp, _options);
+    GeneralStataCmd *cmd = new GeneralStataCmd(_verb, _weight, _using_clause, _varlist,
+                                               _assign_stmt, _if_clause, _in_clause, _options);
 
     return cmd;
 }
@@ -68,9 +59,15 @@ MakeGeneralStataCmd& MakeGeneralStataCmd::assign_stmt(BranchExprNode *Nassign_st
     return *this;
 }
 
-MakeGeneralStataCmd& MakeGeneralStataCmd::if_exp(BranchExprNode *Nif_exp)
+MakeGeneralStataCmd& MakeGeneralStataCmd::if_clause(BranchExprNode *Nif_clause)
 {
-    _if_exp = Nif_exp;
+    _if_clause = Nif_clause;
+    return *this;
+}
+
+MakeGeneralStataCmd& MakeGeneralStataCmd::in_clause(BranchExprNode *Nin_clause)
+{
+    _in_clause = Nin_clause;
     return *this;
 }
 
@@ -86,27 +83,9 @@ MakeGeneralStataCmd& MakeGeneralStataCmd::weight(BranchExprNode *Nweight)
     return *this;
 }
 
-MakeGeneralStataCmd& MakeGeneralStataCmd::has_range(int Nhas_range)
+MakeGeneralStataCmd& MakeGeneralStataCmd::using_clause(BranchExprNode *Nusing_clause)
 {
-    _has_range = Nhas_range;
-    return *this;
-}
-
-MakeGeneralStataCmd& MakeGeneralStataCmd::range_upper(int Nrange_upper)
-{
-    _range_upper = Nrange_upper;
-    return *this;
-}
-
-MakeGeneralStataCmd& MakeGeneralStataCmd::range_lower(int Nrange_lower)
-{
-    _range_lower = Nrange_lower;
-    return *this;
-}
-
-MakeGeneralStataCmd& MakeGeneralStataCmd::using_filename(std::string Nusing_filename)
-{
-    _using_filename = Nusing_filename;
+    _using_clause = Nusing_clause;
     return *this;
 }
 

@@ -10,10 +10,10 @@ all: parse.o lex.o infra
 			build/EmbeddedRCmd.o build/RStataDriver.o \
 			build/ExprNode.o
 
-parse.o:
+parse.o: generate
 	g++ $(CPFLAGS) $(CXFLAGS) build/ado.tab.cpp -o build/parse.o 
 
-lex.o:
+lex.o: generate
 	g++ $(CPFLAGS) $(CXFLAGS) build/lex.yy.cpp -o build/lex.o 
 
 infra: generate
