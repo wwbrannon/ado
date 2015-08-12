@@ -111,19 +111,22 @@ _N                          { count(); yylval.str = strdup(yytext); return _BIG_
 
                             /* logical operators and various single-character tokens */
 "&&"                        { count(); yylval.str = strdup(yytext); return AND_OP; }
-"&"                         { count(); yylval.str = strdup(yytext); return AND_OP; }
+"&&"                        { count(); yylval.str = strdup(yytext); return AND_OP; }
 "||"                        { count(); yylval.str = strdup(yytext); return OR_OP; }
 "|"                         { count(); yylval.str = strdup(yytext); return OR_OP; }
 ">="                        { count(); yylval.str = strdup(yytext); return GT_OP; }
 "<="                        { count(); yylval.str = strdup(yytext); return LE_OP; }
 "=="                        { count(); yylval.str = strdup(yytext); return EQ_OP; }
 "!="                        { count(); yylval.str = strdup(yytext); return NE_OP; }
+"~="                        { count(); yylval.str = strdup(yytext); return NE_OP; }
+"!"                         { count(); yylval.str = strdup(yytext); return '!'; }
+"~"                         { count(); yylval.str = strdup(yytext); return '~'; }
 
 \*                          { count(); yylval.str = strdup(yytext); return '*'; }
 \+                          { count(); yylval.str = strdup(yytext); return '+'; }
 \/                          { count(); yylval.str = strdup(yytext); return '/'; }
 \-                          { count(); yylval.str = strdup(yytext); return '-'; }
-%                           { count(); yylval.str = strdup(yytext); return '%'; }
+\^                          { count(); yylval.str = strdup(yytext); return '^'; }
 
 \[                          { count(); yylval.str = strdup(yytext); return '['; }
 \]                          { count(); yylval.str = strdup(yytext); return ']'; }
