@@ -1,18 +1,11 @@
-#The three functions that implement the three types of loops we support
-
-rstata_cmd_while <-
+#Functions that implement the types of loops we support
+rstata_foreach <-
 function()
 {
     #FIXME
 }
 
-rstata_cmd_foreach <-
-function()
-{
-    #FIXME
-}
-
-rstata_cmd_forvalues <-
+rstata_forvalues <-
 function()
 {
     #FIXME

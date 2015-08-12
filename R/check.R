@@ -113,6 +113,29 @@ function(node, debug_level=0)
 }
 
 ##############################################################################
+## Loops
+#' @export
+verifynode.rstata_loop <-
+function(node, debug_level=0)
+{
+    #FIXME
+}
+
+#' @export
+verifynode.rstata_foreach <-
+function(node, debug_level=0)
+{
+    #FIXME
+}
+
+#' @export
+verifynode.rstata_forvalues <-
+function(node, debug_level=0)
+{
+    #FIXME
+}
+
+##############################################################################
 ## Command parts
 #' @export
 verifynode.rstata_if_clause <-

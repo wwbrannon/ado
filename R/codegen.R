@@ -9,6 +9,22 @@ function(node, debug_level=0)
 UseMethod("codegen")
 
 ##############################################################################
+## Loops
+#' @export
+codegen.rstata_foreach <-
+function(node, debug_level=0)
+{
+    #FIXME
+}
+
+#' @export
+codegen.rstata_forvalues <-
+function(node, debug_level=0)
+{
+    #FIXME
+}
+
+##############################################################################
 ## Compound and atomic commands
 #' @export
 codegen.rstata_compound_cmd <-
