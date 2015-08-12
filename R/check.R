@@ -8,7 +8,7 @@ function(node)
   #General checks all AST nodes should pass
   raiseifnot(node %is% "rstata_ast_node")
   raiseifnot(every(c("data", "children") %in% names(node)))
-  
+
   #Recursively check the children
   if(length(node$children) > 0)
   {
@@ -93,7 +93,8 @@ function(node)
   if(length(node$children) == 1)
   {
     raiseifnot("if_expression" %in% names(node$children))
-    raiseifnot(node$children[[1]] %is% "rstata_expression")
+    raiseifnot(node$children[[1]] %is% "rstata_expression" ||
+               node$children[[1]] %is% "rstata_literal")
   }
   
   invisible(TRUE)
@@ -153,7 +154,8 @@ function(node)
     raiseifnot(c("left", "right") %in% names(node$children))
     
     raiseifnot(node$children$left %is% "rstata_ident")
-    raiseifnot(node$children$right %is% "rstata_expression")
+    raiseifnot(node$children$right %is% "rstata_expression" ||
+               node$children$right %is% "rstata_literal")
   }
 
   invisible(TRUE)  
@@ -168,8 +170,7 @@ function(node)
   #Children - length, names, types
   #Length at least 0, checked above
   #No name requirements for children
-  good <- vapply(node$children, function(x) x %is% "rstata_option", TRUE)
-  raiseifnot(length(which(!good)) != 0)
+  raiseifnot(every(vapply(node$children, function(x) x %is% "rstata_option", TRUE)))
   
   invisible(TRUE)
 }
@@ -204,8 +205,7 @@ function(node)
   #Children - length, names, types
   #No name requirements for children
   raiseifnot(length(node$children) > 0)
-  good <- vapply(node$children, function(x) x %is% "rstata_cmd", TRUE)
-  raiseifnot(length(which(!good)) != 0)
+  raiseifnot(every(vapply(node$children, function(x) x %is% "rstata_cmd", TRUE)))
   
   invisible(TRUE)
 }
@@ -219,8 +219,7 @@ function(node)
   #Children - length, names, types
   raiseifnot(length(node$children) > 0)
 
-  good <- vapply(node$children, function(x) x %is% "rstata_modifier_cmd", TRUE)
-  raiseifnot(length(which(!good)) != 0)
+  raiseifnot(every(vapply(node$children, function(x) x %is% "rstata_modifier_cmd", TRUE)))
 }
 
 verifynode.rstata_embedded_r <-
@@ -354,8 +353,7 @@ function(node)
   #Children - length, names, types
   raiseifnot(length(node$children) > 0)
   
-  good <- vapply(node$children, function(x) x %is% "rstata_expression", TRUE)
-  raiseifnot(length(which(!good)) != 0)
+  raiseifnot(every(vapply(node$children, function(x) x %is% "rstata_expression" || x %is% "rstata_literal", TRUE)))
   
   invisible(TRUE)
 }
@@ -385,11 +383,9 @@ function(node)
   #Children - length, names, types
   raiseifnot(length(node$children) > 0)
   
-  good <- vapply(node$children, function(x) x %is% "rstata_expression", TRUE)
-  raiseifnot(length(which(!good)) != 0)
+  raiseifnot(every(vapply(node$children, function(x) x %is% "rstata_expression" || x %is% "rstata_literal", TRUE)))
   
-  good <- vapply(node$children, function(x) !(x %is% "rstata_assignment_expression"), TRUE)
-  raiseifnot(length(which(!good)) != 0)
+  raiseifnot(every(vapply(node$children, function(x) !(x %is% "rstata_assignment_expression"), TRUE)))
   
   invisible(TRUE)
 }
@@ -623,8 +619,11 @@ function(node)
   raiseifnot(length(node$children) == 2)
   raiseifnot(every(c("left", "right") %in% names(node$children)))
   
-  raiseifnot(node$children$left %is% "rstata_expression")
-  raiseifnot(node$children$right %is% "rstata_expression")
+  raiseifnot(node$children$left %is% "rstata_expression" ||
+             node$children$left %is% "rstata_literal")
+ 
+  raiseifnot(node$children$right %is% "rstata_expression" ||
+             node$children$right %is% "rstata_literal")
   
   invisible(TRUE)
 }
@@ -640,8 +639,12 @@ function(node)
   raiseifnot(length(node$children) == 2)
   raiseifnot(every(c("left", "right") %in% names(node$children)))
   
-  raiseifnot(node$children$left %is% "rstata_expression")
-  raiseifnot(node$children$right %is% "rstata_expression")
+  raiseifnot(node$children$left %is% "rstata_expression" ||
+             node$children$left %is% "rstata_literal")
+ 
+  raiseifnot(node$children$right %is% "rstata_expression" ||
+             node$children$right %is% "rstata_literal")
+  
   
   invisible(TRUE)
 }
@@ -657,8 +660,11 @@ function(node)
   raiseifnot(length(node$children) == 2)
   raiseifnot(every(c("left", "right") %in% names(node$children)))
   
-  raiseifnot(node$children$left %is% "rstata_expression")
-  raiseifnot(node$children$right %is% "rstata_expression")
+  raiseifnot(node$children$left %is% "rstata_expression" ||
+             node$children$left %is% "rstata_literal")
+ 
+  raiseifnot(node$children$right %is% "rstata_expression" ||
+             node$children$right %is% "rstata_literal")
   
   invisible(TRUE)
 }
@@ -674,12 +680,14 @@ function(node)
   raiseifnot(length(node$children) %in% c(1, 2))
   
   raiseifnot("left" %in% names(node$children))
-  raiseifnot(node$children$left %is% "rstata_expression")
+  raiseifnot(node$children$left %is% "rstata_expression" ||
+             node$children$left %is% "rstata_literal")
   
   if(length(node$children) == 2)
   {
     raiseifnot("right" %in% names(node$children))
     raiseifnot(node$children$right %is% "rstata_expression" ||
+               node$children$right %is% "rstata_literal" ||
                node$children$right %is% "rstata_argument_expression_list")
   }
     
@@ -698,7 +706,8 @@ function(node)
   raiseifnot(every(c("left", "right") %in% names(node$children)))
   
   raiseifnot(node$children$left %is% "rstata_ident")
-  raiseifnot(node$children$right %is% "rstata_expression")
+  raiseifnot(node$children$right %is% "rstata_expression" ||
+             node$children$right %is% "rstata_literal")
   
   invisible(TRUE)
 }
