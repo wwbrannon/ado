@@ -1,8 +1,8 @@
 %{
-#include <Rcpp.h>
 #include <cstdio>
 #include <cstring>
 #include <iostream>
+#include <Rcpp.h>
 #include "rstata.h"
 
 using namespace std;
@@ -20,7 +20,7 @@ int yywrap()
 {
         return 1;
 } 
-  
+ 
 %}
 
 %union {
@@ -591,43 +591,8 @@ exit_cmd:
 insheet_cmd:
     INSHEET USING STRING_LITERAL
     {
-        STATA_CMD_T cmd = 
-        {
-            .verb = $1,
-            
-            .has_modifiers = 0,
-            .modifiers = NULL,
-            
-            .has_varlist = 0,
-            .varlist = NULL,
-            
-            .has_assign = 0,
-            .assign_stmt = NULL,
-            
-            .has_if = 0,
-            .if_exp = NULL,
-            
-            .has_range = 0,
-            .range_lower = 0,
-            .range_upper = 0,
-            
-            .has_weight = 0,
-            .weight = NULL,
-            
-            .has_using = 1,
-            .using_filename = $3,
-
-            .has_options = 0,
-            .options = NULL
-        };
-
-        STATA_CMD_LIST_T cmdlist =
-        {
-            .current = &cmd,
-            .next = NULL
-        };
-        
-        cmdlist_ptr = &cmdlist;
+        StataCmd cmd = new StataCmd(n_verb = $1, n_using_filename == $3);
+        ADD_TO_CMD_LIST(cmd, cmdlist_ptr)
     }
     ;
 
