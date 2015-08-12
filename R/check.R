@@ -221,7 +221,7 @@ function(node, debug_level=0)
   #No name requirements for children
   raiseifnot(length(node$children) > 0)
   raiseifnot(every(vapply(node$children,
-                          function(x) x %is% "rstata_embedded_r" ||       #embedded R code
+                          function(x) x %is% "rstata_embedded_code" ||    #embedded R or sh code
                                       x %is% "rstata_cmd" ||              #a usual Stata cmd
                                       x %is% "rstata_modifier_cmd_list",  #a Stata cmd with modifiers
                           TRUE)))
@@ -251,13 +251,17 @@ function(node, debug_level=0)
 }
 
 #' @export
-verifynode.rstata_embedded_r <-
+verifynode.rstata_embedded_code <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) == 1)
+  raiseifnot(length(node$data) == 2)
+  
   raiseifnot("value" %in% names(node$data))
   raiseifnot(!is.na(as.character(node$data["value"])))
+  
+  raiseifnot("type" %in% names(node$data))
+  raiseifnot(!is.na(as.character(node$data["type"])))
 
   #Children - length, names, types
   raiseifnot(length(node$children) == 0)

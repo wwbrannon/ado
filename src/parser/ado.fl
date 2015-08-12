@@ -58,15 +58,6 @@ llocp->step();
 ^\*                                 { llocp->lines(1); llocp->step(); short_comment(); }
 
 
-                                    /* Statement separators; consider more than one in a row to be one */
-[\n]+                               { yylval->str = new std::string(yytext); llocp->lines(yyleng); return token::TOK_NEWLINE; }
-[;]+                                { yylval->str = new std::string(yytext); return token::TOK_SEMICOLON; }
-
-                                    /* ignore whitespace but track column numbers */
-{B}+                                { llocp->step(); }
-
-
-
                                     /* if you write {{{ ... }}}, the ... will be executed as R code */
 \{\{\{.*\}\}\}                      {
                                         std::string *s = new std::string(yytext);
@@ -77,10 +68,43 @@ llocp->step();
                                         std::string n = s->substr(3, s->size());
                                         delete s;
                                         
-                                        yylval->node = new ExprNode("rstata_embedded_r");
+                                        yylval->node = new ExprNode("rstata_embedded_code");
                                         yylval->node->addData("value", n);
-                                        return token::TOK_EMBEDDED_R;
+                                        yylval->node->addData("type", "R");
+                                        return token::TOK_EMBEDDED_CODE;
                                     }
+                                    /* similarly, lines that start with "!" or "shell" are sh commands */
+^\![^\n]*$                          {
+                                        std::string *s = new std::string(yytext);
+                                        
+                                        std::string n = s->substr(1, s->size());
+                                        delete s;
+                                        
+                                        yylval->node = new ExprNode("rstata_embedded_code");
+                                        yylval->node->addData("value", n);
+                                        yylval->node->addData("type", "shell");
+                                        return token::TOK_EMBEDDED_CODE;
+                                    }
+^(?i:shell)[^\n]*$                  {
+                                        std::string *s = new std::string(yytext);
+                                        
+                                        std::string n = s->substr(5, s->size());
+                                        delete s;
+                                        
+                                        yylval->node = new ExprNode("rstata_embedded_code");
+                                        yylval->node->addData("value", n);
+                                        yylval->node->addData("type", "shell");
+                                        return token::TOK_EMBEDDED_CODE;
+                                    }
+
+
+
+                                    /* Statement separators; consider more than one in a row to be one */
+[\n]+                               { yylval->str = new std::string(yytext); llocp->lines(yyleng); return token::TOK_NEWLINE; }
+[;]+                                { yylval->str = new std::string(yytext); return token::TOK_SEMICOLON; }
+
+                                    /* ignore whitespace but track column numbers */
+{B}+                                { llocp->step(); }
 
 
 

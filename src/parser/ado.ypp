@@ -112,7 +112,7 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 %token <str>    STRING_FORMAT DATETIME_FORMAT NUMBER_FORMAT
 
                 /* Commands with unusual enough syntax they have to be parsed separately */
-%token <node>   EMBEDDED_R
+%token <node>   EMBEDDED_CODE
 %token <node>   BY XI
 %token <node>   QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
 %token <node>   GENERATE RECAST DISPLAY FORMAT MERGE
@@ -258,12 +258,8 @@ cmds:
 
 cmd:
       cmd_sep
-    | EMBEDDED_R cmd_sep
-    {
-        $2; // suppressing a stupid bison warning
-
-        $$ = $1;
-    }
+    | EMBEDDED_CODE /* R or shell */
+    
     | nonmodifier_cmd cmd_sep
     {
         $2; // suppressing a stupid bison warning

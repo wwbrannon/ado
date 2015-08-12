@@ -1,7 +1,14 @@
 Now:
   o) expression, expression_list and varlist as args / cmd arg types and type checking
-    o) should local, global and collapse be special commands?
+    o) edit semantic analyzer to take "expression_list" and check whether it should
+       be a varlist or a list of expressions or a single expression depending on arg
+       function actually takes
+    o) edit existing parser actions to give expression_list instead of the others
 
+  o) Parser / lexer:
+    o) syntax for collapse
+
+Backend:
   o) infrastructural R functions
     o) varlist_to_formula
     o) for operators - how many of these even need to exist?
@@ -18,10 +25,6 @@ Now:
   o) complete all the commands which now have stubs
 
 Parser / lexer:
-  o) create a "!" shell command like the {{{ }}} embedded R command
-
-  o) syntax for collapse
-
   o) Macros, without loops
       o) need to find a way to lex nested macros and recursively substitute
          their values from the symbol table - use flex start conditions
@@ -31,7 +34,7 @@ Parser / lexer:
       o) much harder, because of macros
 
   o) if block construct
-  
+
 Systematic debugging:
   o) use testthat and travis
   o) write a unit test suite
@@ -51,18 +54,10 @@ Misc:
 
 ===============================================================================
 Wishlist functionality:
-  o) don't require a newline before each }
-
-  o) better interactive reading
-    o) Ctrl-D isn't EOF
-    o) the way it stores ado command history is a godawful hack, probably
-       also a race condition, and is Unix-specific
+  o) the way it stores ado command history is a godawful hack, probably
+     also a race condition, and is Unix-specific
 
   o) A mechanism for the user to register an R function obeying the
      calling convention as a Stata command - the "registry" package?
 
-  o) time-series operations and grammar
-
   o) graphics
-
-  o) very Stata-like output: unlikely to be worth imitating

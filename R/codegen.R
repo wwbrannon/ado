@@ -24,10 +24,14 @@ function(node, debug_level=0)
 }
 
 #' @export
-codegen.rstata_embedded_r <-
+codegen.rstata_embedded_code <-
 function(node, debug_level=0)
 {
-  parse(text=node$data["value"])
+  if(node$data["type"] == "R")
+    return(parse(text=node$data["value"]))
+
+  if(node$data["type"] == "shell")
+    return as.call(list(as.symbol("system", command=node$data["value"])))
 }
 
 #' @export
