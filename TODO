@@ -1,11 +1,12 @@
 Now:
-  o) a macro backend fix
+  o) some formatting fixes to rstata() and helpers
+    o) should print an extra newline after each command, a la Stata
+    o) error messages need a newline (or two, as above)
 
   o) Lexer fixes
     o) fix compound double quotes
     o) are long comments subtly broken?
     o) macro substitution, local and global
-        o) the `=expr' syntax?
         o) the ++ and -- operators for macros
         o) the c(), e() and r() pseudo-operators
 

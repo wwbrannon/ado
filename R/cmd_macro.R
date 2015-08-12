@@ -9,18 +9,27 @@ function(expression_list, return.match.call=NULL)
     env <- get("rstata_macro_env", envir=rstata_env)
     exprs <- expression_list
 
-    #FIXME should incorporate the "set to nothing" way of clearing a macro
-    if(length(exprs) == 1) #either an assignment or an attempt to clear this macro
+    #Either an assignment or an attempt to clear this macro
+    if(length(exprs) == 1)
     {
         stmt <- exprs[[1]]
-        raiseifnot(stmt[[1]] == as.symbol("<-"), cls="EvalErrorException",
-                   msg="Bad macro assignment")
 
-        val <- eval(stmt[[3]]) #the RHS
-        val <- as.character(val)
+        if(is.symbol(stmt) || is.character(stmt))
+        {
+            #clear the macro
+            nm <- paste0("_", as.character(stmt))
+            rm(list=nm, envir=env)
+        } else if(is.call(stmt) && stmt[[1]] == as.symbol("<-"))
+        {
+            #set the macro
+            val <- as.character(eval(stmt[[3]])) #the RHS
 
-        nm <- paste0("_", as.character(stmt[[2]]))
-        assign(nm, val, envir=env)
+            nm <- paste0("_", as.character(stmt[[2]]))
+            assign(nm, val, envir=env)
+        } else
+        {
+            raiseCondition("Bad macro assignment", cls="EvalErrorException")
+        }
     } else if(length(exprs) == 2)
     {
         raiseifnot(is.symbol(exprs[[1]]) || is.character(exprs[[1]]),
@@ -50,13 +59,21 @@ function(expression_list, return.match.call=NULL)
     if(length(exprs) == 1) #an assignment
     {
         stmt <- exprs[[1]]
-        raiseifnot(stmt[[1]] == as.symbol("<-"), cls="EvalErrorException",
-                   msg="Bad macro assignment")
 
-        val <- eval(stmt[[3]]) #the RHS
-        val <- as.character(val)
+        if(is.symbol(stmt) || is.character(stmt))
+        {
+            #clear the macro
+            rm(list=as.character(stmt), envir=env)
+        } else if(is.call(stmt) && stmt[[1]] == as.symbol("<-"))
+        {
+            #set the macro
+            val <- as.character(eval(stmt[[3]])) #the RHS
 
-        assign(as.character(stmt[[2]]), val, envir=env)
+            assign(as.character(stmt[[2]]), val, envir=env)
+        } else
+        {
+            raiseCondition("Bad macro assignment", cls="EvalErrorException")
+        }
     } else if(length(exprs) == 2)
     {
         raiseifnot(is.symbol(exprs[[1]]) || is.character(exprs[[1]]),
