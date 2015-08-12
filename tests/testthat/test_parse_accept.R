@@ -5,22 +5,60 @@ expect_accept <- function(str) eval(bquote(expect_equal(parse_accept(.(str)), 1)
 expect_reject <- function(str) eval(bquote(expect_equal(parse_accept(.(str)), 0)))
 
 test_that("Numeric literals parse", {
-    expect_accept("disp 1")
-    expect_accept("disp -11")
-    expect_accept("disp 0xdeadbeef")
-    expect_accept("disp ")
-})
-
-test_that("Arithmetic expressions parse", {
-    #FIXME
+    expect_accept("disp .\n")
+    expect_accept("disp 0\n")
+    expect_accept("disp -10\n")
+    expect_accept("disp -10.0978\n")
+    expect_accept("disp 0.0234\n")
+    expect_accept("disp .0234\n")
+    expect_accept("disp 10.0978\n")
+    expect_accept("disp 0x0\n")
+    expect_accept("disp 0xadf\n")
+    expect_accept("disp 0x1482\n")
+    expect_accept("disp 0xdeadbeef\n")
+    expect_accept("disp 02453\n")
+    expect_accept("disp 00124\n")
+    expect_accept("disp 03.24E3\n")
+    expect_accept("disp 033E31\n")
 })
 
 test_that("Datetime literals parse", {
-    #FIXME
+    expect_accept("disp 07jan2006\n")
+    expect_accept("disp 08jan1995\n")
+    expect_accept("disp 14jul209\n")
+    expect_accept("disp 07jan2006 12:45:12.09\n")
+    expect_accept("disp 08jan1995 03:12:34\n")
+    expect_accept("disp 14jul209 21:45:02\n")
 })
-    
+
 test_that("String expressions, with double and compound double quotes, parse", {
-    #FIXME
+    expect_accept('disp "this is a string"\n')
+    expect_accept('disp "this is a \\nstring \\\" with escapes"\n')
+    expect_accept('disp `"this is a \\nstring \\\" with escapes"\'\n')
+    expect_accept('disp `"this is a "nested" string"\'\n')
+})
+
+test_that("Postfix expressions parse", {
+    expect_accept("disp seq()\n")
+    expect_accept("disp seq(1,2,3)\n")
+    expect_accept("disp seq(1, 2, 3)\n")
+    expect_accept("disp var(1 2 3)\n")
+    expect_accept("disp seq(foo bar baz)\n")
+    expect_accept("disp func(foo, bar, baz)\n")
+    expect_accept("disp seq(foo(), bar, baz)\n")
+    expect_accept("disp val(foo() bar baz)\n")
+})
+
+test_that("Arithmetic expressions parse", {
+    expect_accept("disp 45+1\n")
+    expect_accept("disp 97-23\n")
+    expect_accept("disp 3.4 / 10\n")
+    expect_accept("disp 43 * 78.5\n")
+    expect_accept("disp 43 ^ 2.0\n")
+    expect_accept("disp 43 ^ 3\n")
+    expect_accept("disp (123 + 987) / 4^2\n")
+    expect_accept("disp (1343 - 966.01 + 67) ^ 2 - 2 / 3\n")
+    expect_accept("disp (12 + 87 * (76 - 4)) ^ 2 - (34 / (43 + 98)) ^ 0.5\n")
 })
 
 test_that("Factor expressions and factorial operators parse", {
@@ -28,10 +66,6 @@ test_that("Factor expressions and factorial operators parse", {
 })
 
 test_that("Type constructors parse", {
-    #FIXME
-})
-
-test_that("Postfix expressions parse", {
     #FIXME
 })
 
@@ -47,6 +81,10 @@ test_that("Assignment expressions parse", {
     #FIXME
 })
 
+test_that("Long comments parse", {
+    #FIXME
+})
+
 test_that("Short comments parse", {
     expect_accept('disp "short comments parse" // at EOF')
     expect_accept('disp "short comments parse" // and at EOL with a newline\n')
@@ -55,10 +93,6 @@ test_that("Short comments parse", {
     expect_accept('//short comments parse at the top of the script
                   disp "short comments parse"
                   // and again here\n')
-})
-
-test_that("Long comments parse", {
-    #FIXME
 })
 
 test_that("Both statement delimiters parse", {
@@ -93,7 +127,7 @@ test_that("General commands with an expression_list parse", {
     expect_accept("tab support treat\n")
     expect_accept("gen byte foo = 10\n")
     expect_accept("disp \"I'm a string\"\n")
-    expect_accept("logit y x1 x2##i.x3 x4 c.x5#x6")
+    expect_accept("logit y x1 x2##i.x3 x4 c.x5#x6\n")
 })
 
 test_that("General commands with an option list parse", {
@@ -112,7 +146,7 @@ test_that("General commands with an expression list and an if clause parse", {
     expect_accept("logit y x1 x2 x3 if treat != 3\n")
     expect_accept("drop if hhid > 9999\n")
     expect_accept("gen y = 1 if income > 50000\n")
-    expect_accept("replace income = 0 if income <= 50000")
+    expect_accept("replace income = 0 if income <= 50000\n")
 })
 
 test_that("General commands with an expression list and an in clause parse", {
@@ -125,7 +159,7 @@ test_that("General commands with an expression list and an in clause parse", {
 test_that("General commands with an expression list and a weight clause parse", {
     expect_accept("tab support treat [pweight=weight]\n")
     expect_accept("reg y x1 x2 x3 [aweight=weight]\n")
-    expect_accept("logit z y1 y2##y10 y3 [iweight = wgt]")
+    expect_accept("logit z y1 y2##y10 y3 [iweight = wgt]\n")
     expect_accept("mlogit z y2 y3 c.y5#y9 [aweight = wgt]\n")
 })
 
@@ -141,7 +175,7 @@ test_that("General commands with an expression list and an option list parse", {
     expect_accept("reg voted treat i.race, cluster(hhid)\n")
     expect_accept("mlogit voted treat i.race, cluster(hhid) b(1)\n")
     expect_accept("egen v = std(var1 + var2), missing\n")
-    expect_accept("egen v = mode(var3), minmode")
+    expect_accept("egen v = mode(var3), minmode\n")
 })
 
 test_that("Embedded code blocks parse", {
@@ -312,4 +346,3 @@ test_that("Foreach loops parse", {
         disp `i'
     }\n")
 })
-
