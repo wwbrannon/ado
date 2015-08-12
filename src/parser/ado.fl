@@ -126,8 +126,6 @@ B           [ \t\v\r\f]
 \)                          return yy::RStataParser::make_RPAREN(yytext, loc);
 \{                          return yy::RStataParser::make_LBRACE(yytext, loc);
 \}                          return yy::RStataParser::make_RBRACE(yytext, loc);
-\"                          return yy::RStataParser::make_DQUOTE(yytext, loc);
-\'                          return yy::RStataParser::make_SQUOTE(yytext, loc);
 ,                           return yy::RStataParser::make_COMMA(yytext, loc);
 :                           return yy::RStataParser::make_COLON(yytext, loc);
 

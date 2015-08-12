@@ -1,4 +1,4 @@
-/* Methods for most of the derived classes of BaseExprNode */
+/* Methods for most of the derived classes of BranchExprNode */
 
 #include <utility>
 #include <Rcpp.h>
@@ -49,9 +49,9 @@ BranchExprNode::BranchExprNode(std::string _type, std::string _data)
 }
 
 void
-BranchExprNode::setChildren(std::initializer_list<BaseExprNode *> list)
+BranchExprNode::setChildren(std::initializer_list<BranchExprNode *> list)
 {
-    std::vector<BaseExprNode *>().swap(children);
+    std::vector<BranchExprNode *>().swap(children);
 
     for(auto elem : list)
     {
@@ -60,13 +60,13 @@ BranchExprNode::setChildren(std::initializer_list<BaseExprNode *> list)
 }
 
 void
-BranchExprNode::setChildren(std::vector<BaseExprNode *> _children)
+BranchExprNode::setChildren(std::vector<BranchExprNode *> _children)
 {
     children = _children;
 }
 
 void
-BranchExprNode::appendChild(BaseExprNode *_child)
+BranchExprNode::appendChild(BranchExprNode *_child)
 {
     children.push_back(_child);
 }
@@ -123,10 +123,5 @@ List BranchExprNode::as_R_object() const
     }
 
     return res;
-}
-
-List BaseExprNode::as_R_object() const
-{
-    return R_NilValue; // this will never be called
 }
 

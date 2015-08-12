@@ -51,8 +51,6 @@
     GT_OP           ">"
     LBRACE          "{"
     RBRACE          "}"
-    DQUOTE          "\""
-    SQUOTE          "'"
     COMMA           ","
     COLON           ":"
     NEG_OP          "!"
@@ -138,9 +136,6 @@ external_statement:
         $$ = node;
     }
     | compound_cmd
-    {
-        $$ = $1;
-    }
     ;
 
 compound_cmd:
@@ -201,7 +196,8 @@ modifier_cmd_list:
 
 nonmodifier_cmd:
       compound_cmd
-    
+    {
+    }
     | IDENT expression_list if_clause in_clause weight_clause using_clause option_list
     {
 
@@ -264,14 +260,41 @@ equality_operator:
 
 primary_expression:
       IDENT
+    {
+        $$ = $1;
+    }
     | NUMBER
+    {
+        $$ = $1;
+    }
     | NUMBER_MISSING
+    {
+        $$ = $1;
+    }
     | STRING_LITERAL
+    {
+        $$ = $1;
+    }
     | STRING_MISSING
+    {
+        $$ = $1;
+    }
     | DATE
+    {
+        $$ = $1;
+    }
     | TIME
+    {
+        $$ = $1;
+    }
     | DATETIME
+    {
+        $$ = $1;
+    }
     | "(" expression ")"
+    {
+        $$ = $2;
+    }
     ;
 
 postfix_expression:
@@ -458,7 +481,7 @@ weight_clause:
     {
         $$ = new BranchExprNode("weight_clause", "");
     }
-    | "[" IDENT "=" expression "]"
+    | "[" IDENT assignment_operator expression "]"
     {
         BranchExprNode *node = new BranchExprNode("weight_clause", "");
         node->setChildren( {$2, $4} );

@@ -21,7 +21,7 @@ class RStataDriver
         RStataDriver(std::string text);
         virtual ~RStataDriver();
 
-        BaseExprNode *ast;
+        BranchExprNode *ast;
 
         void scan_begin();
         void scan_end();

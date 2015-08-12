@@ -14,16 +14,30 @@
 #include <memory>
 #include <Rcpp.h>
 
-// abstract base class for the AST the parser will generate
-class BaseExprNode
+// The main class of node in the AST the parser generates.
+// All branch expressions: assignment expressions, logical expressions,
+// equality expressions, relational expressions, arithmetic expressions,
+// function calls, and even statement blocks
+class BranchExprNode
 {
     public:
-        // method that returns this BaseExprNode as an R expression
+        BranchExprNode(std::string _type, std::string _data);
+        BranchExprNode(); // for subclasses
+        
+        void setChildren(std::vector<BranchExprNode *> _children);
+        void setChildren(std::initializer_list<BranchExprNode *> children);
+        void appendChild(BranchExprNode *_child);
+        
         Rcpp::List as_R_object() const;
+    
+    private:
+        std::vector<BranchExprNode *> children;
+        std::string data;
+        std::string type;
 };
 
 // The next three classes are AST nodes for literals - string, symbol and numeric
-class NumberExprNode: public BaseExprNode
+class NumberExprNode: public BranchExprNode
 {
     public:
         NumberExprNode(std::string _data);
@@ -34,7 +48,7 @@ class NumberExprNode: public BaseExprNode
         std::string data;
 };
 
-class IdentExprNode: public BaseExprNode
+class IdentExprNode: public BranchExprNode
 {
     public:
         IdentExprNode(std::string _data);
@@ -45,7 +59,7 @@ class IdentExprNode: public BaseExprNode
         std::string data;
 };
 
-class StringExprNode: public BaseExprNode
+class StringExprNode: public BranchExprNode
 {
     public:
         StringExprNode(std::string _data);
@@ -56,7 +70,7 @@ class StringExprNode: public BaseExprNode
         std::string data;
 };
 
-class DatetimeExprNode: public BaseExprNode
+class DatetimeExprNode: public BranchExprNode
 {
     public:
         DatetimeExprNode(std::string _date, std::string _time);
@@ -66,26 +80,6 @@ class DatetimeExprNode: public BaseExprNode
 
     private:
         Rcpp::Datetime dt;
-};
-
-// all other expressions: assignment expressions, logical expressions,
-// equality expressions, relational expressions, arithmetic expressions,
-// function calls, and even statement blocks
-class BranchExprNode: public BaseExprNode
-{
-    public:
-        BranchExprNode(std::string _type, std::string _data);
-        
-        void setChildren(std::vector<BaseExprNode *> _children);
-        void setChildren(std::initializer_list<BaseExprNode *> children);
-        void appendChild(BaseExprNode *_child);
-        
-        Rcpp::List as_R_object() const;
-    
-    private:
-        std::vector<BaseExprNode *> children;
-        std::string data;
-        std::string type;
 };
 
 // All non-compound Stata commands
@@ -140,16 +134,16 @@ class MakeGeneralStataCmd
         
         GeneralStataCmd create();
 
-        MakeGeneralStataCmd& verb(std::string _verb);
-        MakeGeneralStataCmd& weight(BranchExprNode *_weight);
-        MakeGeneralStataCmd& varlist(BranchExprNode *_varlist);
-        MakeGeneralStataCmd& assign_stmt(BranchExprNode *_assign_stmt);
-        MakeGeneralStataCmd& if_exp(BranchExprNode *_if_exp);
-        MakeGeneralStataCmd& options(BranchExprNode *_options);
-        MakeGeneralStataCmd& has_range(int _has_range);
-        MakeGeneralStataCmd& range_upper(int _range_upper);
-        MakeGeneralStataCmd& range_lower(int _range_lower);
-        MakeGeneralStataCmd& using_filename(std::string _using_filename);
+        MakeGeneralStataCmd *verb(std::string _verb);
+        MakeGeneralStataCmd *weight(BranchExprNode *_weight);
+        MakeGeneralStataCmd *varlist(BranchExprNode *_varlist);
+        MakeGeneralStataCmd *assign_stmt(BranchExprNode *_assign_stmt);
+        MakeGeneralStataCmd *if_exp(BranchExprNode *_if_exp);
+        MakeGeneralStataCmd *options(BranchExprNode *_options);
+        MakeGeneralStataCmd *has_range(int _has_range);
+        MakeGeneralStataCmd *range_upper(int _range_upper);
+        MakeGeneralStataCmd *range_lower(int _range_lower);
+        MakeGeneralStataCmd *using_filename(std::string _using_filename);
     
     private:
         std::string _verb;
