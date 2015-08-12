@@ -89,12 +89,13 @@ class OptionListExprNode: public BaseExprNode
 class BranchExprNode: public BaseExprNode
 {
     public:
-        BranchExprNode(std::string _data, std::vector<std::unique_ptr<BaseExprNode>> _children);
+        BranchExprNode(std::string _data, BaseExprNode *_left, BaseExprNode *_right);
         
         virtual Rcpp::List as_R_object() const;
     
     private:
-        std::vector<std::unique_ptr<BaseExprNode>> children;
+        BaseExprNode *left;
+        BaseExprNode *right;
         std::string data;
 };
 

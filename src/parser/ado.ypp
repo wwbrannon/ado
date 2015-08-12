@@ -9,7 +9,7 @@ void raise_condition(const std::string& msg, const std::string& type);
 
 extern "C" int yylex(void);
 
-void yyerror(std::vector<std::unique_ptr<BaseExprNode>> *ast_root, const char *str)
+void yyerror(std::unique_ptr<BaseExprNode> **ast_root, const char *str)
 {
         raise_condition(str, "error");
 }
@@ -25,7 +25,7 @@ int yywrap()
     char *str;
 }
 
-%parse-param {std::vector<std::unique_ptr<BaseExprNode>> *ast_root}
+%parse-param {std::unique_ptr<BaseExprNode> **ast_root}
 %define parse.error verbose
 %start translation_unit
 

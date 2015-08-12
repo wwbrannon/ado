@@ -41,10 +41,12 @@ StringExprNode::StringExprNode(std::string _data)
     data = _data;
 }
 
-BranchExprNode::BranchExprNode(std::string _data, std::vector<std::unique_ptr<BaseExprNode>> _children)
+BranchExprNode::BranchExprNode(std::string _data, BaseExprNode *_left, BaseExprNode *_right)
 {
     data = _data;
-    children = std::move(_children);
+
+    left = _left;
+    right = _right;
 }
 
 // The methods for conversion to R expressions
@@ -77,14 +79,10 @@ List StringExprNode::as_R_object() const
 
 List BranchExprNode::as_R_object() const
 {
-    unsigned int x;
     List res;
 
-    for(x = 0; x < children.size(); x++)
-    {
-        List y = children[x]->as_R_object();
-        res.push_back(y);
-    }
+    res.push_back(left->as_R_object());
+    res.push_back(right->as_R_object());
 
     return res;
 }

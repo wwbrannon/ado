@@ -7,7 +7,6 @@ Immediate TODO:
         o) incorporate most of the currently unused keyword tokens
         o) abbreviations for abbreviate-able keywords
     o) finish the actions for commands
-        o) figure out how to make the as_R_object methods recursive - should they all return lists?
 
 Semantics:
     o) write up stubs for the R functions implementing Stata commands
