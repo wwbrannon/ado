@@ -173,7 +173,7 @@ function(node)
 codegen.rstata_weight_clause <-
 function(node)
 {
-  list(variable=codegen(node$children$left),
+  list(kind=codegen(node$children$left),
        weight_expression=codegen(node$children$right))
 }
 

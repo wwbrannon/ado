@@ -1,8 +1,10 @@
 Now:
+  o) do merge specs work?
+
   o) better error messages from check()
+    o) test it with a few known valid and invalid commands afterward
 
   o) some other grammatical things
-    o) weight clauses aren't parsing correctly - conflicting with the var[exp] syntax
     o) function and option args should be separable by ',' or ' '
     o) syntax for weird commands
         o) collapse

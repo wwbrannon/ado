@@ -52,7 +52,6 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 %precedence RELATIONAL
 %precedence "+" "-"
 %precedence EXPONENT
-%precedence "["
 %precedence "("
 
 /* EOF and command separators */
@@ -116,6 +115,7 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 
                 /* Command components and keywords */
 %token          USING IF IN
+%token <node>   WEIGHT_SPEC
 %token <str>    MERGE_SPEC
 
                 /* Factor variable operators */
@@ -136,7 +136,7 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 %type <node>    if_clause in_clause weight_clause using_clause
 
 %type <node>    expression
-%type <node>    primary_expression postfix_expression power_expression
+%type <node>    primary_expression postfix_expression power_expression literal_expression
 %type <node>    unary_expression multiplication_expression additive_expression
 %type <node>    relational_expression equality_expression logical_expression
 %type <node>    cross_expression unary_factor_expression
@@ -540,7 +540,6 @@ nonmodifier_cmd:
 
         $$ = node;
     }
-
     ;
 
 format_spec:
@@ -618,7 +617,7 @@ cross_operator:
     | "#"
     ;
 
-primary_expression:
+literal_expression:
       IDENT
     | NUMBER
     | NUMBER_MISSING
@@ -626,6 +625,13 @@ primary_expression:
     | STRING_MISSING
     | DATE
     | DATETIME
+    ;
+
+primary_expression:
+      literal_expression
+    {
+        $$ = $1;
+    }
     | "(" expression ")"
     {
         $$ = $2;
@@ -674,8 +680,8 @@ cross_expression:
     ;
 
 postfix_expression:
-      cross_expression %prec "["
-    | postfix_expression "[" expression "]" %prec "["
+      cross_expression
+    | postfix_expression "[" additive_expression "]"
     {
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
         node->addData("verb", std::string("[]"));
@@ -786,6 +792,18 @@ logical_expression:
     }
     ;
 
+expression:
+      logical_expression
+    | logical_expression assignment_operator logical_expression
+    {
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_assignment_expression"});
+        node->addData("verb", "=");
+        node->appendChild("left", $1);
+        node->appendChild("right", $3);
+        $$ = node;
+    }
+    ;
+
 argument_expression_list:
       logical_expression
     {
@@ -798,18 +816,6 @@ argument_expression_list:
         $1->appendChild($3);
 
         $$ = $1;
-    }
-    ;
-
-expression:
-      logical_expression
-    | logical_expression assignment_operator logical_expression
-    {
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_assignment_expression"});
-        node->addData("verb", "=");
-        node->appendChild("left", $1);
-        node->appendChild("right", $3);
-        $$ = node;
     }
     ;
 
@@ -887,13 +893,10 @@ weight_clause:
     {
         $$ = new ExprNode("rstata_weight_clause");
     }
-    | "[" IDENT assignment_operator expression "]"
+    | WEIGHT_SPEC literal_expression "]"
     {
-        ExprNode *node = new ExprNode("rstata_weight_clause");
-        node->appendChild("left", $2);
-        node->appendChild("right", $4);
-
-        $$ = node;
+        $1->appendChild("right", $2);
+        $$ = $1;
     }
     ;
 

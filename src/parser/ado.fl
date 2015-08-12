@@ -268,6 +268,25 @@ in                                  { yylval->str = new std::string(yytext); ret
 
 
 
+                                    /* Weight-clause specifiers */
+"["{B}*(a|p|i|f)weight{B}*"="       {
+                                        ExprNode *clause = new ExprNode("rstata_weight_clause");
+                                        ExprNode *kind = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        std::string *s = new std::string(yytext);
+
+                                        // remove the first and last characters of the string
+                                        s->pop_back();
+                                        std::string n0 = s->substr(1, s->size());
+                                        delete s;
+
+                                        kind->addData("value", trim(n0));
+                                        clause->appendChild("left", kind);
+
+                                        yylval->node = clause;
+                                        return token::TOK_WEIGHT_SPEC;
+                                    }
+                                    
+                                    
                                     /* infix operators and various single-character tokens */
 "&"                                 { yylval->str = new std::string(yytext); return token::TOK_AND_OP; }
 "|"                                 { yylval->str = new std::string(yytext); return token::TOK_OR_OP; }
