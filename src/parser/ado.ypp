@@ -24,16 +24,8 @@ class RStataDriver;
 
 %union
 {
-    char *str;
-    
-    NumberExprNode      *number_node;
-    IdentExprNode       *ident_node;
-    StringExprNode      *str_node;
-    DatetimeExprNode    *dt_node;
-    
-    BranchExprNode      *node;
-    GeneralStataCmd     *stata_cmd_node;
-    EmbeddedRCmd        *r_cmd_node;
+    std::string   *str;
+    ExprNode      *node;
 }
 
 %code
@@ -92,14 +84,14 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 
 /* Literals of various fundamental types */
 %token <node> NUMBER NUMBER_MISSING
-%token <ident_node> IDENT
+%token <node> IDENT
 %token <node> STRING_LITERAL STRING_MISSING
 %token <node> DATE TIME DATETIME
 
 /* Commands with unusual enough syntax they have to be parsed separately */
 %token <node> EMBEDDED_R;
 %token <node> QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
-%token <ident_node> MERGE
+%token <node> MERGE
 
 /* Command components and keywords */
 %token <str> USING IF IN
@@ -111,14 +103,14 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 %type <node> modifier_cmd nonmodifier_cmd
 
 %type <str> assignment_operator unary_operator power_operator equality_operator
-%type <str> multiplication_operator additive_operator relational_operator
+%type <str> multiplication_operator additive_operator relational_operator logical_operator
 
 %type <node> if_clause in_clause weight_clause using_clause
 
 %type <node> expression
 %type <node> primary_expression postfix_expression power_expression
 %type <node> unary_expression multiplication_expression additive_expression
-%type <node> relational_expression equality_expression logical_and_expression logical_or_expression
+%type <node> relational_expression equality_expression logical_expression
 
 %type <node> option
 %type <node> option_list argument_expression_list expression_list
@@ -161,7 +153,7 @@ compound_cmd:
 cmds:
       cmd
     {
-        BranchExprNode *node = new BranchExprNode("cmd_list", "");
+        ExprNode *node = new ExprNode("compound_cmd");
         node->appendChild($1);
         $$ = node;
     }
@@ -174,13 +166,7 @@ cmds:
 
 cmd:
       EMBEDDED_R
-    {
-        $$ = $1;
-    }
     | nonmodifier_cmd
-    {
-        $$ = $1;
-    }
     | modifier_cmd_list nonmodifier_cmd
     {
         $1->appendChild($2);
@@ -224,7 +210,7 @@ modifier_cmd:
 modifier_cmd_list:
       modifier_cmd
     {
-        BranchExprNode *node = new BranchExprNode("modifier_cmd_list", "");
+        ExprNode *node = new ExprNode("modifier_cmd_list");
         node->appendChild($1);
         $$ = node;
     }
@@ -238,32 +224,32 @@ modifier_cmd_list:
 nonmodifier_cmd:
       IDENT expression_list if_clause in_clause weight_clause using_clause option_list
     {
-        GeneralStataCmd *node = MakeGeneralStataCmd($1)
-                                    .varlist($2)
-                                    .if_clause($3)
-                                    .in_clause($4)
-                                    .weight($5)
-                                    .using_clause($4)
-                                    .options($7)
-                                .create();
+        ExprNode *node = new ExprNode("GeneralStataCmd");
+        node->appendChild($1);
+        node->appendChild($2);
+        node->appendChild($3);
+        node->appendChild($4);
+        node->appendChild($5);
+        node->appendChild($6);
+        node->appendChild($7);
         $$ = node;
     }
     | IDENT
     {
-        GeneralStataCmd *node = MakeGeneralStataCmd($1).create();
+        ExprNode *node = new ExprNode("GeneralStataCmd");
+        node->appendChild($1);
         $$ = node;
     }
     
     /* commands with unusual enough syntax to parse them separately */
     | MERGE MERGE_SPEC expression_list using_clause option_list
     {
-        BranchExprNode *opts = $4;
-        opts->appendChild($2);
-        GeneralStataCmd *node = MakeGeneralStataCmd($1)
-                                    .varlist($3)
-                                    .using_clause($4)
-                                    .options(opts)
-                                .create();
+        ExprNode *node = new ExprNode("GeneralStataCmd");
+        node->appendChild($1);
+        node->appendChild($2);
+        node->appendChild($3);
+        node->appendChild($4);
+        node->appendChild($5);
         $$ = node;
     }
     ;
@@ -312,39 +298,20 @@ equality_operator:
     | "!="
     ;
 
+logical_operator:
+      "&"
+    | "|"
+    ;
+
 primary_expression:
       IDENT
-    {
-        $$ = $1;
-    }
     | NUMBER
-    {
-        $$ = $1;
-    }
     | NUMBER_MISSING
-    {
-        $$ = $1;
-    }
     | STRING_LITERAL
-    {
-        $$ = $1;
-    }
     | STRING_MISSING
-    {
-        $$ = $1;
-    }
     | DATE
-    {
-        $$ = $1;
-    }
     | TIME
-    {
-        $$ = $1;
-    }
     | DATETIME
-    {
-        $$ = $1;
-    }
     | "(" expression ")"
     {
         $$ = $2;
@@ -355,19 +322,22 @@ postfix_expression:
       primary_expression
     | postfix_expression "[" expression "]" %prec "["
     {
-        BranchExprNode *node = new BranchExprNode("expression", "[]");
+        ExprNode *node = new ExprNode("expression");
+        node->addData("value", *($2));
         node->setChildren( {$1, $3} );
         $$ = node;
     }
     | postfix_expression "(" ")" %prec "("
     {
-        BranchExprNode *node = new BranchExprNode("expression", "()");
+        ExprNode *node = new ExprNode("expression");
+        node->addData("value", *($2));
         node->appendChild($1);
         $$ = node;
     }
     | postfix_expression "(" argument_expression_list ")"
     {
-        BranchExprNode *node = new BranchExprNode("expression", "()");
+        ExprNode *node = new ExprNode("expression");
+        node->addData("value", *($2));
         node->setChildren( {$1, $3} );
         $$ = node;
     }
@@ -377,7 +347,8 @@ power_expression:
       postfix_expression %prec EXPONENT
     | power_expression power_operator postfix_expression %prec EXPONENT
     {
-        BranchExprNode *node = new BranchExprNode("expression", "^");
+        ExprNode *node = new ExprNode("expression");
+        node->addData("value", *($2));
         node->setChildren( {$1, $3} );
         $$ = node;
     }
@@ -387,7 +358,8 @@ unary_expression:
       power_expression
     | unary_operator power_expression
     {
-        BranchExprNode *node = new BranchExprNode("expression", $1);
+        ExprNode *node = new ExprNode("expression");
+        node->addData("value", *($1));
         node->appendChild($2);
         $$ = node;
     }
@@ -397,7 +369,8 @@ multiplication_expression:
       unary_expression
     | multiplication_expression multiplication_operator unary_expression
     {
-        BranchExprNode *node = new BranchExprNode("expression", $2);
+        ExprNode *node = new ExprNode("expression");
+        node->addData("value", *($2));
         node->setChildren( {$1, $3} );
         $$ = node;
     }
@@ -407,7 +380,8 @@ additive_expression:
       multiplication_expression %prec "+"
     | additive_expression additive_operator multiplication_expression %prec "+"
     {
-        BranchExprNode *node = new BranchExprNode("expression", $2);
+        ExprNode *node = new ExprNode("expression");
+        node->addData("value", *($2));
         node->setChildren( {$1, $3} );
         $$ = node;
     }
@@ -417,7 +391,8 @@ relational_expression:
       additive_expression %prec RELATIONAL
     | relational_expression relational_operator additive_expression %prec RELATIONAL
     {
-        BranchExprNode *node = new BranchExprNode("expression", $2);
+        ExprNode *node = new ExprNode("expression");
+        node->addData("value", *($2));
         node->setChildren( {$1, $3} );
         $$ = node;
     }
@@ -427,40 +402,32 @@ equality_expression:
       relational_expression
     | equality_expression equality_operator relational_expression
     {
-        BranchExprNode *node = new BranchExprNode("expression", $2);
+        ExprNode *node = new ExprNode("expression");
+        node->addData("value", *($2));
         node->setChildren( {$1, $3} );
         $$ = node;
     }
     ;
 
-logical_and_expression:
+logical_expression:
       equality_expression
-    | logical_and_expression "&" equality_expression
+    | logical_expression logical_operator equality_expression
     {
-        BranchExprNode *node = new BranchExprNode("expression", $2);
-        node->setChildren( {$1, $3} );
-        $$ = node;
-    }
-    ;
-
-logical_or_expression:
-      logical_and_expression
-    | logical_or_expression "|" logical_and_expression
-    {
-        BranchExprNode *node = new BranchExprNode("expression", $2);
+        ExprNode *node = new ExprNode("expression");
+        node->addData("value", *($2));
         node->setChildren( {$1, $3} );
         $$ = node;
     }
     ;
 
 argument_expression_list:
-      logical_or_expression
+      logical_expression
     {
-        BranchExprNode *node = new BranchExprNode("expression_list", "");
+        ExprNode *node = new ExprNode("expression_list");
         node->appendChild($1);
         $$ = node;
     }
-    | argument_expression_list "," logical_or_expression
+    | argument_expression_list "," logical_expression
     {
         $1->appendChild($3);
         $$ = $1;
@@ -468,10 +435,11 @@ argument_expression_list:
     ;
 
 expression:
-      logical_or_expression
-    | IDENT assignment_operator logical_or_expression
+      logical_expression
+    | IDENT assignment_operator logical_expression
     {
-        BranchExprNode *node = new BranchExprNode("expression", $2);
+        ExprNode *node = new ExprNode("expression");
+        node->addData("value", *($2));
         node->setChildren( {$1, $3} );
         $$ = node;
     }
@@ -480,7 +448,7 @@ expression:
 expression_list:
       expression
     {
-        BranchExprNode *node = new BranchExprNode("expression_list", "");
+        ExprNode *node = new ExprNode("expression_list");
         node->appendChild($1);
         $$ = node;
     }
@@ -500,7 +468,7 @@ expression_list:
 option_list:
       %empty
     {
-        $$ = new BranchExprNode("option_list", "");
+        $$ = new ExprNode("option_list");
     }
     | option_list "," option
     {
@@ -512,13 +480,13 @@ option_list:
 option:
       IDENT
     {
-        BranchExprNode *node = new BranchExprNode("option", "");
+        ExprNode *node = new ExprNode("option");
         node->appendChild($1);
         $$ = node;
     }
     | IDENT "(" expression_list ")"
     {
-        BranchExprNode *node = new BranchExprNode("option", "");
+        ExprNode *node = new ExprNode("option");
         node->setChildren( {$1, $3} );
         $$ = node;
     }
@@ -533,11 +501,11 @@ option:
 weight_clause:
       %empty
     {
-        $$ = new BranchExprNode("weight_clause", "");
+        $$ = new ExprNode("weight_clause");
     }
     | "[" IDENT assignment_operator expression "]"
     {
-        BranchExprNode *node = new BranchExprNode("weight_clause", "");
+        ExprNode *node = new ExprNode("weight_clause");
         node->setChildren( {$2, $4} );
         $$ = node;
     }
@@ -552,11 +520,11 @@ weight_clause:
 if_clause:
       %empty
     {
-        $$ = new BranchExprNode("if_clause", "");
+        $$ = new ExprNode("if_clause");
     }
     | IF expression
     {
-        BranchExprNode *node = new BranchExprNode("if_clause", "");
+        ExprNode *node = new ExprNode("if_clause");
         node->appendChild($2);
         $$ = node;
     }
@@ -571,11 +539,11 @@ if_clause:
 in_clause:
       %empty
     {
-        $$ = new BranchExprNode("in_clause", "");
+        $$ = new ExprNode("in_clause");
     }
     | IN NUMBER "/" NUMBER
     {
-        BranchExprNode *node = new BranchExprNode("in_clause", "");
+        ExprNode *node = new ExprNode("in_clause");
         node->setChildren( {$2, $4} );
         $$ = node;
     }
@@ -590,17 +558,17 @@ in_clause:
 using_clause:
       %empty
     {
-        $$ = new BranchExprNode("using_clause", "");
+        $$ = new ExprNode("using_clause");
     }
     | USING STRING_LITERAL
     {
-        BranchExprNode *node = new BranchExprNode("using_clause", "");
+        ExprNode *node = new ExprNode("using_clause");
         node->appendChild($2);
         $$ = node;
     }
     | USING IDENT
     {
-        BranchExprNode *node = new BranchExprNode("using_clause", "");
+        ExprNode *node = new ExprNode("using_clause");
         node->appendChild($2);
         $$ = node;
     }

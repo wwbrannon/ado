@@ -9,7 +9,7 @@
 // [[Rcpp::export]]
 Rcpp::List do_stata_parse(std::string text)
 {
-    List res;
+    Rcpp::List res;
     RStataDriver *driver = new RStataDriver(text);
 
     // parse the input

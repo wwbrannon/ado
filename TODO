@@ -1,12 +1,14 @@
 Roadmap to v0.1:
 Immediate TODO:
-    o) rewrite the grammar actions for new class hierarchy
-        o) delete various random strings that don't become part of the AST
+    o) misc small parser fixes
+        o) delete the random strings that don't become part of the AST,
+           to avoid a memory leak
+        o) make sure the location tracking works
+        o) what about memory leaks during the error recovery stuff?
+    o) infrastructural R functions - AST walkers, name abbreviation support, etc
 
 Semantics:
     o) write up stubs for the R functions implementing Stata commands
-    o) abbreviations for commands, varnames, other things that aren't
-       hardcoded into the grammar
     o) Stata-like output: how much is this worth imitating?
 
 Write a test suite and test
@@ -16,19 +18,24 @@ Write a test suite and test
 * Run R CMD check to check the package tarball.
 
 Later functionality
-    v0.2: Loops + Macros
-
-    v0.3: Real varlists, with factors, interactions, etc
+    v0.2:
+        o) A mechanism for the user to register an R function obeying the
+           calling convention as a Stata command
+        
+        o) A batch processing mode
+    
+        o) Many more commands
+            o) data management: egen, input, label, etc
+            o) graphics
+            o) basic stats
+    
+    v0.3:
+        o) Real varlists, with factors, interactions, etc
+    
+        o) Formats / data types
 
     v0.4:
-        A mechanism for registering an arbitrary R function obeying the
-        calling convention as a Stata command
-    
-        Many more commands - egen, input, label
-    
-        Formats / data types
-    
-        Graphics?
+        o) Loops + Macros
 
 Write documentation
     o) man entries, vignettes, examples
