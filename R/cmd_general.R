@@ -3,72 +3,56 @@
 ### other commands will eventually rely on.
 
 ## Self-explanatory
-exit <-
-function(...)
+rstata_exit <-
+function()
 {
-    cond <- simpleCondition("Exit requested")
-    class(cond) <- c(class(cond), "exit")
 
-    signalCondition(cond)
 }
 
-quit <- exit
+rstata_quit <- rstata_exit
 
 ## Data manipulation commands
-generate <-
-function(...)
+rstata_generate <-
+function(expression, type_spec=NULL, if_clause=NULL, in_clause=NULL, option_list=NULL)
 {
 
 }
 
-insheet <-
-function(...)
+rstata_insheet <-
+function(using_clause, varlist=NULL, option_list=NULL)
 {
 
 }
 
 ## Immediate commands
-display <-
-function(...)
+rstata_display <-
+function(expression, format_spec=NULL)
 {
 
 }
 
 ## Stats commands
-logit <-
-function(...)
+rstata_logit <-
+function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL, option_list=NULL)
 {
 
 }
 
-tab <-
-function(...)
-{
-
-}
-
-## Graphics commands
-scatter <-
-function(...)
-{
-
-}
-
-bar <-
-function(...)
+rstata_tab <-
+function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL, option_list=NULL)
 {
 
 }
 
 ## Macro management commands
-local <-
-function(...)
+rstata_local <-
+function(expression)
 {
 
 }
 
-global <-
-function(...)
+rstata_global <-
+function(expression)
 {
 
 }
