@@ -490,29 +490,25 @@ nonmodifier_cmd:
      * we can do about it. */
     | MERGE MERGE_SPEC expression_list using_clause option_list
     {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_special_cmd"});
-        node->appendChild("verb", $1);
-        node->addData("merge_spec", *($2));
+        $1->addData("merge_spec", *($2));
 
         if($3->nChildren() > 0)
-            node->appendChild("expression_list", $3);
+            $1->appendChild("expression_list", $3);
 
         if($4->nChildren() > 0)
-            node->appendChild("using_clause", $4);
+            $1->appendChild("using_clause", $4);
 
         if($5->nChildren() > 0)
-            node->appendChild("option_list", $5);
+            $1->appendChild("option_list", $5);
 
-        $$ = node;
+        $$ = $1;
     }
     | XI expression_list option_list /* only necessary because this is a keyword */
     {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_special_cmd"});
-        node->appendChild("verb", $1);
-        node->appendChild("expression_list", $2);
-        node->appendChild("option_list", $3);
+        $1->appendChild("expression_list", $2);
+        $1->appendChild("option_list", $3);
 
-        $$ = node;
+        $$ = $1;
     }
     | COLLAPSE collapse_list if_clause in_clause weight_clause option_list
     | IVREGRESS varlist "(" varlist "=" varlist ")" if_clause in_clause weight_clause option_list

@@ -1535,10 +1535,11 @@ noisily                             {
 merge                               {
                                         R_ECHO(yytext);
                                         
-                                        yylval->node = new ExprNode({"rstata_literal", "rstata_ident"});
-                                        yylval->node->addData("value", *(new std::string(yytext)));
+                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        verb->addData("value", *(new std::string(yytext)));
 
-                                        // FIXME why isn't this also generating a cmd node?
+                                        yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
+                                        yylval->node->appendChild("verb", verb);
                                         return token::TOK_MERGE;
                                     }
 collapse                            {
