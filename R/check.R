@@ -16,7 +16,7 @@ function(node)
    raiseifnot(length(named) == length(unique(named)))
    
    for(chld in node$children)
-    check(chld)
+     check(chld)
   }
   
   #Check this node in a way appropriate to its type
@@ -408,7 +408,11 @@ function(node)
   
   raiseifnot(every(vapply(node$children, function(x) x %is% "rstata_expression" || x %is% "rstata_literal", TRUE)))
   
-  raiseifnot(every(vapply(node$children, function(x) !(x %is% "rstata_assignment_expression"), TRUE)))
+  raiseifnot(every(vapply(node$children,
+                          function(x) !(x %is% "rstata_assignment_expression") &&
+                                      !(x %is% "rstata_factor_expression") &&
+                                      !(x %is% "rstata_cross_expression"),
+                          TRUE)))
   
   invisible(TRUE)
 }
@@ -626,11 +630,33 @@ function(node)
   raiseifnot(length(node$children) == 2)
   raiseifnot(every(c("left", "right") %in% names(node$children)))
   
-  raiseifnot(node$children$left %is% "rstata_expression" ||
-             node$children$left %is% "rstata_literal")
- 
-  raiseifnot(node$children$right %is% "rstata_expression" ||
-             node$children$right %is% "rstata_literal")
+  raiseifnot(
+    !(
+      node$children$left %is% "rstata_factor_expression" ||
+        node$children$left %is% "rstata_cross_expression"
+    )
+    
+    &&
+      
+    (
+      node$children$left %is% "rstata_expression" ||
+      node$children$left %is% "rstata_literal"
+    )
+  ) 
+  
+  raiseifnot(
+    !(
+      node$children$right %is% "rstata_factor_expression" ||
+        node$children$right %is% "rstata_cross_expression"
+    )
+    
+    &&
+      
+      (
+        node$children$right %is% "rstata_expression" ||
+          node$children$right %is% "rstata_literal"
+      )
+  )
   
   invisible(TRUE)
 }
@@ -646,12 +672,33 @@ function(node)
   raiseifnot(length(node$children) == 2)
   raiseifnot(every(c("left", "right") %in% names(node$children)))
   
-  raiseifnot(node$children$left %is% "rstata_expression" ||
-             node$children$left %is% "rstata_literal")
- 
-  raiseifnot(node$children$right %is% "rstata_expression" ||
-             node$children$right %is% "rstata_literal")
+  raiseifnot(
+    !(
+      node$children$left %is% "rstata_factor_expression" ||
+        node$children$left %is% "rstata_cross_expression"
+    )
+    
+    &&
+      
+    (
+      node$children$left %is% "rstata_expression" ||
+        node$children$left %is% "rstata_literal"
+    )
+  ) 
   
+  raiseifnot(
+    !(
+      node$children$right %is% "rstata_factor_expression" ||
+        node$children$right %is% "rstata_cross_expression"
+    )
+    
+    &&
+      
+    (
+      node$children$right %is% "rstata_expression" ||
+        node$children$right %is% "rstata_literal"
+    )
+  )
   
   invisible(TRUE)
 }
@@ -666,12 +713,34 @@ function(node)
   #Children - length, names, types
   raiseifnot(length(node$children) == 2)
   raiseifnot(every(c("left", "right") %in% names(node$children)))
+
+  raiseifnot(
+    !(
+      node$children$left %is% "rstata_factor_expression" ||
+        node$children$left %is% "rstata_cross_expression"
+    )
+    
+    &&
+      
+    (
+      node$children$left %is% "rstata_expression" ||
+        node$children$left %is% "rstata_literal"
+    )
+  ) 
   
-  raiseifnot(node$children$left %is% "rstata_expression" ||
-             node$children$left %is% "rstata_literal")
- 
-  raiseifnot(node$children$right %is% "rstata_expression" ||
-             node$children$right %is% "rstata_literal")
+  raiseifnot(
+    !(
+      node$children$right %is% "rstata_factor_expression" ||
+        node$children$right %is% "rstata_cross_expression"
+    )
+    
+    &&
+      
+    (
+      node$children$right %is% "rstata_expression" ||
+        node$children$right %is% "rstata_literal"
+    )
+  )
   
   invisible(TRUE)
 }
@@ -687,15 +756,20 @@ function(node)
   raiseifnot(length(node$children) %in% c(1, 2))
   
   raiseifnot("left" %in% names(node$children))
-  raiseifnot(node$children$left %is% "rstata_expression" ||
-             node$children$left %is% "rstata_literal")
+  raiseifnot(node$children$left %is% "rstata_literal")
   
   if(length(node$children) == 2)
   {
     raiseifnot("right" %in% names(node$children))
-    raiseifnot(node$children$right %is% "rstata_expression" ||
-               node$children$right %is% "rstata_literal" ||
-               node$children$right %is% "rstata_argument_expression_list")
+    raiseifnot(
+        (
+          node$children$right %is% "rstata_expression" ||
+          node$children$right %is% "rstata_literal" ||
+          node$children$right %is% "rstata_argument_expression_list"
+        )
+        && !(node$children$right %is% "rstata_factor_expression")
+        && !(node$children$right %is% "rstata_cross_expression")
+    )
   }
     
   invisible(TRUE)
@@ -713,8 +787,20 @@ function(node)
   raiseifnot(every(c("left", "right") %in% names(node$children)))
   
   raiseifnot(node$children$left %is% "rstata_ident")
-  raiseifnot(node$children$right %is% "rstata_expression" ||
-             node$children$right %is% "rstata_literal")
+  
+  raiseifnot(
+    !(
+      node$children$right %is% "rstata_factor_expression" ||
+        node$children$right %is% "rstata_cross_expression"
+    )
+    
+    &&
+      
+    (
+      node$children$right %is% "rstata_expression" ||
+        node$children$right %is% "rstata_literal"
+    )
+  )
   
   invisible(TRUE)
 }
