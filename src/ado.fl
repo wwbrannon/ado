@@ -1,44 +1,90 @@
 %{
 #include <stdio.h>
 #include "y.tab.h"
+
+void long_comment();
+void short_comment();
 %}
 
 %%
-\[ return LBRACKET;
-\] return RBRACKET;
-\( return LPAREN;
-\) return RPAREN;
-\{ return LBRACE;
-\} return RBRACE;
-\" return DQUOTE;
-\' return SQUOTE;
-= return EQUALS;
-, return COMMA;
-: return COLON;
+"/*"                    { long_comment(); } /* the lexer eats comments */
+\/\/                    { short_comment(); }
 
--?[0-9]+(\.[0-9]+)? return NUMBER;
-\* return TIMES;
-\+ return PLUS;
-\/ return DIVIDE;
-\- return MINUS;
+-?[0-9]+(\.[0-9]+)?     return NUMBER;
+\*                      return '*';
+\+                      return '+';
+\/                      return '/';
+\-                      return '-';
 
-(?i:insheet) return INSHEET;
-(?i:tab) return TABLE;
-(?i:sum) return SUM;
-(?i:summarize) return SUM;
-(?i:di) return DI;
-(?i:display) return DI;
+(?i:insheet)            return INSHEET;
+(?i:tab)                return TABLE;
+(?i:sum)                return SUM;
+(?i:summarize)          return SUM;
+(?i:di)                 return DI;
+(?i:display)            return DI;
 
-(?i:using) return USING;
-(?i:by) return BY;
-(?i:in) return IN;
-(?i:if) return IF;
-(?i:pweight) return PWEIGHT;
-(?i:aweight) return AWEIGHT;
+(?i:using)              return USING;
+(?i:by)                 return BY;
+(?i:in)                 return IN;
+(?i:if)                 return IF;
+(?i:pweight)            return PWEIGHT;
+(?i:aweight)            return AWEIGHT;
 
-[_A-Za-z][A-Za-z0-9_]* return IDENT;
+\"(\\.|[^"\\])*\"       return STRING_LITERAL;
+\'(\\.|[^'\\])*\'       return STRING_LITERAL;
 
-\n /* do nothing */;
-[ \t]+ /* do nothing */;
+"&&"                    return AND_OP;
+"&"                     return AND_OP;
+"||"                    return OR_OP;
+"|"                     return OR_OP;
+">="                    return GT_OP;
+"<="                    return LE_OP;
+"=="                    return EQ_OP;
+"!="                    return NE_OP;
+
+\[                      return '[';
+\]                      return ']';
+\(                      return '(';
+\)                      return ')';
+\{                      return '{';
+\}                      return '}';
+\"                      return '"';
+\'                      return '\'';
+=                       return '=';
+%                       return '%';
+,                       return ',';
+:                       return ':';
+
+
+[_A-Za-z][A-Za-z0-9_]*  return IDENT;
+
+\n                      /* do nothing */;
+[ \t]+                  /* do nothing */;
 %%
+
+void long_comment()
+{
+    char c, c1;
+
+loop:
+    while ((c = input()) != '*' && c != 0)
+        putchar(c);
+
+    if ((c1 = input()) != '/' && c != 0)
+    {
+        unput(c1);
+        goto loop;
+    }
+
+    if (c != 0)
+        putchar(c1);
+}
+
+void short_comment()
+{
+    char c;
+    
+    while ((c = input()) != '\n' && c != 0)
+        putchar(c);
+}
 
