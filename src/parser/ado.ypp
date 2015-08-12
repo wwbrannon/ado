@@ -52,6 +52,8 @@ int yywrap()
 %token <str> QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
 %token <str> SET LOG DUPLICATES MERGE
 
+%token <str> NEWLINE
+
 %%
 
 /*
@@ -61,8 +63,8 @@ int yywrap()
  */
 
 commands:
-      %empty
-    | commands command
+      command
+    | commands NEWLINE command
     ;
 
 command:
@@ -96,13 +98,13 @@ modifier_cmd:
     ;
 
 modifier_cmd_list:
-      %empty
+      modifier_cmd
     | modifier_cmd_list modifier_cmd
     ;
 
 /* FIXME - everything after IDENT should be optional */
 nonmodifier_cmd:
-      special_cmd
+    special_cmd
     
     | IDENT filename
     | IDENT filename ',' option_list
@@ -202,7 +204,8 @@ expression:
     ;
 
 expression_list:
-    expression_list expression
+      expression
+    | expression_list expression
     ;
 
 /*
@@ -212,7 +215,7 @@ expression_list:
  */
 
 varlist:
-      %empty
+      IDENT
     | varlist IDENT
     ;
 
@@ -223,7 +226,7 @@ varlist:
  */
 
 option_list:
-      %empty
+      option
     | option_list option
     ;
 
@@ -279,6 +282,10 @@ using_clause:
  ******************************
  */
 
+set_cmd:
+    SET IDENT expression
+    ;
+
 duplicates_cmd:
     DUPLICATES
     ;
@@ -289,10 +296,6 @@ log_cmd:
 
 merge_cmd:
     MERGE
-    ;
-
-set_cmd:
-    SET
     ;
 
 %%

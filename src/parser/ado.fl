@@ -157,7 +157,7 @@ _N                          { count(); yylval.str = strdup(yytext); return _BIG_
 
 
                             /* ignore whitespace but track line and column numbers */
-\n                          { count(); ++line_num; }
+\n                          { count(); ++line_num; return NEWLINE; }
 [ \t\v\r\f]+                { count(); }
 %%
 
