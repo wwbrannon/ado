@@ -280,29 +280,19 @@ cmd:
         $$ = $1;
     }
 
-    | modifier_cmd_list long_modifier_cmd expression_list option_list ":" nonmodifier_cmd cmd_sep
+    | modifier_cmd_list long_modifier_cmd ":" nonmodifier_cmd cmd_sep
     {
-        $2->appendChild("varlist", $3);
-        
-        if($4->nChildren() > 0)
-            $2->appendChild("option_list", $4);
-        
         $1->appendChild($2);
-        $1->appendChild("main_cmd", $6);
+        $1->appendChild("main_cmd", $4);
         
         R_ACTION($1);
         
         $$ = $1;
     }
-    | modifier_cmd_list long_modifier_cmd expression_list option_list ":" compound_cmd cmd_sep
+    | modifier_cmd_list long_modifier_cmd ":" compound_cmd cmd_sep
     {
-        $2->appendChild("varlist", $3);
-        
-        if($4->nChildren() > 0)
-            $2->appendChild("option_list", $4);
-        
         $1->appendChild($2);
-        $1->appendChild("main_cmd", $6);
+        $1->appendChild("main_cmd", $4);
         
         R_ACTION($1);
         
@@ -317,8 +307,22 @@ modifier_cmd:
     ;
 
 long_modifier_cmd:
-      BY
-    | XI
+      BY expression_list option_list 
+    {
+        $1->appendChild("varlist", $2);
+        
+        if($3->nChildren() > 0)
+          $1->appendChild("option_list", $3);
+        
+        $$ = $1;
+    }
+    | XI option_list
+    {
+      if($2->nChildren() > 0)
+        $1->appendChild("option_list", $2);
+      
+      $$ = $1;
+    }
     ;
 
 modifier_cmd_list:
@@ -467,6 +471,16 @@ nonmodifier_cmd:
 
         $$ = node;
     }
+    | XI expression_list option_list /* only necessary because this is a keyword */
+    {
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_special_cmd"});
+        node->appendChild("verb", $1);
+        node->appendChild("varlist", $2);
+        node->appendChild("option_list", $3);
+
+        $$ = node;
+    }
+
     ;
 
 type_spec:
