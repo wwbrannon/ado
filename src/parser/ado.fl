@@ -25,7 +25,7 @@
 #endif
 
 #undef YYLMAX
-#define YYLMAX 8192
+#define YYLMAX 65536
 
 // String utility functions used and defined below
 std::vector<std::string> split(const std::string &s, char delim);
