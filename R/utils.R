@@ -177,3 +177,44 @@ function(fmt)
   
   return(FALSE)
 }
+
+#Functions for generating code
+function_for_ado_operator <-
+function(name)
+{
+  #Arithmetic expressions
+  if(name %in% c("^", "-", "+", "*", "/", "+", "-"))
+    return(as.symbol(name))
+  
+  #Logical, relational and other expressions
+  if(name %in% c("==", "&", "|", "!", ">", "<", ">=", "<="))
+    return(as.symbol(name))
+  
+  if(name == "()")
+    return(as.symbol("do.call"))
+  
+  if(name == "=")
+    return(as.symbol("<-")) #FIXME this is probably wrong
+  
+  if(name == "[]")
+    return(as.symbol("["))
+  
+  #Factor operators
+  if(name == "c.")
+    return(as.symbol("op_cont"))
+  
+  if(name == "i.")
+    return(as.symbol("op_ind"))
+  
+  if(name == "o.")
+    return(as.symbol("op_omit"))
+  
+  if(name == "ib.")
+    return(as.symbol("op_base"))
+  
+  if(name == "##")
+    return(as.symbol("op_fact_cross"))
+  
+  if(name == "#")
+    return(as.symbol("op_cross"))
+}

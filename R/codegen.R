@@ -1,138 +1,163 @@
-### After we've weeded the AST and know that it satisfies assumptions,
-### we need to recursively step through it and evaluate each command.
-### We can do that in two steps, leveraging what's already part of R:
-###     1) construct an unevaluated call from the AST for each command,
-###        where the call is to one of the functions written to implement
-###        a Stata command
-###     2) call eval :)
-### This shouldn't actually be recursive, because R doesn't / can't eliminate
-### tail calls. What can we do instead?
-
-#check for each function?
-#        if(mode(walked) != "expression")
-#        {
-#            cond <- simpleError("Bad AST generated")
-#            class(cond) <- c(class(cond), "bad_command")
-#
-#            signalCondition(cond)
-#        }
+### Code generation. At this point, we've "weeded" the AST and know it satisfies
+### our assumptions. Now it's time to generate an expression object containing
+### one unevaluated call for each Stata command. Next, we'll evaluate these objects
+### for a) their side effects, b) values which are objects with print() methods.
 
 codegen <-
 function(node)
 UseMethod("codegen")
 
-## Literals
-codegen.rstata_ident <-
-function(node)
-{
-    as.symbol(node$data$value)
-}
-
-codegen.rstata_number <-
-function(node)
-{
-    as.numeric(node$data$value)
-}
-
-codegen.rstata_string_literal <-
-function(node)
-{
-    as.character(node$data$value)
-}
-
-codegen.rstata_datetime <-
-function(node)
-{
-    as.POSIXct(strptime(node$data$value, format="%d%b%Y %H:%M:%S"))
-}
-
-codegen.rstata_type_constructor <-
-function(node)
-{
-
-}
-
+##############################################################################
 ## Compound and atomic commands
 codegen.rstata_compound_cmd <-
 function(node)
 {
-
-}
-
-codegen.rstata_modifier_cmd_list <- #should this exist?
-function(node)
-{
-
+  lst <- list()
+  chlds <- lapply(node$children, codegen)
+  
+  for(chld in chlds)
+  {
+    if(!is.expression(chld))
+      lst <- c(lst, chld)
+    else #we have an "embedded R" cmd, which we should unpack
+      lst <- c(lst, as.list(chld))
+  }
+  
+  do.call(expression, lst)
 }
 
 codegen.rstata_embedded_r <-
 function(node)
 {
-    #A stub from an older function - expand
-    #vals <- lapply(lapply(parse(text=txt), eval), capture.output)
+  parse(text=node$data["value"])
+}
 
-    #do.call(paste0, c(vals, list(collapse="\n")))
+codegen.rstata_cmd <-
+function(node)
+{
+  NextMethod()
+}
 
+codegen.rstata_modifier_cmd_list <-
+function(node)
+{
+  
+}
+
+codegen.rstata_modifier_cmd <-
+function(node)
+{
 }
 
 codegen.rstata_general_cmd <-
 function(node)
 {
-
+  args <- node$children
+  verb <- codegen(args["verb"])
+  args <- args[names(args) != "verb"]
+  #FIXME
 }
 
-## Command parts and expressions
-codegen.rstata_expression <-
+codegen.rstata_special_cmd <-
 function(node)
 {
-
 }
 
-codegen.rstata_expression_list <-
-function(node)
-{
-
-}
-
-codegen.rstata_argument_expression_list <-
-function(node)
-{
-
-}
-
+##############################################################################
+## Command parts
 codegen.rstata_if_clause <-
 function(node)
 {
-
 }
 
 codegen.rstata_in_clause <-
 function(node)
 {
-
-}
-
-codegen.rstata_option_list <-
-function(node)
-{
-
-}
-
-codegen.rstata_option <-
-function(node)
-{
-
 }
 
 codegen.rstata_using_clause <-
 function(node)
 {
-
 }
 
 codegen.rstata_weight_clause <-
 function(node)
 {
-
 }
 
+codegen.rstata_option_list <-
+function(node)
+{
+}
+
+codegen.rstata_option <-
+function(node)
+{
+}
+
+##############################################################################
+## Lists of expressions
+codegen.rstata_expression_list <-
+function(node)
+{
+  lapply(node$children, codegen)
+}
+
+codegen.rstata_argument_expression_list <-
+function(node)
+{
+  lapply(node$children, codegen)
+}
+
+codegen.rstata_type_constructor <-
+function(node)
+{
+}
+
+##############################################################################
+## Expression branch nodes
+codegen.rstata_expression <-
+function(node)
+{
+  #Get the function to call
+  op <- node$children$verb$data["value"]
+  op <- function_for_ado_operator(op)
+  
+  #Get the operator's arguments - one, two, or at least in principle, more
+  args <- node$children[names(node$children) != "verb"]
+  args <- lapply(args, codegen)
+  
+  as.call(c(list(op), args))
+}
+
+##############################################################################
+## Literal expressions
+codegen.rstata_literal <-
+function(node)
+{
+  NextMethod()
+}
+
+codegen.rstata_ident <-
+function(node)
+{
+  as.symbol(node$data["value"])
+}
+
+codegen.rstata_number <-
+function(node)
+{
+  as.numeric(node$data["value"])
+}
+
+codegen.rstata_string_literal <-
+function(node)
+{
+  as.character(node$data["value"])
+}
+
+codegen.rstata_datetime <-
+function(node)
+{
+  as.POSIXct(node$data["value"])
+}
