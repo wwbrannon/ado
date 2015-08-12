@@ -55,10 +55,6 @@ M           (?i:(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec))
 \"\"                        { count(); yylval.str = strdup(yytext); return STRING_MISSING; }
 \"(\\.|[^"\\])*\"           { count(); yylval.str = strdup(yytext); return STRING_LITERAL; }
 
-str                         { count(); yylval.str = strdup(yytext); return STRING_TYPE_SPEC; }
-str{D}+                     { count(); yylval.str = strdup(yytext); return STRING_TYPE_SPEC; }
-strL                        { count(); yylval.str = strdup(yytext); return STRING_TYPE_SPEC; }
-
 
 
                                                         /* datetime literals */
@@ -80,57 +76,17 @@ strL                        { count(); yylval.str = strdup(yytext); return STRIN
 {D}*"."{D}+({E})?           { count(); yylval.str = strdup(yytext); return NUMBER; }
 {D}+"."{D}*({E})?           { count(); yylval.str = strdup(yytext); return NUMBER; }
 
-(?i:byte)                   { count(); yylval.str = strdup(yytext); return BYTE; } /* Stata's numeric data types */
-(?i:int)                    { count(); yylval.str = strdup(yytext); return INT; }
-(?i:long)                   { count(); yylval.str = strdup(yytext); return LONG; }
-(?i:float)                  { count(); yylval.str = strdup(yytext); return FLOAT; }
-(?i:double)                 { count(); yylval.str = strdup(yytext); return DOUBLE; }
-
-
-
-                            /* format specifiers */
-%-?{D}+s                    { count(); yylval.str = strdup(yytext); return STRING_FORMAT; }
-%-?0?{D}+\.{D}+[efg]c?      { count(); yylval.str = strdup(yytext); return NUMBER_FORMAT; }
-%-?t[Ccdwmqh]{L}*           { count(); yylval.str = strdup(yytext); return DATETIME_FORMAT; }
-
 
 
                             /* Other keywords */
-_n                          { count(); yylval.str = strdup(yytext); return _LITTLE_N; }
-_N                          { count(); yylval.str = strdup(yytext); return _BIG_N; }
-(?i:_all)                   { count(); yylval.str = strdup(yytext); return _ALL; }
-(?i:_b)                     { count(); yylval.str = strdup(yytext); return _B; }
-(?i:_coef)                  { count(); yylval.str = strdup(yytext); return _COEF; }
-(?i:_cons)                  { count(); yylval.str = strdup(yytext); return _CONS; }
-(?i:_pi)                    { count(); yylval.str = strdup(yytext); return _PI; }
-(?i:_pred)                  { count(); yylval.str = strdup(yytext); return _PRED; }
-(?i:_rc)                    { count(); yylval.str = strdup(yytext); return _RC; }
-(?i:_skip)                  { count(); yylval.str = strdup(yytext); return _SKIP; }
 (?i:using)                  { count(); yylval.str = strdup(yytext); return USING; }
-(?i:with)                   { count(); yylval.str = strdup(yytext); return WITH; }
-(?i:local)                  { count(); yylval.str = strdup(yytext); return LOCAL; }
-(?i:global)                 { count(); yylval.str = strdup(yytext); return GLOBAL; }
-(?i:varlist)                { count(); yylval.str = strdup(yytext); return VARLIST; }
-(?i:newlist)                { count(); yylval.str = strdup(yytext); return NEWLIST; }
-(?i:numlist)                { count(); yylval.str = strdup(yytext); return NUMLIST; }
 (?i:if)                     { count(); yylval.str = strdup(yytext); return IF; }
 (?i:in)                     { count(); yylval.str = strdup(yytext); return IN; }
-(?i:of)                     { count(); yylval.str = strdup(yytext); return OF; }
-                            
-                            
-
-                            /* flow control constructs */
-(?i:while)                  { count(); yylval.str = strdup(yytext); return WHILE; }
-(?i:foreach)                { count(); yylval.str = strdup(yytext); return FOREACH; }
-(?i:forvalues)              { count(); yylval.str = strdup(yytext); return FORVALUES; }
-(?i:forval)                 { count(); yylval.str = strdup(yytext); return FORVALUES; }
 
 
 
                             /* logical operators and various single-character tokens */
-"&&"                        { count(); yylval.str = strdup(yytext); return AND_OP; }
 "&"                         { count(); yylval.str = strdup(yytext); return AND_OP; }
-"||"                        { count(); yylval.str = strdup(yytext); return OR_OP; }
 "|"                         { count(); yylval.str = strdup(yytext); return OR_OP; }
 ">="                        { count(); yylval.str = strdup(yytext); return GT_OP; }
 "<="                        { count(); yylval.str = strdup(yytext); return LT_OP; }
