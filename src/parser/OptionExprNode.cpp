@@ -1,17 +1,17 @@
-/* Methods for the StataOption class */
+/* Methods for the OptionExprNode class */
 
 #include <Rcpp.h>
 #include "rstata.hpp"
 
 using namespace Rcpp;
 
-StataOption::StataOption(std::string _name, std::vector<std::string> _args)
+OptionExprNode::OptionExprNode(std::string _name, std::vector<std::string> _args)
 {
     name = _name;
     args = _args;
 }
 
-List StataOption::as_list() const
+List OptionExprNode::as_R_object() const
 {
     unsigned int x;
     List res;

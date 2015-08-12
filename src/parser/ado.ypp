@@ -9,7 +9,7 @@ void raise_condition(const std::string& msg, const std::string& type);
 
 extern "C" int yylex(void);
 
-void yyerror(std::vector<std::unique_ptr<BaseStataCmd>> *cmdlist_ptr, const char *str)
+void yyerror(std::vector<std::unique_ptr<BaseExprNode>> *ast_root, const char *str)
 {
         raise_condition(str, "error");
 }
@@ -25,7 +25,7 @@ int yywrap()
     char *str;
 }
 
-%parse-param {std::vector<std::unique_ptr<BaseStataCmd>> *cmdlist_ptr}
+%parse-param {std::vector<std::unique_ptr<BaseExprNode>> *ast_root}
 %define parse.error verbose
 %start translation_unit
 
@@ -87,7 +87,6 @@ cmds:
 
 cmd:
       embedded_r_cmd
-    | flow_control_statement
     | modifier_cmd_list nonmodifier_cmd
     | modifier_cmd_list ':' nonmodifier_cmd
     | modifier_cmd_list nonmodifier_cmd ':' nonmodifier_cmd
@@ -95,21 +94,6 @@ cmd:
 
 embedded_r_cmd:
     EMBEDDED_R
-    ;
-
-flow_control_statement:
-      WHILE expression compound_cmd
-    | FORVALUES IDENT '=' NUMBER '/' NUMBER compound_cmd
-    | foreach
-    ;
-
-foreach:
-      FOREACH IDENT IN expression_list compound_cmd
-    | FOREACH IDENT OF LOCAL IDENT compound_cmd
-    | FOREACH IDENT OF GLOBAL IDENT compound_cmd
-    | FOREACH IDENT OF VARLIST expression_list compound_cmd
-    | FOREACH IDENT OF NEWLIST expression_list compound_cmd
-    | FOREACH IDENT OF NUMLIST expression_list compound_cmd
     ;
 
 modifier_cmd:

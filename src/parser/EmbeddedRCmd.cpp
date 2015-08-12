@@ -9,7 +9,7 @@ EmbeddedRCmd::EmbeddedRCmd(std::string _text)
     text = _text;
 }
 
-List EmbeddedRCmd::as_list() const
+List EmbeddedRCmd::as_R_object() const
 {
     List res;
    

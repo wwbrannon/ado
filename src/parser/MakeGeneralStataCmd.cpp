@@ -33,25 +33,25 @@ MakeGeneralStataCmd& MakeGeneralStataCmd::verb(std::string const& _verb)
     return *this;
 }
 
-MakeGeneralStataCmd& MakeGeneralStataCmd::varlist(BaseStataExpr *_varlist)
+MakeGeneralStataCmd& MakeGeneralStataCmd::varlist(BaseExprNode *_varlist)
 {
     __varlist = _varlist;
     return *this;
 }
 
-MakeGeneralStataCmd& MakeGeneralStataCmd::assign_stmt(BaseStataExpr *_assign_stmt)
+MakeGeneralStataCmd& MakeGeneralStataCmd::assign_stmt(BaseExprNode *_assign_stmt)
 {
     __assign_stmt = _assign_stmt;
     return *this;
 }
 
-MakeGeneralStataCmd& MakeGeneralStataCmd::if_exp(BaseStataExpr *_if_exp)
+MakeGeneralStataCmd& MakeGeneralStataCmd::if_exp(BaseExprNode *_if_exp)
 {
     __if_exp = _if_exp;
     return *this;
 }
 
-MakeGeneralStataCmd& MakeGeneralStataCmd::options(OptionList *_options)
+MakeGeneralStataCmd& MakeGeneralStataCmd::options(OptionListExprNode *_options)
 {
     __options = _options;
     return *this;

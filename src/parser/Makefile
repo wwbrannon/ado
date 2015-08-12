@@ -11,7 +11,7 @@ CPPFLAGS += -Ibuild
 
 all: parse.o lex.o
 	ar -rcs ado.a build/parse.o build/lex.o \
-			build/StataExpr.o build/OptionList.o build/StataOption.o \
+			build/ExprNode.o build/OptionListExprNode.o build/OptionExprNode.o \
 			build/GeneralStataCmd.o build/MakeGeneralStataCmd.o \
 			build/EmbeddedRCmd.o
 
@@ -25,9 +25,9 @@ lex.o: infra
 
 infra:
 	mkdir -p build
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) StataExpr.cpp -o build/StataExpr.o
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) OptionList.cpp -o build/OptionList.o
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) StataOption.cpp -o build/StataOption.o
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) ExprNode.cpp -o build/ExprNode.o
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) OptionListExprNode.cpp -o build/OptionListExprNode.o
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) OptionExprNode.cpp -o build/OptionExprNode.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) GeneralStataCmd.cpp -o build/GeneralStataCmd.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) MakeGeneralStataCmd.cpp -o build/MakeGeneralStataCmd.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) EmbeddedRCmd.cpp -o build/EmbeddedRCmd.o

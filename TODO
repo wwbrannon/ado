@@ -6,9 +6,8 @@ Immediate TODO:
         o) real varlists, with factors, interactions, etc
         o) incorporate most of the currently unused keyword tokens
         o) abbreviations for abbreviate-able keywords
-        o) looks like macros have to go in here (loops use them)
     o) finish the actions for commands
-        o) how to represent compound statements and loops?
+        o) figure out how to make the as_R_object methods recursive - should they all return lists?
 
 Semantics:
     o) write up stubs for the R functions implementing Stata commands
@@ -35,3 +34,4 @@ Later functionality
     
     Graphics?
 
+    Loops + Macros

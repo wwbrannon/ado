@@ -19,7 +19,7 @@ class BaseExprNode
 {
     public:
         // method that returns this BaseExprNode as an R expression
-        virtual Rcpp::Language as_R_object() const = 0;
+        virtual Rcpp::List as_R_object() const = 0;
 };
 
 // The next three classes are AST nodes for literals - string, symbol and numeric
@@ -31,7 +31,7 @@ class NumberExprNode: public BaseExprNode
         NumberExprNode(long double _data);
         NumberExprNode(std::string _data);
         
-        virtual Rcpp::Language as_R_object() const;
+        virtual Rcpp::List as_R_object() const;
 
     private:
         Rcpp::NumericVector data; // a type-generic number already in R format
@@ -42,7 +42,7 @@ class IdentExprNode: public BaseExprNode
     public:
         IdentExprNode(std::string _data);
         
-        virtual Rcpp::Language as_R_object() const;
+        virtual Rcpp::List as_R_object() const;
 
     private:
         std::string data;
@@ -53,7 +53,7 @@ class StringExprNode: public BaseExprNode
     public:
         StringExprNode(std::string _data);
         
-        virtual Rcpp::Language as_R_object() const;
+        virtual Rcpp::List as_R_object() const;
 
     private:
         std::string data;
@@ -91,7 +91,7 @@ class BranchExprNode: public BaseExprNode
     public:
         BranchExprNode(std::string _data, std::vector<std::unique_ptr<BaseExprNode>> _children);
         
-        virtual Rcpp::Language as_R_object() const;
+        virtual Rcpp::List as_R_object() const;
     
     private:
         std::vector<std::unique_ptr<BaseExprNode>> children;
@@ -144,40 +144,6 @@ class CmdBlock: public BaseExprNode
 {
     private:
         
-
-    public:
-        virtual Rcpp::List as_R_object() const;
-};
-
-class WhileCmd: public BaseExprNode
-{
-    private:
-        CmdBlock *cmds;
-        std::string name;
-        BaseExprNode *exp;
-
-    public:
-        virtual Rcpp::List as_R_object() const;
-        WhileCmd(CmdBlock *cmds
-};
-
-class ForvaluesCmd: public BaseExprNode
-{
-    private:
-        CmdBlock *cmds;
-        std::string name;
-
-
-    public:
-        virtual Rcpp::List as_R_object() const;
-};
-
-class ForeachCmd: public BaseExprNode
-{
-    private:
-        CmdBlock *cmds;
-        std::string name;
-
 
     public:
         virtual Rcpp::List as_R_object() const;
