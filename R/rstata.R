@@ -14,7 +14,7 @@ function(expr_list)
 }
 
 rstata <-
-function(dta = NULL, assign.back=TRUE)
+function(dta = NULL, conn=stdin(), assign.back=TRUE)
 {
     #create an empty dataset if none provided,
     #but make sure we have a data frame
@@ -27,7 +27,8 @@ function(dta = NULL, assign.back=TRUE)
     
     while(TRUE)
     {
-        line <- readline(". ")
+        cat(". ")
+        line <- readLines(conn)
 
         val <-
         tryCatch(
