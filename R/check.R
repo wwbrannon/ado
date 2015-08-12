@@ -241,7 +241,8 @@ function(node, debug_level=0)
   raiseifnot(length(node$children) == 2)
   raiseifnot(every(c("expression", "compound_cmd") %in% names(node$children)))
 
-  raiseifnot(node$children$expression %is% "rstata_expression")
+  raiseifnot(node$children$expression %is% "rstata_expression" ||
+             node$children$expression %is% "rstata_literal")
   raiseifnot(node$children$compound_cmd %is% "rstata_compound_cmd")
 
   invisible(TRUE)
