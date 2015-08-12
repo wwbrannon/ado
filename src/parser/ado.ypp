@@ -513,8 +513,20 @@ nonmodifier_cmd:
 
         $$ = node;
     }
-    | COLLAPSE clist if_clause in_clause weight_clause option_list
+    | COLLAPSE collapse_list if_clause in_clause weight_clause option_list
     | IVREGRESS varlist "(" varlist "=" varlist ")" if_clause in_clause weight_clause option_list
+    | RECODE varlist recode_rule_list if_clause in_clause option_list
+    ;
+
+/* Helper constructs for several special commands */
+varlist:
+      IDENT
+    | varlist IDENT
+    ;
+
+numlist:
+      NUMBER
+    | numlist NUMBER
     ;
 
 /* Helper constructs for collapse */
@@ -532,15 +544,24 @@ collapse_spec:
     "(" IDENT ")" collapse_spec_element
     ;
 
-clist:
+collapse_list:
       collapse_spec
-    | clist collapse_spec
+    | collapse_list collapse_spec
     ;
 
-/* Helper constructs for ivregress */
-varlist:
+/* Helper constructs for recode */
+recode_rule_lhs:
       IDENT
-    | varlist IDENT
+    | NUMBER "/" NUMBER
+    | numlist
+    ;
+
+recode_rule:
+    "(" recode_rule_lhs "=" NUMBER ")" 
+
+recode_rule_list:
+      recode_rule
+    | recode_rule_list recode_rule
     ;
 
 /*
