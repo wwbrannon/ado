@@ -174,7 +174,7 @@ function(ast, debug_level=0)
     {
         check(ast, debug_level=debug_level)
 
-        codegen(ast, debug_level=debug_level)
+        codegen(ast)
     },
     error=function(c) c,
     BadCommandException=function(c) c)
