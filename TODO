@@ -1,15 +1,14 @@
 Roadmap to v0.1:
 Immediate TODO:
-    o) error recovery + error if other character given
-    o) make sure the location tracking works
-    o) memory leaks
-        o) delete the random strings that don't become part of the AST
-        o) delete command parts if not added
-        o) what about memory leaks during the error recovery stuff?
     o) expand the grammar to include
         o) formats
         o) data types
         o) fully general varlists
+    o) error recovery + error if other character given
+    o) make sure the location tracking works
+    o) memory leaks
+        o) delete the random string tokens that don't become part of the AST
+        o) what about memory leaks during the error recovery stuff?
     
     o) infrastructural R functions - AST walkers, name abbreviation support, etc
 

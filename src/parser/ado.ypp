@@ -236,14 +236,29 @@ nonmodifier_cmd:
         
         if($3->nChildren() > 0)
             node->appendChild("if_clause", $3);
+        else
+            delete $3;
+
         if($4->nChildren() > 0)
             node->appendChild("in_clause", $4);
+        else
+            delete $4;
+
         if($5->nChildren() > 0)
             node->appendChild("weight_clause", $5);
+        else
+            delete $5;
+
         if($6->nChildren() > 0)
             node->appendChild("using_clause", $6);
+        else
+            delete $6;
+
         if($7->nChildren() > 0)
             node->appendChild("option_list", $7);
+        else
+            delete $7;
+
         $$ = node;
     }
     | IDENT
@@ -262,10 +277,18 @@ nonmodifier_cmd:
         
         if($3->nChildren() > 0)
             node->appendChild("varlist", $3);
+        else
+            delete $3;
+
         if($4->nChildren() > 0)
             node->appendChild("using_clause", $4);
+        else
+            delete $4;
+
         if($5->nChildren() > 0)
             node->appendChild("option_list", $5);
+        else
+            delete $5;
         
         $$ = node;
     }
