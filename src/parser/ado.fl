@@ -4,7 +4,6 @@
 
 %{ /* -*- C++ -*- */
 #include <cstring>
-#include <cerrno>
 #include <climits>
 #include <cstdlib>
 #include <cstdio>
@@ -16,16 +15,40 @@
 #include <sstream>
 #include <string>
 
+#include <Rcpp.h>
+
 #include "RStata.hpp"
 #include "ado.tab.hpp"
 #include "RStataDriver.hpp"
+
+// We really, really can't have the scanner calling exit() and
+// killing the R process, so let's use our own friendlier routine.
+// If the issue is memory exhaustion, the R interpreter overall will
+// have run out of memory and will handle it however it's going to.
+#ifdef YY_FATAL_ERROR
+#undef YY_FATAL_ERROR
+#endif
+
+#define YY_FATAL_ERROR(msg) rstata_yy_fatal_error(msg)
 
 #ifndef YYSTYPE
 #define YYSTYPE yy::RStataParser::semantic_type
 #endif
 
+// Make yytext big enough to hold a macro replacement text as large as
+// the ones Stata allows
+#ifdef YYLMAX
 #undef YYLMAX
+#endif
+
 #define YYLMAX 65536
+
+// our error handling routine for fatal errors, defined below
+void rstata_yy_fatal_error(std::string& msg);
+void rstata_yy_fatal_error(const char *msg);
+
+// the rstata_yy_fatal_error function uses this function to stop execution
+void raise_condition(const std::string& msg, const std::string& type);
 
 // String utility functions used and defined below
 std::vector<std::string> split(const std::string &s, char delim);
@@ -905,6 +928,29 @@ trim(const std::string& str, const std::string& what)
         return "";
 
     return str.substr(start, len);
+}
+
+void
+rstata_yy_fatal_error(std::string& msg)
+{
+    raise_condition(msg, "error");
+}
+
+void
+rstata_yy_fatal_error(const char *msg)
+{
+    raise_condition(std::string(msg), "error");
+}
+
+void
+raise_condition(const std::string& msg, const std::string& type)
+{
+  Rcpp::List cond;
+  cond["message"] = msg;
+  cond["call"] = R_NilValue;
+  cond.attr("class") = Rcpp::CharacterVector::create(type, "condition");
+  Rcpp::Function stopper("stop");
+  stopper(cond);
 }
 
 // The scanning-related functions of the driver class, which depend on lexer objects
