@@ -48,3 +48,12 @@ function(...)
 
 }
 
+## Other commands
+exit <-
+function(...)
+{
+    
+}
+
+quit <- exit
+

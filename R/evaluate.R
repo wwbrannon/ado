@@ -16,25 +16,25 @@ UseMethod("evaluate")
 evaluate.rstata_ident <-
 function(node)
 {
-
+    as.symbol(node$data$value)
 }
 
 evaluate.rstata_number <-
 function(node)
 {
-
+    as.numeric(node$data$value)
 }
 
 evaluate.rstata_string_literal <-
 function(node)
 {
-
+    as.character(node$data$value)
 }
 
 evaluate.rstata_datetime <-
 function(node)
 {
-
+    
 }
 
 evaluate.rstata_type_constructor <-
