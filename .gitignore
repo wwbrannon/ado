@@ -38,3 +38,8 @@ build/
 
 #vim files
 .*.swp
+
+#RStudio files
+.Rproj.user
+/*.Rproj
+
