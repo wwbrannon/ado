@@ -440,7 +440,7 @@ i?"o("\ *{D}+\ *\/{D}+\ *")."       {
                                     }
 (?i:gen)                            {
                                         yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
-                                        yylval->node->addData("verb", *(new std::string(yytext)));
+                                        yylval->node->addData("verb", "generate");
                                         return token::TOK_GENERATE;
                                     }
 (?i:recast)                         {
