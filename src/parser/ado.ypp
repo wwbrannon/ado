@@ -121,7 +121,7 @@ yy::RStataParser::error(const location_type& l, const std::string& m)
 %token <node>   EMBEDDED_CODE
 %token <node>   BY XI BYSORT
 %token <node>   QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
-%token <node>   MERGE COLLAPSE IVREGRESS RECODE
+%token <node>   MERGE COLLAPSE IVREGRESS RECODE GSORT
 
                 /* Command components and keywords */
 %token          USING IF IN
@@ -516,9 +516,10 @@ nonmodifier_cmd:
     | COLLAPSE collapse_list if_clause in_clause weight_clause option_list
     | IVREGRESS varlist "(" varlist "=" varlist ")" if_clause in_clause weight_clause option_list
     | RECODE varlist recode_rule_list if_clause in_clause option_list
+    | GSORT gsort_varlist option_list
     ;
 
-/* Helper constructs for several special commands */
+/* Helper constructs for multiple special commands */
 varlist:
       IDENT
     | varlist IDENT
@@ -562,6 +563,18 @@ recode_rule:
 recode_rule_list:
       recode_rule
     | recode_rule_list recode_rule
+    ;
+
+/* Helper constructs for gsort */
+gsort_var:
+      IDENT
+    | "+" IDENT
+    | "-" IDENT
+    ;
+
+gsort_varlist:
+      gsort_var
+    | gsort_varlist gsort_var
     ;
 
 /*
