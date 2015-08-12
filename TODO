@@ -1,34 +1,40 @@
-Roadmap to v0.1:
 Immediate TODO:
     o) the lexer should format dates/times/datetimes and numbers into strings
        in a way that R's as.typename functions can immediately convert
-    o) parser should handle the /// syntax for continuing a statement
+    
     o) next, infrastructural R functions
         o) weeding for each type of node
-        o) AST walkers to construct unevaluated calls and eval them
+        o) AST walkers to construct unevaluated calls and expression objects
     o) functions for the initial set of commands
+    
     o) grammar expansion: fully general varlists
         o) factor variable operators ("i.", "c.", "o.", "#"/"##", "ib."/"b."/"X.varname")
         o) :value_label_name
         o) revise the semantic analysis phase in R to handle new grammar
     
-Write a test suite and test
-
 Later functionality
-    v0.2:
         o) A mechanism for the user to register an R function obeying the
            calling convention as a Stata command
+        
+        o) Loops + Macros
+            Suddenly very clear what has to happen here: the containing R environment keeps
+            data structures, reads in the program text and then passes it to the parser,
+            which does the parse and then as each cmd rule matches, calls back to the weeding +
+            transforming + executing code that's written in R.
+
+            That way it works the same for interactive use where the R function reads lines,
+            but behaves correctly in batch use. We can also implement macros with this setup.
+
+            Memory management will be...interesting.
         
         o) Many more commands
             o) data management: egen, input, label, etc
             o) graphics
             o) basic stats
-    
-    v0.3:
-        o) Loops + Macros
+        
         o) Stata-like output: how much is this worth imitating?
 
-        o) time series support
+Write a test suite and test
 
 Write documentation
     o) man entries, vignettes, examples

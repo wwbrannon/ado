@@ -7,6 +7,7 @@
 #include <climits>
 #include <cstdlib>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include "RStata.hpp"
 #include "ado.tab.hpp"
@@ -41,15 +42,19 @@ B           [ \t\v\r\f]
 llocp->step();
 %}
 
+                            /* Allow a triple slash at EOL as a line-extender */
+\/\/\/\n                    { llocp->lines(yyleng); llocp->step();  }
+
+
 
                             /* ignore whitespace but track line and column numbers */
-[\n]+                       llocp->lines(yyleng); llocp->step();
-{B}+                        llocp->step();
+[\n]+                       { llocp->lines(yyleng); llocp->step(); }
+{B}+                        { llocp->step(); }
 
                             /* eat comments */
-\/\*                        long_comment();
-\/\/                        short_comment();
-^\*                         short_comment();
+\/\*                        { long_comment(); }
+\/\/                        { short_comment(); }
+^\*                         { short_comment(); }
 
 
 
