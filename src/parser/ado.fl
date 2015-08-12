@@ -369,8 +369,8 @@ size_t macro_length = 0;
    
                                     /* Any other character is a delimiter - we're at the end of the macro */
     [^{L}{D}]|\n                    {
-                                        R_ECHO(yytext);
-                                        
+                                        // don't R_ECHO because we're unputting the matched text to process again
+
                                         if(yytext[0] == '\n')
                                             llocp->lines(1);
                                         
@@ -787,7 +787,7 @@ size_t macro_length = 0;
                                         loop_buf += yytext[0];
                                     }
     "}"                             {
-                                        R_ECHO(yytext);
+                                        // don't R_ECHO because we're going to unput the matched text to process again
 
                                         // This is not a mistake: it should be -1 rather than 0, because the brace_count
                                         // variable is set to 0 when yylex starts up, and we want to see one more closing
@@ -804,7 +804,7 @@ size_t macro_length = 0;
                                             yy_pop_state(yyscanner); // back to FOREACH or FORVALUES
                                             yy_pop_state(yyscanner); // back to INITIAL
 
-                                            yyless(0); // we want to re-scan this because the parser expects it
+                                            unput(yytext[0]); // we want to re-scan this because the parser expects a "}"
 
                                             // construct a string literal token from loop_buf and return it
                                             std::string *s = new std::string(loop_buf);
