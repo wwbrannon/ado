@@ -149,7 +149,7 @@ function(node, debug_level=0)
   
   if("numlist" %in% names(node$children))
   {
-    raiseifnot(node$children$varlist %is% "rstata_expression_list",
+    raiseifnot(node$children$numlist %is% "rstata_expression_list",
                msg=if(debug_level) NULL else "Invalid numlist given to foreach statement")
     
     raiseifnot(every(vapply(node$children$numlist, function(v) v %is% "rstata_number", logical(1))),
@@ -163,11 +163,11 @@ function(node, debug_level=0)
                msg=if(debug_level) NULL else "Invalid varlist given to foreach statement")
   } else if("local_macro_source" %in% names(node$children))
   {
-    raiseifnot(node$children$numlist %is% "rstata_ident",
+    raiseifnot(node$children$local_macro_source %is% "rstata_ident",
                msg=if(debug_level) NULL else "Invalid source macro name in foreach statement")
   } else if("global_macro_source" %in% names(node$children))
   {
-    raiseifnot(node$children$numlist %is% "rstata_ident",
+    raiseifnot(node$children$global_macro_source %is% "rstata_ident",
                msg=if(debug_level) NULL else "Invalid source macro name in foreach statement")
   }
 
