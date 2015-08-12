@@ -1,7 +1,7 @@
 ## C files
-/src/parser/build/ado.tab.cpp
-/src/parser/build/ado.output
-/src/parser/build/lex.yy.c
+/src/parser/ado.tab.cpp
+/src/parser/ado.output
+/src/parser/lex.yy.c
 
 # Object files
 *.o
