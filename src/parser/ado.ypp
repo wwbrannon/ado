@@ -588,7 +588,7 @@ postfix_expression:
     | postfix_expression "[" expression "]" %prec "["
     {
         ExprNode *node = new ExprNode("rstata_expression");
-        node->addData("value", std::string("[]"));
+        node->addData("verb", std::string("[]"));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
         
@@ -600,7 +600,7 @@ postfix_expression:
     | postfix_expression "(" ")" %prec "("
     {
         ExprNode *node = new ExprNode("rstata_expression");
-        node->addData("value", std::string("()"));
+        node->addData("verb", std::string("()"));
         node->appendChild("left", $1);
         
         delete $2;
@@ -611,7 +611,7 @@ postfix_expression:
     | postfix_expression "(" argument_expression_list ")"
     {
         ExprNode *node = new ExprNode("rstata_expression");
-        node->addData("value", std::string("()"));
+        node->addData("verb", std::string("()"));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
         
@@ -627,7 +627,7 @@ power_expression:
     | power_expression power_operator postfix_expression %prec EXPONENT
     {
         ExprNode *node = new ExprNode("rstata_expression");
-        node->addData("value", *($2));
+        node->addData("verb", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
         $$ = node;
@@ -639,7 +639,7 @@ unary_expression:
     | unary_operator power_expression
     {
         ExprNode *node = new ExprNode("rstata_expression");
-        node->addData("value", *($1));
+        node->addData("verb", *($1));
         node->appendChild("right", $2);
         $$ = node;
     }
@@ -650,7 +650,7 @@ multiplication_expression:
     | multiplication_expression multiplication_operator unary_expression
     {
         ExprNode *node = new ExprNode("rstata_expression");
-        node->addData("value", *($2));
+        node->addData("verb", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
         $$ = node;
@@ -662,7 +662,7 @@ additive_expression:
     | additive_expression additive_operator multiplication_expression %prec "+"
     {
         ExprNode *node = new ExprNode("rstata_expression");
-        node->addData("value", *($2));
+        node->addData("verb", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
         $$ = node;
@@ -674,7 +674,7 @@ relational_expression:
     | relational_expression relational_operator additive_expression %prec RELATIONAL
     {
         ExprNode *node = new ExprNode("rstata_expression");
-        node->addData("value", *($2));
+        node->addData("verb", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
         $$ = node;
@@ -686,7 +686,7 @@ equality_expression:
     | equality_expression equality_operator relational_expression
     {
         ExprNode *node = new ExprNode("rstata_expression");
-        node->addData("value", *($2));
+        node->addData("verb", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
         $$ = node;
@@ -698,7 +698,7 @@ logical_expression:
     | logical_expression logical_operator equality_expression
     {
         ExprNode *node = new ExprNode("rstata_expression");
-        node->addData("value", *($2));
+        node->addData("verb", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
         $$ = node;
@@ -710,7 +710,7 @@ cross_expression:
     | cross_expression cross_operator logical_expression
     {
         ExprNode *node = new ExprNode("rstata_expression");
-        node->addData("value", *($2));
+        node->addData("verb", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
         $$ = node;
@@ -739,7 +739,7 @@ expression:
     | IDENT assignment_operator cross_expression
     {
         ExprNode *node = new ExprNode("rstata_expression");
-        node->addData("value", *($2));
+        node->addData("verb", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
         $$ = node;
@@ -760,7 +760,7 @@ expression_list:
     }
     | type_spec "(" expression_list ")"
     {
-        ExprNode *node = new ExprNode("rstata_type_constructor");
+        ExprNode *node = new ExprNode("rstata_expression_list");
         node->addData("type_spec", *($1));
         node->appendChild("varlist", $3);
         
