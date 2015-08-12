@@ -278,34 +278,14 @@ size_t macro_length = 0;
                                         }
                                     }
     
-    \\\`                            {
+    \\.                             {
                                         R_ECHO(yytext);
                                         
                                         // push yytext to the back of the current frame
                                         std::vector<std::string> frame = macro_stack.top();
                                         macro_stack.pop();
 
-                                        frame.push_back(std::string(yytext));
-                                        macro_stack.push(frame);
-                                    }
-    \\\'                            {
-                                        R_ECHO(yytext);
-                                        
-                                        // push yytext to the back of the current frame
-                                        std::vector<std::string> frame = macro_stack.top();
-                                        macro_stack.pop();
-
-                                        frame.push_back(std::string(yytext));
-                                        macro_stack.push(frame);
-                                    }
-    \\\.                            {
-                                        R_ECHO(yytext);
-                                        
-                                        // push yytext to the back of the current frame
-                                        std::vector<std::string> frame = macro_stack.top();
-                                        macro_stack.pop();
-
-                                        frame.push_back(std::string(yytext));
+                                        frame.push_back(std::string(yytext + 1)); // a string w/o the first char
                                         macro_stack.push(frame);
                                     }
     \\                              {
@@ -315,11 +295,11 @@ size_t macro_length = 0;
                                         std::vector<std::string> frame = macro_stack.top();
                                         macro_stack.pop();
 
-                                        frame.push_back(std::string(yytext));
+                                        frame.push_back(std::string("\\"));
                                         macro_stack.push(frame);
                                     }
    
-    [^\\\`\'\n]+                      {
+    [^\\\`\'\n]+                    {
                                         R_ECHO(yytext);
                                         
                                         // push yytext to the back of the current frame
@@ -467,44 +447,14 @@ size_t macro_length = 0;
 
                                         yy_push_state(GMACRO_BRACE, yyscanner);
                                     }
-    \\\}                            {
+    \\.                             {
                                         R_ECHO(yytext);
                                         
                                         // push yytext to the back of the current frame
                                         std::vector<std::string> frame = macro_stack.top();
                                         macro_stack.pop();
 
-                                        frame.push_back(std::string(yytext));
-                                        macro_stack.push(frame);
-                                    }
-    \\\$                            {
-                                        R_ECHO(yytext);
-                                        
-                                        // push yytext to the back of the current frame
-                                        std::vector<std::string> frame = macro_stack.top();
-                                        macro_stack.pop();
-
-                                        frame.push_back(std::string(yytext));
-                                        macro_stack.push(frame);
-                                    }
-    \\\`                            {
-                                        R_ECHO(yytext);
-                                        
-                                        // push yytext to the back of the current frame
-                                        std::vector<std::string> frame = macro_stack.top();
-                                        macro_stack.pop();
-
-                                        frame.push_back(std::string(yytext));
-                                        macro_stack.push(frame);
-                                    }
-    \\\.                            {
-                                        R_ECHO(yytext);
-                                        
-                                        // push yytext to the back of the current frame
-                                        std::vector<std::string> frame = macro_stack.top();
-                                        macro_stack.pop();
-
-                                        frame.push_back(std::string(yytext));
+                                        frame.push_back(std::string(yytext + 1)); // a string w/o the first char
                                         macro_stack.push(frame);
                                     }
     \\                              {
@@ -514,7 +464,7 @@ size_t macro_length = 0;
                                         std::vector<std::string> frame = macro_stack.top();
                                         macro_stack.pop();
 
-                                        frame.push_back(std::string(yytext));
+                                        frame.push_back(std::string("\\"));
                                         macro_stack.push(frame);
                                     }
 
