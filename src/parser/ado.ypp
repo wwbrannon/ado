@@ -373,7 +373,7 @@ modifier_cmd_list:
     ;
 
 nonmodifier_cmd:
-     IDENT expression_list if_clause in_clause weight_clause using_clause option_list
+      IDENT expression_list if_clause in_clause weight_clause using_clause option_list
     {
         ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
         node->appendChild("verb", $1);
@@ -396,10 +396,26 @@ nonmodifier_cmd:
 
         $$ = node;
     }
-    | IDENT
+    | IDENT if_clause in_clause weight_clause using_clause option_list
     {
         ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
         node->appendChild("verb", $1);
+
+        if($2->nChildren() > 0)
+            node->appendChild("if_clause", $2);
+
+        if($3->nChildren() > 0)
+            node->appendChild("in_clause", $3);
+
+        if($4->nChildren() > 0)
+            node->appendChild("weight_clause", $4);
+
+        if($5->nChildren() > 0)
+            node->appendChild("using_clause", $5);
+
+        if($6->nChildren() > 0)
+            node->appendChild("option_list", $6);
+
         $$ = node;
     }
     
