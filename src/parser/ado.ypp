@@ -84,11 +84,13 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
     RPAREN          ")"
     NEWLINE         "\n"
     SEMICOLON       ";"
+    FACT_CROSS      "##"
+    CROSS           "#"
 ;
 
 /* Literals of various fundamental types */
 %token <node>   NUMBER NUMBER_MISSING
-%token <node>   IDENT
+%token <node>   IDENT IDENT_WITH_LEVEL
 %token <node>   STRING_LITERAL STRING_MISSING
 %token <node>   DATE DATETIME
 
@@ -106,6 +108,9 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 /* Command components and keywords */
 %token <str>    USING IF IN
 %token <str>    MERGE_SPEC
+
+/* Factor variable operators */
+%token <str> CONT_OPERATOR IND_OPERATOR BASE_OPERATOR OMIT_OPERATOR
 
 /* Nonterminal token types */
 %type <node>    translation_unit external_statement compound_cmd cmds modifier_cmd_list cmd
