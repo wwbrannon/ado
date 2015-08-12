@@ -1,7 +1,10 @@
 Now:
+  o) there should be more than one debug level
+
   o) Lexer fixes
     o) fix compound double quotes
     o) are long comments subtly broken?
+
     o) macro substitution, local and global
         o) the ++ and -- operators for macros
         o) the c(), e() and r() pseudo-operators
@@ -9,11 +12,7 @@ Now:
   o) Stata's "stored results"
     o) creturn
 
-  o) code in a {{{.....}}} block should execute in a specially prepared environment
-
   o) Loops: much harder, because of macros
-
-  o) there should be more than one debug level
 
   o) syntax for weird commands
     o) does all this require a GLR parser?
@@ -39,7 +38,9 @@ Backend:
 
   o) complete all the commands which now have stubs
 
-  o) comparisons with string and numeric missings will yield NA, like R, rather
+  o) code in a {{{.....}}} block should execute in a specially prepared environment
+
+  o) comparisons with string and numeric missings currently yield NA, like R, rather
      than booleans like Stata
 
 ===============================================================================

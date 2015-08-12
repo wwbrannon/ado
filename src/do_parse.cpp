@@ -65,3 +65,28 @@ do_parse(std::string text, int debug_level=0)
   return R_NilValue;
 }
 
+// [[Rcpp::export]]
+int
+parse_accept(std::string text, int debug_level=0)
+{
+  int ret;
+  
+  try
+  {
+    RStataDriver *driver = new RStataDriver(text, debug_level);
+    
+    if(driver->parse() == 0 && driver->error_seen == 0)
+        ret = 1;
+    else
+        ret = 0;
+
+    driver->delete_ast();
+    delete driver;
+  } catch(...)
+  {
+    ret = 0;
+  }
+
+  return ret;
+}
+

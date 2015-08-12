@@ -9,3 +9,7 @@ do_parse <- function(text, debug_level = 0L) {
     .Call('rstata_do_parse', PACKAGE = 'rstata', text, debug_level)
 }
 
+parse_accept <- function(text, debug_level = 0L) {
+    .Call('rstata_parse_accept', PACKAGE = 'rstata', text, debug_level)
+}
+
