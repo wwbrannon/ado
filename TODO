@@ -1,21 +1,17 @@
 Now:
     o) all FIXMEs
-
-    o) name abbreviation - options, variables, commands
-      o) check() should check that abbrevs are valid
-      o) codegen() should unabbreviate them
-
     o) finalize the format of generated code
-
-    o) better error messages
-        o) from check() and codegen()
-        o) methods take debug_level arguments; now they need to act on them
+      o) there should be more S3 classes set on the generated objects
 
     o) infrastructural R functions
       o) for operators
       o) for prefix commands - quietly, noisily, capture, by, xi
     
     o) R functions for initial general commands
+
+    o) better error messages
+        o) from check() and codegen()
+        o) methods take debug_level arguments; now they need to act on them
 
     Systematic debugging:
         o) use testthat and travis
@@ -45,21 +41,22 @@ Documentation:
     o) document the R expression format the parser emits
 
 Misc:
+    o) figure out the NAMESPACE and what you have to export
     o) Makevars and Makefile have to come from a configure script for
        portability - autoconf?
 
 ===============================================================================
 Wishlist functionality:
-    o) better interactive reading than readline() and readLines()
+    o) better interactive reading
       o) Ctrl-D isn't EOF
-      o) the way it stores ado command history is an awful hack
+      o) the way it stores ado command history is a godawful hack, probably
+         also a race condition, and is Unix-specific
 
     o) A mechanism for the user to register an R function obeying the
        calling convention as a Stata command - the "registry" package?
-    
+
     o) time-series operations and grammar
 
     o) graphics
 
     o) very Stata-like output: unlikely to be worth imitating
-

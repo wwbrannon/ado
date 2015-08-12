@@ -1,5 +1,11 @@
 ### The REPL, batch-processing and environment-handling logic for rstata
 
+#Create a package-wide environment used to hold three things:
+#    o) the dataset,
+#    o) the symbol table for macro substitution, and
+#    o) settings and parameters that commands can see or modify.
+rstata_env <- new.env(parent=emptyenv())
+
 #' @export
 #' @useDynLib rstata
 #' @import Rcpp
@@ -8,195 +14,195 @@ function(dta = NULL, filename=NULL, string=NULL,
          assign.back=TRUE, save.history=TRUE,
          debug_level=0)
 {
-    #Sanity checks: create an empty dataset if none provided,
-    #but make sure we have a data frame
-    if(is.null(dta))
-    {
-        dta <- data.frame()
-        varname <- "dta"
-    } else
-    {
-        varname <- deparse(substitute(dta))
-    }
+  #We have a package-wide environment because of scoping issues,
+  #but data in it shouldn't persist across calls to this function
+  rm(list=ls(rstata_env), envir=rstata_env)
+  
+  #(re-)create the settings cache and macro symbol table
+  assign("rstata_macro_env", new.env(parent=emptyenv()), envir=rstata_env)
+  assign("rstata_settings_env", new.env(parent=emptyenv()), envir=rstata_env)
+  
+  #Sanity checks: create an empty dataset if none provided,
+  #but make sure we have a data frame
+  if(is.null(dta))
+  {
+    assign("rstata_dta", data.frame(), envir=rstata_env)
+    varname <- "dta"
+  } else
+  {
+    assign("rstata_dta", dta, envir=rstata_env)
+    varname <- deparse(substitute(dta))
+  }
 
-    stopifnot(is.data.frame(dta))
+  stopifnot(is.data.frame(get("rstata_dta", envir=rstata_env)))
+  
+  #Sanity checks: make sure file and string aren't both set
+  if(!is.null(filename) && !is.null(string))
+  {
+      stop("Cannot specify both the filename and string arguments")
+  }
+  
+  #Should we, on exit, put the final dataset back into the variable
+  #we were given as if we had a pointer to it?
+  if(!is.null(assign.back))
+      on.exit(if(assign.back)
+              {
+                obj <- get("rstata_dta", envir=rstata_env)
+                assign(varname, obj, pos=parent.frame())
+              })
+  
+  #Callbacks: a macro value accessor that allows the lexer to retrieve macro values.
+  get_macro_value <-
+  function(name)
+  {
+    env <- get("rstata_macro_env", envir=rstata_env)
+    get(name, envir=env, inherits=FALSE)
+  }
+  
+  #Callbacks: the main command-processing callback function for the parser
+  process_cmd <-
+  function(ast, debug_level=0)
+  {
+    #Semantic analysis and code generation
+    ret_p1 <-
+      tryCatch(
+        {
+          check(ast, debug_level=debug_level)
+          
+          codegen(ast, debug_level=debug_level)
+        },
+        error=function(c) c,
+        BadCommandException=function(c) c)
     
-    #Sanity checks: make sure file and string aren't both set
-    if(!is.null(filename) && !is.null(string))
-    {
-        stop("Cannot specify both the filename and string arguments")
-    }
+    #Raising conditions with custom classes through an intervening
+    #C++ layer is quite tricky, so we're going to return ints and have
+    #the C++ code re-raise the exceptions in a more controllable way
+    if(inherits(ret_p1, "BadCommandException") || inherits(ret_p1, "error"))
+      return( list(1, ret_p1$message) )
     
-    #Should we, on exit, put the final dataset back into the variable
-    #we were given as if we had a pointer to it?
-    if(!is.null(assign.back))
-        on.exit(if(assign.back)
-                {
-                  assign(varname, dta, pos=parent.frame())
-                })
+    #Evaluate the generated calls for their side effects and for printable objects
+    ret_p2 <-
+      tryCatch(
+        {
+          #FIXME "invalid for() loop sequence"
+          objs <- eval(ret_p1, envir=parent.frame())
+          
+          for(obj in objs)
+            print(obj) #dispatches to the custom print methods
+        },
+        error=function(c) c,
+        ExitRequestedException=function(c) c)
     
-    #Create two environments used to hold a) the symbol table for macro
-    #substitution, b) settings and parameters that commands can see
-    #or modify.
-    rstata_settings_env <- new.env(parent=emptyenv())
-    rstata_macro_env <- new.env(parent=emptyenv())
+    if(inherits(ret_p2, "error")) #raise an EvalErrorException in the C++
+      return( list(2, ret_p2$message) )
     
-    #Callbacks: a macro value accessor that closes over the macro
-    #environment, so that the lexer can retrieve macro values.
-    get_macro_value <-
-    function(name)
-    {
-        get(name, envir=rstata_macro_env, inherits=FALSE)
-    }
-
-    #Callbacks: the main command-processing callback function for
-    #the parsing driver. The dta object and the settings environment
-    #are in lexical scope here.
-    #FIXME need to pass those objects down
-    process_cmd <-
-    function(ast, debug_level=0)
-    {
-      #Semantic analysis and code generation
-      ret_p1 <-
-        tryCatch(
-          {
-            check(ast, debug_level=debug_level)
-            
-            codegen(ast, debug_level=debug_level)
-          },
-          error=function(c) c,
-          BadCommandException=function(c) c)
-      
-      #Raising conditions with custom classes through an intervening
-      #C++ layer is quite tricky, so we're going to return ints and have
-      #the C++ code re-raise the exceptions in a more controllable way
-      if(inherits(ret_p1, "BadCommandException") || inherits(ret_p1, "error"))
-        return( list(1, ret_p1$message) )
-      
-      #Evaluate the generated calls for their side effects and for printable objects
-      ret_p2 <-
-        tryCatch(
-          {
-            #FIXME how to incorporate debug level?
-            #FIXME "invalid for() loop sequence"
-            objs <- eval(ret_p1, envir=parent.frame())
-            
-            for(obj in objs)
-              print(obj) #dispatches to the custom print methods
-          },
-          error=function(c) c,
-          ExitRequestedException=function(c) c)
-      
-      if(inherits(ret_p2, "error")) #raise an EvalErrorException in the C++
-        return( list(2, ret_p2$message) )
-      
-      if(inherits(ret_p2, "ExitRequestedException"))
-        return( list(3, ret_p2$message) )
-      
-      return( list(0, "Success") );
-    }
+    if(inherits(ret_p2, "ExitRequestedException"))
+      return( list(3, ret_p2$message) )
     
-    # =========================================================================
-    #The actual work of parsing and executing commands is here
-    if(interactive() && is.null(filename) && is.null(string))
-    {
-        #We're reading from stdin, interactively:
-        #time for a read-eval-print loop
+    return( list(0, "Success") );
+  }
+  
+  # =========================================================================
+  #The actual work of parsing and executing commands is here
+  if(interactive() && is.null(filename) && is.null(string))
+  {
+      #We're reading from stdin, interactively:
+      #time for a read-eval-print loop
+      
+      #Save the command history before we get started
+      if(!is.null(save.history) && save.history)
+      {
+        #the R command history before this function was invoked
+        orig_cmdhist <- tempfile()
+        savehistory(orig_cmdhist)
         
-        #Save the command history before we get started
-        if(!is.null(save.history) && save.history)
-        {
-          #the R command history before this function was invoked
-          orig_cmdhist <- tempfile()
-          savehistory(orig_cmdhist)
-          
-          #our command history
-          cmdhist <- tempfile()
-          cat("", file=cmdhist)
-          loadhistory(cmdhist) #start with empty history
+        #our command history
+        cmdhist <- tempfile()
+        cat("", file=cmdhist)
+        loadhistory(cmdhist) #start with empty history
 
-          on.exit(
-          {
-            loadhistory(orig_cmdhist)
-            
-            unlink(cmdhist)
-            unlink(orig_cmdhist)
-          }, add=TRUE)
-        }
-      
-        while(TRUE)
+        on.exit(
         {
-          val <- 
-          tryCatch(
-          {
-            inpt <- read_interactive()
-            
-            if(!is.null(save.history) && save.history)
-            {
-              cat(inpt, "\n", file=cmdhist, append=TRUE)
-              loadhistory(cmdhist) #it's brutal how much disk access this is
-            }
-            
-            #Send the input to the bison parser, which, after reading
-            #each command, invokes the process_cmd callback
-            do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
-                                    get_macro_value=get_macro_value,
-                                    debug_level=debug_level)
-          },
-          error = function(c) c)
+          loadhistory(orig_cmdhist)
           
-          if(inherits(val, "error"))
+          unlink(cmdhist)
+          unlink(orig_cmdhist)
+        }, add=TRUE)
+      }
+    
+      while(TRUE)
+      {
+        val <- 
+        tryCatch(
+        {
+          inpt <- read_interactive()
+          
+          if(!is.null(save.history) && save.history)
           {
-            if(inherits(val, "ExitRequestedException"))
-            {
-              cat("\n") #so the new R prompt is on a new line
-              break
-            } else if(inherits(val, "BadCommandException") ||
-                      inherits(val, "EvalErrorException"))
-            {
-              cat(paste0(val$message, sep=""))
-              
-              next
-            } else
-            {
-              cat(paste0(val$message, sep=""))
-              
-              s <- substr(readline("Save dataset? "), 1, 1)
-              if(s == "Y" || s == "y")
-                assign.back <- TRUE
-              
-              break
-            }
+            cat(inpt, "\n", file=cmdhist, append=TRUE)
+            loadhistory(cmdhist) #it's brutal how much disk access this is
+          }
+          
+          #Send the input to the bison parser, which, after reading
+          #each command, invokes the process_cmd callback
+          do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
+                                  get_macro_value=get_macro_value,
+                                  debug_level=debug_level)
+        },
+        error = function(c) c)
+        
+        if(inherits(val, "error"))
+        {
+          if(inherits(val, "ExitRequestedException"))
+          {
+            cat("\n") #so the new R prompt is on a new line
+            break
+          } else if(inherits(val, "BadCommandException") ||
+                    inherits(val, "EvalErrorException"))
+          {
+            cat(paste0(val$message, sep=""))
+            
+            next
+          } else
+          {
+            cat(paste0(val$message, sep=""))
+            
+            s <- substr(readline("Save dataset? "), 1, 1)
+            if(s == "Y" || s == "y")
+              assign.back <- TRUE
+            
+            break
           }
         }
-    } else if(is.null(filename) && is.null(string))
-    {   
-        inpt <- readLines(con=stdin(), warn=FALSE)
-        inpt <- Reduce(function(x, y) paste(x, y, sep="\n"), inpt)
-        inpt <- paste0(inpt, "\n\n\n")
-        
-        do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
-                                get_macro_value=get_macro_value,
-                                debug_level=debug_level)
-    } else if(!is.null(filename))
-    {
-        inpt <- readLines(con=file(filename, "r"))
-        inpt <- Reduce(function(x, y) paste(x, y, sep="\n"), inpt)
-        inpt <- paste0(inpt, "\n\n\n")
-        
-        do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
-                                get_macro_value=get_macro_value,
-                                debug_level=debug_level)
-    } else
-    {
-        inpt <- readLines(con=textConnection(string))
-        inpt <- Reduce(function(x, y) paste(x, y, sep="\n"), inpt)
-        inpt <- paste0(inpt, "\n\n\n")
-        
-        do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
-                                get_macro_value=get_macro_value,
-                                debug_level=debug_level)
-    }
-    
-    return(invisible(dta));
+      }
+  } else if(is.null(filename) && is.null(string))
+  {   
+      inpt <- readLines(con=stdin(), warn=FALSE)
+      inpt <- Reduce(function(x, y) paste(x, y, sep="\n"), inpt)
+      inpt <- paste0(inpt, "\n\n\n")
+      
+      do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
+                              get_macro_value=get_macro_value,
+                              debug_level=debug_level)
+  } else if(!is.null(filename))
+  {
+      inpt <- readLines(con=file(filename, "r"))
+      inpt <- Reduce(function(x, y) paste(x, y, sep="\n"), inpt)
+      inpt <- paste0(inpt, "\n\n\n")
+      
+      do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
+                              get_macro_value=get_macro_value,
+                              debug_level=debug_level)
+  } else
+  {
+      inpt <- readLines(con=textConnection(string))
+      inpt <- Reduce(function(x, y) paste(x, y, sep="\n"), inpt)
+      inpt <- paste0(inpt, "\n\n\n")
+      
+      do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
+                              get_macro_value=get_macro_value,
+                              debug_level=debug_level)
+  }
+  
+  return(invisible(get("rstata_dta", envir=rstata_env)));
 }

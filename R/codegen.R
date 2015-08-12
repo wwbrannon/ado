@@ -47,7 +47,8 @@ codegen.rstata_general_cmd <-
 function(node, debug_level=0)
 {
   verb <- as.character(codegen(node$children$verb))
-  verb <- get(paste0("rstata_", verb), mode="function")
+  verb <- unabbreviateCommand(paste0("rstata_cmd_", verb))
+  verb <- get(verb, mode="function")
   
   args <- node$children
   args <- args[names(args) != "verb"]
@@ -69,7 +70,8 @@ codegen.rstata_special_cmd <-
 function(node, debug_level=0)
 {
   verb <- as.character(codegen(node$children$verb))
-  verb <- get(paste0("rstata_", verb), mode="function")
+  verb <- unabbreviateCommand(paste0("rstata_cmd_", verb))
+  verb <- get(verb, mode="function")
   
   args <- node$children
   args <- args[names(args) != "verb"]
@@ -89,7 +91,8 @@ codegen.rstata_modifier_cmd <-
 function(node, debug_level=0)
 {
   verb <- as.character(codegen(node$children$verb))
-  verb <- get(paste0("rstata_", verb), mode="function")
+  verb <- unabbreviateCommand(paste0("rstata_cmd_", verb))
+  verb <- get(verb, mode="function")
   
   as.call(list(verb))
 }

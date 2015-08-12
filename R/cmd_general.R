@@ -3,58 +3,68 @@
 ### other commands will eventually rely on.
 
 ## Quitting the REPL
-rstata_exit <-
+rstata_cmd_exit <-
 function()
 {
-
+  raiseCondition("Exit requested", "ExitRequestedException")
 }
 
-rstata_quit <-
-rstata_exit
+rstata_cmd_quit <-
+function()
+{
+  raiseCondition("Exit requested", "ExitRequestedException")
+}
 
 ## Data manipulation commands
-rstata_generate <-
+rstata_cmd_generate <-
 function(expression, type_spec=NULL, if_clause=NULL, in_clause=NULL, option_list=NULL)
 {
-
+  rstata_dta <- get("rstata_dta", envir=rstata_env)
+  rstata_macro_env <- get("rstata_macro_env", envir=rstata_env)
+  rstata_settings_env <- get("rstata_settings_env", envir=rstata_env)
+  
+  print(rstata_dta)
+  print(rstata_macro_env)
+  print(rstata_settings_env)
+  
+  print(match.call())
 }
 
-rstata_insheet <-
+rstata_cmd_insheet <-
 function(using_clause, varlist=NULL, option_list=NULL)
 {
-
+  print(match.call())
 }
 
 ## Immediate commands
-rstata_display <-
+rstata_cmd_display <-
 function(expression, format_spec=NULL)
 {
-
+  print(match.call())
 }
 
 ## Stats commands
-rstata_logit <-
+rstata_cmd_logit <-
 function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL, option_list=NULL)
 {
-
+  print(match.call())
 }
 
-rstata_tab <-
+rstata_cmd_tabulate <-
 function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL, option_list=NULL)
 {
-
+  print(match.call())
 }
 
 ## Macro management commands
-rstata_local <-
+rstata_cmd_local <-
 function(expression)
 {
-
+  print(match.call())
 }
 
-rstata_global <-
+rstata_cmd_global <-
 function(expression)
 {
-
+  print(match.call())
 }
-

@@ -294,7 +294,11 @@ function(node, debug_level=0)
   raiseifnot(names(node$children) == c("verb"))
   raiseifnot(node$children$verb %is% "rstata_ident")
   
-  raiseifnot(tolower(node$children$verb$data["value"]) %in% c("quietly", "noisily", "capture"))
+  func <- paste0("rstata_cmd_", tolower(node$children$verb$data["value"]))
+  func <- unabbreviateCommand(func, "BadCommandException")
+  
+  raiseifnot(func %in% paste0("rstata_cmd_", c("quietly", "noisily", "capture")))
+  raiseifnot(exists(func))
   
   invisible(TRUE)
 }
@@ -307,7 +311,8 @@ function(node, debug_level=0)
   raiseifnot(length(node$data) == 0)
 
   #Children - length, names, types
-  func <- paste0("rstata_", tolower(node$children$verb$data["value"]))
+  func <- paste0("rstata_cmd_", tolower(node$children$verb$data["value"]))
+  func <- unabbreviateCommand(func, "BadCommandException")
   raiseifnot(exists(func))
   
   args <-
@@ -338,10 +343,12 @@ function(node, debug_level=0)
 verifynode.rstata_special_cmd <-
 function(node, debug_level=0)
 {
-  verb <- tolower(node$children$verb$data["value"])
-  func <- paste0("rstata_", verb)
+  func <- tolower(node$children$verb$data["value"])
+  func <- paste0("rstata_cmd_", func)
+  func <- unabbreviateCommand(func, "BadCommandException")
   
-  raiseifnot(verb %in% c("merge", "generate", "recast", "display", "format", "xi"))
+  raiseifnot(func %in% paste0("rstata_cmd_",
+                              c("merge", "generate", "recast", "display", "format", "xi")))
   raiseifnot(exists(func))
   
   args <- formals(get(func))
@@ -354,12 +361,12 @@ function(node, debug_level=0)
   raiseifnot(every(correct_arg_types_for_cmd(node$children)))
   
   #checks of node-specific data
-  if(verb == "merge")
+  if(func == "rstata_cmd_merge")
   {
     raiseifnot(length(node$data) == 1)
     raiseifnot(names(node$data) == c("merge_spec"))
     raiseifnot(node$data["merge_spec"] %in% c("m:m", "m:1", "1:m", "1:1"))
-  } else if(verb == "generate")
+  } else if(func == "rstata_cmd_generate")
   {
     raiseifnot(length(node$data) %in% c(0, 1))
     
@@ -368,22 +375,27 @@ function(node, debug_level=0)
       raiseifnot(names(node$data) == c("type_spec"))
       raiseifnot(valid_data_type(node$data["type_spec"]))
     }
-  } else if(verb == "recast")
+  } else if(func == "rstata_cmd_recast")
   {
     raiseifnot(length(node$data) == 1)
     raiseifnot(names(node$data) == c("type_spec"))
     raiseifnot(valid_data_type(node$data["type_spec"]))
-  } else if(verb == "display")
+  } else if(func == "display")
   {
-    #none needed
-  } else if(verb == "format")
+    raiseifnot(length(node$data) %in% c(0, 1))
+    
+    if(length(node$data == 1))
+    {
+      raiseifnot(names(node$data) == c("format_spec"))
+      raiseifnot(valid_format_spec(node$data["format_spec"]))
+    }
+  } else if(func == "rstata_cmd_format")
   {
     raiseifnot(length(node$data) == 1)
     raiseifnot(names(node$data) == c("format_spec"))
     raiseifnot(valid_format_spec(node$data["format_spec"]))
-  } else if(verb == "xi")
+  } else if(func == "rstata_cmd_xi")
   {
-    #FIXME what do I do about xi being both a cmd and a prefix cmd?
     raiseifnot(length(node$data) == 0)
   }
 

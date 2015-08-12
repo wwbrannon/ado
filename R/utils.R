@@ -223,3 +223,33 @@ function(name)
   if(name == "#")
     return(as.symbol("%#%"))
 }
+
+#For use with a function's list of its acceptable Stata options,
+#or with the names attribute of the dataset
+unabbreviateName <-
+function(name, choices, cls="error")
+{
+  matched <- charmatch(name, choices)
+  raiseifnot(length(matched) == 1, cls=cls)
+  
+  choices[matched]
+}
+
+#For unabbreviating command names against the list of all the
+#rstata_* command-implementing functions
+unabbreviateCommand <-
+function(name, cls="error")
+{
+  funcs <- ls(envir=parent.env(environment()))
+  funcs <- funcs[grep("^rstata_cmd_", funcs)]
+  
+  unabbreviateName(name, funcs, cls=cls)
+}
+
+#Those commands which take a varlist and interpret it as an R formula
+#can call this function to convert
+varlist_to_formula <-
+function(varlist)
+{
+  #FIXME
+}
