@@ -121,7 +121,7 @@ yy::RStataParser::error(const location_type& l, const std::string& m)
 %token <node>   EMBEDDED_CODE
 %token <node>   BY XI BYSORT
 %token <node>   QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
-%token <node>   MERGE
+%token <node>   MERGE COLLAPSE IVREGRESS RECODE
 
                 /* Command components and keywords */
 %token          USING IF IN
@@ -483,7 +483,10 @@ nonmodifier_cmd:
         $$ = node;
     }
 
-    /* commands with unusual enough syntax to parse them separately */
+    /* Commands with unusual enough syntax that they have to be parsed
+     * separately. In some abstract sense, there shouldn't be so many
+     * of these, but with Stata defined the way it is, there's not much
+     * we can do about it. */
     | MERGE MERGE_SPEC expression_list using_clause option_list
     {
         ExprNode *node = new ExprNode({"rstata_cmd", "rstata_special_cmd"});
@@ -510,6 +513,34 @@ nonmodifier_cmd:
 
         $$ = node;
     }
+    | COLLAPSE clist if_clause in_clause weight_clause option_list
+    | IVREGRESS varlist "(" varlist "=" varlist ")" if_clause in_clause weight_clause option_list
+    ;
+
+/* Helper constructs for collapse */
+collapse_spec_element_base:
+      IDENT
+    | IDENT "=" IDENT
+    ;
+
+collapse_spec_element:
+      collapse_spec_element_base
+    | collapse_spec_element collapse_spec_element_base
+    ;
+
+collapse_spec:
+    "(" IDENT ")" collapse_spec_element
+    ;
+
+clist:
+      collapse_spec
+    | clist collapse_spec
+    ;
+
+/* Helper constructs for ivregress */
+varlist:
+      IDENT
+    | varlist IDENT
     ;
 
 /*
