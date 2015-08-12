@@ -10,7 +10,7 @@ class RStataDriver
     public:
         RStataDriver(std::string text, int debug_level);
         RStataDriver(int callback, Rcpp::Function cmd_action,
-                     Rcpp::Function get_macro_value,
+                     Rcpp::Function macro_value_accessor,
                      std::string text, int debug_level);
         virtual ~RStataDriver();
 
@@ -25,7 +25,10 @@ class RStataDriver
         int callbacks;
         void wrap_cmd_action(Rcpp::List ast);
         Rcpp::Function cmd_action;
-        Rcpp::Function get_macro_value;
+        
+        std::string get_macro_value(std::string name);
+        std::string get_macro_value(const char *name);
+        Rcpp::Function macro_value_accessor;
 
         // error-handling functions and state
         int error_seen;

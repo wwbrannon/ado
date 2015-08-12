@@ -6,16 +6,16 @@
 using namespace Rcpp;
 
 // do_parse_with_callbacks
-SEXP do_parse_with_callbacks(std::string text, Rcpp::Function cmd_action, Rcpp::Function get_macro_value, int debug_level);
-RcppExport SEXP rstata_do_parse_with_callbacks(SEXP textSEXP, SEXP cmd_actionSEXP, SEXP get_macro_valueSEXP, SEXP debug_levelSEXP) {
+SEXP do_parse_with_callbacks(std::string text, Rcpp::Function cmd_action, Rcpp::Function macro_value_accessor, int debug_level);
+RcppExport SEXP rstata_do_parse_with_callbacks(SEXP textSEXP, SEXP cmd_actionSEXP, SEXP macro_value_accessorSEXP, SEXP debug_levelSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< std::string >::type text(textSEXP);
     Rcpp::traits::input_parameter< Rcpp::Function >::type cmd_action(cmd_actionSEXP);
-    Rcpp::traits::input_parameter< Rcpp::Function >::type get_macro_value(get_macro_valueSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Function >::type macro_value_accessor(macro_value_accessorSEXP);
     Rcpp::traits::input_parameter< int >::type debug_level(debug_levelSEXP);
-    __result = Rcpp::wrap(do_parse_with_callbacks(text, cmd_action, get_macro_value, debug_level));
+    __result = Rcpp::wrap(do_parse_with_callbacks(text, cmd_action, macro_value_accessor, debug_level));
     return __result;
 END_RCPP
 }

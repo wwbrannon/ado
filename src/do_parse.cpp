@@ -11,12 +11,12 @@
 // [[Rcpp::export]]
 SEXP
 do_parse_with_callbacks(std::string text, Rcpp::Function cmd_action,
-                        Rcpp::Function get_macro_value, int debug_level=0)
+                        Rcpp::Function macro_value_accessor, int debug_level=0)
 {
   try
   {
     
-    RStataDriver *driver = new RStataDriver(1, cmd_action, get_macro_value,
+    RStataDriver *driver = new RStataDriver(1, cmd_action, macro_value_accessor,
                                             text, debug_level);
 
     driver->parse();

@@ -52,7 +52,7 @@ function(dta = NULL, filename=NULL, string=NULL,
         })
 
     #Callbacks: a macro value accessor that allows the lexer to retrieve macro values.
-    get_macro_value <-
+    macro_value_accessor <-
     function(name)
     {
         env <- get("rstata_macro_env", envir=rstata_env)
@@ -103,7 +103,7 @@ function(dta = NULL, filename=NULL, string=NULL,
                 #Send the input to the bison parser, which, after reading
                 #each command, invokes the process_cmd callback
                 do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
-                                        get_macro_value=get_macro_value,
+                                        macro_value_accessor=macro_value_accessor,
                                         debug_level=debug_level)
             },
             error = function(c) c)
@@ -141,7 +141,7 @@ function(dta = NULL, filename=NULL, string=NULL,
         inpt <- paste0(inpt, "\n\n\n")
 
         do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
-                                get_macro_value=get_macro_value,
+                                macro_value_accessor=macro_value_accessor,
                                 debug_level=debug_level)
     } else if(!is.null(filename))
     {
@@ -150,7 +150,7 @@ function(dta = NULL, filename=NULL, string=NULL,
         inpt <- paste0(inpt, "\n\n\n")
 
         do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
-                                get_macro_value=get_macro_value,
+                                macro_value_accessor=macro_value_accessor,
                                 debug_level=debug_level)
     } else
     {
@@ -159,7 +159,7 @@ function(dta = NULL, filename=NULL, string=NULL,
         inpt <- paste0(inpt, "\n\n\n")
 
         do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
-                                get_macro_value=get_macro_value,
+                                macro_value_accessor=macro_value_accessor,
                                 debug_level=debug_level)
     }
 

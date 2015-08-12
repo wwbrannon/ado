@@ -30,7 +30,7 @@ raise_condition(const std::string& msg, const std::string& type)
 // ctors
 RStataDriver::RStataDriver(std::string _text, int _debug_level)
             : cmd_action(Rcpp::Function("identity")),
-              get_macro_value(Rcpp::Function("identity"))
+              macro_value_accessor(Rcpp::Function("identity"))
 {
     text = _text;
 
@@ -41,16 +41,16 @@ RStataDriver::RStataDriver(std::string _text, int _debug_level)
 }
 
 RStataDriver::RStataDriver(int _callbacks, Rcpp::Function _cmd_action,
-                           Rcpp::Function _get_macro_value,
+                           Rcpp::Function _macro_value_accessor,
                            std::string _text, int _debug_level)
             : cmd_action(Rcpp::Function("identity")),
-              get_macro_value(Rcpp::Function("identity"))
+              macro_value_accessor(Rcpp::Function("identity")) // FIXME
 {
     text = _text;
     
     callbacks = _callbacks;
     cmd_action = _cmd_action;
-    get_macro_value = _get_macro_value;
+    macro_value_accessor = _macro_value_accessor;
 
     debug_level = _debug_level;
     error_seen = 0;
@@ -102,6 +102,21 @@ RStataDriver::wrap_cmd_action(Rcpp::List ast)
 
   if(status == 3)
     throw ExitRequestedException(msg);
+}
+
+std::string
+RStataDriver::get_macro_value(std::string name)
+{
+    std::string str = Rcpp::as<std::string>(macro_value_accessor(name));
+
+    return str;
+}
+
+std::string
+RStataDriver::get_macro_value(const char *name)
+{
+    std::string s = std::string(name);
+    return Rcpp::as<std::string>(macro_value_accessor(s));
 }
 
 void
