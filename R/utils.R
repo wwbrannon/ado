@@ -11,7 +11,7 @@ function(vec)
 
 `%is%` <-
 function(x, y)
-all(y %in% class(x))
+every(y %in% class(x))
 
 #Reverse a vector of strings
 rev_string <-
@@ -50,17 +50,6 @@ function(expr, cls="bad_command", msg=errmsg)
     invisible(NULL)
 }
 
-
-stopifnot
-function (...) 
-{
-    mc <- match.call()
-    if (!(is.logical(r <- ll[[i]]) && !any(is.na(r)) && 
-        all(r))) {
-    }
-    invisible()
-}
-
 #We're reading from the console, so we have to handle the /// construct
 #in this function as well as in the parser.
 read_interactive <-
@@ -88,3 +77,104 @@ function()
     res
 }
 
+#Functions for validating parts of general and special commands
+valid_cmd_part <-
+function(name)
+{
+  name %in% c("main_cmd", "next_modifier", "verb", "varlist",
+              "if_clause", "in_clause", "weight_clause",
+              "using_clause", "option_list", "expression")
+}
+
+correct_arg_types_for_cmd <-
+function(children)
+{
+  ns <- setdiff(names(children), c("verb"))
+  
+  for(n in ns)
+  {
+    if(n == "if_clause")
+    {
+      if(!children[n] %is% "rstata_if_clause")
+        return(FALSE)
+    }
+    
+    if(n == "in_clause")
+    {
+      if(!children[n] %is% "rstata_in_clause")
+        return(FALSE)
+    }
+    
+    if(n == "weight_clause")
+    {
+      if(!children[n] %is% "rstata_weight_clause")
+        return(FALSE)
+    }
+    
+    if(n == "using_clause")
+    {
+      if(!children[n] %is% "rstata_using_clause")
+        return(FALSE)
+    }
+    
+    if(n == "option_list")
+    {
+      if(!children[n] %is% "rstata_option_list")
+        return(FALSE)
+    }
+    
+    if(n == "varlist")
+    {
+      if(!children[n] %is% "rstata_expression_list")
+        return(FALSE)
+      
+      types <- vapply(children,
+                      function(n) n %is% "rstata_ident" ||
+                                  n %is% "rstata_label_expression" ||
+                                  n %is% "rstata_factor_expression" ||
+                                  n %is% "rstata_cross_expression",
+                      TRUE)
+      if(length(which(types)) != length(types))
+        return(FALSE)
+    }
+    
+    if(n == "expression")
+    {
+      if(!(children[n] %is% "rstata_expression"))
+        return(FALSE)
+    }
+  }
+  
+  return(TRUE)
+}
+
+valid_data_type <-
+function(name)
+{
+  if(name %in% c("byte", "int", "long", "float", "double"))
+    return(TRUE)
+  
+  if(name %in% c("str", "strL"))
+    return(TRUE)
+  
+  if(length(grep("str[0-9]+", name)) > 0)
+    if(name != "str0")
+      return(TRUE)
+  
+  return(FALSE)
+}
+
+valid_format_spec <-
+function(fmt)
+{
+  if(length(grep("%-?[0-9]+s", fmt)) > 0)
+    return(TRUE)
+  
+  if(length(grep("%-?0?[1-9][0-9]+\\.[0-9]+[efg]c?", fmt)) > 0)
+    return(TRUE)
+  
+  if(length(grep("%-?t[Ccdwmqh][A-Za-z_]*", fmt)) > 0)
+    return(TRUE)
+  
+  return(FALSE)
+}
