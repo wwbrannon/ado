@@ -26,8 +26,7 @@ function(expression, return.match.call=NULL)
 rstata_cmd_di <-
 function(expression, format_spec=NULL, return.match.call=NULL)
 {
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
+    rstata_cmd_display(expression, format_spec, return.match.call)
 }
 
 rstata_cmd_display <-
@@ -35,6 +34,9 @@ function(expression, format_spec=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
+
+    #FIXME to handle format specs later
+    eval(expression[[1]])
 }
 
 rstata_cmd_do <-

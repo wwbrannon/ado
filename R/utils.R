@@ -43,7 +43,7 @@ function(expr, envir=parent.frame(),
             ret[[length(ret)+1]] <- tmp$value
 
             if(print.results && tmp$visible)
-                print(tmp$value)
+                cat(as.character(tmp$value), "\n", sep="")
         }
     }
 
@@ -309,6 +309,8 @@ function(name)
 
   if(valid_data_type(name))
     return(as.symbol(name))
+
+  raiseCondition("Bad operator or function", cls="BadCommandException")
 }
 
 #For use with a function's list of its acceptable Stata options,
