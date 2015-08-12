@@ -3,6 +3,23 @@
 
 MakeGeneralStataCmd::MakeGeneralStataCmd(std::string Nverb)
 {
+    _verb = new IdentExprNode(Nverb);
+    
+    _weight = NULL;
+    _varlist = NULL;
+    _assign_stmt = NULL;
+    _if_exp = NULL;
+    _options = NULL;
+
+    _has_range = 0;
+    _range_lower = 0;
+    _range_upper = 0;
+
+    _using_filename = "";
+}
+
+MakeGeneralStataCmd::MakeGeneralStataCmd(IdentExprNode *Nverb)
+{
     _verb = Nverb;
     
     _weight = NULL;
@@ -27,9 +44,15 @@ GeneralStataCmd *MakeGeneralStataCmd::create()
     return cmd;
 }
 
-MakeGeneralStataCmd& MakeGeneralStataCmd::verb(std::string Nverb)
+MakeGeneralStataCmd& MakeGeneralStataCmd::verb(IdentExprNode *Nverb)
 {
     _verb = Nverb;
+    return *this;
+}
+
+MakeGeneralStataCmd& MakeGeneralStataCmd::verb(std::string Nverb)
+{
+    _verb = new IdentExprNode(Nverb);
     return *this;
 }
 

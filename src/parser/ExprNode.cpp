@@ -9,7 +9,7 @@ using namespace Rcpp;
 // Constructors
 NumberExprNode::NumberExprNode(std::string _data)
 {
-    data = _data;
+    data = Language("as.numeric", _data).eval(); // FIXME
 }
 
 IdentExprNode::IdentExprNode(std::string _data)
@@ -72,40 +72,24 @@ BranchExprNode::appendChild(BranchExprNode *_child)
 }
 
 // The methods for conversion to R expressions
-List NumberExprNode::as_R_object() const
+NumericVector NumberExprNode::as_R_object() const
 {
-    List res;
-    
-    res.push_back(data);
-
-    return res;
+    return data;
 }
 
-List IdentExprNode::as_R_object() const
+Symbol IdentExprNode::as_R_object() const
 {
-    List res;
-    
-    res.push_back(data);
-
-    return res;
+    return Symbol(data);
 }
 
-List StringExprNode::as_R_object() const
+String StringExprNode::as_R_object() const
 {
-    List res;
-    
-    res.push_back(data);
-
-    return res;
+    return data;
 }
 
-List DatetimeExprNode::as_R_object() const
+Datetime DatetimeExprNode::as_R_object() const
 {
-    List res;
-
-    res.push_back(dt);
-
-    return res;
+    return dt;
 }
 
 List BranchExprNode::as_R_object() const

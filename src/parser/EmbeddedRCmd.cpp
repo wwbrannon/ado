@@ -4,9 +4,8 @@
 using namespace Rcpp;
 
 EmbeddedRCmd::EmbeddedRCmd(std::string _text)
-            : GeneralStataCmd(_text)
+            : GeneralStataCmd("embedded_r")
 {
-    verb = "embedded_r";
     text = _text;
 }
 
@@ -15,7 +14,7 @@ List EmbeddedRCmd::as_R_object() const
     List res;
    
     res = List::create(_["func"]            = Symbol("dispatch.rstata.cmd"),
-                       _["verb"]            = verb,
+                       _["verb"]            = verb->as_R_object(),
                        _["text"]            = text);
     
     return res;

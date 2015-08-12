@@ -3,12 +3,12 @@
 
 using namespace Rcpp;
 
-GeneralStataCmd::GeneralStataCmd(std::string _verb,
+GeneralStataCmd::GeneralStataCmd(IdentExprNode *_verb,
                    BranchExprNode *_weight, std::string _using_filename,
                    int _has_range, int _range_lower, int _range_upper,
                    BranchExprNode *_varlist, BranchExprNode *_assign_stmt,
                    BranchExprNode *_if_exp, BranchExprNode *_options)
-               : BranchExprNode("GeneralStataCmd", _verb)
+               : BranchExprNode("GeneralStataCmd", "")
 {
     verb = _verb;
 
@@ -25,10 +25,11 @@ GeneralStataCmd::GeneralStataCmd(std::string _verb,
     using_filename = _using_filename;
 }
 
+// for EmbeddedRCmd
 GeneralStataCmd::GeneralStataCmd(std::string _verb)
-               : BranchExprNode("GeneralStataCmd", _verb)
+               : BranchExprNode("GeneralStataCmd", "")
 {
-    verb = _verb;
+    verb = new IdentExprNode(_verb);
 
     varlist = NULL;
     assign_stmt = NULL;
@@ -48,7 +49,7 @@ List GeneralStataCmd::as_R_object() const
     List res;
    
     res = List::create(_["func"]            = Symbol("dispatch.rstata.cmd"),
-                       _["verb"]            = verb,
+                       _["verb"]            = verb->as_R_object(),
                        _["varlist"]         = varlist->as_R_object(),
                        _["assign_stmt"]     = assign_stmt->as_R_object(),
                        _["if_exp"]          = if_exp->as_R_object(),

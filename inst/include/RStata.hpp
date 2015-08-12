@@ -42,10 +42,10 @@ class NumberExprNode: public BranchExprNode
     public:
         NumberExprNode(std::string _data);
         
-        Rcpp::List as_R_object() const;
+        Rcpp::NumericVector as_R_object() const;
 
     private:
-        std::string data;
+        Rcpp::NumericVector data;
 };
 
 class IdentExprNode: public BranchExprNode
@@ -53,7 +53,7 @@ class IdentExprNode: public BranchExprNode
     public:
         IdentExprNode(std::string _data);
         
-        Rcpp::List as_R_object() const;
+        Rcpp::Symbol as_R_object() const;
 
     private:
         std::string data;
@@ -64,10 +64,10 @@ class StringExprNode: public BranchExprNode
     public:
         StringExprNode(std::string _data);
         
-        Rcpp::List as_R_object() const;
+        Rcpp::String as_R_object() const;
 
     private:
-        std::string data;
+        Rcpp::String data;
 };
 
 class DatetimeExprNode: public BranchExprNode
@@ -76,7 +76,7 @@ class DatetimeExprNode: public BranchExprNode
         DatetimeExprNode(std::string _date, std::string _time);
         DatetimeExprNode(std::string _dt);
         
-        Rcpp::List as_R_object() const;
+        Rcpp::Datetime as_R_object() const;
 
     private:
         Rcpp::Datetime dt;
@@ -99,13 +99,13 @@ class GeneralStataCmd: public BranchExprNode
         std::string using_filename; // "using filename": the filename given after using, or NULL
     
     public:
-        std::string verb;
+        IdentExprNode *verb;
 
         Rcpp::List as_R_object() const;
 
-        GeneralStataCmd(std::string _verb);
-
-        GeneralStataCmd(std::string _verb,
+        GeneralStataCmd(std::string _verb); // for EmbeddedRCmd
+        
+        GeneralStataCmd(IdentExprNode *_verb,
                    BranchExprNode *_weight, std::string _using_filename,
                    int _has_range, int _range_lower, int _range_upper,
                    BranchExprNode *_varlist,
@@ -130,10 +130,12 @@ class EmbeddedRCmd: public GeneralStataCmd
 class MakeGeneralStataCmd
 {
     public:    
+        MakeGeneralStataCmd(IdentExprNode *_verb);
         MakeGeneralStataCmd(std::string _verb);
         
         GeneralStataCmd *create();
 
+        MakeGeneralStataCmd& verb(IdentExprNode *_verb);
         MakeGeneralStataCmd& verb(std::string _verb);
         MakeGeneralStataCmd& weight(BranchExprNode *_weight);
         MakeGeneralStataCmd& varlist(BranchExprNode *_varlist);
@@ -146,7 +148,7 @@ class MakeGeneralStataCmd
         MakeGeneralStataCmd& using_filename(std::string _using_filename);
     
     private:
-        std::string _verb;
+        IdentExprNode *_verb;
         BranchExprNode *_weight;
         BranchExprNode *_varlist;
         BranchExprNode *_assign_stmt;
