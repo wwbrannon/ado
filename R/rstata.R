@@ -66,7 +66,7 @@ function(dta = NULL, filename=NULL, string=NULL,
     #We should put the debug_level argument into settings_env so that it's
     #accessible for nested invocations of do_parse_with_callbacks to handle
     #do files or the body blocks of loops.
-    assign("debug_level", debug_level, envir=get("rstata_settings_env", envir=rstata_env))
+    assignSetting("debug_level", debug_level)
 
     #=========================================================================
     #The actual work of parsing and executing commands is here

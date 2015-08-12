@@ -1,3 +1,17 @@
+assignSetting <-
+function(name, value)
+{
+    settings_env <- get("rstata_settings_env", envir=rstata_env)
+    assign(name, value, envir=settings_env)
+}
+
+getSettingValue <-
+function(name)
+{
+    settings_env <- get("rstata_settings_env", envir=rstata_env)
+    get(name, envir=settings_env)
+}
+
 flatten <-
 function(x)
 {
