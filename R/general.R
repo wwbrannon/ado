@@ -1,94 +1,61 @@
-rstata.count <-
+### The initial set of nine commands to implement. They cover a broad
+### selection of Stata features and will help test the infrastructure
+### other commands will eventually rely on.
+
+## Data manipulation commands
+gen <-
 function(...)
 {
 
 }
 
-rstata.drop <-
+insheet <-
 function(...)
 {
 
 }
 
-rstata.keep <-
+## Immediate commands
+display <-
 function(...)
 {
 
 }
 
-rstata.insheet <-
+## Stats commands
+logit <-
 function(...)
 {
 
 }
 
-rstata.gen <-
+tab <-
 function(...)
 {
 
 }
 
-rstata.describe <-
+## Graphics commands
+scatter <-
 function(...)
 {
 
 }
 
-rstata.logit <-
+bar <-
 function(...)
 {
 
 }
 
-rstata.mlogit <-
+## Macro registration commands
+local <-
 function(...)
 {
 
 }
 
-rstata.order <-
-function(...)
-{
-
-}
-
-rstata.outsheet <-
-function(...)
-{
-
-}
-
-rstata.sort <-
-function(...)
-{
-
-}
-
-rstata.table <-
-function(...)
-{
-
-}
-
-rstata.regress <-
-function(...)
-{
-
-}
-
-rstata.replace <-
-function(...)
-{
-
-}
-
-rstata.sum <-
-function(...)
-{
-
-}
-
-rstata.xtile <-
+global <-
 function(...)
 {
 
