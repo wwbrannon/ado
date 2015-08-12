@@ -1,0 +1,27 @@
+Roadmap to version > 1.0:
+
+Many more commands - egen, input, label
+
+Formats
+
+Looping
+        foreach
+        while
+        forvalues
+
+Graphics
+
+Things the grammar should support
+    comments with "*"
+    filenames not in quotes
+    datetime literals
+    datelists
+    varlists: factors, interactions, etc
+    numlists
+    all prefix commands
+    abbreviations for commands and other keywords (+ the * glob syntax)
+    
+    macros...
+
+    graphs
+
