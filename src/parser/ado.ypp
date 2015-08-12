@@ -156,8 +156,8 @@ yy::RStataParser::error(const location_type& l, const std::string& m)
 
                 /* Non-terminals for the syntax of special commands */
 %type <node>    anova_term_list collapse_list collapse_spec gsort_var
-%type <node>    gsort_varlist modelspec modelspec_list numlist
-%type <node>    recode_rule recode_rule_list varlist
+%type <node>    gsort_varlist modelspec modelspec_list numlist collapse_spec_base
+%type <node>    recode_rule recode_rule_list varlist collapse_spec_base_list
 %type <node>    anova_nest_expression anova_error_expression
 
 %destructor { }                 translation_unit
@@ -658,12 +658,69 @@ numlist:
     ;
 
 /* Helper constructs for collapse */
-collapse_spec:
-      "(" IDENT ")" varlist
+collapse_spec_base:
+      IDENT
+    | IDENT "=" IDENT
     {
+        // this would be an assignment expression as usual, except that
+        // for every single other command than this one, assignment expressions
+        // shouldn't be allowed in function argument lists. they're not allowed here
+        // syntactically either, and it'd be an even uglier hack to allow them everywhere
+        // just for this internal representation.
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
+        node->addData("verb", std::string("()"));
+        
+        // the "left" child
+        ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
+        left->addData("value", *(new std::string("collapse_newvar")));
+        node->appendChild("left", left);
+
+        // the "right" child
+        ExprNode *arglist = new ExprNode("rstata_argument_expression_list");
+        ExprNode *explist = new ExprNode("rstata_expression_list");
+        explist->appendChild($1);
+        explist->appendChild($3);
+        arglist->appendChild(explist);
+        
+        node->appendChild("right", arglist);
+        $$ = node;
     }
-    | "(" IDENT ")" IDENT "=" IDENT
+    ;
+
+collapse_spec_base_list:
+      collapse_spec_base
     {
+        ExprNode *node = new ExprNode("rstata_expression_list");
+        node->appendChild($1);
+        $$ = node;
+    }
+    | collapse_spec_base_list collapse_spec_base
+    {
+        $1->appendChild($2);
+        $$ = $1;
+    }
+    ;
+
+collapse_spec:
+      "(" IDENT ")" collapse_spec_base_list
+    {
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
+        node->addData("verb", std::string("()"));
+        
+        // the "left" child
+        ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
+        left->addData("value", *(new std::string("collapse_stat")));
+        node->appendChild("left", left);
+        
+        // the "right" child
+        ExprNode *explist = new ExprNode("rstata_expression_list");
+        explist->appendChild($2); // stat goes first
+        ExprNode *arglist = new ExprNode("rstata_argument_expression_list");
+        arglist->appendChild(explist);
+        arglist->appendChild($4); // variable names or assignments follow
+        
+        node->appendChild("right", arglist);
+        $$ = node;
     }
     ;
 
@@ -688,8 +745,13 @@ recode_rule:
     {
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
         node->addData("verb", std::string("()"));
-        node->appendChild("left", std::string("recode_rule_ident"));
         
+        // the "left" child
+        ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
+        left->addData("value", *(new std::string("recode_rule_ident")));
+        node->appendChild("left", left);
+        
+        // the "right" child
         ExprNode *explist = new ExprNode("rstata_expression_list");
         explist->appendChild($4); // destination value goes first
         explist->appendChild($2);
@@ -705,8 +767,13 @@ recode_rule:
 
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
         node->addData("verb", std::string("()"));
-        node->appendChild("left", std::string("recode_rule_range"));
         
+        // the "left" child
+        ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
+        left->addData("value", *(new std::string("recode_rule_range")));
+        node->appendChild("left", left);
+        
+        // the "right" child
         ExprNode *explist = new ExprNode("rstata_expression_list");
         explist->appendChild($6); // destination value goes first
         explist->appendChild($4); // then the upper range limit
@@ -721,8 +788,13 @@ recode_rule:
     {
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
         node->addData("verb", std::string("()"));
-        node->appendChild("left", std::string("recode_rule_numlist"));
         
+        // the "left" child
+        ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
+        left->addData("value", *(new std::string("recode_rule_numlist")));
+        node->appendChild("left", left);
+        
+        // the "right" child
         ExprNode *explist = new ExprNode("rstata_expression_list");
         explist->appendChild($4); // destination value goes first
         ExprNode *arglist = new ExprNode("rstata_argument_expression_list");
@@ -754,9 +826,12 @@ gsort_var:
     {
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
         node->addData("verb", std::string("()"));
-        node->appendChild("left", std::string("asc"));
         node->appendChild("right", $1);
-
+        
+        ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
+        left->addData("value", *(new std::string("asc")));
+        node->appendChild("left", left);
+        
         $$ = node;
     }
     | "+" IDENT
@@ -765,8 +840,11 @@ gsort_var:
         
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
         node->addData("verb", std::string("()"));
-        node->appendChild("left", std::string("asc"));
         node->appendChild("right", $2);
+        
+        ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
+        left->addData("value", *(new std::string("asc")));
+        node->appendChild("left", left);
 
         $$ = node;
     }
@@ -776,8 +854,11 @@ gsort_var:
         
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
         node->addData("verb", std::string("()"));
-        node->appendChild("left", std::string("desc"));
         node->appendChild("right", $2);
+        
+        ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
+        left->addData("value", *(new std::string("desc")));
+        node->appendChild("left", left);
 
         $$ = node;
     }
@@ -829,6 +910,7 @@ anova_nest_expression:
       unary_factor_expression
     | anova_nest_expression "|" unary_factor_expression
     {
+        $2; // shut up, bison...
     }
     ;
 
@@ -836,6 +918,7 @@ anova_error_expression:
       anova_nest_expression
     | anova_nest_expression "/"
     {
+        $2; // shut up, bison...
     }
     ;
 
