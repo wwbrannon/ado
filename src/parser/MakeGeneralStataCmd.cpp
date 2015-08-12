@@ -18,72 +18,72 @@ MakeGeneralStataCmd::MakeGeneralStataCmd(std::string Nverb)
     _using_filename = "";
 }
 
-GeneralStataCmd MakeGeneralStataCmd::create()
+GeneralStataCmd *MakeGeneralStataCmd::create()
 {
     GeneralStataCmd *cmd = new GeneralStataCmd(_verb, _weight, _using_filename,
                                                _has_range, _range_upper, _range_lower,
                                                _varlist, _assign_stmt, _if_exp, _options);
 
-    return *cmd;
+    return cmd;
 }
 
-MakeGeneralStataCmd *MakeGeneralStataCmd::verb(std::string Nverb)
+MakeGeneralStataCmd& MakeGeneralStataCmd::verb(std::string Nverb)
 {
     _verb = Nverb;
-    return this;
+    return *this;
 }
 
-MakeGeneralStataCmd *MakeGeneralStataCmd::varlist(BranchExprNode *Nvarlist)
+MakeGeneralStataCmd& MakeGeneralStataCmd::varlist(BranchExprNode *Nvarlist)
 {
     _varlist = Nvarlist;
-    return this;
+    return *this;
 }
 
-MakeGeneralStataCmd *MakeGeneralStataCmd::assign_stmt(BranchExprNode *Nassign_stmt)
+MakeGeneralStataCmd& MakeGeneralStataCmd::assign_stmt(BranchExprNode *Nassign_stmt)
 {
     _assign_stmt = Nassign_stmt;
-    return this;
+    return *this;
 }
 
-MakeGeneralStataCmd *MakeGeneralStataCmd::if_exp(BranchExprNode *Nif_exp)
+MakeGeneralStataCmd& MakeGeneralStataCmd::if_exp(BranchExprNode *Nif_exp)
 {
     _if_exp = Nif_exp;
-    return this;
+    return *this;
 }
 
-MakeGeneralStataCmd *MakeGeneralStataCmd::options(BranchExprNode *Noptions)
+MakeGeneralStataCmd& MakeGeneralStataCmd::options(BranchExprNode *Noptions)
 {
     _options = Noptions;
-    return this;
+    return *this;
 }
 
-MakeGeneralStataCmd *MakeGeneralStataCmd::weight(BranchExprNode *Nweight)
+MakeGeneralStataCmd& MakeGeneralStataCmd::weight(BranchExprNode *Nweight)
 {
     _weight = Nweight;
-    return this;
+    return *this;
 }
 
-MakeGeneralStataCmd *MakeGeneralStataCmd::has_range(int Nhas_range)
+MakeGeneralStataCmd& MakeGeneralStataCmd::has_range(int Nhas_range)
 {
     _has_range = Nhas_range;
-    return this;
+    return *this;
 }
 
-MakeGeneralStataCmd *MakeGeneralStataCmd::range_upper(int Nrange_upper)
+MakeGeneralStataCmd& MakeGeneralStataCmd::range_upper(int Nrange_upper)
 {
     _range_upper = Nrange_upper;
-    return this;
+    return *this;
 }
 
-MakeGeneralStataCmd *MakeGeneralStataCmd::range_lower(int Nrange_lower)
+MakeGeneralStataCmd& MakeGeneralStataCmd::range_lower(int Nrange_lower)
 {
     _range_lower = Nrange_lower;
-    return this;
+    return *this;
 }
 
-MakeGeneralStataCmd *MakeGeneralStataCmd::using_filename(std::string Nusing_filename)
+MakeGeneralStataCmd& MakeGeneralStataCmd::using_filename(std::string Nusing_filename)
 {
     _using_filename = Nusing_filename;
-    return this;
+    return *this;
 }
 

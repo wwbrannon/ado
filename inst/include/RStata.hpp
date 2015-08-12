@@ -132,18 +132,18 @@ class MakeGeneralStataCmd
     public:    
         MakeGeneralStataCmd(std::string _verb);
         
-        GeneralStataCmd create();
+        GeneralStataCmd *create();
 
-        MakeGeneralStataCmd *verb(std::string _verb);
-        MakeGeneralStataCmd *weight(BranchExprNode *_weight);
-        MakeGeneralStataCmd *varlist(BranchExprNode *_varlist);
-        MakeGeneralStataCmd *assign_stmt(BranchExprNode *_assign_stmt);
-        MakeGeneralStataCmd *if_exp(BranchExprNode *_if_exp);
-        MakeGeneralStataCmd *options(BranchExprNode *_options);
-        MakeGeneralStataCmd *has_range(int _has_range);
-        MakeGeneralStataCmd *range_upper(int _range_upper);
-        MakeGeneralStataCmd *range_lower(int _range_lower);
-        MakeGeneralStataCmd *using_filename(std::string _using_filename);
+        MakeGeneralStataCmd& verb(std::string _verb);
+        MakeGeneralStataCmd& weight(BranchExprNode *_weight);
+        MakeGeneralStataCmd& varlist(BranchExprNode *_varlist);
+        MakeGeneralStataCmd& assign_stmt(BranchExprNode *_assign_stmt);
+        MakeGeneralStataCmd& if_exp(BranchExprNode *_if_exp);
+        MakeGeneralStataCmd& options(BranchExprNode *_options);
+        MakeGeneralStataCmd& has_range(int _has_range);
+        MakeGeneralStataCmd& range_upper(int _range_upper);
+        MakeGeneralStataCmd& range_lower(int _range_lower);
+        MakeGeneralStataCmd& using_filename(std::string _using_filename);
     
     private:
         std::string _verb;

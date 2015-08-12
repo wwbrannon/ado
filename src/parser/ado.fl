@@ -61,35 +61,75 @@ B           [ \t\v\r\f]
                                 s[strlen(s) - 3] = '\0';
                                 s += 3;
                                 
-                                return yy::RStataParser::make_EMBEDDED_R(new EmbeddedRCmd(std::string(s)), loc);
+                                const EmbeddedRCmd *cmd = new EmbeddedRCmd(std::string(s));
+                                return yy::RStataParser::make_EMBEDDED_R(cmd, loc);
                             }
 
 
 
                             /* string literals and string (or string-ish) data types */
-\"\"                        return yy::RStataParser::make_STRING_MISSING(new StringExprNode(""), loc);
-\"(\\.|[^"\\])*\"           return yy::RStataParser::make_STRING_LITERAL(new StringExprNode(yytext), loc);
+\"\"                        {
+                                const StringExprNode *cmd = new StringExprNode(std::string(""));
+                                return yy::RStataParser::make_STRING_MISSING(cmd, loc);
+                            }
+\"(\\.|[^"\\])*\"           {
+                                const StringExprNode *cmd = new StringExprNode(std::string(yytext));
+                                return yy::RStataParser::make_STRING_LITERAL(cmd, loc);
+                            }
 
 
 
                                                         /* datetime literals */
-{D}{D}{M}{D}+                                           return yy::RStataParser::make_DATE(new DatetimeExprNode(std::string(yytext), std::string("")), loc);
-{D}{D}:{D}{D}(:{D}{D}(\.{D}+)?)?                        return yy::RStataParser::make_TIME(new DatetimeExprNode(std::string(""), std::string(yytext)), loc);
-{D}{D}{M}{D}+[ \t]+{D}{D}:{D}{D}(:{D}{D}(\.{D}+)?)?     return yy::RStataParser::make_DATETIME(new DatetimeExprNode(yytext), loc);
+{D}{D}{M}{D}+                                           {
+                                                            const DatetimeExprNode *cmd = new DatetimeExprNode(std::string(yytext), std::string(""));
+                                                            return yy::RStataParser::make_DATE(cmd, loc);
+                                                        }
+{D}{D}:{D}{D}(:{D}{D}(\.{D}+)?)?                        {
+                                                            const DatetimeExprNode *cmd = new DatetimeExprNode(std::string(""), std::string(yytext));
+                                                            return yy::RStataParser::make_TIME(cmd, loc);
+                                                        }
+{D}{D}{M}{D}+[ \t]+{D}{D}:{D}{D}(:{D}{D}(\.{D}+)?)?     {
+                                                            const DatetimeExprNode *cmd = new DatetimeExprNode(std::string(yytext));
+                                                            return yy::RStataParser::make_DATETIME(cmd, loc);
+                                                        }
 
 
 
                             /* numbers and numeric data types */
-\.                          return yy::RStataParser::make_NUMBER_MISSING(new NumberExprNode(""), loc);
-\.{L}                       return yy::RStataParser::make_NUMBER_MISSING(new NumberExprNode(""), loc);
+\.                          {
+                                const NumberExprNode *cmd = new NumberExprNode(yytext);
+                                return yy::RStataParser::make_NUMBER_MISSING(cmd, loc);
+                            }
+\.{L}                       {
+                                const NumberExprNode *cmd = new NumberExprNode(yytext);
+                                return yy::RStataParser::make_NUMBER_MISSING(cmd, loc);
+                            }
 
-[+-]?0[xX]{H}+              return yy::RStataParser::make_NUMBER(new NumberExprNode(yytext), loc); /* hex */
-0{D}+                       return yy::RStataParser::make_NUMBER(new NumberExprNode(yytext), loc); /* octal */
-[+-]?{D}+(\.{D}+)?          return yy::RStataParser::make_NUMBER(new NumberExprNode(yytext), loc); /* decimal */
+[+-]?0[xX]{H}+              { /* hex */
+                                const NumberExprNode *cmd = new NumberExprNode(yytext);
+                                return yy::RStataParser::make_NUMBER(cmd, loc);
+                            }
+0{D}+                       { /* octal */
+                                const NumberExprNode *cmd = new NumberExprNode(yytext);
+                                return yy::RStataParser::make_NUMBER(cmd, loc);
+                            }
+[+-]?{D}+(\.{D}+)?          { /* decimal */
+                                const NumberExprNode *cmd = new NumberExprNode(yytext);
+                                return yy::RStataParser::make_NUMBER(cmd, loc);
+                            }
 
-{D}+{E}                     return yy::RStataParser::make_NUMBER(new NumberExprNode(yytext), loc); /* scientific notation */
-{D}*"."{D}+({E})?           return yy::RStataParser::make_NUMBER(new NumberExprNode(yytext), loc);
-{D}+"."{D}*({E})?           return yy::RStataParser::make_NUMBER(new NumberExprNode(yytext), loc);
+{D}+{E}                     { /* scientific notation */
+                                const NumberExprNode *cmd = new NumberExprNode(yytext);
+                                return yy::RStataParser::make_NUMBER(cmd, loc);
+                            }
+{D}*"."{D}+({E})?           {
+                                const NumberExprNode *cmd = new NumberExprNode(yytext);
+                                return yy::RStataParser::make_NUMBER(cmd, loc);
+                            }
+{D}+"."{D}*({E})?           {
+                                const NumberExprNode *cmd = new NumberExprNode(yytext);
+                                return yy::RStataParser::make_NUMBER(cmd, loc);
+                            }
 
 
 
@@ -132,16 +172,34 @@ B           [ \t\v\r\f]
 
 
                             /* command verbs that have to be hardcoded into the grammar */
-(?i:capture)                return yy::RStataParser::make_CAPTURE(MakeGeneralStataCmd(yytext).create(), loc);
-(?i:quietly)                return yy::RStataParser::make_QUIETLY(MakeGeneralStataCmd(yytext).create(), loc);
-(?i:qui)                    return yy::RStataParser::make_QUIETLY(MakeGeneralStataCmd("quietly").create(), loc);
-(?i:noisily)                return yy::RStataParser::make_NOISILY(MakeGeneralStataCmd(yytext).create(), loc);
-(?i:merge)                  return yy::RStataParser::make_MERGE(MakeGeneralStataCmd(yytext).create(), loc);
+(?i:capture)                {
+                                const GeneralStataCmd *cmd = MakeGeneralStataCmd(std::string(yytext)).create();
+                                return yy::RStataParser::make_CAPTURE(cmd, loc);
+                            }
+(?i:quietly)                {
+                                const GeneralStataCmd *cmd = MakeGeneralStataCmd(std::string(yytext)).create();
+                                return yy::RStataParser::make_QUIETLY(cmd, loc);
+                            }
+(?i:qui)                    {
+                                const GeneralStataCmd *cmd = MakeGeneralStataCmd(std::string("quietly")).create();
+                                return yy::RStataParser::make_QUIETLY(cmd, loc);
+                            }
+(?i:noisily)                {
+                                const GeneralStataCmd *cmd = MakeGeneralStataCmd(std::string(yytext)).create();
+                                return yy::RStataParser::make_NOISILY(cmd, loc);
+                            }
+(?i:merge)                  {
+                                const GeneralStataCmd *cmd = MakeGeneralStataCmd(std::string(yytext)).create();
+                                return yy::RStataParser::make_MERGE(cmd, loc);
+                            }
 
 
 
                             /* all non-keyword identifiers */
-[_A-Za-z][A-Za-z0-9_]*      return yy::RStataParser::make_IDENT(new IdentExprNode(yytext), loc);
+[_A-Za-z][A-Za-z0-9_]*      {
+                                const IdentExprNode *cmd = new IdentExprNode(yytext);
+                                return yy::RStataParser::make_IDENT(cmd, loc);
+                            }
 
 %%
 
