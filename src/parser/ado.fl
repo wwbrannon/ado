@@ -35,14 +35,13 @@ typedef yy::RStataParser::token token;
 // tokens would have to be able to cross buffer boundaries.) So we'll
 // redefine YY_INPUT instead.
 // 
-// Read a character at a time from a) the macro_buf buffer if it has
-// length greater than 0, or b) yyin if not. If we read a character from
-// macro_buf, erase() that character.
-// FIXME does it have to be a character at a time?
-#define YY_INPUT(buf,result,max_size) \
-    {\
-        // FIXME \
-    }
+// Read from a) the macro_buf buffer if it has length greater than 0,
+// or b) yyin if not. If we read some text from macro_buf, erase() that
+// text so that it's not read again.
+#define YY_INPUT(buf,result,max_size)
+   {
+      
+   }
 
 // Code run each time a pattern is matched
 #define YY_USER_ACTION  { llocp->columns(yyleng); }
@@ -302,7 +301,7 @@ std::string macro_buf;
     \{[^\{\}\n\$\`]+\}              {
                                         // push yytext to the back of the current frame, removing the "{" and "}"
                                         std::string s = std::string(yytext);
-                                        s.erase(s.begin(), 1);
+                                        s.erase(0, 1);
                                         s.pop_back();
                                         
                                         std::vector<std::string> frame = macro_stack.top();
