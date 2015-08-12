@@ -6,10 +6,6 @@
 
 #include "RStata.hpp"
 
-// define the YY_DECL macro for flex
-#define YY_DECL yy::RStataParser::symbol_type yylex(RStataDriver& driver)
-YY_DECL;
-
 void raise_condition(const std::string& msg, const std::string& type);
 
 class RStataDriver

@@ -3,37 +3,48 @@
 
 %defines
 %define parser_class_name { RStataParser }
-%define api.token.constructor
-%define api.value.type variant
-%define parse.assert
 %define parse.trace
 %define parse.error verbose
 %define api.token.prefix {TOK_}
 
+%define api.pure
+%pure-parser
+
 %code requires
 {
-    #include <memory>
-    #include "RStata.hpp"
-    class RStataDriver;
+#include <memory>
+#include "RStata.hpp"
+class RStataDriver;
+
+#define YY_DECL int yylex(yy::RStataParser::semantic_type* yylval_param, yy::RStataParser::location_type* llocp, RStataDriver& driver)
 }
 
 %param { RStataDriver& driver }
-
 %locations
+
+%union
+{
+    BranchExprNode *node;
+    IdentExprNode *ident;
+    char *str;
+}
 
 %code
 {
-    #include <string>
-    #include <cstdio>
-    #include <cstring>
-    #include <iostream>
-    #include <Rcpp.h>
-    #include "RStataDriver.hpp"
+#include "ado.tab.hpp"
+#include <string>
+#include <cstdio>
+#include <cstring>
+#include <iostream>
+#include <Rcpp.h>
+#include "RStataDriver.hpp"
 
-    void yy::RStataParser::error(const location_type& l, const std::string& m)
-    {
-            driver.error(l, m);
-    }
+YY_DECL;
+
+void yy::RStataParser::error(const location_type& l, const std::string& m)
+{
+        driver.error(l, m);
+}
 }
 
 /* Operator  precedence */
@@ -43,9 +54,9 @@
 %precedence "["
 %precedence "("
 
-%token <std::string> END 0 "end of file"
+%token <str> END 0 "end of file"
 
-%token <std::string>
+%token <str>
     PLUS            "+"
     LT_OP           "<"
     GT_OP           ">"
@@ -73,37 +84,37 @@
 ;
 
 /* Literals of various fundamental types */
-%token <NumberExprNode *> NUMBER NUMBER_MISSING
-%token <IdentExprNode *> IDENT
-%token <StringExprNode *> STRING_LITERAL STRING_MISSING
-%token <DatetimeExprNode *> DATE TIME DATETIME
+%token <node> NUMBER NUMBER_MISSING
+%token <ident> IDENT
+%token <node> STRING_LITERAL STRING_MISSING
+%token <node> DATE TIME DATETIME
 
 /* Commands with unusual enough syntax they have to be parsed separately */
-%token <EmbeddedRCmd *> EMBEDDED_R;
-%token <GeneralStataCmd *> QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
-%token <IdentExprNode *> MERGE
+%token <node> EMBEDDED_R;
+%token <node> QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
+%token <ident> MERGE
 
 /* Command components and keywords */
-%token <std::string> USING IF IN
-%token <StringExprNode *> MERGE_SPEC
+%token <str> USING IF IN
+%token <node> MERGE_SPEC
 
 /* Nonterminal token types */
-%type <BranchExprNode *> translation_unit external_statement compound_cmd cmds modifier_cmd_list cmd
+%type <node> translation_unit external_statement compound_cmd cmds modifier_cmd_list cmd
 
-%type <GeneralStataCmd *> modifier_cmd nonmodifier_cmd
+%type <node> modifier_cmd nonmodifier_cmd
 
-%type <std::string> assignment_operator unary_operator power_operator equality_operator
-%type <std::string> multiplication_operator additive_operator relational_operator
+%type <str> assignment_operator unary_operator power_operator equality_operator
+%type <str> multiplication_operator additive_operator relational_operator
 
-%type <BranchExprNode *> if_clause in_clause weight_clause using_clause
+%type <node> if_clause in_clause weight_clause using_clause
 
-%type <BranchExprNode *> expression
-%type <BranchExprNode *> primary_expression postfix_expression power_expression
-%type <BranchExprNode *> unary_expression multiplication_expression additive_expression
-%type <BranchExprNode *> relational_expression equality_expression logical_and_expression logical_or_expression
+%type <node> expression
+%type <node> primary_expression postfix_expression power_expression
+%type <node> unary_expression multiplication_expression additive_expression
+%type <node> relational_expression equality_expression logical_and_expression logical_or_expression
 
-%type <BranchExprNode *> option
-%type <BranchExprNode *> option_list argument_expression_list expression_list
+%type <node> option
+%type <node> option_list argument_expression_list expression_list
 
 %start translation_unit
 %%

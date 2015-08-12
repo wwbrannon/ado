@@ -1,3 +1,6 @@
+%option bison-bridge
+%option noyywrap
+
 %{ /* -*- C++ -*- */
 #include <cstring>
 #include <cerrno>
@@ -9,16 +12,21 @@
 #include "ado.tab.hpp"
 #include "RStataDriver.hpp"
 
+#ifndef YYSTYPE
+#define YYSTYPE yy::RStataParser::semantic_type
+#endif
+
 // Functions to eat comments
 void long_comment();
 void short_comment();
 
 static yy::location loc;
 
-#define yyterminate() return(yy::RStataParser::make_END(std::string("END"), loc))
-%}
+typedef yy::RStataParser::token token;
 
-%option noyywrap debug
+// Code run each time a pattern is matched
+# define YY_USER_ACTION  loc.columns(yyleng);
+%}
 
 D           [0-9]
 L           [a-zA-Z_]
@@ -28,17 +36,13 @@ F           [FLfl]
 M           (?i:(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec))
 B           [ \t\v\r\f]
 
-%{
-    // Code run each time a pattern is matched
-    # define YY_USER_ACTION  loc.columns(yyleng);
-%}
-
 %%
 
 %{
-    // Code run each time yylex is called
-    loc.step();
+// Code run each time yylex is called
+loc.step();
 %}
+
 
                             /* ignore whitespace but track line and column numbers */
 [\n]+                       loc.lines(yyleng); loc.step();
@@ -61,152 +65,152 @@ B           [ \t\v\r\f]
                                 s[strlen(s) - 3] = '\0';
                                 s += 3;
                                 
-                                const EmbeddedRCmd *cmd = new EmbeddedRCmd(std::string(s));
-                                return yy::RStataParser::make_EMBEDDED_R(cmd, loc);
+                                yylval->node = new EmbeddedRCmd(std::string(s));
+                                return token::TOK_EMBEDDED_R;
                             }
 
 
 
                             /* string literals and string (or string-ish) data types */
 \"\"                        {
-                                const StringExprNode *cmd = new StringExprNode(std::string(""));
-                                return yy::RStataParser::make_STRING_MISSING(cmd, loc);
+                                yylval->node = new StringExprNode(std::string(""));
+                                return token::TOK_STRING_MISSING;
                             }
 \"(\\.|[^"\\])*\"           {
-                                const StringExprNode *cmd = new StringExprNode(std::string(yytext));
-                                return yy::RStataParser::make_STRING_LITERAL(cmd, loc);
+                                yylval->node = new StringExprNode(std::string(yytext));
+                                return token::TOK_STRING_LITERAL;
                             }
 
 
 
                                                         /* datetime literals */
 {D}{D}{M}{D}+                                           {
-                                                            const DatetimeExprNode *cmd = new DatetimeExprNode(std::string(yytext), std::string(""));
-                                                            return yy::RStataParser::make_DATE(cmd, loc);
+                                                            yylval->node = new DatetimeExprNode(std::string(yytext), std::string(""));
+                                                            return token::TOK_DATE;
                                                         }
 {D}{D}:{D}{D}(:{D}{D}(\.{D}+)?)?                        {
-                                                            const DatetimeExprNode *cmd = new DatetimeExprNode(std::string(""), std::string(yytext));
-                                                            return yy::RStataParser::make_TIME(cmd, loc);
+                                                            yylval->node = new DatetimeExprNode(std::string(""), std::string(yytext));
+                                                            return token::TOK_TIME;
                                                         }
 {D}{D}{M}{D}+[ \t]+{D}{D}:{D}{D}(:{D}{D}(\.{D}+)?)?     {
-                                                            const DatetimeExprNode *cmd = new DatetimeExprNode(std::string(yytext));
-                                                            return yy::RStataParser::make_DATETIME(cmd, loc);
+                                                            yylval->node = new DatetimeExprNode(std::string(yytext));
+                                                            return token::TOK_DATETIME;
                                                         }
 
 
 
                             /* numbers and numeric data types */
 \.                          {
-                                const NumberExprNode *cmd = new NumberExprNode(yytext);
-                                return yy::RStataParser::make_NUMBER_MISSING(cmd, loc);
+                                yylval->node = new NumberExprNode(yytext);
+                                return token::TOK_NUMBER_MISSING;
                             }
 \.{L}                       {
-                                const NumberExprNode *cmd = new NumberExprNode(yytext);
-                                return yy::RStataParser::make_NUMBER_MISSING(cmd, loc);
+                                yylval->node = new NumberExprNode(yytext);
+                                return token::TOK_NUMBER_MISSING;
                             }
 
 [+-]?0[xX]{H}+              { /* hex */
-                                const NumberExprNode *cmd = new NumberExprNode(yytext);
-                                return yy::RStataParser::make_NUMBER(cmd, loc);
+                                yylval->node = new NumberExprNode(yytext);
+                                return token::TOK_NUMBER;
                             }
 0{D}+                       { /* octal */
-                                const NumberExprNode *cmd = new NumberExprNode(yytext);
-                                return yy::RStataParser::make_NUMBER(cmd, loc);
+                                yylval->node = new NumberExprNode(yytext);
+                                return token::TOK_NUMBER;
                             }
 [+-]?{D}+(\.{D}+)?          { /* decimal */
-                                const NumberExprNode *cmd = new NumberExprNode(yytext);
-                                return yy::RStataParser::make_NUMBER(cmd, loc);
+                                yylval->node = new NumberExprNode(yytext);
+                                return token::TOK_NUMBER;
                             }
 
 {D}+{E}                     { /* scientific notation */
-                                const NumberExprNode *cmd = new NumberExprNode(yytext);
-                                return yy::RStataParser::make_NUMBER(cmd, loc);
+                                yylval->node = new NumberExprNode(yytext);
+                                return token::TOK_NUMBER;
                             }
 {D}*"."{D}+({E})?           {
-                                const NumberExprNode *cmd = new NumberExprNode(yytext);
-                                return yy::RStataParser::make_NUMBER(cmd, loc);
+                                yylval->node = new NumberExprNode(yytext);
+                                return token::TOK_NUMBER;
                             }
 {D}+"."{D}*({E})?           {
-                                const NumberExprNode *cmd = new NumberExprNode(yytext);
-                                return yy::RStataParser::make_NUMBER(cmd, loc);
+                                yylval->node = new NumberExprNode(yytext);
+                                return token::TOK_NUMBER;
                             }
 
 
 
                             /* Other keywords */
-(?i:using)                  return yy::RStataParser::make_USING(yytext, loc);
-(?i:if)                     return yy::RStataParser::make_IF(yytext, loc);
-(?i:in)                     return yy::RStataParser::make_IN(yytext, loc);
+(?i:using)                  { yylval->str = strdup(yytext); return token::TOK_USING; }
+(?i:if)                     { yylval->str = strdup(yytext); return token::TOK_IF; }
+(?i:in)                     { yylval->str = strdup(yytext); return token::TOK_IN; }
 (1\:1|1\:m|m\:1|m\:m)       {
-                                const StringExprNode *cmd = new StringExprNode(std::string(yytext));
-                                return yy::RStataParser::make_MERGE_SPEC(cmd, loc);
+                                yylval->node = new StringExprNode(std::string(yytext));
+                                return token::TOK_MERGE_SPEC;
                             }
 
 
 
                             /* logical operators and various single-character tokens */
-"&"                         return yy::RStataParser::make_AND_OP(yytext, loc);
-"|"                         return yy::RStataParser::make_OR_OP(yytext, loc);
-">"                         return yy::RStataParser::make_GT_OP(yytext, loc);
-"<"                         return yy::RStataParser::make_LT_OP(yytext, loc);
-">="                        return yy::RStataParser::make_GE_OP(yytext, loc);
-"<="                        return yy::RStataParser::make_LE_OP(yytext, loc);
-"=="                        return yy::RStataParser::make_EQ_OP(yytext, loc);
-"!="                        return yy::RStataParser::make_NE_OP(yytext, loc);
-"~="                        return yy::RStataParser::make_NE_OP(yytext, loc);
-"!"                         return yy::RStataParser::make_NEG_OP(yytext, loc);
-"~"                         return yy::RStataParser::make_NEG_OP("!", loc);
+"&"                         { yylval->str = strdup(yytext); return token::TOK_AND_OP; }
+"|"                         { yylval->str = strdup(yytext); return token::TOK_OR_OP; }
+">"                         { yylval->str = strdup(yytext); return token::TOK_GT_OP; }
+"<"                         { yylval->str = strdup(yytext); return token::TOK_LT_OP; }
+">="                        { yylval->str = strdup(yytext); return token::TOK_GE_OP; }
+"<="                        { yylval->str = strdup(yytext); return token::TOK_LE_OP; }
+"=="                        { yylval->str = strdup(yytext); return token::TOK_EQ_OP; }
+"!="                        { yylval->str = strdup(yytext); return token::TOK_NE_OP; }
+"~="                        { yylval->str = strdup(yytext); return token::TOK_NE_OP; }
+"!"                         { yylval->str = strdup(yytext); return token::TOK_NEG_OP; }
+"~"                         { yylval->str = strdup(yytext); return token::TOK_NEG_OP; }
 
-\*                          return yy::RStataParser::make_STAR(yytext, loc);
-\+                          return yy::RStataParser::make_PLUS(yytext, loc);
-\/                          return yy::RStataParser::make_SLASH(yytext, loc);
-\-                          return yy::RStataParser::make_MINUS(yytext, loc);
-\^                          return yy::RStataParser::make_CARET(yytext, loc);
-=                           return yy::RStataParser::make_ASSIGN(yytext, loc);
+\*                          { yylval->str = strdup(yytext); return token::TOK_STAR; }
+\+                          { yylval->str = strdup(yytext); return token::TOK_PLUS; }
+\/                          { yylval->str = strdup(yytext); return token::TOK_SLASH; }
+\-                          { yylval->str = strdup(yytext); return token::TOK_MINUS; }
+\^                          { yylval->str = strdup(yytext); return token::TOK_CARET; }
+=                           { yylval->str = strdup(yytext); return token::TOK_ASSIGN; }
 
-\[                          return yy::RStataParser::make_LBRACKET(yytext, loc);
-\]                          return yy::RStataParser::make_RBRACKET(yytext, loc);
-\(                          return yy::RStataParser::make_LPAREN(yytext, loc);
-\)                          return yy::RStataParser::make_RPAREN(yytext, loc);
-\{                          return yy::RStataParser::make_LBRACE(yytext, loc);
-\}                          return yy::RStataParser::make_RBRACE(yytext, loc);
-,                           return yy::RStataParser::make_COMMA(yytext, loc);
-:                           return yy::RStataParser::make_COLON(yytext, loc);
+\[                          { yylval->str = strdup(yytext); return token::TOK_LBRACKET; }
+\]                          { yylval->str = strdup(yytext); return token::TOK_RBRACKET; }
+\(                          { yylval->str = strdup(yytext); return token::TOK_LPAREN; }
+\)                          { yylval->str = strdup(yytext); return token::TOK_RPAREN; }
+\{                          { yylval->str = strdup(yytext); return token::TOK_LBRACE; }
+\}                          { yylval->str = strdup(yytext); return token::TOK_RBRACE; }
+,                           { yylval->str = strdup(yytext); return token::TOK_COMMA; }
+:                           { yylval->str = strdup(yytext); return token::TOK_COLON; }
 
 
 
                             /* command verbs that have to be hardcoded into the grammar */
 (?i:capture)                {
-                                const GeneralStataCmd *cmd = MakeGeneralStataCmd(std::string(yytext)).create();
-                                return yy::RStataParser::make_CAPTURE(cmd, loc);
+                                yylval->node = MakeGeneralStataCmd(std::string(yytext)).create();
+                                return token::TOK_CAPTURE;
                             }
 (?i:quietly)                {
-                                const GeneralStataCmd *cmd = MakeGeneralStataCmd(std::string(yytext)).create();
-                                return yy::RStataParser::make_QUIETLY(cmd, loc);
+                                yylval->node = MakeGeneralStataCmd(std::string(yytext)).create();
+                                return token::TOK_QUIETLY;
                             }
 (?i:qui)                    {
-                                const GeneralStataCmd *cmd = MakeGeneralStataCmd(std::string("quietly")).create();
-                                return yy::RStataParser::make_QUIETLY(cmd, loc);
+                                yylval->node = MakeGeneralStataCmd(std::string("quietly")).create();
+                                return token::TOK_QUIETLY;
                             }
 (?i:noisily)                {
-                                const GeneralStataCmd *cmd = MakeGeneralStataCmd(std::string(yytext)).create();
-                                return yy::RStataParser::make_NOISILY(cmd, loc);
+                                yylval->node = MakeGeneralStataCmd(std::string(yytext)).create();
+                                return token::TOK_NOISILY;
                             }
 (?i:merge)                  {
                                 // this is an IDENT because the parser constructs this command with its options
-                                const IdentExprNode *cmd = new IdentExprNode(std::string(yytext));
-                                return yy::RStataParser::make_MERGE(cmd, loc);
+                                yylval->ident = new IdentExprNode(std::string(yytext));
+                                return token::TOK_MERGE;
                             }
 
 
 
                             /* all non-keyword identifiers */
 [_A-Za-z][A-Za-z0-9_]*      {
-                                const IdentExprNode *cmd = new IdentExprNode(std::string(yytext));
-                                return yy::RStataParser::make_IDENT(cmd, loc);
+                                yylval->ident = new IdentExprNode(std::string(yytext));
+                                return token::TOK_IDENT;
                             }
 
-<<EOF>>                     return yy::RStataParser::make_END(std::string("END"), loc);
+<<EOF>>                     { yylval->str = strdup("END"); return token::TOK_END; }
 %%
 
 void long_comment()
