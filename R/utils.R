@@ -1,22 +1,3 @@
-raiseifnot <-
-function(test, cond=simpleError)
-{
-    msg = paste0("Assertion failed: ", deparse(substitute(test)))
-    if(!test)
-        signalCondition(cond(msg))
-}
-
-errorifnot <-
-raiseifnot
-
-warningifnot <-
-function(test)
-raiseifnot(test, cond=simpleWarning)
-
-messageifnot <-
-function(test)
-raiseifnot(test, cond=simpleMessage)
-
 #Reverse a vector of strings
 rev_string <-
 function(str)
@@ -35,7 +16,14 @@ function()
     res = ""
     while(TRUE)
     {
-        inpt <- readline(". ")
+        inpt <- readLines(con=stdin(), n = 1, warn = FALSE)
+        
+        if(length(inpt) == 0) #at EOF
+        {
+            cond = simpleCondition("end of file")
+            class(cond) <- c("exit", class(cond))
+            signalCondition(cond)
+        }
         
         if(substring(rev_string(inpt), 1, 3) == "///")
         {

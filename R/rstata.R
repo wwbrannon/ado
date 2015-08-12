@@ -24,68 +24,66 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
         on.exit(assign(varname, dta, pos=parent.frame()))
     }
     
-    #Set the function we use to get input
-    if(is.null(filename) && is.null(string))
+    if(interactive() && is.null(filename) && is.null(string))
     {
-        #We're reading from stdin
-        if(interactive())
+        #We're reading from stdin as an REPL
+        
+        #The main read-eval-print loop
+        while(TRUE)
         {
-            read_input <- read_interactive
-        }
-        else
-        {
-            read_input <-
-            function()
+            cat(". ", sep="")
+            
+            val <-
+            tryCatch(
             {
-                readLines(con=stdin())
+                inpt <- read_interactive()
+
+                #Send the input to the bison parser
+                ast <- do_stata_parse(inpt)
+                
+                ##FIXME when API stabilizes
+                #Do post-parsing syntax and semantic checks on the AST,
+                #and then recursively transform it to an expression object
+                #res <- lapply(ast, function(x) eval(x, dta, environment()))
+                #res <- do.call(paste0, c(res, list(collapse="\n")))
+                #
+                #eval(res) #each called function prints its own output
+            },
+            error = function(c) c,
+            exit = function(c) c)
+
+            if(inherits(val, "error"))
+                signalCondition(val);
+            
+            #The custom condition for ado-language exit commands
+            if(inherits(val, "exit"))
+            {
+                cat("\n");
+                break;
             }
+
+            print(val, sep="\n") #this line is unnecessary soon...
         }
+    } else if(is.null(filename) && is.null(string))
+    {   
+        #We're reading from stdin, in batch mode
+        
+        inpt <- readLines(con=stdin(), warn=FALSE)
+        ast <- do_stata_parse(inpt)
+        
+        ##FIXME when API stabilizes
     } else if(!is.null(filename))
     {
-        read_input <-
-        function()
-        {
-            readLines(con=file(filename, "r"))
-        }
+        inpt <- readLines(con=file(filename, "r"))
+        ast <- do_stata_parse(inpt)
+        
+        ##FIXME when API stabilizes
     } else #!is.null(string)
     {
-        read_input <-
-        function()
-        {
-            readLines(con=textConnection(string))
-        }
-    }
-
-    #The main read-eval-print loop
-    while(TRUE)
-    {
-        inpt <- read_input()
-
-        val <-
-        tryCatch(
-        {
-            #Send the input to the bison parser
-            ast <- do_stata_parse(inpt)
-            
-            ##FIXME when API stabilizes
-            #Do post-parsing syntax and semantic checks on the AST,
-            #and then recursively transform it to an expression object
-            #res <- lapply(ast, function(x) eval(x, dta, environment()))
-            #res <- do.call(paste0, c(res, list(collapse="\n")))
-            #
-            #eval(res) #need to catch and return the output?
-        },
-        error = function(c) c,
-        exit = function(c) c)
-
-        if(inherits(val, "error"))
-            signalCondition(val);
+        inpt <- readLines(con=textConnection(string))
+        ast <- do_stata_parse(inpt)
         
-        #The custom condition for ado-language exit commands
-        if(inherits(val, "exit"))
-            break;
-
-        print(val, sep="\n")
+        ##FIXME when API stabilizes
     }
 
     return(invisible(dta));
