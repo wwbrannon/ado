@@ -1,36 +1,53 @@
-weed <-
-function(node)
-UseMethod("weed")
-
-weed.general.cmd
-<- 
-
-
-
-
-
-
-
-
-
-
-eval.ast.node <-
-function(node)
+raiseifnot <-
+function(test, cond=simpleError)
 {
-    if(!("rstata.ast.node" %in% class(node)))
-    {
-        signalCondition(simpleError("Not called on an AST node"))
-    }
-
-
+    msg = paste0("Assertion failed: ", deparse(substitute(test)))
+    if(!test)
+        signalCondition(cond(msg))
 }
 
-#The function to execute embedded R code
-embedded_r <-
-function(txt)
-{
-    vals <- lapply(lapply(parse(text=txt), eval), capture.output)
+errorifnot <-
+raiseifnot
 
-    do.call(paste0, c(vals, list(collapse="\n")))
+warningifnot <-
+function(test)
+raiseifnot(test, cond=simpleWarning)
+
+messageifnot <-
+function(test)
+raiseifnot(test, cond=simpleMessage)
+
+#Reverse a vector of strings
+rev_string <-
+function(str)
+{
+    pts <- lapply(strsplit(str, NULL), rev)
+    pts <- lapply(pts, function(x) paste0(x, collapse=''))
+
+    simplify2array(pts)
+}
+
+#We're reading from the console, so we have to handle the /// construct
+#in this function as well as in the parser.
+read_interactive <-
+function()
+{
+    res = ""
+    while(TRUE)
+    {
+        inpt <- readline(". ")
+        
+        if(substring(rev_string(inpt), 1, 3) == "///")
+        {
+            res <- paste(res, inpt, sep="\n")
+            next;
+        }
+        
+        #we got a non-continuing line
+        res <- paste(res, inpt, sep="\n")
+        break
+    }
+
+    res
 }
 
