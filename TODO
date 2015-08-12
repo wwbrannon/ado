@@ -1,11 +1,12 @@
 Semantic analysis / code generation:
-    o) semantic analysis and infrastructural R functions
-        o) weeding for each type of node
-        o) AST walkers to construct unevaluated calls and expression objects
-            o) name abbreviation
-        o) how much of the common weeding and walking can be encapsulated into
-           superclass methods? use NextMethod
-    
+    o) finish semantic analysis and weeding
+    o) code generation: construct unevaluated calls and expression objects
+        o) name abbreviation
+
+    o) printing info from embedded R command
+
+    o) something is wrong with condition passing out of the cmd_action callback
+
     o) functions for the initial set of commands
     
     o) Many more commands
@@ -15,11 +16,11 @@ Semantic analysis / code generation:
         o) a few more macro manipulation commands
         
 Parser / lexer:
-    o) the class information the parser is embedding in nodes isn't rich enough
+    o) lowercase commands before building parse tree
+
     o) Macros, without loops
-        o) not terribly hard - just need to find a way to lex nested macros and
-           recursively substitute their values from the symbol table. the driver's
-           callbacks make this fairly easy to implement
+        o) just need to find a way to lex nested macros and recursively substitute
+           their values from the symbol table
         o) "compound double quotes"
 
     o) Loops

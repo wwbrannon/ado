@@ -352,12 +352,12 @@ nonmodifier_cmd:
             node->appendChild("varlist", $3);
         else
             delete $3;
-
+        
         if($4->nChildren() > 0)
             node->appendChild("using_clause", $4);
         else
             delete $4;
-
+        
         if($5->nChildren() > 0)
             node->appendChild("option_list", $5);
         else
@@ -564,7 +564,7 @@ label_expression:
       primary_expression %prec ":"
     | label_expression label_operator primary_expression %prec ":"
     {
-        ExprNode *node = new ExprNode("rstata_expression");
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_label_expression"});
         node->addData("value", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -583,11 +583,23 @@ factor_expression:
     }
     ;
 
+cross_expression:
+      factor_expression
+    | cross_expression cross_operator factor_expression
+    {
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_cross_expression"});
+        node->addData("verb", *($2));
+        node->appendChild("left", $1);
+        node->appendChild("right", $3);
+        $$ = node;
+    }
+    ;
+
 postfix_expression:
-      factor_expression %prec "["
+      cross_expression %prec "["
     | postfix_expression "[" expression "]" %prec "["
     {
-        ExprNode *node = new ExprNode("rstata_expression");
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
         node->addData("verb", std::string("[]"));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -599,7 +611,7 @@ postfix_expression:
     }
     | postfix_expression "(" ")" %prec "("
     {
-        ExprNode *node = new ExprNode("rstata_expression");
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
         node->addData("verb", std::string("()"));
         node->appendChild("left", $1);
         
@@ -610,7 +622,7 @@ postfix_expression:
     }
     | postfix_expression "(" argument_expression_list ")"
     {
-        ExprNode *node = new ExprNode("rstata_expression");
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
         node->addData("verb", std::string("()"));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -626,7 +638,7 @@ power_expression:
       postfix_expression %prec EXPONENT
     | power_expression power_operator postfix_expression %prec EXPONENT
     {
-        ExprNode *node = new ExprNode("rstata_expression");
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_power_expression"});
         node->addData("verb", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -638,7 +650,7 @@ unary_expression:
       power_expression
     | unary_operator power_expression
     {
-        ExprNode *node = new ExprNode("rstata_expression");
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_unary_expression"});
         node->addData("verb", *($1));
         node->appendChild("right", $2);
         $$ = node;
@@ -649,7 +661,7 @@ multiplication_expression:
       unary_expression
     | multiplication_expression multiplication_operator unary_expression
     {
-        ExprNode *node = new ExprNode("rstata_expression");
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_multiplication_expression"});
         node->addData("verb", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -661,7 +673,7 @@ additive_expression:
       multiplication_expression %prec "+"
     | additive_expression additive_operator multiplication_expression %prec "+"
     {
-        ExprNode *node = new ExprNode("rstata_expression");
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_additive_expression"});
         node->addData("verb", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -673,7 +685,7 @@ relational_expression:
       additive_expression %prec RELATIONAL
     | relational_expression relational_operator additive_expression %prec RELATIONAL
     {
-        ExprNode *node = new ExprNode("rstata_expression");
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_relational_expression"});
         node->addData("verb", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -685,7 +697,7 @@ equality_expression:
       relational_expression
     | equality_expression equality_operator relational_expression
     {
-        ExprNode *node = new ExprNode("rstata_expression");
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_equality_expression"});
         node->addData("verb", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -697,19 +709,7 @@ logical_expression:
       equality_expression
     | logical_expression logical_operator equality_expression
     {
-        ExprNode *node = new ExprNode("rstata_expression");
-        node->addData("verb", *($2));
-        node->appendChild("left", $1);
-        node->appendChild("right", $3);
-        $$ = node;
-    }
-    ;
-
-cross_expression:
-      logical_expression
-    | cross_expression cross_operator logical_expression
-    {
-        ExprNode *node = new ExprNode("rstata_expression");
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_logical_expression"});
         node->addData("verb", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -718,13 +718,13 @@ cross_expression:
     ;
 
 argument_expression_list:
-      cross_expression
+      logical_expression
     {
         ExprNode *node = new ExprNode("rstata_argument_expression_list");
         node->appendChild($1);
         $$ = node;
     }
-    | argument_expression_list "," cross_expression
+    | argument_expression_list "," logical_expression
     {
         $1->appendChild($3);
         
@@ -735,10 +735,10 @@ argument_expression_list:
     ;
 
 expression:
-      cross_expression
-    | IDENT assignment_operator cross_expression
+      logical_expression
+    | IDENT assignment_operator logical_expression
     {
-        ExprNode *node = new ExprNode("rstata_expression");
+        ExprNode *node = new ExprNode("rstata_expression", "rstata_assignment_expression");
         node->addData("verb", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -760,7 +760,7 @@ expression_list:
     }
     | type_spec "(" expression_list ")"
     {
-        ExprNode *node = new ExprNode("rstata_expression_list");
+        ExprNode *node = new ExprNode("rstata_type_constructor");
         node->addData("type_spec", *($1));
         node->appendChild("varlist", $3);
         
