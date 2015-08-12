@@ -54,38 +54,39 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 %precedence EXPONENT
 %precedence "["
 %precedence "("
-%precedence FACTOR
-%precedence ":"
 
 %token <str> END 0 "end of file"
 %token <str> ILLEGAL_CHARACTER /* Not used, but invokes error handling if seen */
 
-%token <str>        NEWLINE
+%token
+    NEWLINE
+    SEMICOLON       ";"
+    LPAREN          "("
+    RPAREN          ")"
+    COMMA           ","
+    LBRACE          "{"
+    RBRACE          "}"
+    LBRACKET        "["
+    RBRACKET        "]"
+    COLON           ":"
+    ASSIGN          "="
+;
+
 %token <str>
     PLUS            "+"
     LT_OP           "<"
     GT_OP           ">"
-    LBRACE          "{"
-    RBRACE          "}"
-    COMMA           ","
-    COLON           ":"
     NEG_OP          "!"
     STAR            "*"
     SLASH           "/"
     MINUS           "-"
     CARET           "^"
-    ASSIGN          "="
     GE_OP           ">="
     LE_OP           "<="
     EQ_OP           "=="
     NE_OP           "!="
     OR_OP           "|"
     AND_OP          "&"
-    LBRACKET        "["
-    RBRACKET        "]"
-    LPAREN          "("
-    RPAREN          ")"
-    SEMICOLON       ";"
     FACT_CROSS      "##"
     CROSS           "#"
 ;
@@ -108,7 +109,7 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 %token <node>   GENERATE RECAST DISPLAY FORMAT MERGE
 
                 /* Command components and keywords */
-%token <str>    USING IF IN
+%token          USING IF IN
 %token <str>    MERGE_SPEC
 
                 /* Factor variable operators */
@@ -118,14 +119,14 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 %type <node>    translation_unit external_statement compound_cmd cmds modifier_cmd_list cmd
 %type <node>    error
 
-%type <node>    modifier_cmd nonmodifier_cmd
+%type <node>    modifier_cmd nonmodifier_cmd long_modifier_cmd long_modifier_lede
 
 %type <node>    unary_factor_operator
 
-%type <str>     assignment_operator label_operator unary_operator power_operator equality_operator
+%type <str>     unary_operator power_operator equality_operator
 %type <str>     multiplication_operator additive_operator relational_operator logical_operator
 %type <str>     cross_operator
-%type <str>     cmd_sep cmd_seps type_spec format_spec
+%type <str>     type_spec format_spec
 
 %type <node>    if_clause in_clause weight_clause using_clause
 
@@ -138,9 +139,9 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 %type <node>    option options
 %type <node>    option_list argument_expression_list expression_list
 
-%destructor { }            translation_unit
-%destructor { delete $$; } <str>
-%destructor { delete $$; } <node>
+%destructor { }                 translation_unit
+%destructor { delete $$; }      <str>
+%destructor { delete $$; }      <node>
 
 %start translation_unit
 %%
@@ -163,8 +164,6 @@ translation_unit:
         $1->appendChild($3);
         driver.ast = $1;
 
-        delete $2;
-        
         $$ = $1;
     }
     ;
@@ -178,14 +177,6 @@ external_statement:
 cmd_seps:
       cmd_sep
     | cmd_seps cmd_sep
-    {
-        std::string n = *($1) + *($2);
-        $$ = &n;
-        
-        delete $1;
-        delete $2;
-
-    }
     ;
 
 cmd_sep:
@@ -196,9 +187,6 @@ cmd_sep:
 compound_cmd:
     "{" cmds "}"
     {
-        delete $1;
-        delete $3;
-
         $$ = $2;
     }
     ;
@@ -210,11 +198,9 @@ cmds:
         node->appendChild($1);
         $$ = node;
     }
-    | cmds cmd_sep cmd
+    | cmds cmd_seps cmd
     {
         $1->appendChild($3);
-
-        delete $2;
 
         $$ = $1;
     }
@@ -245,19 +231,6 @@ cmd:
     {
         $1->appendChild("main_cmd", $3);
 
-        delete $2;
-
-        R_ACTION($1);
-        
-        $$ = $1;
-    }
-    | modifier_cmd_list nonmodifier_cmd ":" nonmodifier_cmd
-    {
-        $1->appendChild("next_modifier", $2);
-        $2->appendChild("main_cmd", $4);
-        
-        delete $3;
-        
         R_ACTION($1);
         
         $$ = $1;
@@ -274,21 +247,53 @@ cmd:
     {
         $1->appendChild("main_cmd", $3);
         
-        delete $2;
+        R_ACTION($1);
+        
+        $$ = $1;
+    }
+    | modifier_cmd_list long_modifier_cmd nonmodifier_cmd
+    {
+        $1->appendChild("next_modifier", $2);
+        $2->appendChild("main_cmd", $3);
         
         R_ACTION($1);
         
         $$ = $1;
     }
-    | modifier_cmd_list nonmodifier_cmd ":" compound_cmd
+    | modifier_cmd_list long_modifier_cmd compound_cmd
     {
         $1->appendChild("next_modifier", $2);
-        $2->appendChild("main_cmd", $4);
-        
-        delete $3;
+        $2->appendChild("main_cmd", $3);
         
         R_ACTION($1);
         
+        $$ = $1;
+    }
+    ;
+
+long_modifier_cmd:
+    long_modifier_lede option_list ":"
+    {
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        node->appendChild("varlist", $1);
+        
+        if($2->nChildren() > 0)
+            node->appendChild("verb", $1);
+        
+        $$ = node;
+    }
+    ;
+
+long_modifier_lede:
+      IDENT
+    {
+        ExprNode *node = new ExprNode("rstata_expression_list");
+        node->appendChild($1);
+        $$ = node;
+    }
+    | long_modifier_lede IDENT
+    {
+        $1->appendChild($2);
         $$ = $1;
     }
     ;
@@ -322,28 +327,18 @@ nonmodifier_cmd:
         
         if($3->nChildren() > 0)
             node->appendChild("if_clause", $3);
-        else
-            delete $3;
 
         if($4->nChildren() > 0)
             node->appendChild("in_clause", $4);
-        else
-            delete $4;
 
         if($5->nChildren() > 0)
             node->appendChild("weight_clause", $5);
-        else
-            delete $5;
 
         if($6->nChildren() > 0)
             node->appendChild("using_clause", $6);
-        else
-            delete $6;
 
         if($7->nChildren() > 0)
             node->appendChild("option_list", $7);
-        else
-            delete $7;
 
         $$ = node;
     }
@@ -363,18 +358,12 @@ nonmodifier_cmd:
         
         if($3->nChildren() > 0)
             node->appendChild("varlist", $3);
-        else
-            delete $3;
         
         if($4->nChildren() > 0)
             node->appendChild("using_clause", $4);
-        else
-            delete $4;
         
         if($5->nChildren() > 0)
             node->appendChild("option_list", $5);
-        else
-            delete $5;
         
         $$ = node;
     }
@@ -386,18 +375,12 @@ nonmodifier_cmd:
         
         if($3->nChildren() > 0)
             node->appendChild("if_clause", $3);
-        else
-            delete $3;
 
         if($4->nChildren() > 0)
             node->appendChild("in_clause", $4);
-        else
-            delete $4;
 
         if($5->nChildren() > 0)
             node->appendChild("option_list", $5);
-        else
-            delete $5;
         
         $$ = node;
     }
@@ -410,18 +393,12 @@ nonmodifier_cmd:
         
         if($4->nChildren() > 0)
             node->appendChild("if_clause", $4);
-        else
-            delete $4;
 
         if($5->nChildren() > 0)
             node->appendChild("in_clause", $5);
-        else
-            delete $5;
         
         if($6->nChildren() > 0)
             node->appendChild("option_list", $6);
-        else
-            delete $6;
         
         $$ = node;
     }
@@ -435,8 +412,6 @@ nonmodifier_cmd:
         
         if($4->nChildren() > 0)
             node->appendChild("option_list", $4);
-        else
-            delete $4;
         
         $$ = node;
     }
@@ -566,19 +541,16 @@ primary_expression:
     | DATETIME
     | "(" expression ")"
     {
-        delete $1;
-        delete $3;
-        
         $$ = $2;
     }
     ;
 
 label_expression:
-      primary_expression %prec ":"
-    | label_expression label_operator primary_expression %prec ":"
+      primary_expression
+    | label_expression label_operator primary_expression
     {
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_label_expression"});
-        node->addData("verb", *($2));
+        node->addData("verb", ":");
         node->appendChild("left", $1);
         node->appendChild("right", $3);
         $$ = node;
@@ -586,8 +558,8 @@ label_expression:
     ;
 
 unary_factor_expression:
-      label_expression %prec FACTOR
-    | unary_factor_operator label_expression %prec FACTOR
+      label_expression
+    | unary_factor_operator label_expression
     {
         $1->appendChild("left", $2);
         
@@ -616,9 +588,6 @@ postfix_expression:
         node->appendChild("left", $1);
         node->appendChild("right", $3);
         
-        delete $2;
-        delete $4;
-
         $$ = node;
     }
     | postfix_expression "(" ")" %prec "("
@@ -626,9 +595,6 @@ postfix_expression:
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
         node->addData("verb", std::string("()"));
         node->appendChild("left", $1);
-        
-        delete $2;
-        delete $3;
         
         $$ = node;
     }
@@ -639,9 +605,6 @@ postfix_expression:
         node->appendChild("left", $1);
         node->appendChild("right", $3);
         
-        delete $2;
-        delete $4;
-
         $$ = node;
     }
     ;
@@ -740,8 +703,6 @@ argument_expression_list:
     {
         $1->appendChild($3);
         
-        delete $2;
-        
         $$ = $1;
     }
     ;
@@ -751,7 +712,7 @@ expression:
     | IDENT assignment_operator logical_expression
     {
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_assignment_expression"});
-        node->addData("verb", *($2));
+        node->addData("verb", "=");
         node->appendChild("left", $1);
         node->appendChild("right", $3);
         $$ = node;
@@ -776,9 +737,6 @@ expression_list:
         node->addData("type_spec", *($1));
         node->appendChild("varlist", $3);
         
-        delete $2;
-        delete $4;
-
         $$ = node;
     }
     ;
@@ -796,8 +754,6 @@ option_list:
     }
     | "," options
     {
-        delete $1;
-
         $$ = $2;
     }
     ;
@@ -830,9 +786,6 @@ option:
         node->appendChild("name", $1);
         node->appendChild("args", $3);
         
-        delete $2;
-        delete $4;
-        
         $$ = node;
     }
     ;
@@ -854,10 +807,6 @@ weight_clause:
         node->appendChild("left", $2);
         node->appendChild("right", $4);
         
-        delete $1;
-        delete $3;
-        delete $5;
-
         $$ = node;
     }
     ;
@@ -878,8 +827,6 @@ if_clause:
         ExprNode *node = new ExprNode("rstata_if_clause");
         node->appendChild("if_expression", $2);
         
-        delete $1;
-
         $$ = node;
     }
     ;
@@ -901,9 +848,6 @@ in_clause:
         node->appendChild("upper", $2);
         node->appendChild("lower", $4);
         
-        delete $1;
-        delete $3;
-
         $$ = node;
     }
     ;
@@ -924,8 +868,6 @@ using_clause:
         ExprNode *node = new ExprNode("rstata_using_clause");
         node->appendChild("filename", $2);
         
-        delete $1;
-
         $$ = node;
     }
     | USING IDENT
@@ -933,8 +875,6 @@ using_clause:
         ExprNode *node = new ExprNode("rstata_using_clause");
         node->appendChild("filename", $2);
         
-        delete $1;
-
         $$ = node;
     }
     ;
