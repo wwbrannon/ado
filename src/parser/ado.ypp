@@ -37,22 +37,11 @@ int yywrap()
 %token <str> NUMBER IDENT STRING_LITERAL
 %token <str> NUMBER_MISSING STRING_MISSING DATE TIME DATETIME
 
-/* Flow control constructs */
-%token <str> WHILE FORVALUES FOREACH
-
-/* Type specifiers */
-%token <str> BYTE INT LONG FLOAT DOUBLE STRING_TYPE_SPEC;
-
 /* Operators */
 %token <str> GT_OP LT_OP EQ_OP NE_OP OR_OP AND_OP
 
-/* Formats */
-%token <str> STRING_FORMAT DATETIME_FORMAT NUMBER_FORMAT
-
 /* Command components and keywords */
 %token <str> USING IF WITH IN
-%token <str> LOCAL GLOBAL VARLIST NEWLIST NUMLIST OF
-%token <str> _LITTLE_N _BIG_N _ALL _B _COEF _CONS _PI _PRED _RC _SKIP
 
 /* Commands with unusual enough syntax they have to be parsed separately */
 %token <str> QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
