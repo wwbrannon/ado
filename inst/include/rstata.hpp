@@ -18,7 +18,7 @@ class StataOption
 {
     public:
         StataOption(std::string _name, std::vector<std::string> _args);
-        Rcpp::Language as_list() const;
+        Rcpp::List as_list() const;
 
     private:
         std::string name;
@@ -30,7 +30,7 @@ class OptionList
 {
     public:
         OptionList(std::vector<StataOption> _options);
-        Rcpp::Language as_list() const;
+        Rcpp::List as_list() const;
     
     private:
         std::vector<StataOption> options;
