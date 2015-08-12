@@ -98,13 +98,14 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 %token <node>   DATE DATETIME
 
                 /* Type specifiers */
-%token <str>    BYTE INT LONG FLOAT DOUBLE STRING_TYPE_SPEC;
+%token <str>    BYTE INT LONG FLOAT DOUBLE STRING_TYPE_SPEC
 
                 /* Formats */
 %token <str>    STRING_FORMAT DATETIME_FORMAT NUMBER_FORMAT
 
                 /* Commands with unusual enough syntax they have to be parsed separately */
-%token <node>   EMBEDDED_R;
+%token <node>   EMBEDDED_R
+%token <node>   BY XI
 %token <node>   QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
 %token <node>   GENERATE RECAST DISPLAY FORMAT MERGE
 
@@ -251,47 +252,34 @@ cmd:
         
         $$ = $1;
     }
-    | modifier_cmd_list long_modifier_cmd ":" nonmodifier_cmd
-    {
-        $1->appendChild($2);
-        $1->appendChild("main_cmd", $4);
-        
-        R_ACTION($1);
-        
-        $$ = $1;
-    }
-    | modifier_cmd_list long_modifier_cmd ":" compound_cmd
-    {
-        $1->appendChild($2);
-        $1->appendChild("main_cmd", $4);
-        
-        R_ACTION($1);
-        
-        $$ = $1;
-    }
-    ;
 
-long_modifier_cmd:
-      IDENT option_list
+    | modifier_cmd_list long_modifier_cmd expression_list option_list ":" nonmodifier_cmd
     {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
-        node->appendChild("verb", $1);
+        $2->appendChild("varlist", $3);
         
-        if($2->nChildren() > 0)
-            node->appendChild("option_list", $2);
+        if($4->nChildren() > 0)
+            $2->appendChild("option_list", $4);
         
-        $$ = node;
+        $1->appendChild($2);
+        $1->appendChild("main_cmd", $6);
+        
+        R_ACTION($1);
+        
+        $$ = $1;
     }
-    | IDENT expression_list option_list
+    | modifier_cmd_list long_modifier_cmd expression_list option_list ":" compound_cmd
     {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
-        node->appendChild("verb", $1);
-        node->appendChild("varlist", $2);
+        $2->appendChild("varlist", $3);
         
-        if($3->nChildren() > 0)
-            node->appendChild("option_list", $3);
+        if($4->nChildren() > 0)
+            $2->appendChild("option_list", $4);
         
-        $$ = node;
+        $1->appendChild($2);
+        $1->appendChild("main_cmd", $6);
+        
+        R_ACTION($1);
+        
+        $$ = $1;
     }
     ;
 
@@ -299,6 +287,11 @@ modifier_cmd:
       CAPTURE
     | QUIETLY
     | NOISILY
+    ;
+
+long_modifier_cmd:
+      BY
+    | XI
     ;
 
 modifier_cmd_list:
@@ -316,7 +309,7 @@ modifier_cmd_list:
     ;
 
 nonmodifier_cmd:
-      IDENT expression_list if_clause in_clause weight_clause using_clause option_list
+     IDENT expression_list if_clause in_clause weight_clause using_clause option_list
     {
         ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
         node->appendChild("verb", $1);
@@ -690,7 +683,7 @@ argument_expression_list:
 
 expression:
       logical_expression
-    | IDENT assignment_operator logical_expression
+    | logical_expression assignment_operator logical_expression
     {
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_assignment_expression"});
         node->addData("verb", "=");

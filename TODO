@@ -1,16 +1,17 @@
-Semantic analysis / code generation:
+Now:
+    o) something is wrong with condition passing out of the cmd_action callback
+
     o) code generation: construct unevaluated calls and expression objects
         o) name abbreviation
 
-    o) something is wrong with condition passing out of the cmd_action callback
-
     o) functions for the initial set of commands
-        o) printing info from embedded R command
-    
+
+    Debug:
+        o) use testthat and travis
+        o) write a unit test suite
+        o) test, test, test...
+
 Parser / lexer:
-    o) parse by and xi and friends correctly
-    o) cmd_seps
-    o) why is it dumping core on bad input? error recovery + delete, probably. smart pointers?
     o) Macros, without loops
         o) just need to find a way to lex nested macros and recursively substitute
            their values from the symbol table
@@ -25,11 +26,6 @@ Commands:
         o) basic stats
         o) a few more macro manipulation commands
         
-Debug:
-    o) use testthat and travis
-    o) write a unit test suite
-    o) test, test, test...
-
 Documentation:
     o) convert comments to use roxygen2
     o) man entries, vignettes, examples, README

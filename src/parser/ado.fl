@@ -411,6 +411,22 @@ i?"o("\ *{D}+\ *\/{D}+\ *")."       {
 
 
                                     /* command verbs that have to be hardcoded into the grammar */
+(?i:by)                             {
+                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        verb->addData("value", *(new std::string(yytext)));
+                                        
+                                        yylval->node = new ExprNode({"rstata_cmd","rstata_general_cmd"});
+                                        yylval->node->appendChild("verb", verb);
+                                        return token::TOK_BY;
+                                    }
+(?i:xi)                             {
+                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        verb->addData("value", *(new std::string(yytext)));
+                                        
+                                        yylval->node = new ExprNode({"rstata_cmd","rstata_general_cmd"});
+                                        yylval->node->appendChild("verb", verb);
+                                        return token::TOK_XI;
+                                    }
 (?i:capture)                        {
                                         ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
