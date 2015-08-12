@@ -7,10 +7,14 @@
 #include <cerrno>
 #include <climits>
 #include <cstdlib>
-#include <iostream>
 #include <cstdio>
+
+#include <stack>
+#include <vector>
+#include <iostream>
 #include <sstream>
 #include <string>
+
 #include "RStata.hpp"
 #include "ado.tab.hpp"
 #include "RStataDriver.hpp"
@@ -19,7 +23,7 @@
 #define YYSTYPE yy::RStataParser::semantic_type
 #endif
 
-// String utility functions used below
+// String utility functions used and defined below
 std::vector<std::string> split(const std::string &s, char delim);
 std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems);
 std::string trim(const std::string& str, const std::string& what = " ");
@@ -27,13 +31,18 @@ std::string trim(const std::string& str, const std::string& what = " ");
 typedef yy::RStataParser::token token;
 
 // Code run each time a pattern is matched
-#define YY_USER_ACTION  llocp->columns(yyleng);
+#define YY_USER_ACTION  { llocp->columns(yyleng); }
 %}
 
 %x LONG_COMMENT
 %x SHORT_COMMENT
 
 %x LOCAL_MACRO
+%x GLOBAL_MACRO
+%x CDQUOTE
+
+%x EMBED
+%x STRING
 
 D           [0-9]
 L           [a-zA-Z_]
@@ -48,18 +57,59 @@ B           [ \t\v\r\f]
 %{
 // Code run each time yylex is called
 llocp->step();
+
+// Buffers and stacks for state machines
+std::string cdquote_buf;
+std::string embed_buf;
+std::string string_buf;
+std::stack<std::vector<std::string>> macro_stack;
 %}
-                                    /* Macros and compound double quotes */
-<INITIAL>\`                         { yy_push_state(LOCAL_MACRO); }
+                                    /* if you write {{{ ... }}}, the ... will be executed as R code */
+<INITIAL>"{{{"                      { yy_push_state(EMBED); }
+<EMBED>{
+    "}}}"                           {
+                                        yy_pop_state();
+
+                                        ExprNode *node = new ExprNode("rstata_embedded_code");
+                                        node->addData("value", std::string(embed_buf));
+                                        node->addData("lang", "R");
+
+                                        yylval->node = node;
+                                        return token::TOK_EMBEDDED_CODE;
+                                    }
+    \n+                             { llocp->lines(yyleng); embed_buf += std::string(yytext); }
+    [^\}\n]+                        { embed_buf += std::string(yytext); }
+
+    <<EOF>>                         { driver.error(*llocp, "Unclosed embed block"); yyterminate(); }
+}
+
+
+
+                                    /* FIXME Macros, local and global */
+<INITIAL>\`                         { yy_push_state(LOCAL_MACRO);  }
+<INITIAL>\$                         { yy_push_state(GLOBAL_MACRO); }
 
 <LOCAL_MACRO>{
     \`                              { yy_push_state(LOCAL_MACRO); }
-    [^\`\']*                        { /* something with local_macro_stack */ }
-    \'                              { yy_pop_state(); }
+    \$                              { yy_push_state(GLOBAL_MACRO); }
 
+    \n                              { llocp->lines(1); driver.error(*llocp, "Unclosed local macro"); yyterminate(); }
     <<EOF>>                         { driver.error(*llocp, "Unclosed local macro"); yyterminate(); }
+    
+    [^\`\']*                        { /* something with macro_stack */ }
+    \'                              { yy_pop_state(); }
 }
 
+<GLOBAL_MACRO>{
+    \`                              { yy_push_state(LOCAL_MACRO);  }
+    \$                              { yy_push_state(GLOBAL_MACRO); }
+
+    \n                              { llocp->lines(1); driver.error(*llocp, "Unclosed global macro"); yyterminate(); }
+    <<EOF>>                         { driver.error(*llocp, "Unclosed global macro"); yyterminate(); }
+
+    [^\`\']*                        { /* something with macro_stack */ }
+    \'                              { yy_pop_state(); }
+}
 
 
 
@@ -78,37 +128,25 @@ llocp->step();
 }
 
 
-                                    /* Allow a triple slash at EOL as a line extender.
-                                       We could just use the comment rules below, but this is clearer. */
+                                    /* Allow a triple slash at EOL as a line extender */
 \/\/\/\n                            { llocp->lines(yyleng); llocp->step(); }
 
 
 
                                     /* Eat short comments */
-<INITIAL>"//"                       { BEGIN(SHORT_COMMENT); }
-<INITIAL>^\*                        { BEGIN(SHORT_COMMENT); }
+<INITIAL>"//"                       { yy_push_state(SHORT_COMMENT); }
+<INITIAL>^\*                        { yy_push_state(SHORT_COMMENT); }
 <SHORT_COMMENT>{
     [^\n]*                          { /* eat anything but a newline */ }
-    \n                              { llocp->lines(1); BEGIN(INITIAL); }
+    \n                              {
+                                         yy_pop_state();
+                                         llocp->lines(1);
+                                         return token::TOK_NEWLINE;
+                                    }
 }
 
 
 
-                                    /* if you write {{{ ... }}}, the ... will be executed as R code */
-\{\{\{.*\}\}\}                      {
-                                        std::string *s = new std::string(yytext);
-
-                                        // remove the last three chars
-                                        s->pop_back(); s->pop_back(); s->pop_back();
-
-                                        std::string n = s->substr(3, s->size());
-                                        delete s;
-
-                                        yylval->node = new ExprNode("rstata_embedded_code");
-                                        yylval->node->addData("value", n);
-                                        yylval->node->addData("lang", "R");
-                                        return token::TOK_EMBEDDED_CODE;
-                                    }
                                     /* similarly, lines that start with "!" or "shell" are sh commands */
 ^\![^\n]*$                          {
                                         std::string *s = new std::string(yytext);
@@ -136,32 +174,100 @@ llocp->step();
 
 
                                     /* Statement separators; consider more than one in a row to be one */
-[\n]+                               { yylval->str = new std::string(yytext); llocp->lines(yyleng); return token::TOK_NEWLINE; }
-[;]+                                { yylval->str = new std::string(yytext); return token::TOK_SEMICOLON; }
+[\n]+                               {
+                                        yylval->str = new std::string(yytext);
+                                        llocp->lines(yyleng);
+                                        return token::TOK_NEWLINE;
+                                    }
+[;]+                                {
+                                        yylval->str = new std::string(yytext);
+                                        return token::TOK_SEMICOLON;
+                                    }
 
                                     /* ignore whitespace but track column numbers */
 {B}+                                { llocp->step(); }
 
 
 
+<INITIAL>\`\"                       { cdquote_buf.clear(); yy_push_state(CDQUOTE); }
+<CDQUOTE>{
+    \"\'                            {
+                                        std::string *s = new std::string(cdquote_buf);
+                                        
+                                        /* Saw the matching close quote - all done */
+                                        yy_pop_state();
+                                        
+                                        yylval->node = new ExprNode({"rstata_literal", "rstata_string_literal"});
+                                        yylval->node->addData("value", *s);
+                                        return token::TOK_STRING_LITERAL;
+                                    }
+
+                                    /* Code run on seeing macro terminators will check if the new top state is CDQUOTE
+                                       and append the macro replacement text to cdquote_buf if so. */
+    \`                              { yy_push_state(LOCAL_MACRO); } 
+    \$                              { yy_push_state(GLOBAL_MACRO); }
+
+                                    /* Unlike in Stata, strings can continue over multiple lines */
+    [\n]+                           { llocp->lines(yyleng); cdquote_buf += std::string(yytext); }
+    
+    \\\$                            { cdquote_buf += '$'; }
+    \\\`                            { cdquote_buf += '`'; }
+    \\n                             { cdquote_buf += '\n'; }
+    \\t                             { cdquote_buf += '\t'; }
+    \\r                             { cdquote_buf += '\r'; }
+    \\b                             { cdquote_buf += '\b'; }
+    \\f                             { cdquote_buf += '\f'; }
+    \\.                             { cdquote_buf += yytext[1]; }
+    \\                              { cdquote_buf += '\\'; }
+    
+    [^\\\n\"\`\$]+                  { cdquote_buf += std::string(yytext); }
+
+    <<EOF>>                         { driver.error(*llocp, "Unclosed compound double quote"); yyterminate(); }
+}
+
                                     /* string literals and string (or string-ish) data types */
-\"\"                                {
+\"\"                                { /* FIXME this should go away */
                                         std::string *s = new std::string;
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_string_literal"});
                                         yylval->node->addData("value", *s);
                                         return token::TOK_STRING_MISSING;
                                     }
-\"(\\.|[^"\\])*\"                   {
-                                        std::string *s = new std::string(yytext);
-                                        s->pop_back(); // remove trailing double quote
+<INITIAL>\"                         { string_buf.clear(); yy_push_state(STRING); }
+<STRING>{
+    \"                              {
+                                        std::string *s = new std::string(string_buf);
 
-                                        std::string n = s->substr(1, s->length()); // remove leading double quote
-                                        delete s;
-
+                                        /* Saw a close quote - all done */
+                                        yy_pop_state();
+                                        
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_string_literal"});
-                                        yylval->node->addData("value", n);
+                                        yylval->node->addData("value", *s);
                                         return token::TOK_STRING_LITERAL;
                                     }
+    
+                                    /* Code run on seeing macro terminators will check if the new top state is STRING
+                                       and append the macro replacement text to string_buf if so. */
+    \`                              { yy_push_state(LOCAL_MACRO); }
+    \$                              { yy_push_state(GLOBAL_MACRO); }
+  
+                                    /* Unlike in Stata, strings can continue over multiple lines */
+    [\n]+                           { llocp->lines(yyleng); string_buf += std::string(yytext); }
+    
+    \\\"                            { string_buf += '"'; }
+    \\\`                            { string_buf += '`'; }
+    \\\$                            { string_buf += '$'; }
+    \\n                             { string_buf += '\n'; }
+    \\t                             { string_buf += '\t'; }
+    \\r                             { string_buf += '\r'; }
+    \\b                             { string_buf += '\b'; }
+    \\f                             { string_buf += '\f'; }
+    \\.                             { string_buf += yytext[1]; }
+    \\                              { string_buf += '\\'; }
+    
+    [^\\\n\"\`\$]+                  { string_buf += std::string(yytext); }
+   
+    <<EOF>>                         { driver.error(*llocp, "Unclosed string literal"); yyterminate(); }
+}
 
 
 
@@ -268,7 +374,7 @@ in                                  { yylval->str = new std::string(yytext); ret
 
 
 
-                                    /* Weight-clause specifiers */
+                                    /* Weight-clause specifiers (this is a hack) */
 "["{B}*(a|p|i|f)weight{B}*"="       {
                                         ExprNode *clause = new ExprNode("rstata_weight_clause");
                                         ExprNode *kind = new ExprNode({"rstata_literal", "rstata_ident"});
@@ -285,8 +391,9 @@ in                                  { yylval->str = new std::string(yytext); ret
                                         yylval->node = clause;
                                         return token::TOK_WEIGHT_SPEC;
                                     }
-                                    
-                                    
+
+
+
                                     /* infix operators and various single-character tokens */
 "&"                                 { yylval->str = new std::string(yytext); return token::TOK_AND_OP; }
 "|"                                 { yylval->str = new std::string(yytext); return token::TOK_OR_OP; }
@@ -571,6 +678,18 @@ display                             {
 
                                         return token::TOK_DISPLAY;
                                     }
+disp                                {
+                                        yylval->node = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        yylval->node->addData("value", *(new std::string(yytext)));
+
+                                        return token::TOK_DISPLAY;
+                                    }
+di                                  {
+                                        yylval->node = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        yylval->node->addData("value", *(new std::string(yytext)));
+
+                                        return token::TOK_DISPLAY;
+                                    }
 format                              {
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_ident"});
                                         yylval->node->addData("value", *(new std::string(yytext)));
@@ -624,7 +743,7 @@ trim(const std::string& str, const std::string& what)
     return str.substr(start, len);
 }
 
-// The scanning-related functions of the driver class, which depend on lexer-related objects
+// The scanning-related functions of the driver class, which depend on lexer objects
 void
 RStataDriver::scan_begin()
 {
