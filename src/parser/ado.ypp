@@ -60,6 +60,7 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 %token <str> END 0 "end of file"
 %token <str> ILLEGAL_CHARACTER /* Not used, but invokes error handling if seen */
 
+%token <str>        NEWLINE
 %token <str>
     PLUS            "+"
     LT_OP           "<"
@@ -84,7 +85,6 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
     RBRACKET        "]"
     LPAREN          "("
     RPAREN          ")"
-    NEWLINE         "\n"
     SEMICOLON       ";"
     FACT_CROSS      "##"
     CROSS           "#"
@@ -125,7 +125,7 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 %type <str>     assignment_operator label_operator unary_operator power_operator equality_operator
 %type <str>     multiplication_operator additive_operator relational_operator logical_operator
 %type <str>     cross_operator
-%type <str>     cmd_sep type_spec format_spec
+%type <str>     cmd_sep cmd_seps type_spec format_spec
 
 %type <node>    if_clause in_clause weight_clause using_clause
 
@@ -158,7 +158,7 @@ translation_unit:
 
         $$ = $1;
     }
-    | translation_unit cmd_sep external_statement
+    | translation_unit cmd_seps external_statement
     {
         $1->appendChild($3);
         driver.ast = $1;
@@ -175,8 +175,21 @@ external_statement:
     | compound_cmd
     ;
 
+cmd_seps:
+      cmd_sep
+    | cmd_seps cmd_sep
+    {
+        std::string n = *($1) + *($2);
+        $$ = &n;
+        
+        delete $1;
+        delete $2;
+
+    }
+    ;
+
 cmd_sep:
-      "\n"
+      NEWLINE
     | ";"
     ;
 

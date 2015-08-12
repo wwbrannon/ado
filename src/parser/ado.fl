@@ -60,7 +60,7 @@ llocp->step();
 
 
                                     /* ignore whitespace but track line and column numbers */
-[\n]+                               { llocp->lines(yyleng); llocp->step(); }
+[\n]+                               { yylval->str = new std::string(yytext); llocp->lines(yyleng); return token::TOK_NEWLINE; }
 {B}+                                { llocp->step(); }
 
 
@@ -68,7 +68,11 @@ llocp->step();
                                     /* if you write {{{ ... }}}, the ... will be executed as R code */
 \{\{\{.*\}\}\}                      {
                                         std::string *s = new std::string(yytext);
-                                        std::string n = s->substr(3, s->length() - 3);
+                                        
+                                        // remove the last three chars
+                                        s->pop_back(); s->pop_back(); s->pop_back();
+                                        
+                                        std::string n = s->substr(3, s->size());
                                         delete s;
                                         
                                         yylval->node = new ExprNode("rstata_embedded_r");
@@ -410,6 +414,11 @@ i?"o("\ *{D}+\ *\/{D}+\ *")."       {
 (?i:capture)                        {
                                         yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
                                         yylval->node->addData("verb", *(new std::string(yytext)));
+                                        return token::TOK_CAPTURE;
+                                    }
+(?i:cap)                            {
+                                        yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
+                                        yylval->node->addData("verb", "capture");
                                         return token::TOK_CAPTURE;
                                     }
 (?i:quietly)                        {
