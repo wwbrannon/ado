@@ -1,19 +1,37 @@
-Roadmap to v1.0:
+Roadmap to v0.1:
 
 Immediate TODO:
-    o) finish the rest of the grammar
-    o) incorporate most of the currently unused keyword tokens
-       into the right places in the grammar
+    o) finish the grammar
+        o) shift/reduce conflicts in the expression sections
+        o) real varlists, with factors, interactions, etc
+        o) incorporate most of the currently unused keyword tokens
+        o) abbreviations for abbreviate-able keywords
+        o) looks like macros have to go in here (loops use them)
     o) finish the actions for commands
+        o) how to represent compound statements and loops?
 
 Semantics:
-    o) write up stubs for all R functions implementing Stata commands
+    o) write up stubs for the R functions implementing Stata commands
+    o) abbreviations for commands, varnames, other things that aren't
+       hardcoded into the grammar
+    o) Stata-like output: how much is it worth imitating that?
 
 Write a test suite and test
 
-Write documentation - man entries, vignettes, examples
+Write documentation
+    o) man entries, vignettes, examples
+    o) document the R expression format the parser emits
 
 * Edit the exports in 'NAMESPACE', and add necessary imports.
 * Run R CMD build to build the package tarball.
 * Run R CMD check to check the package tarball.
+
+Later functionality
+    A mechanism for registering an arbitrary R function obeying the
+    calling convention as a Stata command
+    
+    Many more commands - egen, input, label
+    Formats
+    
+    Graphics?
 
