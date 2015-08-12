@@ -47,6 +47,7 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
         #time for a read-eval-print loop
         while(TRUE)
         {
+            val <- 
             tryCatch(
               {
                   inpt <- read_interactive()
@@ -64,10 +65,13 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
                   do_parse_with_callbacks(inpt, process_cmd, get_macro_value)
               },
               
-              error =
-              function(c) c
+              error = function(c) c,
+              exit = function(c) c,
+              bad_command = function(c) c)
+
+              if(inherits(val, "error"))
               {
-                cat(paste0(val$message), "\n", sep="")
+                cat(paste0(c$message), "\n", sep="")
                 
                 on.exit("")
                 s <- substr(readline("Will now exit. Save data? "), 1, 1)
@@ -77,22 +81,17 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
                 break
               }
               
-              exit =
-              function(c)
+              if(inherits(val, "exit"))
               {
                 cat("\n")
                 break
-                
-              },
+              }
               
-              bad_command =
-              function(c)
+              if(inherits(val, "bad_command"))
               {
-                print(val$message)
+                print(c$message)
                 next
               }
-            )
-
         }
     } else if(is.null(filename) && is.null(string))
     {   
@@ -117,6 +116,8 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
 process_cmd <-
 function(ast)
 {
+    print(ast); return(1);
+  
     #possible FIXME: conditions raised here shouldn't be swallowed by
     #the C++ layer - are they?
 
@@ -130,7 +131,7 @@ function(ast)
     #Evaluate the generated call
     #    a) for its side effects
     #    b) for the printable object this tryCatch will return
-    eval(cl, envir=parent.frame())
+    obj <- eval(cl, envir=parent.frame())
     
     print(obj) #dispatches to the custom print methods
 
