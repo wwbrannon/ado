@@ -232,43 +232,43 @@ strL                                { yylval->str = new std::string(yytext); ret
 
                                     /* Factor variable operators and level-restricted virtual variables */
 "c."                                {
-                                        yylval->node = new ExprNode("rstata_expression");
-                                        yylval->node->addData("value", "c.");
+                                        yylval->node = new ExprNode({"rstata_expression", "rstata_continuous_expression"});
+                                        yylval->node->addData("verb", "c.");
 
                                         return token::TOK_CONT_OPERATOR;
                                     }
 "i."                                {
-                                        yylval->node = new ExprNode("rstata_expression");
-                                        yylval->node->addData("value", "i.");
+                                        yylval->node = new ExprNode({"rstata_expression", "rstata_indicator_expression"});
+                                        yylval->node->addData("verb", "i.");
 
                                         return token::TOK_IND_OPERATOR;
                                     }
                                     
 i?"bn."                             {
-                                        yylval->node = new ExprNode("rstata_expression");
-                                        yylval->node->addData("value", "ib.");
+                                        yylval->node = new ExprNode({"rstata_expression", "rstata_baseline_expression"});
+                                        yylval->node->addData("verb", "ib.");
                                         yylval->node->addData("level", "n");
 
                                         return token::TOK_BASE_OPERATOR;
                                     }
 i?"b(freq)."                        {
-                                        yylval->node = new ExprNode("rstata_expression");
-                                        yylval->node->addData("value", "ib.");
+                                        yylval->node = new ExprNode({"rstata_expression", "rstata_baseline_expression"});
+                                        yylval->node->addData("verb", "ib.");
                                         yylval->node->addData("level", "n");
                                         yylval->node->addData("level", "freq");
 
                                         return token::TOK_BASE_OPERATOR;
                                     }
 i?"b(last)."                        {
-                                        yylval->node = new ExprNode("rstata_expression");
-                                        yylval->node->addData("value", "ib.");
+                                        yylval->node = new ExprNode({"rstata_expression", "rstata_baseline_expression"});
+                                        yylval->node->addData("verb", "ib.");
                                         yylval->node->addData("level", "last");
 
                                         return token::TOK_BASE_OPERATOR;
                                     }
 i?"b(first)."                       {
-                                        yylval->node = new ExprNode("rstata_expression");
-                                        yylval->node->addData("value", "ib.");
+                                        yylval->node = new ExprNode({"rstata_expression", "rstata_baseline_expression"});
+                                        yylval->node->addData("verb", "ib.");
                                         yylval->node->addData("level", "first");
 
                                         return token::TOK_BASE_OPERATOR;
@@ -276,7 +276,7 @@ i?"b(first)."                       {
 i?"b"{D}+"."                        {
                                         std::string *s = new std::string(yytext);
                                         
-                                        yylval->node = new ExprNode("rstata_expression");
+                                        yylval->node = new ExprNode({"rstata_expression", "rstata_baseline_expression"});
                                         yylval->node->addData("value", "ib.");
                                         
                                         if(s->at(0) == 'i')
@@ -291,8 +291,8 @@ i?"b"{D}+"."                        {
 i?"b(#"{D}+")."                     {
                                         std::string *s = new std::string(yytext);
                                         
-                                        yylval->node = new ExprNode("rstata_expression");
-                                        yylval->node->addData("value", "ib.");
+                                        yylval->node = new ExprNode({"rstata_expression", "rstata_baseline_expression"});
+                                        yylval->node->addData("verb", "ib.");
 
                                         if(s->at(0) == 'i')
                                           yylval->node->addData("level", s->substr(4, s->length() - 2));
@@ -307,8 +307,8 @@ i?"b(#"{D}+")."                     {
 i?{D}+"."                          {
                                         std::string *s = new std::string(yytext);
                                         
-                                        yylval->node = new ExprNode("rstata_expression");
-                                        yylval->node->addData("value", "i.");
+                                        yylval->node = new ExprNode({"rstata_expression", "rstata_indicator_expression"});
+                                        yylval->node->addData("verb", "i.");
                                         yylval->node->addData("level", s->substr(1, s->length() - 1));
 
                                         delete s;
@@ -320,8 +320,8 @@ i?{D}+"."                          {
                                         std::vector<std::string> x = split(s->substr(2, s->length() - 2), ' ');
                                         delete s;
                                         
-                                        yylval->node = new ExprNode("rstata_expression");
-                                        yylval->node->addData("value", "i.");
+                                        yylval->node = new ExprNode({"rstata_expression", "rstata_indicator_expression"});
+                                        yylval->node->addData("verb", "i.");
 
                                         for(auto elem : x)
                                         {
@@ -334,8 +334,8 @@ i?{D}+"."                          {
 "i("\ *{D}+\ *\/{D}+\ *")."         {
                                         std::string *s = new std::string(yytext);
                                         std::vector<std::string> x = split(s->substr(2, s->length() -2), ' ');
-                                        yylval->node = new ExprNode("rstata_expression");
-                                        yylval->node->addData("value", "i.");
+                                        yylval->node = new ExprNode({"rstata_expression", "rstata_indicator_expression"});
+                                        yylval->node->addData("verb", "i.");
 
                                         yylval->node->addData("levelstart", trim(x[0]));
                                         yylval->node->addData("levelend", trim(x[1]));
@@ -348,8 +348,8 @@ i?{D}+"."                          {
 i?"o"{D}+"."                        {
                                         std::string *s = new std::string(yytext);
                                         
-                                        yylval->node = new ExprNode("rstata_expression");
-                                        yylval->node->addData("value", "o.");
+                                        yylval->node = new ExprNode({"rstata_expression", "rstata_omit_expression"});
+                                        yylval->node->addData("verb", "o.");
 
                                         if(s->at(0) == 'i')
                                           yylval->node->addData("level", s->substr(2, s->length() - 1));
@@ -364,8 +364,8 @@ i?"o("{D}+(\ +{D}+)*")."            {
                                         std::string *s = new std::string(yytext);
                                         std::vector<std::string> x;
                                         
-                                        yylval->node = new ExprNode("rstata_expression");
-                                        yylval->node->addData("value", "o.");
+                                        yylval->node = new ExprNode({"rstata_expression", "rstata_omit_expression"});
+                                        yylval->node->addData("verb", "o.");
                                         
                                         if(s->at(0) == 'i')
                                             x = split(s->substr(3, s->length() -2), ' ');
@@ -386,8 +386,8 @@ i?"o("\ *{D}+\ *\/{D}+\ *")."       {
                                         std::string *s = new std::string(yytext);
                                         std::vector<std::string> x;
                                         
-                                        yylval->node = new ExprNode("rstata_expression");
-                                        yylval->node->addData("value", "o.");
+                                        yylval->node = new ExprNode({"rstata_expression", "rstata_omit_expression"});
+                                        yylval->node->addData("verb", "o.");
                                         
                                         if(s->at(0) == 'i')
                                             x = split(s->substr(3, s->length() -2), ' ');

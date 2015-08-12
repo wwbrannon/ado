@@ -120,7 +120,7 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 
 %type <node>    modifier_cmd nonmodifier_cmd
 
-%type <node>    factor_operator
+%type <node>    unary_factor_operator
 
 %type <str>     assignment_operator label_operator unary_operator power_operator equality_operator
 %type <str>     multiplication_operator additive_operator relational_operator logical_operator
@@ -133,7 +133,7 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 %type <node>    primary_expression label_expression postfix_expression power_expression
 %type <node>    unary_expression multiplication_expression additive_expression
 %type <node>    relational_expression equality_expression logical_expression
-%type <node>    cross_expression factor_expression
+%type <node>    cross_expression unary_factor_expression
 
 %type <node>    option options
 %type <node>    option_list argument_expression_list expression_list
@@ -496,7 +496,7 @@ unary_operator:
     | "!"
     ;
     
-factor_operator:
+unary_factor_operator:
       CONT_OPERATOR
     | BASE_OPERATOR
     | IND_OPERATOR
@@ -565,27 +565,26 @@ label_expression:
     | label_expression label_operator primary_expression %prec ":"
     {
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_label_expression"});
-        node->addData("value", *($2));
+        node->addData("verb", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
         $$ = node;
     }
     ;
 
-factor_expression:
+unary_factor_expression:
       label_expression %prec FACTOR
-    | factor_expression factor_operator label_expression %prec FACTOR
+    | unary_factor_operator label_expression %prec FACTOR
     {
-        $2->appendChild("left", $1);
-        $2->appendChild("right", $3);
+        $1->appendChild("left", $2);
         
-        $$ = $2; // ExprNode constructed by the lexer, which is a bit of a hack
+        $$ = $1; // ExprNode constructed by the lexer, which is a bit of a hack
     }
     ;
 
 cross_expression:
-      factor_expression
-    | cross_expression cross_operator factor_expression
+      unary_factor_expression
+    | cross_expression cross_operator unary_factor_expression
     {
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_cross_expression"});
         node->addData("verb", *($2));
