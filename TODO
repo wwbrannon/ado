@@ -2,18 +2,14 @@
 Roadmap:
 
 Immediate TODO:
-    o) figure out the right data structure (an R expression?) to rep-
-       resent Stata expressions, modifiers, etc
-    o) finish code to translate such data structures from C to R:
-       methods on the StataExpr and StataCmd classes to return R objs
-    o) refactor code out of header file
-    o) finish expression-parsing code in ado.ypp - di or gen
+    o) finish as_expr methods, make refactored parser compile
+    o) finish expression-parsing code in ado.ypp, testing with gen
     o) test
 
 Next up:
-    o) fill in syntax rules and actions for remaining commands
     o) edit the grammar to support missings, dates, other number
        formats, general varlists
+    o) fill in syntax rules and actions for remaining commands
     o) grammar for flow control
 
 Semantics:

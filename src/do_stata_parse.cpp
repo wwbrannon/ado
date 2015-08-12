@@ -1,5 +1,5 @@
 #include <Rcpp.h>
-#include "rstata.h"
+#include "rstata.hpp"
 #include "ado.tab.hpp"
 #include "lex.yy.hpp"
 
