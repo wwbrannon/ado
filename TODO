@@ -1,8 +1,9 @@
 Now:
-    o) something is wrong with condition passing out of the cmd_action callback
-
     o) code generation: construct unevaluated calls and expression objects
         o) name abbreviation
+
+    o) insert a newline at the end of input, always
+    o) better error messages with exceptions that propagate up from callback
 
     o) functions for the initial set of commands
 
@@ -27,7 +28,7 @@ Commands:
         o) a few more macro manipulation commands
         
 Documentation:
-    o) convert comments to use roxygen2
+    o) convert comments and NAMESPACE to use roxygen2
     o) man entries, vignettes, examples, README
     o) document the R expression format the parser emits
     o) better error messages from check()

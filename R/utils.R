@@ -26,7 +26,7 @@ function(str)
 raiseCondition <-
 function(cls, msg)
 {
-    cond <- simpleError(msg)
+    cond <- simpleCondition(msg)
     class(cond) <- c(class(cond), cls)
     signalCondition(cond)
 

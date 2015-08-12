@@ -3,7 +3,7 @@
 
 #include <exception>
 
-class BadCommandException : std::exception
+class BadCommandException : public std::exception
 {
     const char *what() const noexcept
     {
@@ -11,12 +11,20 @@ class BadCommandException : std::exception
     }
 };
 
-class EvalErrorException : std::exception
+class EvalErrorException : public std::exception
 {
     const char *what() const noexcept
     {
         return "Runtime error in evaluation\n";
     }
+};
+
+class ExitRequestedException : public std::exception
+{
+  const char *what() const noexcept
+  {
+    return "Exit requested\n";
+  }
 };
 
 #endif /* RSTATA_EXCEPTION_H */

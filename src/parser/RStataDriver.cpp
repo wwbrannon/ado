@@ -91,15 +91,14 @@ RStataDriver::wrap_cmd_action(Rcpp::List ast)
   
   // an error in the semantic analyzer or code generator
   if(ret == 1)
-  {
     throw BadCommandException();
-  }
-  
+
   // a runtime error in evaluation or printing
   if(ret == 2)
-  {
     throw EvalErrorException();
-  }
+
+  if(ret == 3)
+    throw ExitRequestedException();
 }
 
 void

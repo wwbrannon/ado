@@ -1,5 +1,8 @@
 ### The REPL, batch-processing and environment-handling logic for rstata
 
+#' @export
+#' @useDynLib rstata
+#' @import Rcpp
 rstata <-
 function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
 {
@@ -47,47 +50,40 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
         #time for a read-eval-print loop
         while(TRUE)
         {
-            val <- 
-            tryCatch(
-              {
-                  inpt <- read_interactive()
-  
-                  #Send the input to the bison parser, which, after reading
-                  #each command, invokes the process_cmd callback defined at
-                  #the end of this file to do a few things:
-                  #    o) run post-parsing syntax and semantic checks on that
-                  #       command's AST
-                  #    o) recursively walk the AST to construct an R expression
-                  #       object
-                  #    o) finally, eval the expression object for its side
-                  #       effects, including printing any output, and throw
-                  #       away the value
-                  do_parse_with_callbacks(inpt, process_cmd, get_macro_value)
-              },
-              error = function(c) c)
+          val <- 
+          tryCatch(
+          {
+            inpt <- read_interactive()
+
+            #Send the input to the bison parser, which, after reading
+            #each command, invokes the process_cmd callback
+            do_parse_with_callbacks(inpt, process_cmd, get_macro_value)
+          },
+          error = function(c) c)
+          
+          if(inherits(val, "error"))
+          {
+            if(inherits(val, "ExitRequestedException"))
+            {
+              cat("\n") #so the new R prompt is on a new line
+              break
+            } else if(inherits(val, "BadCommandException"))
+            {
+              cat(paste0(val$message, "\n", sep=""))
               
-              if(inherits(val, "error"))
-              {
-                if(inherits(val, "exit"))
-                {
-                  cat("\n")
-                  break
-                } else if(inherits(val, "bad_command"))
-                {
-                  cat(paste0(val$message, "\n", sep=""))
-                  next
-                } else
-                {
-                  cat(paste0(val$message, "\n", sep=""))
-                  
-                  on.exit("")
-                  s <- substr(readline("Will now exit. Save data? "), 1, 1)
-                  if(s == "Y" || s == "y")
-                    assign(varname, dta, pos=parent.frame())
-                  
-                  break
-                }
-              }
+              next
+            } else
+            {
+              cat(paste0(val$message, "\n", sep=""))
+              
+              on.exit()
+              s <- substr(readline("Save dataset? "), 1, 1)
+              if(s == "Y" || s == "y")
+                assign(varname, dta, pos=parent.frame())
+              
+              break
+            }
+          }
         }
     } else if(is.null(filename) && is.null(string))
     {   
@@ -112,23 +108,42 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
 process_cmd <-
 function(ast)
 {
-    # FIXME: conditions are not propagating correctly, or being handled
-    # correctly in the caller
+  #Semantic analysis and code generation
+  ret_p1 <-
+  tryCatch(
+  {
+    check(ast)
     
-    #Do semantic analysis and run checks, including for things that Stata
-    #considers syntax, and raise error conditions if the checks fail.
-    weed(ast)
-    
-    #Code generation: convert the raw AST into an R call object
-    cl <- codegen(ast)
-    
-    #Evaluate the generated calls
-    #    a) for their side effects
-    #    b) for printable objects
+    codegen(ast)
+  },
+  error=function(c) c,
+  bad_command=function(c) c)
+  
+  #Raising conditions with custom classes through an intervening
+  #C++ layer is quite tricky, so we're going to return ints and have
+  #the C++ code re-raise the exceptions in a more controllable way
+  if(inherits(ret_p1, "bad_command") || inherits(ret_p1, "error"))
+    return(1)
+  else
+    cl <- ret_p1
+
+  #Evaluate the generated calls for their side effects and for printable objects
+  ret_p2 <-
+  tryCatch(
+  {
     objs <- eval(cl, envir=parent.frame())
-    
+  
     for(obj in objs)
       print(obj) #dispatches to the custom print methods
-
-    return(0); #a compatible type for the C++ layer
+  },
+  error=function(c) c,
+  exit=function(c) c)
+  
+  if(inherits(ret_p2, "error"))
+    return(2)
+  
+  if(inherits(ret_p2, "exit"))
+    return(3)
+  
+  return(0);
 }
