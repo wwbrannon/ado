@@ -112,17 +112,16 @@ function(dta = NULL, filename=NULL, string=NULL,
             {
                 if(inherits(val, "ExitRequestedException"))
                 {
-                    cat("\n") #so the new R prompt is on a new line
                     break
                 } else if(inherits(val, "BadCommandException") ||
                           inherits(val, "EvalErrorException"))
                 {
-                    cat(paste0(val$message, sep=""))
+                    cat(paste0(val$message, "\n\n", sep=""))
 
                     next
                 } else
                 {
-                    cat(paste0(val$message, sep=""))
+                    cat(paste0(val$message, "\n\n", sep=""))
 
                     s <- substr(readline("Save dataset? "), 1, 1)
                     if(s == "Y" || s == "y")
@@ -130,6 +129,9 @@ function(dta = NULL, filename=NULL, string=NULL,
 
                     break
                 }
+            } else
+            {
+                cat("\n")
             }
         }
     } else if(is.null(filename) && is.null(string))

@@ -42,9 +42,8 @@ function(expr, envir=parent.frame(),
             tmp <- withVisible(eval(chld, envir=envir, enclos=enclos))
             ret[[length(ret)+1]] <- tmp$value
 
-            if(print.results)
-                if(tmp$visible)
-                    print(tmp$value)
+            if(print.results && tmp$visible)
+                print(tmp$value)
         }
     }
 
