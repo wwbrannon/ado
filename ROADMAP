@@ -4,10 +4,11 @@ Many more commands - egen, input, label
 
 Formats
 
-Looping
-        foreach
-        while
-        forvalues
+foreach
+while
+forvalues
+
+blocks
 
 Graphics
 
@@ -19,9 +20,8 @@ Things the grammar should support
     filenames not in quotes
     datetime literals
     datelists
-    varlists: factors, interactions, etc
+    real general varlists: factors, interactions, etc
     numlists
-    all prefix commands
     abbreviations for commands and other keywords (+ the * glob syntax)
     
     macros...
