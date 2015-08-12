@@ -31,8 +31,6 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
         #The main read-eval-print loop
         while(TRUE)
         {
-            cat(". ", sep="")
-            
             val <-
             tryCatch(
             {

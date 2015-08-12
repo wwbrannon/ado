@@ -16,7 +16,7 @@ function()
     res = ""
     while(TRUE)
     {
-        inpt <- readLines(con=stdin(), n = 1, warn = FALSE)
+        inpt <- readline(". ")
         
         if(length(inpt) == 0) #at EOF
         {
