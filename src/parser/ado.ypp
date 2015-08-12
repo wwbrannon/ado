@@ -672,7 +672,7 @@ collapse_spec_base:
         // syntactically either, and it'd be an even uglier hack to allow them everywhere
         // just for this internal representation.
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
-        node->addData("verb", std::string("()"));
+        node->addData("verb", *(new std::string("()")));
         
         // the "left" child
         ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
@@ -709,7 +709,7 @@ collapse_spec:
       "(" IDENT ")" collapse_spec_base_list
     {
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
-        node->addData("verb", std::string("()"));
+        node->addData("verb", *(new std::string("()")));
         
         // the "left" child
         ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
@@ -748,7 +748,7 @@ recode_rule:
     | "(" IDENT "=" NUMBER ")" 
     {
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
-        node->addData("verb", std::string("()"));
+        node->addData("verb", *(new std::string("()")));
         
         // the "left" child
         ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
@@ -770,7 +770,7 @@ recode_rule:
         $3; // shut up, bison...
 
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
-        node->addData("verb", std::string("()"));
+        node->addData("verb", *(new std::string("()")));
         
         // the "left" child
         ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
@@ -791,7 +791,7 @@ recode_rule:
     | "(" numlist "=" NUMBER ")" 
     {
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
-        node->addData("verb", std::string("()"));
+        node->addData("verb", *(new std::string("()")));
         
         // the "left" child
         ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
@@ -829,7 +829,7 @@ gsort_var:
       IDENT
     {
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
-        node->addData("verb", std::string("()"));
+        node->addData("verb", *(new std::string("()")));
         node->appendChild("right", $1);
         
         ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
@@ -843,7 +843,7 @@ gsort_var:
         $1; // shut up, bison...
         
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
-        node->addData("verb", std::string("()"));
+        node->addData("verb", *(new std::string("()")));
         node->appendChild("right", $2);
         
         ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
@@ -857,7 +857,7 @@ gsort_var:
         $1; // shut up, bison...
         
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
-        node->addData("verb", std::string("()"));
+        node->addData("verb", *(new std::string("()")));
         node->appendChild("right", $2);
         
         ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
@@ -889,7 +889,7 @@ modelspec:
     | "(" varlist ")"
     {
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
-        node->addData("verb", std::string("()"));
+        node->addData("verb", *(new std::string("()")));
         node->appendChild("right", $2);
         
         ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
@@ -929,7 +929,7 @@ anova_nest_expression:
         // bit of a hack. but there's not an elegant way to do it - just the fact
         // that these commands with their special syntax exist is a hack.
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
-        node->addData("verb", std::string("()"));
+        node->addData("verb", *(new std::string("()")));
         
         // the "left" child
         ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
@@ -955,7 +955,7 @@ anova_error_expression:
         $2; // shut up, bison...
         
         ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
-        node->addData("verb", std::string("()"));
+        node->addData("verb", *(new std::string("()")));
         
         // the "left" child
         ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});

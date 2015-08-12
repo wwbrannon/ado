@@ -234,15 +234,17 @@ function(node, debug_level=0)
   op <- node$data["verb"]
   args <- node$children[names(node$children) != "verb"]
 
-  #if we want to be able to pass this function to do.call, it can't
-  #have a name like "c" that masks something important from base R
+  #If we want to be able to pass this function to do.call, it can't
+  #have a name like "c" that masks something important from base R.
+  #This is kind of a hack, but it works...
   if(op == "()")
   {
-    args["left"] <- paste0("rstata_func_", args["left"])
+    args$left$data["value"] <- paste0("rstata_func_", args$left$data["value"])
   }
 
   op <- function_for_ado_operator(op)
   args <- lapply(args, function(x) codegen(x, debug_level))
+  names(args) <- NULL
 
   as.call(c(list(op), args))
 }
