@@ -123,8 +123,8 @@ function(node, debug_level=0)
   {
     raiseifnot(every(c("upper", "lower") %in% names(node$children)))
 
-    raiseifnot(node$children[[1]] %is% "rstata_numeric")
-    raiseifnot(node$children[[2]] %is% "rstata_numeric")
+    raiseifnot(node$children[[1]] %is% "rstata_number")
+    raiseifnot(node$children[[2]] %is% "rstata_number")
   }
 
   invisible(TRUE)
@@ -630,11 +630,11 @@ function(node, debug_level=0)
   raiseifnot(every(c("left", "right") %in% names(node$children)))
 
   raiseifnot(node$children$left %is% "rstata_ident" ||
-             node$children$left %is% "rstata_numeric" ||
+             node$children$left %is% "rstata_number" ||
              node$children$left %is% "rstata_arithmetic_expression")
 
   raiseifnot(node$children$right %is% "rstata_ident" ||
-               node$children$right %is% "rstata_numeric" ||
+               node$children$right %is% "rstata_number" ||
                node$children$right %is% "rstata_arithmetic_expression")
 
   invisible(TRUE)
@@ -653,7 +653,7 @@ function(node, debug_level=0)
   raiseifnot("right" %in% names(node$children))
 
   raiseifnot(node$children$right %is% "rstata_ident" ||
-               node$children$right %is% "rstata_numeric" ||
+               node$children$right %is% "rstata_number" ||
                node$children$right %is% "rstata_arithmetic_expression")
 
   invisible(TRUE)
@@ -672,11 +672,11 @@ function(node, debug_level=0)
   raiseifnot(every(c("left", "right") %in% names(node$children)))
 
   raiseifnot(node$children$left %is% "rstata_ident" ||
-               node$children$left %is% "rstata_numeric" ||
+               node$children$left %is% "rstata_number" ||
                node$children$left %is% "rstata_arithmetic_expression")
 
   raiseifnot(node$children$right %is% "rstata_ident" ||
-               node$children$right %is% "rstata_numeric" ||
+               node$children$right %is% "rstata_number" ||
                node$children$right %is% "rstata_arithmetic_expression")
 
   invisible(TRUE)
@@ -695,11 +695,11 @@ function(node, debug_level=0)
   raiseifnot(every(c("left", "right") %in% names(node$children)))
 
   raiseifnot(node$children$left %is% "rstata_ident" ||
-               node$children$left %is% "rstata_numeric" ||
+               node$children$left %is% "rstata_number" ||
                node$children$left %is% "rstata_arithmetic_expression")
 
   raiseifnot(node$children$right %is% "rstata_ident" ||
-               node$children$right %is% "rstata_numeric" ||
+               node$children$right %is% "rstata_number" ||
                node$children$right %is% "rstata_arithmetic_expression")
 
   invisible(TRUE)
