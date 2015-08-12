@@ -13,10 +13,8 @@ class RStataDriver
         RStataDriver(int callback, Rcpp::Function cmd_action,
                      Rcpp::Function macro_value_accessor,
                      std::string text, int debug_level);
-        virtual ~RStataDriver();
 
-        ExprNode *ast;
-        void delete_ast();
+        ExprNode ast;
 
         int scan_begin();
         void scan_end();

@@ -56,16 +56,6 @@ RStataDriver::RStataDriver(int _callbacks, Rcpp::Function _cmd_action,
     error_seen = 0;
 }
 
-// dtor
-RStataDriver::~RStataDriver() { }
-
-// recursively delete the ast member
-void
-RStataDriver::delete_ast()
-{
-    delete ast; // the dtor recurses depth-first and deletes from the bottom up
-}
-
 int
 RStataDriver::parse()
 {

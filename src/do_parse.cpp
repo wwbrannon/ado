@@ -20,9 +20,6 @@ do_parse_with_callbacks(std::string text, Rcpp::Function cmd_action,
                                             text, debug_level);
 
     driver->parse();
-    
-    driver->delete_ast();
-    delete driver;
   } catch(std::exception const & e)
   {
     forward_exception_to_r(e);
@@ -48,10 +45,7 @@ do_parse(std::string text, int debug_level=0)
         return R_NilValue;
 
     // now take the resulting AST and recursively turn it into an R object
-    res = driver->ast->as_R_object();
-    
-    driver->delete_ast();
-    delete driver;
+    res = driver->ast.as_R_object();
     
     return res;
   } catch(std::exception const & e)
@@ -79,9 +73,6 @@ parse_accept(std::string text, int debug_level=0)
         ret = 1;
     else
         ret = 0;
-
-    driver->delete_ast();
-    delete driver;
   } catch(...)
   {
     ret = 0;

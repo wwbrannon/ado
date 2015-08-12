@@ -18,7 +18,12 @@ class RStataDriver;
 
 #define YY_DECL int yylex(yy::RStataParser::semantic_type* yylval_param, yy::RStataParser::location_type* llocp, RStataDriver& driver)
 
-#define R_ACTION(node) if(driver.callbacks == 1) { driver.wrap_cmd_action(node->as_R_object()); }
+#define R_ACTION(node) \
+    if(driver.callbacks == 1 && !(driver.error_seen)) \
+    { \
+        driver.wrap_cmd_action(node->as_R_object()); \
+    }
+
 }
 
 %param { RStataDriver& driver }
@@ -42,10 +47,12 @@ class RStataDriver;
 
 YY_DECL;
 
-void yy::RStataParser::error(const location_type& l, const std::string& m)
+void
+yy::RStataParser::error(const location_type& l, const std::string& m)
 {
         driver.error(l, m);
 }
+
 }
 
 /* Operator  precedence */
@@ -158,8 +165,10 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 translation_unit:
       error
     {
+        driver.error_seen = 1; // keep parsing but don't take any further actions
+        
         $1; // shut up, bison...
-
+        
         ExprNode *node = new ExprNode("rstata_compound_cmd");
         $$ = node;
     }
@@ -167,7 +176,7 @@ translation_unit:
     {
         ExprNode *node = new ExprNode("rstata_compound_cmd");
         node->appendChild($1);
-        driver.ast = node;
+        driver.ast = *node;
 
         if( !($1->isDummy()) )
             R_ACTION(node);
@@ -177,13 +186,17 @@ translation_unit:
     | translation_unit external_statement
     {
         $1->appendChild($2);
-        driver.ast = $1;
 
         if( !($2->isDummy()) )
         {
             ExprNode *node = new ExprNode("rstata_compound_cmd");
             node->appendChild($2);
+
+            driver.ast = *node;
             R_ACTION(node);
+        } else
+        {
+            driver.ast = *($1);
         }
 
         $$ = $1;
@@ -192,6 +205,8 @@ translation_unit:
     {
         $2; // shut up, bison...
 
+        driver.error_seen = 1; // keep parsing but don't take any further actions
+        
         $$ = $1;
     }
     ;
