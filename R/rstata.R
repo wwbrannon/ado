@@ -45,24 +45,3 @@ function(dta = NULL, conn=stdin(), assign.back=TRUE)
     return(invisible(dta));
 }
 
-#The dispatcher function for rstata commands.
-#The parser constructs calls to this function with one character argument
-#named "verb" and the arguments to the particular Stata command named by verb.
-dispatch.rstata.cmd <-
-function(verb, ...)
-{
-    args <- as.list(substitute(list(...)))[-1L]
-    
-    fname <- paste0("rstata.", verb)
-    return(capture.output(do.call(fname, args)))
-}
-
-#The function to execute embedded R code
-embedded_r <-
-function(txt)
-{
-    vals <- lapply(lapply(parse(text=txt), eval), capture.output)
-
-    do.call(paste0, c(vals, list(collapse="\n")))
-}
-

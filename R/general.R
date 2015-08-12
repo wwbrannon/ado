@@ -3,7 +3,7 @@
 ### other commands will eventually rely on.
 
 ## Data manipulation commands
-gen <-
+generate <-
 function(...)
 {
 
@@ -43,19 +43,6 @@ function(...)
 }
 
 bar <-
-function(...)
-{
-
-}
-
-## Macro registration commands
-local <-
-function(...)
-{
-
-}
-
-global <-
 function(...)
 {
 
