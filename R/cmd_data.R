@@ -163,7 +163,7 @@ function(expression, option_list=NULL)
 }
 
 rstata_cmd_merge <-
-function(expression_list, using_clause, merge_spec, option_list=NULL)
+function(varlist, using_clause, merge_spec, option_list=NULL)
 {
   match.call()
 }

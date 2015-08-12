@@ -1,9 +1,4 @@
 Now:
-  o) do merge specs work?
-
-  o) better error messages from check()
-    o) test it with a few known valid and invalid commands afterward
-
   o) some other grammatical things
     o) function and option args should be separable by ',' or ' '
     o) syntax for weird commands
@@ -15,6 +10,9 @@ Now:
         o) possibly anova
         o) possibly gsort
         o) fill out their function signatures
+
+  o) better error messages from check()
+    o) test it with a few known valid and invalid commands afterward
 
   o) Macro substitution and compound double quotes
     o) the `=expr' syntax?

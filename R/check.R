@@ -469,6 +469,42 @@ function(node, debug_level=0)
              msg=if(debug_level) "" else NULL)
   raiseifnot(exists(func), msg=if(debug_level) "" else NULL)
 
+  #checks of node-specific data
+  if(func == "rstata_cmd_merge")
+  {
+      raiseifnot(length(node$data) == 1,
+                 msg=if(debug_level) "" else NULL)
+      raiseifnot(names(node$data) == c("merge_spec"),
+                 msg=if(debug_level) "" else NULL)
+      raiseifnot(node$data["merge_spec"] %in% c("m:m", "m:1", "1:m", "1:1"),
+                 msg=if(debug_level) "" else NULL)
+  } else if(func == "display")
+  {
+      raiseifnot(length(node$data) %in% c(0, 1),
+                 msg=if(debug_level) "" else NULL)
+
+      if(length(node$data == 1))
+      {
+          raiseifnot(names(node$data) == c("format_spec"),
+                     msg=if(debug_level) "" else NULL)
+          raiseifnot(valid_format_spec(node$data["format_spec"]),
+                     msg=if(debug_level) "" else NULL)
+      }
+  } else if(func == "rstata_cmd_format")
+  {
+      raiseifnot(length(node$data) == 1,
+                 msg=if(debug_level) "" else NULL)
+      raiseifnot(names(node$data) == c("format_spec"),
+                 msg=if(debug_level) "" else NULL)
+      raiseifnot(valid_format_spec(node$data["format_spec"]),
+                 msg=if(debug_level) "" else NULL)
+  } else if(func == "rstata_cmd_xi")
+  {
+      raiseifnot(length(node$data) == 0,
+                 msg=if(debug_level) "" else NULL)
+  }
+
+  #checks of node's children and the function's formal arguments
   args <-
   tryCatch(
   {
@@ -493,7 +529,8 @@ function(node, debug_level=0)
       if("expression" %in% names(args))
           names(chlds)[names(chlds) == "expression_list"] <- "expression"
   }
-  given <- setdiff(names(chlds), c("verb"))
+
+  given <- c(setdiff(names(chlds), c("verb")), names(node$data))
   raiseifnot(every(given %in% names(args)),
              msg=if(debug_level) "" else NULL)
   raiseifnot(every(vapply(names(args),
@@ -503,41 +540,6 @@ function(node, debug_level=0)
 
   raiseifnot(every(correct_arg_types_for_cmd(chlds)),
              msg=if(debug_level) "" else NULL)
-
-  #checks of node-specific data
-  if(func == "rstata_cmd_merge")
-  {
-    raiseifnot(length(node$data) == 1,
-               msg=if(debug_level) "" else NULL)
-    raiseifnot(names(node$data) == c("merge_spec"),
-               msg=if(debug_level) "" else NULL)
-    raiseifnot(node$data["merge_spec"] %in% c("m:m", "m:1", "1:m", "1:1"),
-               msg=if(debug_level) "" else NULL)
-  } else if(func == "display")
-  {
-    raiseifnot(length(node$data) %in% c(0, 1),
-               msg=if(debug_level) "" else NULL)
-
-    if(length(node$data == 1))
-    {
-      raiseifnot(names(node$data) == c("format_spec"),
-                 msg=if(debug_level) "" else NULL)
-      raiseifnot(valid_format_spec(node$data["format_spec"]),
-                 msg=if(debug_level) "" else NULL)
-    }
-  } else if(func == "rstata_cmd_format")
-  {
-    raiseifnot(length(node$data) == 1,
-               msg=if(debug_level) "" else NULL)
-    raiseifnot(names(node$data) == c("format_spec"),
-               msg=if(debug_level) "" else NULL)
-    raiseifnot(valid_format_spec(node$data["format_spec"]),
-               msg=if(debug_level) "" else NULL)
-  } else if(func == "rstata_cmd_xi")
-  {
-    raiseifnot(length(node$data) == 0,
-               msg=if(debug_level) "" else NULL)
-  }
 
   invisible(TRUE)
 }
