@@ -1,12 +1,6 @@
 #the REPL loop and environment-handling logic for rstata
 library(Rcpp)
 
-eval_stata <-
-function(expr_list)
-{
-    expr_list; #don't do anything at all with them yet
-}
-
 rstata <-
 function(dta = NULL, conn=stdin(), assign.back=TRUE)
 {
@@ -28,7 +22,7 @@ function(dta = NULL, conn=stdin(), assign.back=TRUE)
         tryCatch(
         {
             expr_list <- do_stata_parse(inpt)
-            val <- eval_stata(expr_list)
+            val <- eval_stata(expr_list, envir=dta, enclos=environment())
         },
         error = function(c) c,
         exit = function(c) c)
