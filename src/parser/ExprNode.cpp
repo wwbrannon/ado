@@ -12,7 +12,7 @@ ExprNode::ExprNode()
 ExprNode::ExprNode(std::string _type)
 {
     dummy = false;
-    
+
     types.clear();
     types.push_back("rstata_ast_node");
     types.push_back(_type);
@@ -23,7 +23,7 @@ ExprNode::ExprNode(std::string _type)
 ExprNode::ExprNode(std::initializer_list<std::string> _types)
 {
     dummy = false;
-    
+
     types.clear();
 
     types.push_back("rstata_ast_node");
@@ -120,7 +120,7 @@ ExprNode *
 ExprNode::pop_at_index(unsigned int index)
 {
     ExprNode *ret;
-    
+
     if(index < 0 || index >= children.size())
     {
         ret = NULL;
@@ -128,7 +128,7 @@ ExprNode::pop_at_index(unsigned int index)
     else
     {
         ret = children[index];
-        
+
         children.erase(children.begin() + index);
         names.erase(names.begin() + index);
     }
@@ -145,25 +145,31 @@ Rcpp::List
 ExprNode::as_R_object() const
 {
     Rcpp::List res, chld;
-    
+    Rcpp::CharacterVector children_names;
+
     Rcpp::CharacterVector node_data;
     Rcpp::CharacterVector node_data_names;
     Rcpp::CharacterVector classes;
-    
+
     std::map<std::string, std::string>::const_iterator it;
-    
+
+    unsigned int i;
+
     if(dummy)
         return R_NilValue;
 
     // include the children
-    for(auto elem : children)
+    for(i =0; i < children.size(); i++)
     {
-        if(elem->isDummy())
+        if(children[i]->isDummy())
             continue;
         else
-            chld.push_back(elem->as_R_object());
+        {
+            chld.push_back(children[i]->as_R_object());
+            children_names.push_back(names[i]);
+        }
     }
-    chld.attr("names") = names;
+    chld.attr("names") = children_names;
     res["children"] = chld;
 
     // include the node data
