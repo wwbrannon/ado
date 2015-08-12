@@ -177,7 +177,10 @@ std::stack<std::vector<std::string>> macro_stack;
                                         if(!macro_stack.empty())
                                         {
                                             std::vector<std::string> prev = macro_stack.top();
+                                            macro_stack.pop();
+
                                             prev.push_back(replacement);
+                                            macro_stack.push(prev);
                                             
                                             yy_pop_state();
                                         } else
@@ -205,10 +208,13 @@ std::stack<std::vector<std::string>> macro_stack;
                                         }
                                     }
     
-    [^\`\'\n]*                      {
+    [^\`\'\n]+                      {
                                         // push yytext to the back of the current frame
                                         std::vector<std::string> frame = macro_stack.top();
+                                        macro_stack.pop();
+
                                         frame.push_back(std::string(yytext));
+                                        macro_stack.push(frame);
                                     }
     
     <<EOF>>                         {
