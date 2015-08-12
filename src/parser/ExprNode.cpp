@@ -88,7 +88,7 @@ ExprNode::setChildren(std::vector<std::string> _names, std::vector<ExprNode *> _
 
 
 /*
- * Recursively convert to an R data structure
+ * Counts of members
  */
 size_t
 ExprNode::nChildren()
@@ -112,15 +112,14 @@ ExprNode::as_R_object() const
 {
     Rcpp::List res, chld;
     
-    Rcpp::CharacterVector node_data(data.size());
-    Rcpp::CharacterVector node_data_names(data.size());
+    Rcpp::CharacterVector node_data;
+    Rcpp::CharacterVector node_data_names;
     Rcpp::CharacterVector classes;
     
     std::map<std::string, std::string>::const_iterator it;
-    unsigned int x;
     
     // include the node data
-    for(it = data.begin(); it != data.end(); it++)
+    for(it = data.begin(); it != data.end(); ++it)
     {
         node_data_names.push_back(it->first);
         node_data.push_back(it->second);
@@ -129,9 +128,9 @@ ExprNode::as_R_object() const
     res["data"] = node_data;
 
     // include the children
-    for(x = 0; x < children.size(); x++)
+    for(auto elem : children)
     {
-        chld.push_back(children[x]->as_R_object());
+        chld.push_back(elem->as_R_object());
     }
     chld.attr("names") = names;
     res["children"] = chld;
