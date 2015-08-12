@@ -86,7 +86,7 @@ yy::RStataParser::error(const location_type& l, const std::string& m)
     ASSIGN          "="
 ;
 
-/* Operators whose values need to be passed up to the next layer */
+/* Operators or tokens whose values need to be passed up to the next layer */
 %token <str>
     PERIOD          "."
     PLUS            "+"
@@ -122,7 +122,7 @@ yy::RStataParser::error(const location_type& l, const std::string& m)
 %token <node>   EMBEDDED_CODE
 %token <node>   BY XI BYSORT
 %token <node>   QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
-%token <node>   MERGE COLLAPSE IVREGRESS RECODE GSORT LRTEST
+%token <node>   MERGE COLLAPSE IVREGRESS RECODE GSORT LRTEST TEST ANOVA
 
                 /* Command components and keywords */
 %token          USING IF IN
