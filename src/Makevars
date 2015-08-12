@@ -1,13 +1,11 @@
-PKG_CPPFLAGS = "-I../inst/include"
-PKG_CXXFLAGS = "-c -g -O3 -Wall -fPIC -pedantic -pipe -Wno-unused"
-PKG_LIBS="./parser/ado.a"
+CC=ccache gcc
+CXX=ccache g++
+SHLIB_CXXLD=g++
 
-CC=ccache gcc$(VER)
-CXX=ccache g++$(VER)
-SHLIB_CXXLD=g++$(VER)
-FC=ccache gfortran
-F77=ccache gfortran
-MAKE=make -j8
+PKG_CPPGLAGS += -I../inst/include
+PKG_CPPGLAGS += -I./parser/build
+PKG_CXXFLAGS += -c -g -O3 -Wall -fPIC -pedantic -pipe -Wno-unused
+PKG_LIBS += "./parser/ado.a"
 
 .PHONY: all parser
 

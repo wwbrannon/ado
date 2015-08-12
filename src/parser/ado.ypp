@@ -1,4 +1,5 @@
 %{
+#include <Rcpp.h>
 #include <cstdio>
 #include <cstring>
 #include <iostream>
@@ -6,11 +7,13 @@
 
 using namespace std;
 
+void raise_condition(const string& msg, const string& type);
+
 extern "C" int yylex(void);
 
-void yyerror(const char *str)
+void yyerror(STATA_CMD_LIST_T *cmdlist_ptr, const char *str)
 {
-        fprintf(stderr,"error: %s\n",str);
+        raise_condition(str, "error");
 }
  
 int yywrap()
@@ -21,13 +24,11 @@ int yywrap()
 %}
 
 %token NUMBER IDENT STRING_LITERAL
-%token INSHEET TABLE SUM DI
+%token INSHEET TABLE SUM DI EXIT
 %token USING BY IN IF PWEIGHT AWEIGHT
 %token GT_OP LE_OP EQ_OP NE_OP OR_OP AND_OP
 
 %union {
-    EXPR_T * node;
-    STATA_CMD_T *cmd;
     char *str;
     int num;
 }
@@ -36,8 +37,8 @@ int yywrap()
 %type <str> USING
 %type <str> STRING_LITERAL
 
+%parse-param {STATA_CMD_LIST_T *cmdlist_ptr}
 %define parse.error verbose
-
 %start commands
 
 %%
@@ -51,6 +52,7 @@ command:
     | table_cmd
     | sum_cmd
     | di_cmd
+    | exit_cmd
     ;
 
 primary_expression:
@@ -132,6 +134,13 @@ varlist:
     | varlist IDENT
     ;
 
+exit_cmd:
+    EXIT
+    {
+        raise_condition("Exit requested", "exit");
+    }
+    ;
+
 insheet_cmd:
     INSHEET USING STRING_LITERAL
     {
@@ -164,8 +173,14 @@ insheet_cmd:
             .has_options = 0,
             .options = NULL
         };
+
+        STATA_CMD_LIST_T cmdlist =
+        {
+            .current = &cmd,
+            .next = NULL
+        };
         
-        printf("%s %s %s", $1, $2, $3);
+        cmdlist_ptr = &cmdlist;
     }
     ;
 
@@ -189,10 +204,10 @@ di_cmd:
     ;
 %%
 
-/* using namespace Rcpp;
+using namespace Rcpp;
 
-void raise_condition(const std::string& msg,
-                     const std::string& type)
+void
+raise_condition(const string& msg, const string& type)
 {
   List cond;
   cond["message"] = msg;
@@ -201,26 +216,3 @@ void raise_condition(const std::string& msg,
   Function stopper("stop");
   stopper(cond);
 }
-
-// [[Rcpp::export]]
-List rcpp_do_stata_parse(std::string line)
-{
-    YY_BUFFER_STATE buf;
-        
-    // handle some buffers and parse the input
-    buf = yy_scan_string(line.c_str());
-        
-    if( !yyparse() )
-    {   
-        raise_condition("syntax error", "error");
-    }   
-        
-    yy_delete_buffer(buf);
-
-    // now take the resulting STATA_CMD_T** and turn it into an R object
-
-    //all done! pass back the resulting list
-    List ret = List::create();
-    return ret;
-}
-*/

@@ -32,15 +32,6 @@ function(dta = NULL, assign.back=TRUE)
         val <-
         tryCatch(
         {
-            #once this actually works, turn this into part of the grammar
-            if( line == "exit" || line == "quit" )
-            {
-                cond <- simpleCondition("exit requested")
-                class(cond) <- c(class(cond), "exit")
-
-                signalCondition(cond)
-            }
-                
             expr_list <- do_stata_parse(line)
             val <- eval_stata(expr_list)
         },

@@ -33,10 +33,12 @@ typedef struct ast_node
         CALL_EXPR_T
     } node_type;
 
+    struct ast_node *left;
+    struct ast_node *right;
+    
     union data {
-            char *value; // this is character for everything but NUMBER nodes, and we can atoi them in R
-            struct ast_node *left;
-            struct ast_node *right;
+            char *str; // this is character for everything but NUMBER
+            int  num;
           } op;
 } EXPR_T;
 
@@ -81,6 +83,12 @@ typedef struct STATA_CMD
     int has_options; // 1 if any options were given, 0 otherwise
     EXPR_T *options;
 } STATA_CMD_T;
+
+typedef struct STATA_CMD_LIST
+{
+    STATA_CMD_T *current;
+    STATA_CMD_T *next;
+} STATA_CMD_LIST_T;
 
 #endif /* __RSTATA_H__ */
 

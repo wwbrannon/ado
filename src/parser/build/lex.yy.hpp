@@ -327,7 +327,7 @@ extern int yylex (void);
 #undef YY_DECL
 #endif
 
-#line 70 "ado.fl"
+#line 72 "ado.fl"
 
 
 #line 334 "build/lex.yy.hpp"

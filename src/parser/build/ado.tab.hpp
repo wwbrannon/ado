@@ -52,18 +52,19 @@ extern int yydebug;
     TABLE = 262,
     SUM = 263,
     DI = 264,
-    USING = 265,
-    BY = 266,
-    IN = 267,
-    IF = 268,
-    PWEIGHT = 269,
-    AWEIGHT = 270,
-    GT_OP = 271,
-    LE_OP = 272,
-    EQ_OP = 273,
-    NE_OP = 274,
-    OR_OP = 275,
-    AND_OP = 276
+    EXIT = 265,
+    USING = 266,
+    BY = 267,
+    IN = 268,
+    IF = 269,
+    PWEIGHT = 270,
+    AWEIGHT = 271,
+    GT_OP = 272,
+    LE_OP = 273,
+    EQ_OP = 274,
+    NE_OP = 275,
+    OR_OP = 276,
+    AND_OP = 277
   };
 #endif
 
@@ -72,14 +73,14 @@ extern int yydebug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 28 "ado.ypp" /* yacc.c:1909  */
+#line 31 "ado.ypp" /* yacc.c:1909  */
 
     EXPR_T * node;
     STATA_CMD_T *cmd;
     char *str;
     int num;
 
-#line 83 "build/ado.tab.hpp" /* yacc.c:1909  */
+#line 84 "build/ado.tab.hpp" /* yacc.c:1909  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
@@ -88,6 +89,6 @@ union YYSTYPE
 
 extern YYSTYPE yylval;
 
-int yyparse (void);
+int yyparse (STATA_CMD_LIST_T *cmdlist_ptr);
 
 #endif /* !YY_YY_BUILD_ADO_TAB_HPP_INCLUDED  */

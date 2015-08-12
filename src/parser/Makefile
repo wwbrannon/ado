@@ -1,7 +1,10 @@
 .PHONY: all
 
-CPPFLAGS=-I../../inst/include/
-CXXFLAGS=-c -g -O3 -Wall -fPIC -pedantic -pipe -Wno-unused
+CPPFLAGS += -I/usr/share/R/include
+CPPFLAGS += -I/usr/local/lib/R/site-library/Rcpp/include 
+CPPFLAGS += -I../../inst/include/ -Ibuild
+
+CXXFLAGS += -c -g -O3 -Wall -fPIC -pedantic -pipe -Wno-unused
 
 all: parse.o lex.o
 	ar -rcs ado.a build/parse.o build/lex.o
