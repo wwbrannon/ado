@@ -1,6 +1,4 @@
 Immediate TODO:
-    o) fix the shift/reduce conflict around :value_label_name
-    
     o) Macros, without loops
         o) not terribly hard - just need to find a way to lex nested macros and
            substitute their values from the symbol table

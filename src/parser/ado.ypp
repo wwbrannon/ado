@@ -54,7 +54,8 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 %precedence EXPONENT
 %precedence "["
 %precedence "("
-%nonassoc LABEL
+%precedence FACTOR
+%precedence ":"
 
 %token <str> END 0 "end of file"
 %token <str> ILLEGAL_CHARACTER /* Not used, but invokes error handling if seen */
@@ -561,8 +562,8 @@ primary_expression:
     ;
 
 label_expression:
-      primary_expression 
-    | label_expression label_operator primary_expression
+      primary_expression %prec ":"
+    | label_expression label_operator primary_expression %prec ":"
     {
         ExprNode *node = new ExprNode("rstata_expression");
         node->addData("value", *($2));
@@ -573,8 +574,8 @@ label_expression:
     ;
 
 factor_expression:
-      label_expression
-    | factor_expression factor_operator label_expression
+      label_expression %prec FACTOR
+    | factor_expression factor_operator label_expression %prec FACTOR
     {
         $2->appendChild("left", $1);
         $2->appendChild("right", $3);
