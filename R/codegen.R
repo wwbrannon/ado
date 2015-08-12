@@ -102,9 +102,9 @@ function(node, debug_level=0)
 codegen.rstata_general_cmd <-
 function(node, debug_level=0)
 {
-  verb <- as.character(codegen(node$children$verb, debug_level))
-  verb <- unabbreviateCommand(paste0("rstata_cmd_", verb))
-  verb <- get(verb, mode="function")
+  name <- as.character(codegen(node$children$verb, debug_level))
+  name <- unabbreviateCommand(paste0("rstata_cmd_", name))
+  verb <- get(name, mode="function")
 
   args <- node$children
   args <- args[names(args) != "verb"]
@@ -127,9 +127,9 @@ function(node, debug_level=0)
   #No data elements in a general command
 
   if(debug_level)
-      ret <- c(verb, args, return.match.call=TRUE)
+      ret <- c(as.symbol(name), args, return.match.call=TRUE)
   else
-      ret <- c(verb, args)
+      ret <- c(as.symbol(name), args)
 
   as.call(ret)
 }
@@ -138,9 +138,9 @@ function(node, debug_level=0)
 codegen.rstata_special_cmd <-
 function(node, debug_level=0)
 {
-  verb <- as.character(codegen(node$children$verb, debug_level))
-  verb <- unabbreviateCommand(paste0("rstata_cmd_", verb))
-  verb <- get(verb, mode="function")
+  name <- as.character(codegen(node$children$verb, debug_level))
+  name <- unabbreviateCommand(paste0("rstata_cmd_", name))
+  verb <- get(name, mode="function")
 
   args <- node$children
   args <- args[names(args) != "verb"]
@@ -161,9 +161,9 @@ function(node, debug_level=0)
   names(args) <- nm
 
   if(debug_level)
-      ret <- c(verb, args, node$data, return.match.call=TRUE)
+      ret <- c(as.symbol(name), args, node$data, return.match.call=TRUE)
   else
-      ret <- c(verb, args, node$data)
+      ret <- c(as.symbol(name), args, node$data)
 
   as.call(ret)
 }
@@ -172,14 +172,14 @@ function(node, debug_level=0)
 codegen.rstata_modifier_cmd <-
 function(node, debug_level=0)
 {
-  verb <- as.character(codegen(node$children$verb, debug_level))
-  verb <- unabbreviateCommand(paste0("rstata_cmd_", verb))
-  verb <- get(verb, mode="function")
+  name <- as.character(codegen(node$children$verb, debug_level))
+  name <- unabbreviateCommand(paste0("rstata_cmd_", name))
+  verb <- get(name, mode="function")
 
   if(debug_level)
-      lst <- list(verb, return.match.call=TRUE)
+      lst <- list(as.symbol(name), return.match.call=TRUE)
   else
-      lst <- list(verb)
+      lst <- list(as.symbol(name))
 
   as.call(lst)
 }
