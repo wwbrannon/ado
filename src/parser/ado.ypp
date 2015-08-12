@@ -738,7 +738,7 @@ expression:
       logical_expression
     | IDENT assignment_operator logical_expression
     {
-        ExprNode *node = new ExprNode("rstata_expression", "rstata_assignment_expression");
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_assignment_expression"});
         node->addData("verb", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
