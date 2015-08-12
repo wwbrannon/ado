@@ -103,8 +103,10 @@ B           [ \t\v\r\f]
                             /* logical operators and various single-character tokens */
 "&"                         return yy::RStataParser::make_AND_OP(yytext, loc);
 "|"                         return yy::RStataParser::make_OR_OP(yytext, loc);
-">="                        return yy::RStataParser::make_GT_OP(yytext, loc);
-"<="                        return yy::RStataParser::make_LT_OP(yytext, loc);
+">"                         return yy::RStataParser::make_GT_OP(yytext, loc);
+"<"                         return yy::RStataParser::make_LT_OP(yytext, loc);
+">="                        return yy::RStataParser::make_GE_OP(yytext, loc);
+"<="                        return yy::RStataParser::make_LE_OP(yytext, loc);
 "=="                        return yy::RStataParser::make_EQ_OP(yytext, loc);
 "!="                        return yy::RStataParser::make_NE_OP(yytext, loc);
 "~="                        return yy::RStataParser::make_NE_OP(yytext, loc);
@@ -116,7 +118,7 @@ B           [ \t\v\r\f]
 \/                          return yy::RStataParser::make_SLASH(yytext, loc);
 \-                          return yy::RStataParser::make_MINUS(yytext, loc);
 \^                          return yy::RStataParser::make_CARET(yytext, loc);
-=                           return yy::RStataParser::make_EQUALS(yytext, loc);
+=                           return yy::RStataParser::make_ASSIGN(yytext, loc);
 
 \[                          return yy::RStataParser::make_LBRACKET(yytext, loc);
 \]                          return yy::RStataParser::make_RBRACKET(yytext, loc);
