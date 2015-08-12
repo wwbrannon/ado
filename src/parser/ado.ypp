@@ -115,7 +115,7 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 %type <node>    unary_expression multiplication_expression additive_expression
 %type <node>    relational_expression equality_expression logical_expression
 
-%type <node>    option
+%type <node>    option options
 %type <node>    option_list argument_expression_list expression_list
 
 %start translation_unit
@@ -478,9 +478,22 @@ option_list:
     {
         $$ = new ExprNode("option_list");
     }
-    | option_list "," option
+    | "," options
     {
-        $1->appendChild($3);
+        $$ = $2;
+    }
+    ;
+
+options:
+      option
+    {
+        ExprNode *node = new ExprNode("option_list");
+        node->appendChild($1);
+        $$ = node;
+    }
+    | options option
+    {
+        $1->appendChild($2);
         $$ = $1;
     }
     ;
