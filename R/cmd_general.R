@@ -26,7 +26,7 @@ function(expression, return.match.call=NULL)
 rstata_cmd_di <-
 function(expression_list=NULL, return.match.call=NULL)
 {
-    rstata_cmd_display(expression, return.match.call)
+    rstata_cmd_display(expression_list, return.match.call)
 }
 
 rstata_cmd_display <-
@@ -36,7 +36,7 @@ function(expression_list=NULL, return.match.call=NULL)
         return(match.call())
 
     #FIXME to handle format specs later
-    eval(expression[[1]])
+    eval(expression_list[[1]])
 }
 
 rstata_cmd_do <-
