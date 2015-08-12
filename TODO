@@ -1,18 +1,15 @@
 Immediate TODO:
-    o) next, infrastructural R functions
-        o) weeding for each type of node
-        o) AST walkers to construct unevaluated calls and expression objects
-    o) functions for the initial set of commands
-    
     o) grammar expansion: fully general varlists
         o) factor variable operators ("i.", "c.", "o.", "#"/"##", "ib."/"b."/"X.varname")
         o) :value_label_name
-        o) revise the semantic analysis phase in R to handle new grammar
+    
+    o) next, infrastructural R functions
+        o) weeding for each type of node
+        o) AST walkers to construct unevaluated calls and expression objects
+    
+    o) functions for the initial set of commands
     
 Later functionality
-        o) A mechanism for the user to register an R function obeying the
-           calling convention as a Stata command
-        
         o) Loops + Macros
             Suddenly very clear what has to happen here: the containing R environment keeps
             data structures, reads in the program text and then passes it to the parser,
@@ -29,11 +26,20 @@ Later functionality
             o) graphics
             o) basic stats
         
-        o) Stata-like output: how much is this worth imitating?
-
-Write a test suite and test
+Debug:
+    o) use testthat and travis
+    o) write a unit test suite
+    o) test, test, test...
 
 Write documentation
     o) man entries, vignettes, examples
     o) document the R expression format the parser emits
+
+Wishlist functionality:
+    o) A mechanism for the user to register an R function obeying the
+       calling convention as a Stata command
+    
+    o) time-series operations and grammar
+
+    o) very Stata-like output: unlikely to be worth imitating
 

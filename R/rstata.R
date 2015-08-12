@@ -1,6 +1,5 @@
 ### The REPL, batch-processing and environment-handling logic for rstata
 
-# FIXME
 rstata <-
 function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
 {
@@ -15,6 +14,13 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
     {
         stop("Cannot specify both the filename and string arguments")
     }
+    
+    #Create two environments used to hold a) the symbol table for macro
+    #substitution, b) settings and parameters that commands can see
+    #or modify. The callback function can find these environments on the
+    #search path, so there's no need for getter and setter functions.
+    settings.env <- new.env()
+    macro.env <- new.env()
 
     #Should we put the final dataset back into the variable
     #we were given, pointer-style, on exit?
@@ -26,9 +32,8 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
     
     if(interactive() && is.null(filename) && is.null(string))
     {
-        #We're reading from stdin as an REPL
-        
-        #The main read-eval-print loop
+        #We're reading from stdin, interactively:
+        #time for a read-eval-print loop
         while(TRUE)
         {
             val <-
@@ -36,54 +41,86 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=TRUE)
             {
                 inpt <- read_interactive()
 
-                #Send the input to the bison parser
-                ast <- do_parse(inpt)
-                
-                ##FIXME when API stabilizes
-                #Do post-parsing syntax and semantic checks on the AST,
-                #and then recursively transform it to an expression object
-                #res <- lapply(ast, function(x) eval(x, dta, environment()))
-                #res <- do.call(paste0, c(res, list(collapse="\n")))
-                #
-                #eval(res) #each called function prints its own output
+                #Send the input to the bison parser, which, after reading
+                #each command, invokes the process_cmd callback defined at
+                #the end of this file to do a few things:
+                #    o) run post-parsing syntax and semantic checks on that
+                #       command's AST
+                #    o) recursively walk the AST to construct an R expression
+                #       object
+                #    o) finally, eval the expression object for its side
+                #       effects, including printing any output, and throw
+                #       away the value
+                do_parse_with_callbacks(inpt, process_cmd)
             },
             error = function(c) c,
             exit = function(c) c)
 
+            #We got a bad command, but restart rather than abort
+            if(inherits(val, "bad_command"))
+            {
+                print(val)
+                next
+            }
+
+            #A different error - should this prompt to save data?
             if(inherits(val, "error"))
-                signalCondition(val);
+                signalCondition(val); #re-raise the exception
             
             #The custom condition for ado-language exit commands
             if(inherits(val, "exit"))
             {
-                cat("\n");
-                break;
+                cat("\n")
+                break
             }
-
-            print(val, sep="\n") #this line is unnecessary soon...
         }
     } else if(is.null(filename) && is.null(string))
     {   
-        #We're reading from stdin, in batch mode
-        
         inpt <- readLines(con=stdin(), warn=FALSE)
-        ast <- do_parse(inpt)
         
-        ##FIXME when API stabilizes
+        do_parse_with_callbacks(text=inpt, cmd_action=process_cmd)
     } else if(!is.null(filename))
     {
         inpt <- readLines(con=file(filename, "r"))
-        ast <- do_parse(inpt)
         
-        ##FIXME when API stabilizes
-    } else #!is.null(string)
+        do_parse_with_callbacks(text=inpt, cmd_actionprocess_cmd)
+    } else
     {
         inpt <- readLines(con=textConnection(string))
-        ast <- do_parse(inpt)
         
-        ##FIXME when API stabilizes
+        do_parse_with_callbacks(text=inpt, cmd_action=process_cmd)
     }
 
     return(invisible(dta));
+}
+
+process_cmd <-
+function(ast)
+{
+    #for right now, don't do any of the stuff below...
+    print(ast); return(1);
+    
+    settings.env <- get("settings.env", envir=parent.frame())
+    macro.env    <- get("macro.env", envir=parent.frame())
+    
+    #don't throw an R exception into C++, not a good idea...
+    #instead, the C++ code will notice this return code and re-raise
+    #the condition
+    #FIXME: is this actually necessary?
+    val <-
+    tryCatch( 
+    {
+        #take the syntax tree and a) weed it, b) turn it into
+        #an expression object, throwing exceptions if anything goes wrong
+        walked <- walk(ast)
+
+        lapply(walked, eval)
+    },
+    bad_command = function(c) c)
+    
+    if(inherits(val, "bad_command"))
+        return(1) #failure, the parser re-raises the condition
+    else
+        return(0) #success
 }
 

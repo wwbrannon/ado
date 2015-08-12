@@ -1,6 +1,18 @@
-### The initial set of nine commands to implement. They cover a broad
+### The initial set of commands to implement. They cover a broad
 ### selection of Stata features and will help test the infrastructure
 ### other commands will eventually rely on.
+
+## Self-explanatory
+exit <-
+function(...)
+{
+    cond <- simpleCondition("Exit requested")
+    class(cond) <- c(class(cond), "exit")
+
+    signalCondition(cond)
+}
+
+quit <- exit
 
 ## Data manipulation commands
 generate <-
@@ -48,12 +60,16 @@ function(...)
 
 }
 
-## Other commands
-exit <-
+## Macro management commands
+local <-
 function(...)
 {
-    
+
 }
 
-quit <- exit
+global <-
+function(...)
+{
+
+}
 

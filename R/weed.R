@@ -3,6 +3,15 @@
 ### raise error conditions if the checks fail. This function dispatches according
 ### to the AST node's S3 class.
 
+## What to verify? Per-node:
+##    number and type of child nodes
+##    number and type of data members
+##    presence of particular named data members
+
+## What to verify? Recursively:
+##    
+
+
 weed <-
 function(node)
 UseMethod("weed")
