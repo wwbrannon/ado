@@ -27,6 +27,7 @@ F           [FLfl]
                             /* eat comments but track line and column numbers */
 "/*"                        { long_comment(); }
 \/\/                        { short_comment(); }
+^\*                         { short_comment(); }
 
 
 
