@@ -63,56 +63,12 @@ function(dta = NULL, filename=NULL, string=NULL,
             assign(varname, obj, pos=parent.frame())
         })
 
-    #Callbacks: a macro value accessor that allows the lexer to retrieve macro values.
-    macro_value_accessor <-
-    function(name)
-    {
-        env <- get("rstata_macro_env", envir=rstata_env)
+    #We should put the debug_level argument into settings_env so that it's
+    #accessible for nested invocations of do_parse_with_callbacks to handle
+    #do files or the body blocks of loops.
+    assign("debug_level", debug_level, envir=get("rstata_settings_env", envir=rstata_env))
 
-        #Implement the e() and r() stored results objects, and the c() system
-        #values object. All of the regexes here are a little screwy: if the e(),
-        #r(), or c() appears at the beginning of the macro text, everything after
-        #the close paren is ignored. But this is actually Stata's behavior,
-        #so we'll run with it.
-
-        #the e() class
-        m <- regexpr("^e\\((?<match>.*)\\)", name, perl=TRUE)
-        start <- attr(m, "capture.start")
-        len <- attr(m, "capture.length")
-        if(start != -1)
-        {
-            val <- substr(name, start, start + len - 1)
-            return(rstata_func_e(val))
-        }
-
-        #the r() class
-        m <- regexpr("^r\\((?<match>.*)\\)", name, perl=TRUE)
-        start <- attr(m, "capture.start")
-        len <- attr(m, "capture.length")
-        if(start != -1)
-        {
-            val <- substr(name, start, start + len - 1)
-            return(rstata_func_r(val))
-        }
-
-        #the c() class
-        m <- regexpr("^r\\((?<match>.*)\\)", name, perl=TRUE)
-        start <- attr(m, "capture.start")
-        len <- attr(m, "capture.length")
-        if(start != -1)
-        {
-            val <- substr(name, start, start + len - 1)
-            return(rstata_func_c(val))
-        }
-
-        #a normal macro
-        if(!(name %in% ls(env)))
-            return("")
-        else
-            return(get(name, envir=env, inherits=FALSE))
-    }
-
-    # =========================================================================
+    #=========================================================================
     #The actual work of parsing and executing commands is here
     if(interactive() && is.null(filename) && is.null(string))
     {
@@ -189,6 +145,7 @@ function(dta = NULL, filename=NULL, string=NULL,
         }
     } else if(is.null(filename) && is.null(string))
     {
+        #We should read from stdin, but not interactively
         inpt <- readLines(con=stdin(), warn=FALSE)
         inpt <- Reduce(function(x, y) paste(x, y, sep="\n"), inpt)
         inpt <- paste0(inpt, "\n")
@@ -198,6 +155,7 @@ function(dta = NULL, filename=NULL, string=NULL,
                                 debug_level=debug_level, echo=1)
     } else if(!is.null(filename))
     {
+        #We should read from a do-file
         con = file(filename, "r")
         on.exit(close(con), add=TRUE)
 
@@ -210,6 +168,7 @@ function(dta = NULL, filename=NULL, string=NULL,
                                 debug_level=debug_level, echo=1)
     } else
     {
+        #We should read from a string
         con = textConnection(string)
         on.exit(close(con), add=TRUE)
 
@@ -264,3 +223,53 @@ function(ast, debug_level=0)
 
     return( list(0, "Success") );
 }
+
+#Callbacks: a macro value accessor that allows the lexer to retrieve macro values.
+macro_value_accessor <-
+function(name)
+{
+    env <- get("rstata_macro_env", envir=rstata_env)
+
+    #Implement the e() and r() stored results objects, and the c() system
+    #values object. All of the regexes here are a little screwy: if the e(),
+    #r(), or c() appears at the beginning of the macro text, everything after
+    #the close paren is ignored. But this is actually Stata's behavior,
+    #so we'll run with it.
+
+    #the e() class
+    m <- regexpr("^e\\((?<match>.*)\\)", name, perl=TRUE)
+    start <- attr(m, "capture.start")
+    len <- attr(m, "capture.length")
+    if(start != -1)
+    {
+        val <- substr(name, start, start + len - 1)
+        return(rstata_func_e(val))
+    }
+
+    #the r() class
+    m <- regexpr("^r\\((?<match>.*)\\)", name, perl=TRUE)
+    start <- attr(m, "capture.start")
+    len <- attr(m, "capture.length")
+    if(start != -1)
+    {
+        val <- substr(name, start, start + len - 1)
+        return(rstata_func_r(val))
+    }
+
+    #the c() class
+    m <- regexpr("^r\\((?<match>.*)\\)", name, perl=TRUE)
+    start <- attr(m, "capture.start")
+    len <- attr(m, "capture.length")
+    if(start != -1)
+    {
+        val <- substr(name, start, start + len - 1)
+        return(rstata_func_c(val))
+    }
+
+    #a normal macro
+    if(!(name %in% ls(env)))
+        return("")
+    else
+        return(get(name, envir=env, inherits=FALSE))
+}
+
