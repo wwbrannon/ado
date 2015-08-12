@@ -1,8 +1,15 @@
 %{
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
+#include <iostream>
 #include "rstata.h"
- 
+
+using namespace std;
+
+extern "C" int yylex();
+extern "C" int yyparse();
+extern "C" FILE *yyin;
+
 void yyerror(const char *str)
 {
         fprintf(stderr,"error: %s\n",str);
@@ -138,16 +145,30 @@ insheet_cmd:
         {
             .verb = $1,
             
+            .has_modifiers = 0,
+            .modifiers = NULL,
+            
+            .has_varlist = 0,
+            .varlist = NULL,
+            
+            .has_assign = 0,
+            .assign_stmt = NULL,
+            
+            .has_if = 0,
+            .if_exp = NULL,
+            
+            .has_range = 0,
+            .range_lower = 0,
+            .range_upper = 0,
+            
+            .has_weight = 0,
+            .weight = NULL,
+            
             .has_using = 1,
             .using_filename = $3,
 
-            .has_modifiers = 0,
-            .has_varlist = 0,
-            .has_assign = 0,
-            .has_if = 0,
-            .has_range = 0,
-            .has_weight = 0,
-            .has_options = 0
+            .has_options = 0,
+            .options = NULL
         };
         
         printf("%s %s %s", $1, $2, $3);
