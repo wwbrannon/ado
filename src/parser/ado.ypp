@@ -124,7 +124,7 @@ yy::RStataParser::error(const location_type& l, const std::string& m)
 %token <node>   BY XI BYSORT
 %token <node>   QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
 %token <node>   MERGE COLLAPSE IVREGRESS RECODE GSORT LRTEST ANOVA
-%token <node>    TSLS /* this is an awful hack */
+%token <node>   TSLS /* this is an awful hack */
 
                 /* Command components and keywords */
 %token          USING IF IN
@@ -158,7 +158,7 @@ yy::RStataParser::error(const location_type& l, const std::string& m)
 %type <node>    primary_expression postfix_expression power_expression literal_expression
 %type <node>    unary_expression multiplication_expression additive_expression
 %type <node>    relational_expression equality_expression logical_expression
-%type <node>    cross_expression unary_factor_expression
+%type <node>    cross_expression unary_factor_expression number_or_missing
 
 %type <node>    option options
 %type <node>    option_list argument_expression_list expression_list
@@ -827,14 +827,19 @@ varlist:
     }
     ;
 
-numlist:
+number_or_missing:
       NUMBER
+    | PERIOD
+    ;
+
+numlist:
+      number_or_missing
     {
         ExprNode *node = new ExprNode("rstata_expression_list");
         node->appendChild($1);
         $$ = node;
     }
-    | numlist NUMBER
+    | numlist number_or_missing
     {
         $1->appendChild($2);
         $$ = $1;
