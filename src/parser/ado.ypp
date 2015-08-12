@@ -141,6 +141,7 @@ translation_unit:
       external_statement
     {
         driver.ast = $1;
+
         $$ = $1;
     }
     | translation_unit cmd_sep external_statement
@@ -149,30 +150,11 @@ translation_unit:
         driver.ast = $1;
 
         delete $2;
-
+        
         $$ = $1;
     }
+    | error
     | translation_unit cmd_sep error
-    ;
-
-cmd_sep:
-      "\n"
-    | ";"
-    ;
-
-type_spec:
-      BYTE
-    | INT
-    | LONG
-    | FLOAT
-    | DOUBLE
-    | STRING_TYPE_SPEC
-    ;
-
-format_spec:
-      STRING_FORMAT
-    | NUMBER_FORMAT
-    | DATETIME_FORMAT
     ;
 
 external_statement:
@@ -180,15 +162,19 @@ external_statement:
     | compound_cmd
     ;
 
+cmd_sep:
+      "\n"
+    | ";"
+    ;
+
 compound_cmd:
-      "{" cmds "}"
+    "{" cmds "}"
     {
         delete $1;
         delete $3;
 
         $$ = $2;
     }
-    | "{" error "}"
     ;
 
 cmds:
@@ -441,6 +427,20 @@ nonmodifier_cmd:
     }
     ;
 
+type_spec:
+      BYTE
+    | INT
+    | LONG
+    | FLOAT
+    | DOUBLE
+    | STRING_TYPE_SPEC
+    ;
+
+format_spec:
+      STRING_FORMAT
+    | NUMBER_FORMAT
+    | DATETIME_FORMAT
+    ;
 
 /*
  ************************************************************
@@ -506,7 +506,6 @@ primary_expression:
         
         $$ = $2;
     }
-    | "(" error ")"
     ;
 
 postfix_expression:
@@ -546,8 +545,6 @@ postfix_expression:
 
         $$ = node;
     }
-    | postfix_expression "[" error "]" %prec "["
-    | postfix_expression "(" error ")"
     ;
 
 power_expression:
@@ -685,7 +682,6 @@ expression_list:
 
         $$ = node;
     }
-    | type_spec "(" error ")"
     ;
 
 /*

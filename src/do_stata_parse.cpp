@@ -14,7 +14,7 @@ do_stata_parse(std::string text, int debug_level=0)
     RStataDriver *driver = new RStataDriver(text, debug_level);
 
     // parse the input
-    if( driver->parse() != 0 )
+    if( driver->parse() != 0 || driver->error_seen != 0)
         return R_NilValue;
 
     // now take the resulting AST and recursively turn it into an R object

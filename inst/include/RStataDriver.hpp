@@ -18,6 +18,7 @@ class RStataDriver
 
         int parse();
 
+        int error_seen;
         void error(const yy::location& l, const std::string& m);
         void error(const std::string& m);
 

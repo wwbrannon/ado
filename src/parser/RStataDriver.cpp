@@ -31,6 +31,7 @@ RStataDriver::RStataDriver(std::string _text, int _debug_level)
 {
     text = _text;
     debug_level = _debug_level;
+    error_seen = 0;
 }
 
 // dtor
@@ -64,6 +65,8 @@ RStataDriver::error(const yy::location& l, const std::string& m)
           ", column " + std::to_string(l.begin.column) + ": " + m;
     
     Rcpp::Rcerr << msg << std::endl;
+
+    error_seen = 1;
 }
 
 void
@@ -72,5 +75,7 @@ RStataDriver::error(const std::string& m)
     const std::string msg = "Error: line unknown, column unknown: " + m;
     
     Rcpp::Rcerr << msg << std::endl;
+
+    error_seen = 1;
 }
 
