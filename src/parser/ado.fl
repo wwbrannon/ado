@@ -923,15 +923,14 @@ RStataDriver::scan_begin()
         return 0; // failure
     }
     
-    if(fputs(this->text.c_str(), this->tmp)==0 && ferror(this->tmp))
+    if(fputs( (this->text).c_str(), this->tmp)==0 && ferror(this->tmp))
     {
         this->error("Cannot write to temp file");
         return 0; // failure
     }
     rewind(this->tmp);
     
-    yyin = this->tmp;
-    YY_FLUSH_BUFFER;
+    yy_switch_to_buffer(yy_create_buffer(this->tmp, YY_BUF_SIZE));
 
     return 1;
 }
@@ -940,6 +939,6 @@ void
 RStataDriver::scan_end()
 {
     yy_delete_buffer(YY_CURRENT_BUFFER);
-    // fclose(this->tmp);
+    fclose(this->tmp);
 }
 
