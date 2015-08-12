@@ -56,5 +56,11 @@ function(verb, ...)
 }
 
 #The function to execute embedded R code
-embedded_r <- function(txt) lapply(lapply(parse(text=txt), eval), capture.output)
+embedded_r <-
+function(txt)
+{
+    vals <- lapply(lapply(parse(text=txt), eval), capture.output)
+
+    do.call(paste0, c(vals, list(collapse="\n")))
+}
 
