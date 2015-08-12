@@ -16,11 +16,15 @@ function(expression_list, return.match.call=NULL)
 
         if(is.symbol(stmt))
         {
-            #clear the macro
+            #Clear the macro. It's not an error if it isn't set.
             nm <- paste0("_", as.character(stmt))
             rm(list=nm, envir=env)
         } else if(is.call(stmt) && stmt[[1]] == as.symbol("<-"))
         {
+            #Max macro lengths per Stata
+            raiseifnot(nchar(as.character(stmt[[2]])) <= 31, cls="EvalErrorException",
+                       msg="Macro name too long")
+
             #set the macro
             val <- as.character(eval(stmt[[3]])) #the RHS
 
@@ -36,6 +40,8 @@ function(expression_list, return.match.call=NULL)
                    cls="EvalErrorException", msg="Invalid macro name")
         raiseifnot(is.character(exprs[[2]]), cls="EvalErrorException",
                    msg="Attempt to set macro to non-string value")
+        raiseifnot(nchar(as.character(exprs[[1]])) <= 31, cls="EvalErrorException",
+                   msg="Macro name too long")
 
         nm <- paste0("_", as.character(exprs[[1]]))
         assign(nm, exprs[[2]], envir=env)
@@ -66,6 +72,9 @@ function(expression_list, return.match.call=NULL)
             rm(list=as.character(stmt), envir=env)
         } else if(is.call(stmt) && stmt[[1]] == as.symbol("<-"))
         {
+            raiseifnot(nchar(as.character(stmt[[2]])) <= 32, cls="EvalErrorException",
+                       msg="Macro name too long")
+            
             #set the macro
             val <- as.character(eval(stmt[[3]])) #the RHS
 
@@ -80,6 +89,8 @@ function(expression_list, return.match.call=NULL)
                    cls="EvalErrorException", msg="Invalid macro name")
         raiseifnot(is.character(exprs[[2]]), cls="EvalErrorException",
                    msg="Attempt to set macro to non-string value")
+        raiseifnot(nchar(as.character(exprs[[1]])) <= 32, cls="EvalErrorException",
+                   msg="Macro name too long")
 
         assign(as.character(exprs[[1]]), exprs[[2]], envir=env)
     } else
@@ -106,6 +117,10 @@ function(expression_list, return.match.call=NULL)
         raiseifnot(is.symbol(nm), cls="EvalErrorException",
                    msg="Invalid macro name")
 
+        #We're not going to check these for length, because
+        # a) what would we do if it were too long, anyway?
+        # b) Stata notwithstanding, both R and flex can handle any length of
+        #    string we might actually get here
         val <- paste0("_", as.character(nm))
         assign(val, tempfile(), envir=env)
     }
