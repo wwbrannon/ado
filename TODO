@@ -1,13 +1,12 @@
 Semantic analysis / code generation:
-    o) finish semantic analysis and weeding
+    o) something is wrong with condition passing out of the cmd_action callback
+
     o) code generation: construct unevaluated calls and expression objects
         o) name abbreviation
 
-    o) printing info from embedded R command
-
-    o) something is wrong with condition passing out of the cmd_action callback
-
+Commands:
     o) functions for the initial set of commands
+        o) printing info from embedded R command
     
     o) Many more commands
         o) data management: egen, input, label, etc
@@ -16,8 +15,6 @@ Semantic analysis / code generation:
         o) a few more macro manipulation commands
         
 Parser / lexer:
-    o) lowercase commands before building parse tree
-
     o) Macros, without loops
         o) just need to find a way to lex nested macros and recursively substitute
            their values from the symbol table
@@ -35,7 +32,7 @@ Documentation:
     o) convert comments to use roxygen2
     o) man entries, vignettes, examples, README
     o) document the R expression format the parser emits
-    o) better error messages from weed()
+    o) better error messages from check()
 
 Misc:
     o) Makevars and Makefile have to come from a configure script for

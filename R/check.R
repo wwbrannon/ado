@@ -2,6 +2,8 @@
 ### AST, do some semantic checks on it, including things that Stata considers syntax,
 ### and raise error conditions if the checks fail.
 
+# FIXME how to do type checks in the sense of Stata string vs Stata numeric?
+
 check <-
 function(node)
 {
@@ -404,85 +406,207 @@ function(node)
 }
 
 ## Labels and tightly binding factor operators
-verifynode.rstata_label_expression <-
+verifynode.rstata_factor_expression <-
 function(node)
 {
-  #Data members - length, names, values
   #Children - length, names, types
+  raiseifnot(length(node$children) == 1)
+  raiseifnot("left" %in% names(node$children))
   
-}
-
-verifynode.rstata_indicator_expression <-
-  function(node)
-  {
-    #Data members - length, names, values
-    #Children - length, names, types
-    
-  }
-
-verifynode.rstata_baseline_expression <-
-function(node)
-{
-  #Data members - length, names, values
-  #Children - length, names, types
+  raiseifnot(node$children$left %is% "rstata_ident")
   
+  NextMethod()
 }
 
 verifynode.rstata_continuous_expression <-
 function(node)
 {
   #Data members - length, names, values
-  #Children - length, names, types
+  raiseifnot(length(node$data) == 1)
   
+  invisible(TRUE)
+}
+
+verifynode.rstata_indicator_expression <-
+function(node)
+{
+  #Data members - length, names, values
+  raiseifnot(node$data$verb == "i.")
+  
+  nm <- setdiff(names(node$data), c("verb"))
+  
+  if(length(nm == 0))
+    return(invisible(TRUE))
+  else if(length(nm) == 1 && nm == c("level"))
+    raiseifnot(!is.na(as.numeric(node$data$level)))
+  else if(length(nm) == 2 && ("levelstart" %in% nm && "levelend" %in% nm))
+    raiseifnot(!is.na(as.numeric(node$data$levelstart)) &&
+               !is.na(as.numeric(node$data$levelend)))
+  else if(length(grep("level[0-9]+", nm)) == length(nm))
+    raiseifnot(every(vapply(nm, function(x) !is.na(as.numeric(x)), TRUE)))
+  else
+    raiseifnot(1=0, msg="Bad levels for factor operator")
+
+  invisible(TRUE)
 }
 
 verifynode.rstata_omit_expression <-
 function(node)
 {
   #Data members - length, names, values
-  #Children - length, names, types
+  raiseifnot(length(node$data) > 1)
+  raiseifnot(node$data$verb == "o.")
   
+  nm <- setdiff(names(node$data), c("verb"))
+
+  if(length(nm) == 1 && nm == c("level"))
+    raiseifnot(!is.na(as.numeric(node$data$level)))
+  else if(length(nm) == 2 && ("levelstart" %in% nm && "levelend" %in% nm))
+    raiseifnot(!is.na(as.numeric(node$data$levelstart)) &&
+                 !is.na(as.numeric(node$data$levelend)))
+  else if(length(grep("level[0-9]+", nm)) == length(nm))
+    raiseifnot(every(vapply(nm, function(x) !is.na(as.numeric(x)), TRUE)))
+  else
+    raiseifnot(1=0, msg="Bad levels for factor operator")
+  
+  invisible(TRUE)
+}
+
+verifynode.rstata_baseline_expression <-
+function(node)
+{
+  #Data members - length, names, values
+  raiseifnot(length(node$data) == 2)
+  raiseifnot(node$data$verb == "ib.")
+  
+  raiseifnot("level" %in% names(node$data))
+  
+  raiseifnot(node$data$level %in% c("n", "freq", "last", "first") ||
+             !is.na(as.numeric(node$data$level)))
+  
+  invisible(TRUE)
 }
 
 verifynode.rstata_cross_expression <-
 function(node)
 {
   #Data members - length, names, values
+  raiseifnot(length(node$data) == 1)
+  raiseifnot(node$data$verb %in% c("##", "#"))
+
   #Children - length, names, types
+  raiseifnot(length(node$children) == 2)
+  raiseifnot(every(c("left", "right") %in% names(node$children)))
   
+  raiseifnot(node$children$left %is% "rstata_ident" ||
+             node$children$left %is% "rstata_factor_expression")
+  
+  raiseifnot(node$children$right %is% "rstata_ident" ||
+               node$children$right %is% "rstata_factor_expression")
+  
+  invisible(TRUE)
+}
+
+verifynode.rstata_label_expression <-
+function(node)
+{
+  #Data members - length, names, values
+  raiseifnot(length(node$data) == 1)
+  
+  #Children - length, names, types
+  raiseifnot(length(node$children) == 2)
+  raiseifnot(every(c("left", "right") %in% names(node$children)))
+  
+  raiseifnot(node$children$left %is% "rstata_ident")
+  raiseifnot(node$children$right %is% "rstata_ident")
+  
+  invisible(TRUE)
 }
 
 ## Arithmetic expressions
+verifynode.rstata_power_expression <-
+function(node)
+{
+  #Data members - length, names, values
+  raiseifnot(length(node$data) == 1)
+  raiseifnot(node$data$verb == "^")
+  
+  #Children - length, names, types
+  raiseifnot(length(node$children) == 2)
+  raiseifnot(every(c("left", "right") %in% names(node$children)))
+  
+  raiseifnot(node$children$left %is% "rstata_ident" ||
+             node$children$left %is% "rstata_numeric" ||
+             node$children$left %is% "rstata_arithmetic_expression")
+
+  raiseifnot(node$children$right %is% "rstata_ident" ||
+               node$children$right %is% "rstata_numeric" ||
+               node$children$right %is% "rstata_arithmetic_expression")
+  
+  invisible(TRUE)
+}
+
 verifynode.rstata_unary_expression <-
 function(node)
 {
   #Data members - length, names, values
-  #Children - length, names, types
+  raiseifnot(length(node$data) == 1)
+  raiseifnot(node$data$verb %in% c("-", "+", "!"))
   
+  #Children - length, names, types
+  raiseifnot(length(node$children) == 1)
+  raiseifnot("right" %in% names(node$children))
+  
+  raiseifnot(node$children$right %is% "rstata_ident" ||
+               node$children$right %is% "rstata_numeric" ||
+               node$children$right %is% "rstata_arithmetic_expression")
+  
+  invisible(TRUE)
+}
+
+
+verifynode.rstata_multiplication_expression <-
+function(node)
+{
+  #Data members - length, names, values
+  raiseifnot(length(node$data) == 1)
+  raiseifnot(node$data$verb %in% c("*", "/"))
+  
+  #Children - length, names, types
+  raiseifnot(length(node$children) == 2)
+  raiseifnot(every(c("left", "right") %in% names(node$children)))
+  
+  raiseifnot(node$children$left %is% "rstata_ident" ||
+               node$children$left %is% "rstata_numeric" ||
+               node$children$left %is% "rstata_arithmetic_expression")
+  
+  raiseifnot(node$children$right %is% "rstata_ident" ||
+               node$children$right %is% "rstata_numeric" ||
+               node$children$right %is% "rstata_arithmetic_expression")
+  
+  invisible(TRUE)
 }
 
 verifynode.rstata_additive_expression <-
 function(node)
 {
   #Data members - length, names, values
-  #Children - length, names, types
+  raiseifnot(length(node$data) == 1)
+  raiseifnot(node$data$verb %in% c("+", "-"))
   
-}
-
-verifynode.rstata_multiplication_expression <-
-function(node)
-{
-  #Data members - length, names, values
   #Children - length, names, types
+  raiseifnot(length(node$children) == 2)
+  raiseifnot(every(c("left", "right") %in% names(node$children)))
   
-}
-
-verifynode.rstata_power_expression <-
-function(node)
-{
-  #Data members - length, names, values
-  #Children - length, names, types
+  raiseifnot(node$children$left %is% "rstata_ident" ||
+               node$children$left %is% "rstata_numeric" ||
+               node$children$left %is% "rstata_arithmetic_expression")
   
+  raiseifnot(node$children$right %is% "rstata_ident" ||
+               node$children$right %is% "rstata_numeric" ||
+               node$children$right %is% "rstata_arithmetic_expression")
+  
+  invisible(TRUE)
 }
 
 ## Logical, relational and other expressions
@@ -490,38 +614,89 @@ verifynode.rstata_equality_expression <-
 function(node)
 {
   #Data members - length, names, values
-  #Children - length, names, types
+  raiseifnot(length(node$data) == 1)
+  raiseifnot(node$data$verb %in% c("=="))
   
+  #Children - length, names, types
+  raiseifnot(length(node$children) == 2)
+  raiseifnot(every(c("left", "right") %in% names(node$children)))
+  
+  raiseifnot(node$children$left %is% "rstata_expression")
+  raiseifnot(node$children$right %is% "rstata_expression")
+  
+  invisible(TRUE)
 }
 
 verifynode.rstata_logical_expression <-
 function(node)
 {
   #Data members - length, names, values
-  #Children - length, names, types
+  raiseifnot(length(node$data) == 1)
+  raiseifnot(node$data$verb %in% c("&", "|"))
   
-}
-
-verifynode.rstata_postfix_expression <-
-function(node)
-{
-  #Data members - length, names, values
   #Children - length, names, types
+  raiseifnot(length(node$children) == 2)
+  raiseifnot(every(c("left", "right") %in% names(node$children)))
   
+  raiseifnot(node$children$left %is% "rstata_expression")
+  raiseifnot(node$children$right %is% "rstata_expression")
+  
+  invisible(TRUE)
 }
 
 verifynode.rstata_relational_expression <-
 function(node)
 {
   #Data members - length, names, values
+  raiseifnot(length(node$data) == 1)
+  raiseifnot(node$data$verb %in% c(">", "<", ">=", "<="))
+
   #Children - length, names, types
+  raiseifnot(length(node$children) == 2)
+  raiseifnot(every(c("left", "right") %in% names(node$children)))
   
+  raiseifnot(node$children$left %is% "rstata_expression")
+  raiseifnot(node$children$right %is% "rstata_expression")
+  
+  invisible(TRUE)
+}
+
+verifynode.rstata_postfix_expression <-
+function(node)
+{
+  #Data members - length, names, values
+  raiseifnot(length(node$data) == 1)
+  raseifnot(node$data$verb %in% c("()", "[]"))
+  
+  #Children - length, names, types
+  raiseifnot(length(node$children) %in% c(1, 2))
+  
+  raiseifnot("left" %in% names(node$children))
+  raiseifnot(node$children$left %is% "rstata_expression")
+  
+  if(length(node$children) == 2)
+  {
+    raiseifnot("right" %in% names(node$children))
+    raiseifnot(node$children$right %is% "rstata_expression" ||
+               node$children$right %is% "rstata_argument_expression_list")
+  }
+    
+  invisible(TRUE)
 }
 
 verifynode.rstata_assignment_expression <-
 function(node)
 {
   #Data members - length, names, values
-  #Children - length, names, types
+  raiseifnot(length(node$data) == 1)
+  raiseifnot(node$data$verb %in% c("="))
   
+  #Children - length, names, types
+  raiseifnot(length(node$children) == 2)
+  raiseifnot(every(c("left", "right") %in% names(node$children)))
+  
+  raiseifnot(node$children$left %is% "rstata_ident")
+  raiseifnot(node$children$right %is% "rstata_expression")
+  
+  invisible(TRUE)
 }
