@@ -113,7 +113,7 @@ function(node, debug_level=0)
 {
   verb <- as.character(codegen(node$children$verb))
   verb <- unabbreviateCommand(paste0("rstata_cmd_", verb))
-  verb <- get(verb, mode="function") #FIXME is this right?
+  verb <- get(verb, mode="function")
 
   as.call(list(verb))
 }
