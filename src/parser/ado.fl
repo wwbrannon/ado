@@ -29,7 +29,19 @@ void count();
 
 
                             /* if you write {{{ ... }}}, the ... will be executed as R code */
-\{\{\{.*\}\}\}              { count(); yylval.str = strdup(yytext); return EMBEDDED_R; }
+\{\{\{.*\}\}\}              {
+                                count();
+                                
+                                /* chop off the first and last three characters of yylval.str,
+                                   which are the {{{ and }}} that begin and end this command */
+                                s = strdup(yytext);
+                                s[strlen(s) - 3] = '\0';
+                                s += 3;
+                                
+                                yylval.str = strdup(s); /* may not be necessary, but let's be safe */
+
+                                return EMBEDDED_R;
+                            }
 
 
 
