@@ -7,7 +7,7 @@ An example of the intended usage:
     
     user@host:~$ R -q
     > require(statashell)
-    > statashell()
+    > statashell("data")
     . insheet using "/home/jrandomuser/data.csv"
     . bysort address: egen hh_id = seq()
     
