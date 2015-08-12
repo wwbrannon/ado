@@ -60,7 +60,7 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 
 /* EOF and command separators */
 %token
-    END 0           "end of file"
+    END 0
     NEWLINE
     SEMICOLON       ";"
 ;
@@ -175,15 +175,14 @@ translation_unit:
     | error
     ;
 
-cmd_sep:
-      END
-    | NEWLINE
-    | ";"
-    ;
-
 external_statement:
       cmd
     | compound_cmd
+    ;
+
+cmd_sep:
+      NEWLINE
+    | ";"
     ;
 
 compound_cmd:
@@ -200,7 +199,17 @@ cmds:
         node->appendChild($1);
         $$ = node;
     }
+    | compound_cmd
+    {
+        $$ = $1;
+    }
     | cmds cmd
+    {
+        $1->appendChild($2);
+
+        $$ = $1;
+    }
+    | cmds compound_cmd
     {
         $1->appendChild($2);
 
@@ -209,7 +218,8 @@ cmds:
     ;
 
 cmd:
-      EMBEDDED_R cmd_sep
+      cmd_sep
+    | EMBEDDED_R cmd_sep
     {
         R_ACTION($1);
         
