@@ -12,6 +12,7 @@ class ExprNode
     public:
         // ctor and dtor
         ExprNode(std::string _type);
+        ExprNode(std::initializer_list<std::string> _types);
         virtual ~ExprNode();
         
         // the method to return an R object (atomic vectors are length-1 lists)
@@ -33,7 +34,7 @@ class ExprNode
 
     private:
         // the node's own data
-        std::string type;
+        std::vector<std::string> types;
         std::map<std::string, std::string> data;
         
         // pointers to the node's children with optional names

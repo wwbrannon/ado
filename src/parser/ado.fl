@@ -72,7 +72,7 @@ llocp->step();
                                         delete s;
                                         
                                         yylval->node = new ExprNode("rstata_embedded_r_cmd");
-                                        yylval->node->addData("text", n);
+                                        yylval->node->addData("value", n);
                                         return token::TOK_EMBEDDED_R;
                                     }
 
