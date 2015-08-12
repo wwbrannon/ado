@@ -17,73 +17,57 @@
 #            signalCondition(cond)
 #        }
 
-walk <-
+codegen <-
 function(node)
-UseMethod("walk")
+UseMethod("codegen")
 
 ## Literals
-walk.rstata_ident <-
+codegen.rstata_ident <-
 function(node)
 {
-    weed(node)
-
     as.symbol(node$data$value)
 }
 
-walk.rstata_number <-
+codegen.rstata_number <-
 function(node)
 {
-    weed(node)
-
     as.numeric(node$data$value)
 }
 
-walk.rstata_string_literal <-
+codegen.rstata_string_literal <-
 function(node)
 {
-    weed(node)
-
     as.character(node$data$value)
 }
 
-walk.rstata_datetime <-
+codegen.rstata_datetime <-
 function(node)
 {
-    weed(node)
-
-    
+    as.POSIXct(strptime(node$data$value, format="%d%b%Y %H:%M:%S"))
 }
 
-walk.rstata_type_constructor <-
+codegen.rstata_type_constructor <-
 function(node)
 {
-    weed(node)
-
 
 }
 
 ## Compound and atomic commands
-walk.rstata_compound_cmd <-
+codegen.rstata_compound_cmd <-
 function(node)
 {
-    weed(node)
-
 
 }
 
-walk.rstata_modifier_cmd_list <- #should this exist?
+codegen.rstata_modifier_cmd_list <- #should this exist?
 function(node)
 {
-    weed(node)
-
 
 }
 
-walk.rstata_embedded_r_cmd <-
+codegen.rstata_embedded_r_cmd <-
 function(node)
 {
-    weed(node)
-
     #A stub from an older function - expand
     #vals <- lapply(lapply(parse(text=txt), eval), capture.output)
 
@@ -91,84 +75,64 @@ function(node)
 
 }
 
-walk.rstata_general_cmd <-
+codegen.rstata_general_cmd <-
 function(node)
 {
-    weed(node)
-
 
 }
 
 ## Command parts and expressions
-walk.rstata_expression <-
+codegen.rstata_expression <-
 function(node)
 {
-    weed(node)
-
 
 }
 
-walk.rstata_expression_list <-
+codegen.rstata_expression_list <-
 function(node)
 {
-    weed(node)
-
 
 }
 
-walk.rstata_argument_expression_list <-
+codegen.rstata_argument_expression_list <-
 function(node)
 {
-    weed(node)
-
 
 }
 
-walk.rstata_if_clause <-
+codegen.rstata_if_clause <-
 function(node)
 {
-    weed(node)
-
 
 }
 
-walk.rstata_in_clause <-
+codegen.rstata_in_clause <-
 function(node)
 {
-    weed(node)
-
 
 }
 
-walk.rstata_option_list <-
+codegen.rstata_option_list <-
 function(node)
 {
-    weed(node)
-
 
 }
 
-walk.rstata_option <-
+codegen.rstata_option <-
 function(node)
 {
-    weed(node)
-
 
 }
 
-walk.rstata_using_clause <-
+codegen.rstata_using_clause <-
 function(node)
 {
-    weed(node)
-
 
 }
 
-walk.rstata_weight_clause <-
+codegen.rstata_weight_clause <-
 function(node)
 {
-    weed(node)
-
 
 }
 
