@@ -1,4 +1,3 @@
-%glr-parser
 %skeleton "lalr1.cc" /* -*- C++ -*- */
 %require "3.0.2"
 
@@ -254,8 +253,8 @@ cmd:
     }
     | modifier_cmd_list long_modifier_cmd ":" nonmodifier_cmd
     {
-        $1->appendChild("next_modifier", $2);
-        $2->appendChild("main_cmd", $4);
+        $1->appendChild($2);
+        $1->appendChild("main_cmd", $4);
         
         R_ACTION($1);
         
@@ -263,8 +262,8 @@ cmd:
     }
     | modifier_cmd_list long_modifier_cmd ":" compound_cmd
     {
-        $1->appendChild("next_modifier", $2);
-        $2->appendChild("main_cmd", $4);
+        $1->appendChild($2);
+        $1->appendChild("main_cmd", $4);
         
         R_ACTION($1);
         
