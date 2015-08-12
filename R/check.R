@@ -2,8 +2,6 @@
 ### AST, do some semantic checks on it, including things that Stata considers syntax,
 ### and raise error conditions if the checks fail.
 
-# FIXME how to do type checks in the sense of Stata string vs Stata numeric?
-
 check <-
 function(node)
 {
@@ -281,9 +279,12 @@ function(node)
   func <- paste0("rstata_", tolower(node$children$verb$data["value"]))
   raiseifnot(exists(func))
   
-  args <- names(formals(get(func)))
+  args <- formals(get(func))
   given <- setdiff(names(node$children), c("verb"))
-  raiseifnot(every(given %in% args) && every(args %in% given))
+  raiseifnot(every(given %in% names(args)))
+  raiseifnot(every(vapply(names(args),
+                          function(x) is.null(args[[x]]) || x %in% given,
+                          TRUE)))
 
   raiseifnot(every(correct_arg_types_for_cmd(node$children)))
 
@@ -299,11 +300,13 @@ function(node)
   raiseifnot(verb %in% c("merge", "generate", "recast", "display", "format"))
   raiseifnot(exists(func))
   
-  args <- names(formals(get(func)))
+  args <- formals(get(func))
   given <- setdiff(names(node$children), c("verb"))
-  
-  raiseifnot(every(given %in% args) && every(args %in% given))
-  
+  raiseifnot(every(given %in% names(args)))
+  raiseifnot(every(vapply(names(args),
+                          function(x) is.null(args[[x]]) || x %in% given,
+                          TRUE)))
+
   raiseifnot(every(correct_arg_types_for_cmd(node$children)))
   
   #checks of node-specific data
