@@ -9,6 +9,9 @@ function(vec)
         return(TRUE)
 }
 
+`%is%` <- function(x, y) every(y %in% class(x))
+`%p%` <- function(x, y) paste0(x, y)
+
 deep_eval <-
 function(expr, envir=parent.frame(),
          enclos=if(is.list(envir) || is.pairlist(envir))
@@ -36,9 +39,6 @@ function(expr, envir=parent.frame(),
     ret
 }
 
-`%is%` <-
-function(x, y)
-every(y %in% class(x))
 
 #Reverse a vector of strings
 rev_string <-
