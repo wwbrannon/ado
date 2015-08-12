@@ -59,8 +59,8 @@ llocp->step();
 
 
                                     /* Statement separators; consider more than one in a row to be one */
-[\n]+                               { llocp->lines(yyleng); return token::TOK_NEWLINE; }
-[;]+                                { return token::TOK_SEMICOLON; }
+[\n]+                               { yylval->str = new std::string(yytext); llocp->lines(yyleng); return token::TOK_NEWLINE; }
+[;]+                                { yylval->str = new std::string(yytext); return token::TOK_SEMICOLON; }
 
                                     /* ignore whitespace but track column numbers */
 {B}+                                { llocp->step(); }

@@ -11,6 +11,7 @@ class ExprNode
 {
     public:
         // ctor and dtor
+        ExprNode();
         ExprNode(std::string _type);
         ExprNode(std::initializer_list<std::string> _types);
         virtual ~ExprNode();
@@ -29,12 +30,14 @@ class ExprNode
         void setChildren(std::vector<std::string> _names, std::vector<ExprNode *> _children); // lots of named children
         
         // accessor methods
+        bool   isDummy();
         size_t nChildren();
         size_t nData();
 
         ExprNode *pop_at_index(unsigned int index);
 
     private:
+        bool dummy;
         // the node's own data
         std::vector<std::string> types;
         std::map<std::string, std::string> data;

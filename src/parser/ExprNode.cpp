@@ -2,10 +2,18 @@
 #include <Rcpp.h>
 #include "RStata.hpp"
 
+ExprNode::ExprNode()
+{
+    dummy = true;
+}
+
+
+
 ExprNode::ExprNode(std::string _type)
 {
-    types.clear();
+    dummy = false;
     
+    types.clear();
     types.push_back("rstata_ast_node");
     types.push_back(_type);
 }
@@ -14,6 +22,8 @@ ExprNode::ExprNode(std::string _type)
 
 ExprNode::ExprNode(std::initializer_list<std::string> _types)
 {
+    dummy = false;
+    
     types.clear();
 
     types.push_back("rstata_ast_node");
@@ -100,6 +110,12 @@ ExprNode::nData()
     return data.size();
 }
 
+bool
+ExprNode::isDummy()
+{
+    return dummy;
+}
+
 ExprNode *
 ExprNode::pop_at_index(unsigned int index)
 {
@@ -136,6 +152,23 @@ ExprNode::as_R_object() const
     
     std::map<std::string, std::string>::const_iterator it;
     
+    if(dummy)
+        return R_NilValue;
+
+    // set classes for S3 method dispatch
+    res.attr("class") = types;
+
+    // include the children
+    for(auto elem : children)
+    {
+        if(elem->isDummy())
+            continue;
+        else
+            chld.push_back(elem->as_R_object());
+    }
+    chld.attr("names") = names;
+    res["children"] = chld;
+
     // include the node data
     for(it = data.begin(); it != data.end(); ++it)
     {
@@ -144,17 +177,6 @@ ExprNode::as_R_object() const
     }
     node_data.attr("names") = node_data_names;
     res["data"] = node_data;
-
-    // include the children
-    for(auto elem : children)
-    {
-        chld.push_back(elem->as_R_object());
-    }
-    chld.attr("names") = names;
-    res["children"] = chld;
-
-    // set classes for S3 method dispatch
-    res.attr("class") = types;
 
     return res;
 }

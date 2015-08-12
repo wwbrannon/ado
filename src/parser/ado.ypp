@@ -59,8 +59,9 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 %token ILLEGAL_CHARACTER
 
 /* EOF and command separators */
-%token
-    END 0
+%token END 0
+
+%token <str>
     NEWLINE
     SEMICOLON       ";"
 ;
@@ -124,8 +125,8 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 %token <node>   CONT_OPERATOR IND_OPERATOR BASE_OPERATOR OMIT_OPERATOR
 
                 /* Nonterminal token types */
+%type <node>    error cmd_sep
 %type <node>    translation_unit external_statement compound_cmd cmds modifier_cmd_list cmd
-%type <node>    error
 
 %type <node>    modifier_cmd nonmodifier_cmd long_modifier_cmd
 
@@ -165,8 +166,7 @@ translation_unit:
     {
         ExprNode *node = new ExprNode("rstata_compound_cmd");
         
-        if($1 != NULL)
-            node->appendChild($1);
+        node->appendChild($1);
         
         $$ = node;
         
@@ -174,24 +174,33 @@ translation_unit:
     }
     | translation_unit external_statement
     {
-        if($2 != NULL)
-            $1->appendChild($2);
+        $1->appendChild($2);
         
         $$ = $1;
         
         driver.ast = $1;
     }
-    | error
     ;
 
 external_statement:
       cmd
     | compound_cmd
+    | error
     ;
 
 cmd_sep:
       NEWLINE
+    {
+        $1; // suppressing a stupid bison warning
+        
+        $$ = new ExprNode();
+    }
     | ";"
+    {
+        $1; // suppressing a stupid bison warning
+        
+        $$ = new ExprNode();
+    }
     ;
 
 compound_cmd:
@@ -206,8 +215,7 @@ cmds:
     {
         ExprNode *node = new ExprNode("rstata_compound_cmd");
         
-        if($1 != NULL)
-            node->appendChild($1);
+        node->appendChild($1);
         
         $$ = node;
     }
@@ -217,8 +225,7 @@ cmds:
     }
     | cmds cmd
     {
-        if($2 != NULL)
-            $1->appendChild($2);
+        $1->appendChild($2);
 
         $$ = $1;
     }
@@ -232,23 +239,26 @@ cmds:
 
 cmd:
       cmd_sep
-    {
-        $$ = NULL; // or an ExprNode?
-    }
     | EMBEDDED_R cmd_sep
     {
+        $2; // suppressing a stupid bison warning
+        
         R_ACTION($1);
         
         $$ = $1;
     }
     | nonmodifier_cmd cmd_sep
     {
+        $2; // suppressing a stupid bison warning
+        
         R_ACTION($1);
         
         $$ = $1;
     }
     | modifier_cmd_list nonmodifier_cmd cmd_sep
     {
+        $3; // suppressing a stupid bison warning
+        
         $1->appendChild("main_cmd", $2);
         
         R_ACTION($1);
@@ -257,6 +267,8 @@ cmd:
     }
     | modifier_cmd_list ":" nonmodifier_cmd cmd_sep
     {
+        $4; // suppressing a stupid bison warning
+        
         $1->appendChild("main_cmd", $3);
 
         R_ACTION($1);
@@ -265,6 +277,8 @@ cmd:
     }
     | modifier_cmd_list compound_cmd cmd_sep
     {
+        $3; // suppressing a stupid bison warning
+        
         $1->appendChild("main_cmd", $2);
         
         R_ACTION($1);
@@ -273,6 +287,8 @@ cmd:
     }
     | modifier_cmd_list ":" compound_cmd cmd_sep
     {
+        $4; // suppressing a stupid bison warning
+        
         $1->appendChild("main_cmd", $3);
         
         R_ACTION($1);
@@ -282,6 +298,8 @@ cmd:
 
     | modifier_cmd_list long_modifier_cmd ":" nonmodifier_cmd cmd_sep
     {
+        $5; // suppressing a stupid bison warning
+        
         $1->appendChild($2);
         $1->appendChild("main_cmd", $4);
         
@@ -291,6 +309,8 @@ cmd:
     }
     | modifier_cmd_list long_modifier_cmd ":" compound_cmd cmd_sep
     {
+        $5; // suppressing a stupid bison warning
+        
         $1->appendChild($2);
         $1->appendChild("main_cmd", $4);
         
@@ -857,8 +877,10 @@ in_clause:
     {
         $$ = new ExprNode("rstata_in_clause");
     }
-    | IN NUMBER "/" NUMBER /* failing to reference the "/" produces a spurious warning */
+    | IN NUMBER "/" NUMBER
     {
+        $3; // suppressing a stupid bison warning
+
         ExprNode *node = new ExprNode("rstata_in_clause");
         node->appendChild("upper", $2);
         node->appendChild("lower", $4);
