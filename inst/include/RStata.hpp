@@ -19,7 +19,7 @@ class BaseExprNode
 {
     public:
         // method that returns this BaseExprNode as an R expression
-        virtual Rcpp::List as_R_object() const;
+        Rcpp::List as_R_object() const;
 };
 
 // The next three classes are AST nodes for literals - string, symbol and numeric
@@ -28,10 +28,10 @@ class NumberExprNode: public BaseExprNode
     public:
         NumberExprNode(std::string _data);
         
-        virtual Rcpp::List as_R_object() const;
+        Rcpp::List as_R_object() const;
 
     private:
-        Rcpp::NumericVector data; // a type-generic number already in R format
+        std::string data;
 };
 
 class IdentExprNode: public BaseExprNode
@@ -39,7 +39,7 @@ class IdentExprNode: public BaseExprNode
     public:
         IdentExprNode(std::string _data);
         
-        virtual Rcpp::List as_R_object() const;
+        Rcpp::List as_R_object() const;
 
     private:
         std::string data;
@@ -50,7 +50,7 @@ class StringExprNode: public BaseExprNode
     public:
         StringExprNode(std::string _data);
         
-        virtual Rcpp::List as_R_object() const;
+        Rcpp::List as_R_object() const;
 
     private:
         std::string data;
@@ -62,7 +62,7 @@ class DatetimeExprNode: public BaseExprNode
         DatetimeExprNode(std::string _date, std::string _time);
         DatetimeExprNode(std::string _dt);
         
-        virtual Rcpp::List as_R_object() const;
+        Rcpp::List as_R_object() const;
 
     private:
         Rcpp::Datetime dt;
@@ -74,7 +74,7 @@ class OptionExprNode: public BaseExprNode
     public:
         OptionExprNode(std::string _name, std::vector<std::string> _args);
         
-        virtual Rcpp::List as_R_object() const;
+        Rcpp::List as_R_object() const;
 
     private:
         std::string name;
@@ -86,7 +86,7 @@ class OptionListExprNode: public BaseExprNode
 {
     public:
         OptionListExprNode(std::vector<OptionExprNode> _options);
-        virtual Rcpp::List as_R_object() const;
+        Rcpp::List as_R_object() const;
     
     private:
         std::vector<OptionExprNode> options;
@@ -101,7 +101,7 @@ class BranchExprNode: public BaseExprNode
         BranchExprNode(std::string _data);
         void setChildren(std::vector<std::unique_ptr<BaseExprNode>> _children);
         
-        virtual Rcpp::List as_R_object() const;
+        Rcpp::List as_R_object() const;
     
     private:
         std::vector<std::unique_ptr<BaseExprNode>> children;
@@ -117,7 +117,7 @@ class EmbeddedRCmd: public BaseExprNode
     public:
         std::string verb;
         
-        virtual Rcpp::List as_R_object() const;
+        Rcpp::List as_R_object() const;
         EmbeddedRCmd(std::string _text);
 };
 
@@ -141,7 +141,7 @@ class GeneralStataCmd: public BaseExprNode
         std::string verb;
 
         BaseExprNode *ChildCmd; // the command after a prefix command, incl another prefix command
-        virtual Rcpp::List as_R_object() const;
+        Rcpp::List as_R_object() const;
 
         GeneralStataCmd(std::string _verb,
                    std::string _weight, std::string _using_filename,

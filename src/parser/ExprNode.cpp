@@ -7,6 +7,11 @@
 using namespace Rcpp;
 
 // Constructors
+NumberExprNode::NumberExprNode(std::string _data)
+{
+    data = _data;
+}
+
 IdentExprNode::IdentExprNode(std::string _data)
 {
     data = _data;
@@ -97,5 +102,10 @@ List BranchExprNode::as_R_object() const
     }
 
     return res;
+}
+
+List BaseExprNode::as_R_object() const
+{
+
 }
 

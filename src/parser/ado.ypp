@@ -34,12 +34,6 @@
     {
             driver.error(l, m);
     }
-     
-    int yywrap()
-    {
-            return 1;
-    } 
- 
 }
 
 %token END         0   "end of file"
@@ -67,12 +61,14 @@
     EQUALS          "="
 ;
 
-%token <BaseExprNode> NEWLINE
+%token <std::string> NEWLINE
 %token <BaseExprNode> EMBEDDED_R;
 
 /* Literals of various fundamental types */
-%token <BaseExprNode> NUMBER IDENT STRING_LITERAL
-%token <BaseExprNode> NUMBER_MISSING STRING_MISSING DATE TIME DATETIME
+%token <BaseExprNode> NUMBER NUMBER_MISSING
+%token <BaseExprNode> IDENT
+%token <BaseExprNode> STRING_LITERAL STRING_MISSING
+%token <BaseExprNode> DATE TIME DATETIME
 
 /* Operators */
 %token <BaseExprNode> GT_OP LT_OP EQ_OP NE_OP OR_OP AND_OP

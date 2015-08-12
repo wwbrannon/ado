@@ -1,6 +1,10 @@
 #include <string>
 #include <Rcpp.h>
+#include "ado.tab.hpp"
 #include "RStataDriver.hpp"
+
+// for C++11 features
+// [[Rcpp::plugins("cpp11")]]
 
 // [[Rcpp::export]]
 Rcpp::List do_stata_parse(std::string text)

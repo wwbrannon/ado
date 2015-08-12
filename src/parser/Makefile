@@ -1,34 +1,29 @@
-.PHONY: all
-
-CXX = g++
-
-CXXFLAGS += -std=c++11 -c -g -O3 -fPIC -Wall -pedantic
-
-CPPFLAGS += -I/usr/share/R/include
-CPPFLAGS += -I/usr/local/lib/R/site-library/Rcpp/include 
-CPPFLAGS += -I../../inst/include/
-CPPFLAGS += -Ibuild
+CXFLAGS += -std=c++11 -c -g -O3 -fPIC -Wall -pedantic
+CPFLAGS += "-I/usr/share/R/include"
+CPFLAGS += "-I/usr/local/lib/R/site-library/Rcpp/include"
+CPFLAGS += "-I../../inst/include/"
+CPFLAGS += "-I./build"
 
 all: parse.o lex.o
 	ar -rcs ado.a build/parse.o build/lex.o \
 			build/ExprNode.o build/OptionListExprNode.o build/OptionExprNode.o \
 			build/GeneralStataCmd.o build/MakeGeneralStataCmd.o \
-			build/EmbeddedRCmd.o
+			build/EmbeddedRCmd.o build/RStataDriver.o
 
 parse.o: infra
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) build/ado.tab.cpp -o build/parse.o 
+	g++ $(CPFLAGS) $(CXFLAGS) build/ado.tab.cpp -o build/parse.o 
 
 lex.o: infra
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) build/lex.yy.cpp -o build/lex.o 
+	g++ $(CPFLAGS) $(CXFLAGS) build/lex.yy.cpp -o build/lex.o 
 
 infra: generate
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) ExprNode.cpp -o build/ExprNode.o
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) OptionListExprNode.cpp -o build/OptionListExprNode.o
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) OptionExprNode.cpp -o build/OptionExprNode.o
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) GeneralStataCmd.cpp -o build/GeneralStataCmd.o
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) MakeGeneralStataCmd.cpp -o build/MakeGeneralStataCmd.o
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) EmbeddedRCmd.cpp -o build/EmbeddedRCmd.o
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) RStataDriver.cpp -o build/RStataDriver.o
+	g++ $(CPFLAGS) $(CXFLAGS) ExprNode.cpp -o build/ExprNode.o
+	g++ $(CPFLAGS) $(CXFLAGS) OptionListExprNode.cpp -o build/OptionListExprNode.o
+	g++ $(CPFLAGS) $(CXFLAGS) OptionExprNode.cpp -o build/OptionExprNode.o
+	g++ $(CPFLAGS) $(CXFLAGS) GeneralStataCmd.cpp -o build/GeneralStataCmd.o
+	g++ $(CPFLAGS) $(CXFLAGS) MakeGeneralStataCmd.cpp -o build/MakeGeneralStataCmd.o
+	g++ $(CPFLAGS) $(CXFLAGS) EmbeddedRCmd.cpp -o build/EmbeddedRCmd.o
+	g++ $(CPFLAGS) $(CXFLAGS) RStataDriver.cpp -o build/RStataDriver.o
 
 generate:
 	mkdir -p build
@@ -38,4 +33,6 @@ generate:
 clean:
 	rm -rf build
 	rm -f ado.a
+
+.PHONY: all
 

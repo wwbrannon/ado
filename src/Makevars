@@ -1,17 +1,16 @@
-.PHONY: all parser
-
-CC=ccache gcc
-CXX=ccache g++
+CC=gcc
+CXX=g++
 SHLIB_CXXLD=g++
 
-PKG_CPPGLAGS += -I../inst/include
-PKG_CPPGLAGS += -I./parser/build
-PKG_CXXFLAGS += -c -g -O3 -Wall -fPIC -pedantic -pipe -Wno-unused
-PKG_LIBS += "./parser/ado.a"
+PKG_CPPFLAGS += -I../inst/include
+PKG_CPPFLAGS += -I./parser/build
+PKG_CXXFLAGS += -c -g -O3 -Wall -fPIC -pedantic -pipe -Wno-unused -std=c++11
+PKG_LIBS += "parser/ado.a"
 
-all: $(SHLIB)
-$(SHLIB): parser
+all: parser $(SHLIB)
 
 parser:
-	(cd parser; make)
+	(cd parser; make -d -f Makefile)
+
+.PHONY: all parser
 
