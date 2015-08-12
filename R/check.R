@@ -7,14 +7,17 @@ check <-
 function(node, debug_level=0)
 {
   #General checks all AST nodes should pass
-  raiseifnot(node %is% "rstata_ast_node")
-  raiseifnot(every(c("data", "children") %in% names(node)))
+  raiseifnot(node %is% "rstata_ast_node",
+             msg=if(debug_level) "Not a command object" else NULL)
+  raiseifnot(every(c("data", "children") %in% names(node)),
+             msg=if(debug_level) "Malformed command object" else NULL)
 
   #Recursively check the children
   if(length(node$children) > 0)
   {
    named <- names(node$children)[which(names(node$children) != "")]
-   raiseifnot(length(named) == length(unique(named)))
+   raiseifnot(length(named) == length(unique(named)),
+              msg=if(debug_level) "Malformed command object" else NULL)
 
    for(chld in node$children)
      check(chld, debug_level)
@@ -36,11 +39,14 @@ verifynode.rstata_literal <-
 function(node, debug_level=0)
 {
   #Children - length, names, types
-  raiseifnot(length(node$children) == 0)
+  raiseifnot(length(node$children) == 0,
+             msg=if(debug_level) "Malformed command object" else NULL)
 
   #Data members - length, names, values
-  raiseifnot(length(node$data) == 1)
-  raiseifnot("value" %in% names(node$data))
+  raiseifnot(length(node$data) == 1,
+             msg=if(debug_level) "Malformed command object" else NULL)
+  raiseifnot("value" %in% names(node$data),
+             msg=if(debug_level) "Malformed command object" else NULL)
 
   NextMethod()
 }
@@ -49,8 +55,10 @@ function(node, debug_level=0)
 verifynode.rstata_ident <-
 function(node, debug_level=0)
 {
-  raiseifnot(length(grep("^[_A-Za-z][A-Za-z0-9_]*$", node$data["value"])) > 0)
-  raiseifnot(!is.null(as.symbol(node$data["value"])))
+  raiseifnot(length(grep("^[_A-Za-z][A-Za-z0-9_]*$", node$data["value"])) > 0,
+             msg=if(debug_level) "Malformed command object" else NULL)
+  raiseifnot(!is.null(as.symbol(node$data["value"])),
+             msg=if(debug_level) "Invalid identifier" else NULL)
 
   invisible(TRUE)
 }
@@ -60,9 +68,10 @@ verifynode.rstata_number <-
 function(node, debug_level=0)
 {
   val <- as.numeric(node$data["value"])
-  valid_missings <- c(".", paste0(".", LETTERS, sep=""))
+  valid_missings <- c(".", paste0(".", letters, sep=""))
   raiseifnot((!is.na(val) && !is.null(val)) ||
-             node$data["value"] %in% valid_missings)
+             node$data["value"] %in% valid_missings,
+             msg=if(debug_level) "Invalid numeric literal" else NULL)
 
   invisible(TRUE)
 }
@@ -72,7 +81,8 @@ verifynode.rstata_string_literal <-
 function(node, debug_level=0)
 {
   val <- as.character(node$data["value"])
-  raiseifnot(!is.na(val) && !is.null(val))
+  raiseifnot(!is.na(val) && !is.null(val),
+             msg=if(debug_level) "Invalid string literal" else NULL)
 
   invisible(TRUE)
 }
@@ -82,7 +92,8 @@ verifynode.rstata_datetime <-
 function(node, debug_level=0)
 {
   val <- as.POSIXct(strptime(node$data["value"], format="%d%b%Y %H:%M:%S"))
-  raiseifnot(!is.na(val) && !is.null(val))
+  raiseifnot(!is.na(val) && !is.null(val),
+             msg=if(debug_level) "Invalid date/time literal" else NULL)
 
   invisible(TRUE)
 }
@@ -94,16 +105,20 @@ verifynode.rstata_if_clause <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) == 0)
+  raiseifnot(length(node$data) == 0,
+             msg=if(debug_level) "" else NULL)
 
   #Children - length, names, types
-  raiseifnot(length(node$children) %in% c(0, 1))
+  raiseifnot(length(node$children) %in% c(0, 1),
+             msg=if(debug_level) "" else NULL)
 
   if(length(node$children) == 1)
   {
-    raiseifnot("if_expression" %in% names(node$children))
+    raiseifnot("if_expression" %in% names(node$children),
+               msg=if(debug_level) "" else NULL)
     raiseifnot(node$children[[1]] %is% "rstata_expression" ||
-               node$children[[1]] %is% "rstata_literal")
+               node$children[[1]] %is% "rstata_literal",
+               msg=if(debug_level) "" else NULL)
   }
 
   invisible(TRUE)
@@ -114,17 +129,22 @@ verifynode.rstata_in_clause <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) == 0)
+  raiseifnot(length(node$data) == 0,
+             msg=if(debug_level) "" else NULL)
 
   #Children - length, names, types
-  raiseifnot(length(node$children) %in% c(0, 2))
+  raiseifnot(length(node$children) %in% c(0, 2),
+             msg=if(debug_level) "" else NULL)
 
   if(length(node$children) == 2)
   {
-    raiseifnot(every(c("upper", "lower") %in% names(node$children)))
+    raiseifnot(every(c("upper", "lower") %in% names(node$children)),
+               msg=if(debug_level) "" else NULL)
 
-    raiseifnot(node$children[[1]] %is% "rstata_number")
-    raiseifnot(node$children[[2]] %is% "rstata_number")
+    raiseifnot(node$children[[1]] %is% "rstata_number",
+               msg=if(debug_level) "" else NULL)
+    raiseifnot(node$children[[2]] %is% "rstata_number",
+               msg=if(debug_level) "" else NULL)
   }
 
   invisible(TRUE)
@@ -135,17 +155,21 @@ verifynode.rstata_using_clause <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) == 0)
+  raiseifnot(length(node$data) == 0,
+             msg=if(debug_level) "" else NULL)
 
   #Children - length, names, types
-  raiseifnot(length(node$children) %in% c(0, 1))
+  raiseifnot(length(node$children) %in% c(0, 1),
+             msg=if(debug_level) "" else NULL)
 
   if(length(node$children) == 1)
   {
-    raiseifnot("filename" %in% names(node$children))
+    raiseifnot("filename" %in% names(node$children),
+               msg=if(debug_level) "" else NULL)
 
     raiseifnot(node$children[[1]] %is% "rstata_string_literal" ||
-               node$children[[1]] %is% "rstata_ident")
+               node$children[[1]] %is% "rstata_ident",
+               msg=if(debug_level) "" else NULL)
   }
 
   invisible(TRUE)
@@ -156,20 +180,26 @@ verifynode.rstata_weight_clause <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) == 0)
+  raiseifnot(length(node$data) == 0,
+             msg=if(debug_level) "" else NULL)
 
   #Children - length, names, types
-  raiseifnot(length(node$children) %in% c(0, 2))
+  raiseifnot(length(node$children) %in% c(0, 2),
+             msg=if(debug_level) "" else NULL)
 
   if(length(node$children) == 2)
   {
-    raiseifnot(c("left", "right") %in% names(node$children))
+    raiseifnot(c("left", "right") %in% names(node$children),
+               msg=if(debug_level) "" else NULL)
 
-    raiseifnot(node$children$left %is% "rstata_ident")
-    raiseifnot(node$children$left$data["value"] %in% c("aweight", "iweight", "pweight", "fweight"))
+    raiseifnot(node$children$left %is% "rstata_ident",
+               msg=if(debug_level) "" else NULL)
+    raiseifnot(node$children$left$data["value"] %in% c("aweight", "iweight", "pweight", "fweight"),
+               msg=if(debug_level) "" else NULL)
 
     raiseifnot(node$children$right %is% "rstata_expression" ||
-               node$children$right %is% "rstata_literal")
+               node$children$right %is% "rstata_literal",
+               msg=if(debug_level) "" else NULL)
   }
 
   invisible(TRUE)
@@ -180,12 +210,14 @@ verifynode.rstata_option_list <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) == 0)
+  raiseifnot(length(node$data) == 0,
+             msg=if(debug_level) "" else NULL)
 
   #Children - length, names, types
   #Length at least 0, checked above
   #No name requirements for children
-  raiseifnot(every(vapply(node$children, function(x) x %is% "rstata_option", TRUE)))
+  raiseifnot(every(vapply(node$children, function(x) x %is% "rstata_option", TRUE)),
+             msg=if(debug_level) "" else NULL)
 
   invisible(TRUE)
 }
@@ -195,16 +227,21 @@ verifynode.rstata_option <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) == 0)
+  raiseifnot(length(node$data) == 0,
+             msg=if(debug_level) "" else NULL)
 
   #Children - length, names, types
-  raiseifnot(length(node$children) %in% c(1, 2))
-  raiseifnot("name" %in% names(node$children))
+  raiseifnot(length(node$children) %in% c(1, 2),
+             msg=if(debug_level) "" else NULL)
+  raiseifnot("name" %in% names(node$children),
+             msg=if(debug_level) "" else NULL)
 
   if(length(node$children) == 2)
   {
-    raiseifnot("args" %in% names(node$children))
-    raiseifnot(node$children[[2]] %is% "rstata_expression_list")
+    raiseifnot("args" %in% names(node$children),
+               msg=if(debug_level) "" else NULL)
+    raiseifnot(node$children[[2]] %is% "rstata_expression_list",
+               msg=if(debug_level) "" else NULL)
   }
 
   invisible(TRUE)
@@ -217,17 +254,19 @@ verifynode.rstata_compound_cmd <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) == 0)
+  raiseifnot(length(node$data) == 0,
+             msg=if(debug_level) "" else NULL)
 
   #Children - length, names, types
   #No name requirements for children
-  raiseifnot(length(node$children) > 0)
+  raiseifnot(length(node$children) > 0,
+             msg=if(debug_level) "" else NULL)
   raiseifnot(every(vapply(node$children,
                           function(x) x %is% "rstata_embedded_code" ||    #embedded R or sh code
                                       x %is% "rstata_cmd" ||              #a usual Stata cmd
                                       x %is% "rstata_if_cmd" ||              #an if expr { } block
                                       x %is% "rstata_modifier_cmd_list",  #a Stata cmd with modifiers
-                          TRUE)))
+                          TRUE)), msg=if(debug_level) "" else NULL)
 
   invisible(TRUE)
 }
@@ -237,15 +276,20 @@ verifynode.rstata_if_cmd <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) == 0)
+  raiseifnot(length(node$data) == 0,
+             msg=if(debug_level) "" else NULL)
 
   #Children - length, names, types
-  raiseifnot(length(node$children) == 2)
-  raiseifnot(every(c("expression", "compound_cmd") %in% names(node$children)))
+  raiseifnot(length(node$children) == 2,
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(every(c("expression", "compound_cmd") %in% names(node$children)),
+             msg=if(debug_level) "" else NULL)
 
   raiseifnot(node$children$expression %is% "rstata_expression" ||
-             node$children$expression %is% "rstata_literal")
-  raiseifnot(node$children$compound_cmd %is% "rstata_compound_cmd")
+             node$children$expression %is% "rstata_literal",
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(node$children$compound_cmd %is% "rstata_compound_cmd",
+             msg=if(debug_level) "" else NULL)
 
   invisible(TRUE)
 }
@@ -255,21 +299,25 @@ verifynode.rstata_modifier_cmd_list <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) == 0)
+  raiseifnot(length(node$data) == 0,
+             msg=if(debug_level) "" else NULL)
 
   #Children - length, names, types
-  raiseifnot(length(node$children) > 0)
+  raiseifnot(length(node$children) > 0,
+             msg=if(debug_level) "" else NULL)
   raiseifnot(every(vapply(node$children,
                           function(x) x %is% "rstata_modifier_cmd" ||
                                       x %is% "rstata_general_cmd" ||
                                       x %is% "rstata_compound_cmd",
-                          TRUE)))
+                          TRUE)), msg=if(debug_level) "" else NULL)
 
   named <- names(node$children)[which(names(node$children) != "")]
-  raiseifnot(length(named) == 1 && named == c("main_cmd"))
+  raiseifnot(length(named) == 1 && named == c("main_cmd"),
+             msg=if(debug_level) "" else NULL)
 
   pos <- match("main_cmd", names(node$children))
-  raiseifnot(pos == length(names(node$children)))
+  raiseifnot(pos == length(names(node$children)),
+             msg=if(debug_level) "" else NULL)
 
   invisible(TRUE)
 }
@@ -279,16 +327,22 @@ verifynode.rstata_embedded_code <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) == 2)
+  raiseifnot(length(node$data) == 2,
+             msg=if(debug_level) "" else NULL)
 
-  raiseifnot("value" %in% names(node$data))
-  raiseifnot(!is.na(as.character(node$data["value"])))
+  raiseifnot("value" %in% names(node$data),
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(!is.na(as.character(node$data["value"])),
+             msg=if(debug_level) "" else NULL)
 
-  raiseifnot("lang" %in% names(node$data))
-  raiseifnot(!is.na(as.character(node$data["lang"])))
+  raiseifnot("lang" %in% names(node$data),
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(!is.na(as.character(node$data["lang"])),
+             msg=if(debug_level) "" else NULL)
 
   #Children - length, names, types
-  raiseifnot(length(node$children) == 0)
+  raiseifnot(length(node$children) == 0,
+             msg=if(debug_level) "" else NULL)
 
   invisible(TRUE)
 }
@@ -298,11 +352,15 @@ verifynode.rstata_cmd <-
 function(node, debug_level=0)
 {
   #Children - length, names, types
-  raiseifnot(length(node$children) > 0)
-  raiseifnot("verb" %in% names(node$children))
-  raiseifnot(node$children$verb %is% "rstata_ident")
+  raiseifnot(length(node$children) > 0,
+             msg=if(debug_level) "" else NULL)
+  raiseifnot("verb" %in% names(node$children),
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(node$children$verb %is% "rstata_ident",
+             msg=if(debug_level) "" else NULL)
 
-  raiseifnot(every(valid_cmd_part(names(node$children))))
+  raiseifnot(every(valid_cmd_part(names(node$children))),
+             msg=if(debug_level) "" else NULL)
 
   #Data members - length, names, values
   #No restrictions on number, names or values of data members
@@ -315,18 +373,24 @@ verifynode.rstata_modifier_cmd <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) == 0)
+  raiseifnot(length(node$data) == 0,
+             msg=if(debug_level) "" else NULL)
 
   #Children - length, names, types
-  raiseifnot(length(node$children) == 1)
-  raiseifnot(names(node$children) == c("verb"))
-  raiseifnot(node$children$verb %is% "rstata_ident")
+  raiseifnot(length(node$children) == 1,
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(names(node$children) == c("verb"),
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(node$children$verb %is% "rstata_ident",
+             msg=if(debug_level) "" else NULL)
 
-  func <- paste0("rstata_cmd_", tolower(node$children$verb$data["value"]))
-  func <- unabbreviateCommand(func, "BadCommandException")
+  func <- paste0("rstata_cmd_", node$children$verb$data["value"])
+  func <- unabbreviateCommand(func, cls="BadCommandException",
+                              msg=if(debug_level) "" else NULL)
 
-  raiseifnot(func %in% paste0("rstata_cmd_", c("quietly", "noisily", "capture")))
-  raiseifnot(exists(func))
+  raiseifnot(func %in% paste0("rstata_cmd_", c("quietly", "noisily", "capture")),
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(exists(func), msg=if(debug_level) "" else NULL)
 
   invisible(TRUE)
 }
@@ -336,12 +400,14 @@ verifynode.rstata_general_cmd <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) == 0)
+  raiseifnot(length(node$data) == 0,
+             msg=if(debug_level) "" else NULL)
 
   #Children - length, names, types
-  func <- paste0("rstata_cmd_", tolower(node$children$verb$data["value"]))
-  func <- unabbreviateCommand(func, "BadCommandException")
-  raiseifnot(exists(func))
+  func <- paste0("rstata_cmd_", node$children$verb$data["value"])
+  func <- unabbreviateCommand(func, cls="BadCommandException",
+                              msg=if(debug_level) "" else NULL)
+  raiseifnot(exists(func), msg=if(debug_level) "" else NULL)
 
   args <-
   tryCatch(
@@ -352,7 +418,8 @@ function(node, debug_level=0)
 
   if(inherits(args, "error"))
   {
-    raiseCondition("Command not found", "BadCommandException")
+    raiseCondition("Command not found", cls="BadCommandException",
+                   msg=if(debug_level) "" else NULL)
     return(invisible(TRUE))
   }
 
@@ -368,12 +435,15 @@ function(node, debug_level=0)
   }
   given <- setdiff(names(chlds), c("verb"))
 
-  raiseifnot(every(given %in% names(args)))
+  raiseifnot(every(given %in% names(args)),
+             msg=if(debug_level) "" else NULL)
   raiseifnot(every(vapply(names(args),
                           function(x) is.null(args[[x]]) || x %in% given,
-                          TRUE)))
+                          TRUE)),
+             msg=if(debug_level) "" else NULL)
 
-  raiseifnot(every(correct_arg_types_for_cmd(chlds)))
+  raiseifnot(every(correct_arg_types_for_cmd(chlds)),
+             msg=if(debug_level) "" else NULL)
 
   invisible(TRUE)
 }
@@ -382,13 +452,13 @@ function(node, debug_level=0)
 verifynode.rstata_special_cmd <-
 function(node, debug_level=0)
 {
-  func <- tolower(node$children$verb$data["value"])
-  func <- paste0("rstata_cmd_", func)
-  func <- unabbreviateCommand(func, "BadCommandException")
+  func <- paste0("rstata_cmd_", node$children$verb$data["value"])
+  func <- unabbreviateCommand(func, cls="BadCommandException",
+                              msg=if(debug_level) "" else NULL)
 
-  raiseifnot(func %in% paste0("rstata_cmd_",
-                              c("merge", "display", "format", "xi")))
-  raiseifnot(exists(func))
+  raiseifnot(func %in% paste0("rstata_cmd_", c("merge", "display", "format", "xi")),
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(exists(func), msg=if(debug_level) "" else NULL)
 
   args <-
   tryCatch(
@@ -399,7 +469,8 @@ function(node, debug_level=0)
 
   if(inherits(args, "error"))
   {
-      raiseCondition("Command not found", "BadCommandException")
+      raiseCondition("Command not found", "BadCommandException",
+                     msg=if(debug_level) "" else NULL)
       return(invisible(TRUE))
   }
 
@@ -414,36 +485,49 @@ function(node, debug_level=0)
           names(chlds)[names(chlds) == "expression_list"] <- "expression"
   }
   given <- setdiff(names(chlds), c("verb"))
-  raiseifnot(every(given %in% names(args)))
+  raiseifnot(every(given %in% names(args)),
+             msg=if(debug_level) "" else NULL)
   raiseifnot(every(vapply(names(args),
                           function(x) is.null(args[[x]]) || x %in% given,
-                          TRUE)))
+                          TRUE)),
+             msg=if(debug_level) "" else NULL)
 
-  raiseifnot(every(correct_arg_types_for_cmd(chlds)))
+  raiseifnot(every(correct_arg_types_for_cmd(chlds)),
+             msg=if(debug_level) "" else NULL)
 
   #checks of node-specific data
   if(func == "rstata_cmd_merge")
   {
-    raiseifnot(length(node$data) == 1)
-    raiseifnot(names(node$data) == c("merge_spec"))
-    raiseifnot(node$data["merge_spec"] %in% c("m:m", "m:1", "1:m", "1:1"))
+    raiseifnot(length(node$data) == 1,
+               msg=if(debug_level) "" else NULL)
+    raiseifnot(names(node$data) == c("merge_spec"),
+               msg=if(debug_level) "" else NULL)
+    raiseifnot(node$data["merge_spec"] %in% c("m:m", "m:1", "1:m", "1:1"),
+               msg=if(debug_level) "" else NULL)
   } else if(func == "display")
   {
-    raiseifnot(length(node$data) %in% c(0, 1))
+    raiseifnot(length(node$data) %in% c(0, 1),
+               msg=if(debug_level) "" else NULL)
 
     if(length(node$data == 1))
     {
-      raiseifnot(names(node$data) == c("format_spec"))
-      raiseifnot(valid_format_spec(node$data["format_spec"]))
+      raiseifnot(names(node$data) == c("format_spec"),
+                 msg=if(debug_level) "" else NULL)
+      raiseifnot(valid_format_spec(node$data["format_spec"]),
+                 msg=if(debug_level) "" else NULL)
     }
   } else if(func == "rstata_cmd_format")
   {
-    raiseifnot(length(node$data) == 1)
-    raiseifnot(names(node$data) == c("format_spec"))
-    raiseifnot(valid_format_spec(node$data["format_spec"]))
+    raiseifnot(length(node$data) == 1,
+               msg=if(debug_level) "" else NULL)
+    raiseifnot(names(node$data) == c("format_spec"),
+               msg=if(debug_level) "" else NULL)
+    raiseifnot(valid_format_spec(node$data["format_spec"]),
+               msg=if(debug_level) "" else NULL)
   } else if(func == "rstata_cmd_xi")
   {
-    raiseifnot(length(node$data) == 0)
+    raiseifnot(length(node$data) == 0,
+               msg=if(debug_level) "" else NULL)
   }
 
   invisible(TRUE)
@@ -456,12 +540,16 @@ verifynode.rstata_expression_list <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) == 0)
+  raiseifnot(length(node$data) == 0,
+             msg=if(debug_level) "" else NULL)
 
   #Children - length, names, types
-  raiseifnot(length(node$children) > 0)
+  raiseifnot(length(node$children) > 0,
+             msg=if(debug_level) "" else NULL)
 
-  raiseifnot(every(vapply(node$children, function(x) x %is% "rstata_expression" || x %is% "rstata_literal", TRUE)))
+  raiseifnot(every(vapply(node$children, function(x) x %is% "rstata_expression" ||
+                                                     x %is% "rstata_literal", TRUE)),
+             msg=if(debug_level) "" else NULL)
 
   invisible(TRUE)
 }
@@ -471,18 +559,22 @@ verifynode.rstata_argument_expression_list <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) == 0)
+  raiseifnot(length(node$data) == 0,
+             msg=if(debug_level) "" else NULL)
 
   #Children - length, names, types
-  raiseifnot(length(node$children) > 0)
+  raiseifnot(length(node$children) > 0,
+             msg=if(debug_level) "" else NULL)
 
-  raiseifnot(every(vapply(node$children, function(x) x %is% "rstata_expression" || x %is% "rstata_literal", TRUE)))
+  raiseifnot(every(vapply(node$children, function(x) x %is% "rstata_expression" || x %is% "rstata_literal", TRUE)),
+             msg=if(debug_level) "" else NULL)
 
   raiseifnot(every(vapply(node$children,
                           function(x) !(x %is% "rstata_assignment_expression") &&
                                       !(x %is% "rstata_factor_expression") &&
                                       !(x %is% "rstata_cross_expression"),
-                          TRUE)))
+                          TRUE)),
+             msg=if(debug_level) "" else NULL)
 
   invisible(TRUE)
 }
@@ -494,8 +586,10 @@ verifynode.rstata_expression <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) > 0)
-  raiseifnot("verb" %in% names(node$data))
+  raiseifnot(length(node$data) > 0,
+             msg=if(debug_level) "" else NULL)
+  raiseifnot("verb" %in% names(node$data),
+             msg=if(debug_level) "" else NULL)
 
   NextMethod()
 }
@@ -505,15 +599,22 @@ verifynode.rstata_type_expression <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) == 1)
-  raiseifnot(names(node$data) == c("verb"))
-  raiseifnot(valid_data_type(node$data["verb"]))
+  raiseifnot(length(node$data) == 1,
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(names(node$data) == c("verb"),
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(valid_data_type(node$data["verb"]),
+             msg=if(debug_level) "" else NULL)
 
   #Children - length, names, types
-  raiseifnot(length(node$children) == 1)
-  raiseifnot(names(node$children) == c("left"))
-  raiseifnot(node$children$left %is% "rstata_expression_list")
-  raiseifnot(every(vapply(node$children$left$children, function(x) x %is% "rstata_ident", TRUE)))
+  raiseifnot(length(node$children) == 1,
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(names(node$children) == c("left"),
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(node$children$left %is% "rstata_expression_list",
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(every(vapply(node$children$left$children, function(x) x %is% "rstata_ident", TRUE)),
+             msg=if(debug_level) "" else NULL)
 
   invisible(TRUE)
 }
@@ -524,10 +625,13 @@ verifynode.rstata_factor_expression <-
 function(node, debug_level=0)
 {
   #Children - length, names, types
-  raiseifnot(length(node$children) == 1)
-  raiseifnot("left" %in% names(node$children))
+  raiseifnot(length(node$children) == 1,
+             msg=if(debug_level) "" else NULL)
+  raiseifnot("left" %in% names(node$children),
+             msg=if(debug_level) "" else NULL)
 
-  raiseifnot(node$children$left %is% "rstata_ident")
+  raiseifnot(node$children$left %is% "rstata_ident",
+             msg=if(debug_level) "" else NULL)
 
   NextMethod()
 }
@@ -537,7 +641,8 @@ verifynode.rstata_continuous_expression <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) == 1)
+  raiseifnot(length(node$data) == 1,
+             msg=if(debug_level) "" else NULL)
 
   invisible(TRUE)
 }
@@ -547,21 +652,25 @@ verifynode.rstata_indicator_expression <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(node$data["verb"] == "i.")
+  raiseifnot(node$data["verb"] == "i.",
+             msg=if(debug_level) "" else NULL)
 
   nm <- setdiff(names(node$data), c("verb"))
 
   if(length(nm == 0))
     return(invisible(TRUE))
   else if(length(nm) == 1 && nm == c("level"))
-    raiseifnot(!is.na(as.numeric(node$data["level"])))
+    raiseifnot(!is.na(as.numeric(node$data["level"])),
+               msg=if(debug_level) "" else NULL)
   else if(length(nm) == 2 && ("levelstart" %in% nm && "levelend" %in% nm))
     raiseifnot(!is.na(as.numeric(node$data["levelstart"])) &&
-               !is.na(as.numeric(node$data["levelend"])))
+               !is.na(as.numeric(node$data["levelend"])),
+               msg=if(debug_level) "" else NULL)
   else if(length(grep("level[0-9]+", nm)) == length(nm))
-    raiseifnot(every(vapply(nm, function(x) !is.na(as.numeric(x)), TRUE)))
+    raiseifnot(every(vapply(nm, function(x) !is.na(as.numeric(x)), TRUE)),
+               msg=if(debug_level) "" else NULL)
   else
-    raiseifnot(1==0, msg="Bad levels for factor operator")
+    raiseifnot(1==0, msg=if(debug_level) "Bad levels for factor operator" else NULL)
 
   invisible(TRUE)
 }
@@ -571,20 +680,25 @@ verifynode.rstata_omit_expression <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) > 1)
-  raiseifnot(node$data["verb"] == "o.")
+  raiseifnot(length(node$data) > 1,
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(node$data["verb"] == "o.",
+             msg=if(debug_level) "" else NULL)
 
   nm <- setdiff(names(node$data), c("verb"))
 
   if(length(nm) == 1 && nm == c("level"))
-    raiseifnot(!is.na(as.numeric(node$data["level"])))
+    raiseifnot(!is.na(as.numeric(node$data["level"])),
+               msg=if(debug_level) "" else NULL)
   else if(length(nm) == 2 && ("levelstart" %in% nm && "levelend" %in% nm))
     raiseifnot(!is.na(as.numeric(node$data["levelstart"])) &&
-                 !is.na(as.numeric(node$data["levelend"])))
+                 !is.na(as.numeric(node$data["levelend"])),
+               msg=if(debug_level) "" else NULL)
   else if(length(grep("level[0-9]+", nm)) == length(nm))
-    raiseifnot(every(vapply(nm, function(x) !is.na(as.numeric(x)), TRUE)))
+    raiseifnot(every(vapply(nm, function(x) !is.na(as.numeric(x)), TRUE)),
+               msg=if(debug_level) "" else NULL)
   else
-    raiseifnot(1==0, msg="Bad levels for factor operator")
+    raiseifnot(1==0, msg=if(debug_level) "Bad levels for factor operator" else NULL)
 
   invisible(TRUE)
 }
@@ -594,13 +708,17 @@ verifynode.rstata_baseline_expression <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) == 2)
-  raiseifnot(node$data["verb"] == "ib.")
+  raiseifnot(length(node$data) == 2,
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(node$data["verb"] == "ib.",
+             msg=if(debug_level) "" else NULL)
 
-  raiseifnot("level" %in% names(node$data))
+  raiseifnot("level" %in% names(node$data),
+             msg=if(debug_level) "" else NULL)
 
   raiseifnot(node$data["level"] %in% c("n", "freq", "last", "first") ||
-             !is.na(as.numeric(node$data["level"])))
+             !is.na(as.numeric(node$data["level"])),
+             msg=if(debug_level) "" else NULL)
 
   invisible(TRUE)
 }
@@ -610,18 +728,24 @@ verifynode.rstata_cross_expression <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) == 1)
-  raiseifnot(node$data["verb"] %in% c("##", "#"))
+  raiseifnot(length(node$data) == 1,
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(node$data["verb"] %in% c("##", "#"),
+             msg=if(debug_level) "" else NULL)
 
   #Children - length, names, types
-  raiseifnot(length(node$children) == 2)
-  raiseifnot(every(c("left", "right") %in% names(node$children)))
+  raiseifnot(length(node$children) == 2,
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(every(c("left", "right") %in% names(node$children)),
+             msg=if(debug_level) "" else NULL)
 
   raiseifnot(node$children$left %is% "rstata_ident" ||
-             node$children$left %is% "rstata_factor_expression")
+             node$children$left %is% "rstata_factor_expression",
+             msg=if(debug_level) "" else NULL)
 
   raiseifnot(node$children$right %is% "rstata_ident" ||
-               node$children$right %is% "rstata_factor_expression")
+               node$children$right %is% "rstata_factor_expression",
+             msg=if(debug_level) "" else NULL)
 
   invisible(TRUE)
 }
@@ -632,20 +756,26 @@ verifynode.rstata_power_expression <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) == 1)
-  raiseifnot(node$data["verb"] == "^")
+  raiseifnot(length(node$data) == 1,
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(node$data["verb"] == "^",
+             msg=if(debug_level) "" else NULL)
 
   #Children - length, names, types
-  raiseifnot(length(node$children) == 2)
-  raiseifnot(every(c("left", "right") %in% names(node$children)))
+  raiseifnot(length(node$children) == 2,
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(every(c("left", "right") %in% names(node$children)),
+             msg=if(debug_level) "" else NULL)
 
   raiseifnot(node$children$left %is% "rstata_ident" ||
              node$children$left %is% "rstata_number" ||
-             node$children$left %is% "rstata_arithmetic_expression")
+             node$children$left %is% "rstata_arithmetic_expression",
+             msg=if(debug_level) "" else NULL)
 
   raiseifnot(node$children$right %is% "rstata_ident" ||
                node$children$right %is% "rstata_number" ||
-               node$children$right %is% "rstata_arithmetic_expression")
+               node$children$right %is% "rstata_arithmetic_expression",
+             msg=if(debug_level) "" else NULL)
 
   invisible(TRUE)
 }
@@ -655,16 +785,21 @@ verifynode.rstata_unary_expression <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) == 1)
-  raiseifnot(node$data["verb"] %in% c("-", "+", "!"))
+  raiseifnot(length(node$data) == 1,
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(node$data["verb"] %in% c("-", "+", "!"),
+             msg=if(debug_level) "" else NULL)
 
   #Children - length, names, types
-  raiseifnot(length(node$children) == 1)
-  raiseifnot("right" %in% names(node$children))
+  raiseifnot(length(node$children) == 1,
+             msg=if(debug_level) "" else NULL)
+  raiseifnot("right" %in% names(node$children),
+             msg=if(debug_level) "" else NULL)
 
   raiseifnot(node$children$right %is% "rstata_ident" ||
                node$children$right %is% "rstata_number" ||
-               node$children$right %is% "rstata_arithmetic_expression")
+               node$children$right %is% "rstata_arithmetic_expression",
+             msg=if(debug_level) "" else NULL)
 
   invisible(TRUE)
 }
@@ -674,20 +809,26 @@ verifynode.rstata_multiplication_expression <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) == 1)
-  raiseifnot(node$data["verb"] %in% c("*", "/"))
+  raiseifnot(length(node$data) == 1,
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(node$data["verb"] %in% c("*", "/"),
+             msg=if(debug_level) "" else NULL)
 
   #Children - length, names, types
-  raiseifnot(length(node$children) == 2)
-  raiseifnot(every(c("left", "right") %in% names(node$children)))
+  raiseifnot(length(node$children) == 2,
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(every(c("left", "right") %in% names(node$children)),
+             msg=if(debug_level) "" else NULL)
 
   raiseifnot(node$children$left %is% "rstata_ident" ||
                node$children$left %is% "rstata_number" ||
-               node$children$left %is% "rstata_arithmetic_expression")
+               node$children$left %is% "rstata_arithmetic_expression",
+             msg=if(debug_level) "" else NULL)
 
   raiseifnot(node$children$right %is% "rstata_ident" ||
                node$children$right %is% "rstata_number" ||
-               node$children$right %is% "rstata_arithmetic_expression")
+               node$children$right %is% "rstata_arithmetic_expression",
+             msg=if(debug_level) "" else NULL)
 
   invisible(TRUE)
 }
@@ -697,20 +838,26 @@ verifynode.rstata_additive_expression <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) == 1)
-  raiseifnot(node$data["verb"] %in% c("+", "-"))
+  raiseifnot(length(node$data) == 1,
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(node$data["verb"] %in% c("+", "-"),
+             msg=if(debug_level) "" else NULL)
 
   #Children - length, names, types
-  raiseifnot(length(node$children) == 2)
-  raiseifnot(every(c("left", "right") %in% names(node$children)))
+  raiseifnot(length(node$children) == 2,
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(every(c("left", "right") %in% names(node$children)),
+             msg=if(debug_level) "" else NULL)
 
   raiseifnot(node$children$left %is% "rstata_ident" ||
                node$children$left %is% "rstata_number" ||
-               node$children$left %is% "rstata_arithmetic_expression")
+               node$children$left %is% "rstata_arithmetic_expression",
+             msg=if(debug_level) "" else NULL)
 
   raiseifnot(node$children$right %is% "rstata_ident" ||
                node$children$right %is% "rstata_number" ||
-               node$children$right %is% "rstata_arithmetic_expression")
+               node$children$right %is% "rstata_arithmetic_expression",
+             msg=if(debug_level) "" else NULL)
 
   invisible(TRUE)
 }
@@ -721,12 +868,16 @@ verifynode.rstata_equality_expression <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) == 1)
-  raiseifnot(node$data["verb"] %in% c("=="))
+  raiseifnot(length(node$data) == 1,
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(node$data["verb"] %in% c("=="),
+             msg=if(debug_level) "" else NULL)
 
   #Children - length, names, types
-  raiseifnot(length(node$children) == 2)
-  raiseifnot(every(c("left", "right") %in% names(node$children)))
+  raiseifnot(length(node$children) == 2,
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(every(c("left", "right") %in% names(node$children)),
+             msg=if(debug_level) "" else NULL)
 
   raiseifnot(
     !(
@@ -740,8 +891,8 @@ function(node, debug_level=0)
     (
       node$children$left %is% "rstata_expression" ||
       node$children$left %is% "rstata_literal"
-    )
-  )
+    ),
+  msg=if(debug_level) "" else NULL)
 
   raiseifnot(
     !(
@@ -755,8 +906,8 @@ function(node, debug_level=0)
       (
         node$children$right %is% "rstata_expression" ||
           node$children$right %is% "rstata_literal"
-      )
-  )
+      ),
+  msg=if(debug_level) "" else NULL)
 
   invisible(TRUE)
 }
@@ -766,12 +917,16 @@ verifynode.rstata_logical_expression <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) == 1)
-  raiseifnot(node$data["verb"] %in% c("&", "|"))
+  raiseifnot(length(node$data) == 1,
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(node$data["verb"] %in% c("&", "|"),
+             msg=if(debug_level) "" else NULL)
 
   #Children - length, names, types
-  raiseifnot(length(node$children) == 2)
-  raiseifnot(every(c("left", "right") %in% names(node$children)))
+  raiseifnot(length(node$children) == 2,
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(every(c("left", "right") %in% names(node$children)),
+             msg=if(debug_level) "" else NULL)
 
   raiseifnot(
     !(
@@ -785,8 +940,8 @@ function(node, debug_level=0)
     (
       node$children$left %is% "rstata_expression" ||
         node$children$left %is% "rstata_literal"
-    )
-  )
+    ),
+  msg=if(debug_level) "" else NULL)
 
   raiseifnot(
     !(
@@ -800,8 +955,8 @@ function(node, debug_level=0)
     (
       node$children$right %is% "rstata_expression" ||
         node$children$right %is% "rstata_literal"
-    )
-  )
+    ),
+  msg=if(debug_level) "" else NULL)
 
   invisible(TRUE)
 }
@@ -811,12 +966,16 @@ verifynode.rstata_relational_expression <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) == 1)
-  raiseifnot(node$data["verb"] %in% c(">", "<", ">=", "<="))
+  raiseifnot(length(node$data) == 1,
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(node$data["verb"] %in% c(">", "<", ">=", "<="),
+             msg=if(debug_level) "" else NULL)
 
   #Children - length, names, types
-  raiseifnot(length(node$children) == 2)
-  raiseifnot(every(c("left", "right") %in% names(node$children)))
+  raiseifnot(length(node$children) == 2,
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(every(c("left", "right") %in% names(node$children)),
+             msg=if(debug_level) "" else NULL)
 
   raiseifnot(
     !(
@@ -830,8 +989,8 @@ function(node, debug_level=0)
     (
       node$children$left %is% "rstata_expression" ||
         node$children$left %is% "rstata_literal"
-    )
-  )
+    ),
+  msg=if(debug_level) "" else NULL)
 
   raiseifnot(
     !(
@@ -845,8 +1004,8 @@ function(node, debug_level=0)
     (
       node$children$right %is% "rstata_expression" ||
         node$children$right %is% "rstata_literal"
-    )
-  )
+    ),
+  msg=if(debug_level) "" else NULL)
 
   invisible(TRUE)
 }
@@ -856,18 +1015,24 @@ verifynode.rstata_postfix_expression <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) == 1)
-  raiseifnot(node$data["verb"] %in% c("()", "[]"))
+  raiseifnot(length(node$data) == 1,
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(node$data["verb"] %in% c("()", "[]"),
+             msg=if(debug_level) "" else NULL)
 
   #Children - length, names, types
-  raiseifnot(length(node$children) %in% c(1, 2))
+  raiseifnot(length(node$children) %in% c(1, 2),
+             msg=if(debug_level) "" else NULL)
 
-  raiseifnot("left" %in% names(node$children))
-  raiseifnot(node$children$left %is% "rstata_ident")
+  raiseifnot("left" %in% names(node$children),
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(node$children$left %is% "rstata_ident",
+             msg=if(debug_level) "" else NULL)
 
   if(length(node$children) == 2)
   {
-    raiseifnot("right" %in% names(node$children))
+    raiseifnot("right" %in% names(node$children),
+               msg=if(debug_level) "" else NULL)
     raiseifnot(
         (
           node$children$right %is% "rstata_expression" ||
@@ -876,8 +1041,8 @@ function(node, debug_level=0)
         )
         && !(node$children$right %is% "rstata_factor_expression")
         && !(node$children$right %is% "rstata_cross_expression")
-        && !(node$children$right %is% "rstata_type_expression")
-    )
+        && !(node$children$right %is% "rstata_type_expression"),
+    msg=if(debug_level) "" else NULL)
   }
 
   invisible(TRUE)
@@ -888,15 +1053,20 @@ verifynode.rstata_assignment_expression <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) == 1)
-  raiseifnot(node$data["verb"] %in% c("="))
+  raiseifnot(length(node$data) == 1,
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(node$data["verb"] %in% c("="),
+             msg=if(debug_level) "" else NULL)
 
   #Children - length, names, types
-  raiseifnot(length(node$children) == 2)
-  raiseifnot(every(c("left", "right") %in% names(node$children)))
+  raiseifnot(length(node$children) == 2,
+             msg=if(debug_level) "" else NULL)
+  raiseifnot(every(c("left", "right") %in% names(node$children)),
+             msg=if(debug_level) "" else NULL)
 
   raiseifnot(node$children$left %is% "rstata_ident" ||
-             node$children$left %is% "rstata_type_expression")
+             node$children$left %is% "rstata_type_expression",
+             msg=if(debug_level) "" else NULL)
 
   raiseifnot(
     !(
@@ -910,8 +1080,8 @@ function(node, debug_level=0)
     (
       node$children$right %is% "rstata_expression" ||
         node$children$right %is% "rstata_literal"
-    )
-  )
+    ),
+  msg=if(debug_level) "" else NULL)
 
   invisible(TRUE)
 }
