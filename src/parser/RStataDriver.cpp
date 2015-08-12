@@ -32,6 +32,7 @@ RStataDriver::parse()
     
     scan_begin();
     yy::RStataParser parser(*this);
+    parser.set_debug_level(true);
     res = parser.parse();
     scan_end();
     

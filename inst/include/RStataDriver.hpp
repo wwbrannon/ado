@@ -6,9 +6,6 @@
 
 #include "RStata.hpp"
 
-// forward-declare this to break a circular dependency
-typedef struct yy_buffer_state *YY_BUFFER_STATE;
-
 // define the YY_DECL macro for flex
 #define YY_DECL yy::RStataParser::symbol_type yylex(RStataDriver& driver)
 YY_DECL;
@@ -33,7 +30,6 @@ class RStataDriver
 
     private:
         std::string        text;
-        YY_BUFFER_STATE    buf;
 };
 
 #endif /* RSTATA_DRIVER_H */

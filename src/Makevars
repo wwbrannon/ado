@@ -10,7 +10,7 @@ PKG_LIBS += "parser/ado.a"
 all: parser $(SHLIB)
 
 parser:
-	(cd parser; make -d -f Makefile)
+	(cd parser; make -d -f Makefile DEBUG=T KEEP_PKG_SOURCE=yes)
 
 .PHONY: all parser
 

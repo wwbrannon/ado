@@ -9,13 +9,13 @@
 #include "ado.tab.hpp"
 #include "RStataDriver.hpp"
 
-#define yyterminate() raise_condition("Terminated", "error")
-
 // Functions to eat comments
 void long_comment();
 void short_comment();
 
 static yy::location loc;
+
+#define yyterminate() return(yy::RStataParser::make_END(std::string("END"), loc))
 %}
 
 %option noyywrap debug
@@ -206,6 +206,7 @@ B           [ \t\v\r\f]
                                 return yy::RStataParser::make_IDENT(cmd, loc);
                             }
 
+<<EOF>>                     return yy::RStataParser::make_END(std::string("END"), loc);
 %%
 
 void long_comment()
@@ -238,13 +239,12 @@ void short_comment()
 void
 RStataDriver::scan_begin()
 {
-    buf = yy_scan_string(text.c_str());
-    yy_switch_to_buffer(buf);
+    yy_switch_to_buffer(yy_scan_string(text.c_str()));
 }
 
 void
 RStataDriver::scan_end()
 {
-    yy_delete_buffer(buf);
+    yy_delete_buffer(YY_CURRENT_BUFFER);
 }
 

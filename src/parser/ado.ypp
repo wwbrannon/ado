@@ -43,7 +43,7 @@
 %precedence "["
 %precedence "("
 
-%token END         0   "end of file"
+%token <std::string> END 0 "end of file"
 
 %token <std::string>
     PLUS            "+"
@@ -88,10 +88,9 @@
 %token <StringExprNode *> MERGE_SPEC
 
 /* Nonterminal token types */
-%type <BranchExprNode *> translation_unit external_statement compound_cmd cmds modifier_cmd_list
+%type <BranchExprNode *> translation_unit external_statement compound_cmd cmds modifier_cmd_list cmd
 
-%type <GeneralStataCmd *> modifier_cmd
-%type <BranchExprNode *> cmd nonmodifier_cmd
+%type <GeneralStataCmd *> modifier_cmd nonmodifier_cmd
 
 %type <std::string> assignment_operator unary_operator power_operator equality_operator
 %type <std::string> multiplication_operator additive_operator relational_operator
@@ -165,6 +164,10 @@ cmd:
     {
         $$ = $1;
     }
+    | nonmodifier_cmd
+    {
+        $$ = $1;
+    }
     | modifier_cmd_list nonmodifier_cmd
     {
         $1->appendChild($2);
@@ -176,6 +179,22 @@ cmd:
         $$ = $1;
     }
     | modifier_cmd_list nonmodifier_cmd ":" nonmodifier_cmd
+    {
+        $1->appendChild($2);
+        $2->setChildren({$4});
+        $$ = $1;
+    }
+    | modifier_cmd_list compound_cmd
+    {
+        $1->appendChild($2);
+        $$ = $1;
+    }
+    | modifier_cmd_list ":" compound_cmd
+    {
+        $1->appendChild($3);
+        $$ = $1;
+    }
+    | modifier_cmd_list nonmodifier_cmd ":" compound_cmd
     {
         $1->appendChild($2);
         $2->setChildren({$4});
@@ -204,11 +223,7 @@ modifier_cmd_list:
     ;
 
 nonmodifier_cmd:
-      compound_cmd
-    {
-        $$ = $1;
-    }
-    | IDENT expression_list if_clause in_clause weight_clause using_clause option_list
+      IDENT expression_list if_clause in_clause weight_clause using_clause option_list
     {
         GeneralStataCmd *node = MakeGeneralStataCmd($1)
                                     .varlist($2)

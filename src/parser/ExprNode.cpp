@@ -57,7 +57,7 @@ BranchExprNode::BranchExprNode()
 void
 BranchExprNode::setChildren(std::initializer_list<BranchExprNode *> list)
 {
-    std::vector<BranchExprNode *>().swap(children);
+    children.clear();
 
     for(auto elem : list)
     {
