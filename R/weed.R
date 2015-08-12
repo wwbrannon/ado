@@ -1,6 +1,7 @@
 ### The "weeding" phase of the interpreter. After we get back an AST, do some
-### semantic checks on it, and raise error conditions if the checks fail.
-### This function dispatches by the AST node's S3 class.
+### semantic checks on it, including things that Stata considers "syntax," and
+### raise error conditions if the checks fail. This function dispatches according
+### to the AST node's S3 class.
 
 weed <-
 function(node)
@@ -93,7 +94,13 @@ function(node)
 
 }
 
-weed.rstata_option_list <- #should we actually have an option node?
+weed.rstata_option_list <-
+function(node)
+{
+
+}
+
+weed.rstata_option <-
 function(node)
 {
 

@@ -719,14 +719,22 @@ options:
 
 option:
       IDENT
+    {
+        ExprNode *node = new ExprNode("rstata_option");
+        node->appendChild("name", $1);
+        
+        $$ = node;
+    }
     | IDENT "(" expression_list ")"
     {
-        $1->appendChild("args", $3);
+        ExprNode *node = new ExprNode("rstata_option");
+        node->appendChild("name", $1);
+        node->appendChild("args", $3);
         
         delete $2;
         delete $4;
         
-        $$ = $1;
+        $$ = node;
     }
     ;
 

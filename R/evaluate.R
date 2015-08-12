@@ -59,6 +59,10 @@ function(node)
 evaluate.rstata_embedded_r_cmd <-
 function(node)
 {
+    #A stub from an older function - expand
+    vals <- lapply(lapply(parse(text=txt), eval), capture.output)
+
+    do.call(paste0, c(vals, list(collapse="\n")))
 
 }
 
@@ -99,7 +103,13 @@ function(node)
 
 }
 
-evaluate.rstata_option_list <- #should we actually have an option node?
+evaluate.rstata_option_list <-
+function(node)
+{
+
+}
+
+evaluate.rstata_option <-
 function(node)
 {
 
