@@ -1,5 +1,22 @@
 #the REPL loop and environment-handling logic for rstata
 
+library(Rcpp)
+
+cppFunction('
+List do_stata_parse(String line)
+{
+    my_string_buffer = yy_scan_string (my_string);
+    my_parse_result  = yyparse ();
+    yy_delete_buffer (my_string_buffer);
+}
+')
+
+#need documentation of the format of expr_list - how to encode
+#the parsed stata commands for handling by R? a proper AST?
+eval_stata <-
+function(expr_list)
+    TRUE;
+
 rstata <-
 function(dta = NULL, assign.back=TRUE)
 {
@@ -19,6 +36,7 @@ function(dta = NULL, assign.back=TRUE)
         val <-
         tryCatch(
         {
+            #once this actually works, turn this into part of the grammar
             if( line == "exit" || line == "quit" )
             {
                 cond <- simpleCondition("exit requested")
@@ -27,8 +45,8 @@ function(dta = NULL, assign.back=TRUE)
                 signalCondition(cond)
             }
                 
-            expr <- parse(textConnection(line))
-            val <- eval(expr, parent.frame())      
+            expr_list <- do_stata_parse(line)
+            val <- eval_stata(expr_list)
         },
         error = function(c) c,
         exit = function(c) c)
