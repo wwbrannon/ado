@@ -679,11 +679,18 @@ size_t macro_length = 0;
                                         return token::TOK_STRING_LITERAL;
                                     }
 
+    \"/[^\']+                       {
+                                        R_ECHO(yytext);
+                                        
+                                        cdquote_buf += std::string(yytext);
+                                    }
+
                                     /* Unlike in Stata, strings can continue over multiple lines */
     [\n]+                           {
                                         R_ECHO(yytext);
                                         
-                                        llocp->lines(yyleng); cdquote_buf += std::string(yytext);
+                                        llocp->lines(yyleng);
+                                        cdquote_buf += std::string(yytext);
                                     }
 
     \\\$                            {
@@ -732,7 +739,7 @@ size_t macro_length = 0;
                                         cdquote_buf += '\\';
                                     }
 
-    [^\\\n\`\$]+                    {
+    [^\\\n\`\$\"]+                  {
                                         R_ECHO(yytext);
                                         
                                         cdquote_buf += std::string(yytext);
