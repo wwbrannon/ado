@@ -35,7 +35,7 @@ function(macro_name, text, varlist=NULL, numlist=NULL,
     for(val in vals)
     {
         #Set the macro value
-        rstata_cmd_local(list(as.symbol(macro_name), as.character(val)))
+        rstata_cmd_local(list(substitute(macro_name), as.character(val)))
         
         #And re-parse the text block
         do_parse_with_callbacks(text=text,
@@ -84,7 +84,7 @@ function(macro_name, text, upper, lower,
     for(val in vals)
     {
         #Set the macro value
-        rstata_cmd_local(list(as.symbol(macro_name), as.character(val)))
+        rstata_cmd_local(list(substitute(macro_name), as.character(val)))
 
         #And re-parse the text block
         do_parse_with_callbacks(text=text,
