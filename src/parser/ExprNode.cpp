@@ -122,6 +122,8 @@ ExprNode::as_R_object() const
     chld.attr("names") = names;
     res["children"] = chld;
 
+    res.attr("class") = "rstata.ast.node"; // for e.g. our S3 print method
+
     return res;
 }
 
