@@ -1,31 +1,21 @@
-======================================================================
 Roadmap to v1.0:
 
 Immediate TODO:
     o) finish the rest of the grammar
+	    datetime literals
+	    datelists
+	    real general varlists: factors, interactions, etc
+	    numlists
     o) finish the actions for commands
-    o) make sure it works
 
 Semantics:
     o) write up stubs for all R functions implementing Stata commands
 
-Write a simple test suite
+Write a test suite and test
 
-Documentation
-======================================================================
+Write documentation - man entries, vignettes, examples
 
-======================================================================
-Deploy checklist:
-
-* Edit the help file skeletons in 'man', possibly combining help files
-  for multiple functions.
 * Edit the exports in 'NAMESPACE', and add necessary imports.
-* Put any C/C++/Fortran code in 'src'.
-* If you have compiled code, add a useDynLib() directive to
-  'NAMESPACE'.
 * Run R CMD build to build the package tarball.
 * Run R CMD check to check the package tarball.
-
-Read "Writing R Extensions" for more information.
-======================================================================
 

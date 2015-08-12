@@ -1,26 +1,16 @@
 Roadmap to version > 1.0:
 
 Functionality to add:
-    Many more commands - egen, input, label
+    A mechanism for registering an arbitrary R function obeying the
+    calling convention as a Stata command
+    
     Statement grouping / blocks
     Loops - foreach, while, forvalues
+
+    Many more commands - egen, input, label
     Formats
     
     Graphics?
 
-    A mechanism for registering an arbitrary R function obeying the
-    calling convention as a Stata command
-
-Things the grammar should support
-    blocks
-
-    loops - foreach, while, forvalues
-
-    datetime literals
-    datelists
-    real general varlists: factors, interactions, etc
-    numlists
     abbreviations for commands and other keywords (+ the * glob syntax)
-    
     macros...
-
