@@ -1160,7 +1160,7 @@ strL                                {
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
-                                        return token::TOK_NUMBER_MISSING;
+                                        return token::TOK_PERIOD;
                                     }
 0[xX]{H}+                           { /* hex */
                                         R_ECHO(yytext);
@@ -1413,12 +1413,6 @@ in                                  {
                                         
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_COLON;
-                                    }
-\.                                  {
-                                        R_ECHO(yytext);
-
-                                        yylval->str = new std::string(yytext);
-                                        return token::TOK_PERIOD;
                                     }
 
                                     /* Factor variable operators and level-restricted virtual variables */
@@ -1762,16 +1756,6 @@ lrtest                              {
                                         yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
                                         yylval->node->appendChild("verb", verb);
                                         return token::TOK_LRTEST;
-                                    }
-test                                {
-                                        R_ECHO(yytext);
-                                        
-                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
-                                        verb->addData("value", *(new std::string(yytext)));
-
-                                        yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
-                                        yylval->node->appendChild("verb", verb);
-                                        return token::TOK_TEST;
                                     }
 anova                               {
                                         R_ECHO(yytext);
