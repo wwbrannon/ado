@@ -88,6 +88,7 @@ yy::RStataParser::error(const location_type& l, const std::string& m)
 
 /* Operators whose values need to be passed up to the next layer */
 %token <str>
+    PERIOD          "."
     PLUS            "+"
     LT_OP           "<"
     GT_OP           ">"
@@ -121,7 +122,7 @@ yy::RStataParser::error(const location_type& l, const std::string& m)
 %token <node>   EMBEDDED_CODE
 %token <node>   BY XI BYSORT
 %token <node>   QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
-%token <node>   MERGE COLLAPSE IVREGRESS RECODE GSORT
+%token <node>   MERGE COLLAPSE IVREGRESS RECODE GSORT LRTEST
 
                 /* Command components and keywords */
 %token          USING IF IN
@@ -517,6 +518,8 @@ nonmodifier_cmd:
     | IVREGRESS varlist "(" varlist "=" varlist ")" if_clause in_clause weight_clause option_list
     | RECODE varlist recode_rule_list if_clause in_clause option_list
     | GSORT gsort_varlist option_list
+    | LRTEST modelspec option_list
+    | LRTEST modelspec modelspec option_list
     ;
 
 /* Helper constructs for multiple special commands */
@@ -575,6 +578,13 @@ gsort_var:
 gsort_varlist:
       gsort_var
     | gsort_varlist gsort_var
+    ;
+
+/* Helper constructs for lrtest */
+modelspec:
+      IDENT
+    | "."
+    | "(" varlist ")"
     ;
 
 /*
