@@ -49,7 +49,7 @@ loc.step();
 {B}+                        loc.step();
 
                             /* eat comments */
-"/*"                        long_comment();
+\/\*                         long_comment();
 \/\/                        short_comment();
 ^\*                         short_comment();
 
@@ -70,13 +70,18 @@ loc.step();
 
                             /* string literals and string (or string-ish) data types */
 \"\"                        {
+                                std::string *s = new std::string;
                                 yylval->node = new ExprNode("string_missing");
-                                yylval->node->addData("value", *(new std::string("")));
+                                yylval->node->addData("value", *s);
                                 return token::TOK_STRING_MISSING;
                             }
 \"(\\.|[^"\\])*\"           {
+                                std::string *s = new std::string(yytext);
+                                std::string n = s->substr(1, s->length() - 1);
+                                delete s;
+
                                 yylval->node = new ExprNode("string_literal");
-                                yylval->node->addData("value", *(new std::string(yytext)));
+                                yylval->node->addData("value", n);
                                 return token::TOK_STRING_LITERAL;
                             }
 
