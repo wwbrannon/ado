@@ -68,11 +68,13 @@ typedef yy::RStataParser::token token;
 %x SHORT_COMMENT
 
 %x LOCAL_MACRO
-%x GLOBAL_MACRO
-%x CDQUOTE
+
+%x GMACRO_ALPHA
+%x GMACRO_BRACE
 
 %x EMBED
 %x STRING
+%x CDQUOTE
 
 D           [0-9]
 L           [a-zA-Z_]
@@ -131,7 +133,7 @@ std::stack<std::vector<std::string>> macro_stack;
 
 
 
-                                    /* Macros, local and global */
+                                    /* INITIAL rules to match macros, local and global */
 <INITIAL>\`                         {
                                         while(!macro_stack.empty())
                                             macro_stack.pop();
@@ -142,7 +144,7 @@ std::stack<std::vector<std::string>> macro_stack;
 
                                         yy_push_state(LOCAL_MACRO, yyscanner);
                                     }
-<INITIAL>\$                         {
+<INITIAL>\$/({L}|{D})+              {
                                         while(!macro_stack.empty())
                                             macro_stack.pop();
                                         
@@ -150,9 +152,22 @@ std::stack<std::vector<std::string>> macro_stack;
                                         std::vector<std::string> frame;
                                         macro_stack.push(frame);
 
-                                        yy_push_state(GLOBAL_MACRO, yyscanner);
+                                        yy_push_state(GMACRO_ALPHA, yyscanner);
+                                    }
+<INITIAL>\$\{                       {
+                                        while(!macro_stack.empty())
+                                            macro_stack.pop();
+                                        
+                                        // create and push a stack frame
+                                        std::vector<std::string> frame;
+                                        macro_stack.push(frame);
+
+                                        yy_push_state(GMACRO_BRACE, yyscanner);
                                     }
 
+
+
+                                    /* Rules for while within optionally nested local macros */
 <LOCAL_MACRO>{
     \`                              {
                                         // create and push a stack frame
@@ -161,14 +176,8 @@ std::stack<std::vector<std::string>> macro_stack;
 
                                         yy_push_state(LOCAL_MACRO, yyscanner);
                                     }
-    \$                              {
-                                        // create and push a stack frame
-                                        std::vector<std::string> frame;
-                                        macro_stack.push(frame);
 
-                                        yy_push_state(GLOBAL_MACRO, yyscanner);
-                                    }
-
+                                    /* Local macros can't include newlines */
     \n                              {
                                         llocp->lines(1);
                                         
@@ -183,6 +192,7 @@ std::stack<std::vector<std::string>> macro_stack;
                                         yyterminate();
                                     }
 
+                                    /* We've reached the matching close quote - let's expand the macro */
     \'                              {
                                         std::vector<std::string> frame = macro_stack.top();
                                         std::string combined, replacement;
@@ -221,7 +231,8 @@ std::stack<std::vector<std::string>> macro_stack;
                                         frame.push_back(std::string(yytext));
                                         macro_stack.push(frame);
                                     }
-    
+   
+                                    /* This is an error (failing to close the macro) */
     <<EOF>>                         {
                                         while(!macro_stack.empty())
                                             macro_stack.pop();
@@ -235,24 +246,27 @@ std::stack<std::vector<std::string>> macro_stack;
                                     }
 }
 
-<GLOBAL_MACRO>{
-    \`                              {
-                                        // create and push a stack frame
-                                        std::vector<std::string> frame;
+                                    /* Rules for global macros of the form \$[:alnum:]+
+                                     * This is a bit overcomplicated for just these macros, honestly, but
+                                     * it uses the same state machine setup as for the more complicated
+                                     * GMACRO_BRACE and LOCAL_MACRO cases, and lets us just push a GMACRO_ALPHA
+                                     * state within either of those instead of duplicating this code. */
+<GMACRO_ALPHA>{
+                                    /* A global macro name that doesn't need to be disambiguated with braces */
+    ({L}|{D})+                      {
+                                        // push yytext to the back of the current frame
+                                        std::vector<std::string> frame = macro_stack.top();
+                                        macro_stack.pop();
+
+                                        frame.push_back(std::string(yytext));
                                         macro_stack.push(frame);
-
-                                        yy_push_state(LOCAL_MACRO, yyscanner);
                                     }
-    \$                              {
-                                        // create and push a stack frame
-                                        std::vector<std::string> frame;
-                                        macro_stack.push(frame);
-
-                                        yy_push_state(GLOBAL_MACRO, yyscanner);
-                                    }
-
-                                    /* The delimiter characters that mean we're at the end of the macro */
-    {B}+|\;+|\n                     {
+   
+                                    /* Any other character is a delimiter - we're at the end of the macro */
+    [^{L}{D}]|\n                    {
+                                        if(yyleng == 1 && yytext[0] == '\n')
+                                            llocp->lines(1);
+                                        
                                         std::vector<std::string> frame = macro_stack.top();
                                         std::string combined, replacement;
 
@@ -280,24 +294,68 @@ std::stack<std::vector<std::string>> macro_stack;
                                             yy_pop_state(yyscanner);
                                         }
                                     }
-    
-                                    /* The ${...} syntax. These are balanced delimiters, but they can't be nested, so
-                                       we can match them with one regex. */
-    \{[^\{\}\n\$\`]+\}              {
-                                        // push yytext to the back of the current frame, removing the "{" and "}"
-                                        std::string s = std::string(yytext);
-                                        s.erase(0, 1);
-                                        s.pop_back();
-                                        
+                                    
+                                    /* EOF is also a delimiter, but flex won't allow it in a normal rule */
+    <<EOF>>                         {
                                         std::vector<std::string> frame = macro_stack.top();
+                                        std::string combined, replacement;
+
                                         macro_stack.pop();
+                                        
+                                        for(size_t i = 0; i < frame.size(); i++)
+                                            combined += frame[i];
+                                        
+                                        replacement = driver.get_macro_value(combined);
 
-                                        frame.push_back(s);
-                                        macro_stack.push(frame);
+                                        if(!macro_stack.empty())
+                                        {
+                                            std::vector<std::string> prev = macro_stack.top();
+                                            macro_stack.pop();
+
+                                            prev.push_back(replacement);
+                                            macro_stack.push(prev);
+                                            
+                                            yy_pop_state(yyscanner);
+                                        } else
+                                        {
+                                            for(size_t i = replacement.length(); i > 0; i--)
+                                                unput(replacement[i - 1]);
+                                            
+                                            yy_pop_state(yyscanner);
+                                        }
                                     }
+}
 
-                                    /* A global macro name that doesn't need to be disambiguated with braces */
-    ({L}|{D})+                      {
+
+
+                                    /* The style of global macro with matching braces to allow other macros
+                                     * to be expanded and incorporated into a global's name. */
+<GMACRO_BRACE>{
+                                    /* Allow any type of macro to be nested here */
+    \`                              {
+                                        // create and push a stack frame
+                                        std::vector<std::string> frame;
+                                        macro_stack.push(frame);
+
+                                        yy_push_state(LOCAL_MACRO, yyscanner);
+                                    }
+    \$/({L}|{D})+                   {
+                                        // create and push a stack frame
+                                        std::vector<std::string> frame;
+                                        macro_stack.push(frame);
+
+                                        yy_push_state(GMACRO_ALPHA, yyscanner);
+                                    }
+    \$\{                            {
+                                        // create and push a stack frame
+                                        std::vector<std::string> frame;
+                                        macro_stack.push(frame);
+
+                                        yy_push_state(GMACRO_BRACE, yyscanner);
+                                    }
+                                    
+                                    /* Characters that should be part of the name */
+    [^\`\$\{\}\n]+                  {
                                         // push yytext to the back of the current frame
                                         std::vector<std::string> frame = macro_stack.top();
                                         macro_stack.pop();
@@ -306,8 +364,40 @@ std::stack<std::vector<std::string>> macro_stack;
                                         macro_stack.push(frame);
                                     }
    
-                                    /* Any other character is an error. */
-    .                               {
+                                    /* We've seen the closing brace - wrap up and expand this macro */
+    \}                              {
+                                        std::vector<std::string> frame = macro_stack.top();
+                                        std::string combined, replacement;
+
+                                        macro_stack.pop();
+                                        
+                                        for(size_t i = 0; i < frame.size(); i++)
+                                            combined += frame[i];
+                                        
+                                        replacement = driver.get_macro_value(combined);
+
+                                        if(!macro_stack.empty())
+                                        {
+                                            std::vector<std::string> prev = macro_stack.top();
+                                            macro_stack.pop();
+
+                                            prev.push_back(replacement);
+                                            macro_stack.push(prev);
+                                            
+                                            yy_pop_state(yyscanner);
+                                        } else
+                                        {
+                                            for(size_t i = replacement.length(); i > 0; i--)
+                                                unput(replacement[i - 1]);
+                                            
+                                            yy_pop_state(yyscanner);
+                                        }
+                                    }
+                                    
+                                    /* newline here is an error - these macros can't cross lines */
+    \n                              {
+                                        llocp->lines(1);
+                                        
                                         while(!macro_stack.empty())
                                             macro_stack.pop();
                                         
@@ -315,7 +405,20 @@ std::stack<std::vector<std::string>> macro_stack;
                                             yy_pop_state(yyscanner);
                                         } while(yy_top_state(yyscanner) != INITIAL);
                                         
-                                        driver.error(*llocp, "Invalid global macro");
+                                        driver.error(*llocp, "Unclosed brace-delimited global macro");
+                                        yyterminate();
+                                    }
+                                    
+                                    /* EOF here is an error - the user forgot the closing "}" */
+    <<EOF>>                         {
+                                        while(!macro_stack.empty())
+                                            macro_stack.pop();
+                                        
+                                        do {
+                                            yy_pop_state(yyscanner);
+                                        } while(yy_top_state(yyscanner) != INITIAL);
+                                        
+                                        driver.error(*llocp, "Unclosed brace-delimited global macro");
                                         yyterminate();
                                     }
 }
@@ -399,8 +502,31 @@ std::stack<std::vector<std::string>> macro_stack;
 
 <INITIAL>\`\"                       { cdquote_buf.clear(); yy_push_state(CDQUOTE, yyscanner); }
 <CDQUOTE>{
+                                    /* Allow any type of macro to be nested here */
+    \`                              {
+                                        // create and push a stack frame
+                                        std::vector<std::string> frame;
+                                        macro_stack.push(frame);
+
+                                        yy_push_state(LOCAL_MACRO, yyscanner);
+                                    }
+    \$/({L}|{D})+                   {
+                                        // create and push a stack frame
+                                        std::vector<std::string> frame;
+                                        macro_stack.push(frame);
+
+                                        yy_push_state(GMACRO_ALPHA, yyscanner);
+                                    }
+    \$\{                            {
+                                        // create and push a stack frame
+                                        std::vector<std::string> frame;
+                                        macro_stack.push(frame);
+
+                                        yy_push_state(GMACRO_BRACE, yyscanner);
+                                    }
+    
+                                    /* Saw the matching close quote - all done */
     \"\'                            {
-                                        /* Saw the matching close quote - all done */
                                         std::string *s = new std::string(cdquote_buf);
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_string_literal"});
                                         yylval->node->addData("value", *s);
@@ -424,11 +550,6 @@ std::stack<std::vector<std::string>> macro_stack;
 
     [^\\\n\`\$]+                    { cdquote_buf += std::string(yytext); }
 
-                                    /* Code run on seeing macro terminators will check if the new top state is CDQUOTE
-                                       and append the macro replacement text to cdquote_buf if so. */
-    \`                              { yy_push_state(LOCAL_MACRO, yyscanner); }
-    \$                              { yy_push_state(GLOBAL_MACRO, yyscanner); }
-
     <<EOF>>                         {
                                         cdquote_buf.clear();
                                         yy_pop_state(yyscanner);
@@ -440,6 +561,30 @@ std::stack<std::vector<std::string>> macro_stack;
 
 <INITIAL>\"                         { string_buf.clear(); yy_push_state(STRING, yyscanner); }
 <STRING>{
+                                    /* Allow any type of macro to be nested here */
+    \`                              {
+                                        // create and push a stack frame
+                                        std::vector<std::string> frame;
+                                        macro_stack.push(frame);
+
+                                        yy_push_state(LOCAL_MACRO, yyscanner);
+                                    }
+    \$/({L}|{D})+                   {
+                                        // create and push a stack frame
+                                        std::vector<std::string> frame;
+                                        macro_stack.push(frame);
+
+                                        yy_push_state(GMACRO_ALPHA, yyscanner);
+                                    }
+    \$\{                            {
+                                        // create and push a stack frame
+                                        std::vector<std::string> frame;
+                                        macro_stack.push(frame);
+
+                                        yy_push_state(GMACRO_BRACE, yyscanner);
+                                    }
+    
+                                    /* Saw the matching close quote - all done */
     \"                              {
                                         /* Saw a close quote - all done */
                                         std::string *s = new std::string(string_buf);
@@ -463,11 +608,6 @@ std::stack<std::vector<std::string>> macro_stack;
     \\f                             { string_buf += '\f'; }
     \\.                             { string_buf += yytext[1]; }
     \\                              { string_buf += '\\'; }
-
-                                    /* Code run on seeing macro terminators will check if the new top state is STRING
-                                       and append the macro replacement text to string_buf if so. */
-    \`                              { yy_push_state(LOCAL_MACRO, yyscanner); }
-    \$                              { yy_push_state(GLOBAL_MACRO, yyscanner); }
 
     [^\\\n\"\`\$]+                  { string_buf += std::string(yytext); }
 
