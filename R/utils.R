@@ -17,8 +17,6 @@ function(expr, envir=parent.frame(),
                     baseenv(),
          print.results=TRUE)
 {
-    raiseifnot(is.expression(expr))
-
     ret <- list()
     for(chld in expr)
     {
@@ -305,10 +303,10 @@ function(name)
 #For use with a function's list of its acceptable Stata options,
 #or with the names attribute of the dataset
 unabbreviateName <-
-function(name, choices, cls="error")
+function(name, choices, cls="error", msg=NULL)
 {
   matched <- charmatch(name, choices)
-  raiseifnot(length(matched) == 1 && matched != 0 && !is.na(matched), cls=cls)
+  raiseifnot(length(matched) == 1 && matched != 0 && !is.na(matched), cls=cls, msg=msg)
 
   choices[matched]
 }
@@ -316,12 +314,12 @@ function(name, choices, cls="error")
 #For unabbreviating command names against the list of all the
 #rstata_* command-implementing functions
 unabbreviateCommand <-
-function(name, cls="error")
+function(name, cls="error", msg=NULL)
 {
   funcs <- ls(envir=parent.env(environment()))
   funcs <- funcs[grep("^rstata_cmd_", funcs)]
 
-  unabbreviateName(name, funcs, cls=cls)
+  unabbreviateName(name, funcs, cls=cls, msg=msg)
 }
 
 #Those commands which take a varlist and interpret it as an R formula
