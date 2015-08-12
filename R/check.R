@@ -384,7 +384,7 @@ function(node, debug_level=0)
   func <- unabbreviateCommand(func, "BadCommandException")
 
   raiseifnot(func %in% paste0("rstata_cmd_",
-                              c("merge", "generate", "recast", "display", "format", "xi")))
+                              c("merge", "display", "format", "xi")))
   raiseifnot(exists(func))
 
   args <-
@@ -502,7 +502,9 @@ verifynode.rstata_type_expression <-
 function(node, debug_level=0)
 {
   #Data members - length, names, values
-  raiseifnot(length(node$data) == 0)
+  raiseifnot(length(node$data) == 1)
+  raiseifnot(names(node$data) == c("verb"))
+  raiseifnot(valid_data_type(node$data["verb"]))
 
   #Children - length, names, types
   raiseifnot(length(node$children) == 1)
@@ -892,7 +894,8 @@ function(node, debug_level=0)
   raiseifnot(length(node$children) == 2)
   raiseifnot(every(c("left", "right") %in% names(node$children)))
 
-  raiseifnot(node$children$left %is% "rstata_ident")
+  raiseifnot(node$children$left %is% "rstata_ident" ||
+             node$children$left %is% "rstata_type_expression")
 
   raiseifnot(
     !(
