@@ -56,7 +56,11 @@ function(dta = NULL, filename=NULL, string=NULL,
     function(name)
     {
         env <- get("rstata_macro_env", envir=rstata_env)
-        get(name, envir=env, inherits=FALSE)
+
+        if(!(name %in% ls(env)))
+            return("")
+        else
+            return(get(name, envir=env, inherits=FALSE))
     }
 
     # =========================================================================
