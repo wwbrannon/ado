@@ -681,6 +681,15 @@ postfix_expression:
 
         $$ = node;
     }
+    | postfix_expression "(" expression_list ")"
+    {
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
+        node->addData("verb", std::string("()"));
+        node->appendChild("left", $1);
+        node->appendChild("right", $3);
+
+        $$ = node;
+    }
     ;
 
 power_expression:
@@ -778,6 +787,23 @@ expression:
     }
     ;
 
+/* These two rules are a reduce/reduce conflict we can't eliminate easily, but
+ * it's acceptable because they have exactly the same actions.
+ */
+expression_list:
+      expression
+    {
+        ExprNode *node = new ExprNode("rstata_expression_list");
+        node->appendChild($1);
+        $$ = node;
+    }
+    | expression_list expression
+    {
+        $1->appendChild($2);
+        $$ = $1;
+    }
+    ;
+
 comma_expression_list:
       expression
     {
@@ -789,20 +815,6 @@ comma_expression_list:
     {
         $1->appendChild($3);
 
-        $$ = $1;
-    }
-    ;
-
-expression_list:
-      expression
-    {
-        ExprNode *node = new ExprNode("rstata_expression_list");
-        node->appendChild($1);
-        $$ = node;
-    }
-    | expression_list expression
-    {
-        $1->appendChild($2);
         $$ = $1;
     }
     ;
@@ -847,6 +859,14 @@ option:
         $$ = node;
     }
     | IDENT "(" expression_list ")"
+    {
+        ExprNode *node = new ExprNode("rstata_option");
+        node->appendChild("name", $1);
+        node->appendChild("args", $3);
+
+        $$ = node;
+    }
+    | IDENT "(" comma_expression_list ")"
     {
         ExprNode *node = new ExprNode("rstata_option");
         node->appendChild("name", $1);
