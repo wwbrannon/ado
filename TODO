@@ -1,30 +1,35 @@
 Immediate TODO:
-    o) grammar expansion: fully general varlists
-        o) factor variable operators ("i.", "c.", "o.", "#"/"##", "ib."/"b."/"X.varname")
+    o) grammar expansion: more general varlists
         o) :value_label_name
+        o) grammar and actions for factor variable operators
+           now that they're being lexed
     
-    o) next, infrastructural R functions
+    o) semantic analysis and infrastructural R functions
+        o) do signalCondition and friends behave the way I think?
         o) weeding for each type of node
         o) AST walkers to construct unevaluated calls and expression objects
+            o) name abbreviation
+        o) how much of the common weeding and walking can be encapsulated into
+           superclass methods? use NextMethod
     
     o) functions for the initial set of commands
     
 Later functionality
-        o) Loops + Macros
-            Suddenly very clear what has to happen here: the containing R environment keeps
-            data structures, reads in the program text and then passes it to the parser,
-            which does the parse and then as each cmd rule matches, calls back to the weeding +
-            transforming + executing code that's written in R.
+    o) Macros, without loops
+        o) not terribly hard - just need to find a way to lex nested macros and
+           substitute their values in the symbol table
+        o) "compound double quotes"
+        o) commands to manipulate macros
 
-            That way it works the same for interactive use where the R function reads lines,
-            but behaves correctly in batch use. We can also implement macros with this setup.
+        o) the driver's two callbacks make this fairly easy to implement
 
-            Memory management will be...interesting.
-        
-        o) Many more commands
-            o) data management: egen, input, label, etc
-            o) graphics
-            o) basic stats
+    o) Loops
+        o) much harder
+    
+    o) Many more commands
+        o) data management: egen, input, label, etc
+        o) graphics
+        o) basic stats
         
 Debug:
     o) use testthat and travis
