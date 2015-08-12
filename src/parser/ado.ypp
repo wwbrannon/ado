@@ -48,7 +48,7 @@ int yywrap()
 %token <str> STRING_FORMAT DATETIME_FORMAT NUMBER_FORMAT
 
 /* Command components and keywords */
-%token <str> USING IF IN_CLAUSE WITH IN
+%token <str> USING IF WITH IN
 %token <str> LOCAL GLOBAL VARLIST NEWLIST NUMLIST OF
 %token <str> _LITTLE_N _BIG_N _ALL _B _COEF _CONS _PI _PRED _RC _SKIP
 
@@ -90,34 +90,34 @@ cmds:
     | cmds NEWLINE cmd
     ;
 
-flow_control_statement:
-      WHILE expression block
-    | FORVALUES IDENT '=' expression block
-    | foreach
-    ;
-
-foreach:
-      FOREACH IDENT IN expression_list block
-    | FOREACH IDENT OF LOCAL IDENT block
-    | FOREACH IDENT OF GLOBAL IDENT block
-    | FOREACH IDENT OF VARLIST expression_list block
-    | FOREACH IDENT OF NEWLIST expression_list block
-    | FOREACH IDENT OF NUMLIST expression_list block
-    ;
-
 cmd:
       embedded_r_cmd
     | flow_control_statement
-    | prefix_cmd_list nonmodifier_cmd
+    | modifier_cmd_list nonmodifier_cmd_list
     ;
 
 embedded_r_cmd:
     EMBEDDED_R
     ;
 
-prefix_cmd_list:
-      %empty
-    | modifier_cmd_list nonmodifier_cmd ':'
+flow_control_statement:
+      WHILE expression compound_cmd
+    | FORVALUES IDENT '=' expression compound_cmd
+    | foreach
+    ;
+
+foreach:
+      FOREACH IDENT IN expression_list compound_cmd
+    | FOREACH IDENT OF LOCAL IDENT compound_cmd
+    | FOREACH IDENT OF GLOBAL IDENT compound_cmd
+    | FOREACH IDENT OF VARLIST expression_list compound_cmd
+    | FOREACH IDENT OF NEWLIST expression_list compound_cmd
+    | FOREACH IDENT OF NUMLIST expression_list compound_cmd
+    ;
+
+nonmodifier_cmd_list:
+      ':' nonmodifier_cmd
+    | nonmodifier_cmd_list ':' nonmodifier_cmd
     ;
 
 modifier_cmd:
@@ -127,7 +127,8 @@ modifier_cmd:
     ;
 
 modifier_cmd_list:
-      modifier_cmd
+      %empty
+    | modifier_cmd
     | modifier_cmd_list modifier_cmd
     ;
 

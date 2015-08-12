@@ -20,6 +20,8 @@ L           [a-zA-Z_]
 H           [a-fA-F0-9]
 E           [Ee][+-]?{D}+
 F           [FLfl]
+M           (?i:(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec))
+T           
 
 %option noyywrap
 
@@ -61,6 +63,13 @@ strL                        { count(); yylval.str = strdup(yytext); return STRIN
 \/({L}+\/)*{L}+(\.{L}+)*    { count(); yylval.str = strdup(yytext); return UNQUOTED_FILEPATH; }
 ({L}+\/)+{L}+(\.{L}+)*      { count(); yylval.str = strdup(yytext); return UNQUOTED_FILEPATH; }
 {L}+\.{L}+                  { count(); yylval.str = strdup(yytext); return UNQUOTED_FILEPATH; }
+
+
+
+                            /* datetime literals */
+{T}{M}{D}+                  { count(); yylval.str = strdup(yytext); return DATE; }
+                 { count(); yylval.str = strdup(yytext); return TIME; }
+{T}{M}{D}+                  { count(); yylval.str = strdup(yytext); return DATETIME; }
 
 
 
