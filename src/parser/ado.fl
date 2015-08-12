@@ -71,7 +71,7 @@ llocp->step();
                                         std::string n = s->substr(3, s->length() - 3);
                                         delete s;
                                         
-                                        yylval->node = new ExprNode("rstata_embedded_r_cmd");
+                                        yylval->node = new ExprNode("rstata_embedded_r");
                                         yylval->node->addData("value", n);
                                         return token::TOK_EMBEDDED_R;
                                     }
@@ -171,7 +171,7 @@ strL                                { yylval->str = new std::string(yytext); ret
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_NUMBER;
                                     }
-[+-]?{D}+\.({D}+)?                  { /* decimal float */
+[+-]?{D}+\.({D}+)?/[^_A-Za-z_]      { /* decimal float */
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
@@ -183,13 +183,7 @@ strL                                { yylval->str = new std::string(yytext); ret
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_NUMBER;
                                     }
-{D}*"."{D}+({E})?                   {
-                                        yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
-
-                                        yylval->node->addData("value", *(new std::string(yytext)));
-                                        return token::TOK_NUMBER;
-                                    }
-{D}+"."{D}*({E})?                   {
+{D}*"."{D}+({E})?                   { /* scientific notation with fractions, or numbers like ".0239" */
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
@@ -310,7 +304,7 @@ i?"b(#"{D}+")."                     {
                                         return token::TOK_BASE_OPERATOR;
                                     }
                                     
-"i"{D}+"."                          {
+i?{D}+"."                          {
                                         std::string *s = new std::string(yytext);
                                         
                                         yylval->node = new ExprNode("rstata_expression");
@@ -411,65 +405,56 @@ i?"o("\ *{D}+\ *\/{D}+\ *")."       {
 "##"                                { yylval->str = new std::string(yytext); return token::TOK_FACT_CROSS; }
 "#"                                 { yylval->str = new std::string(yytext); return token::TOK_CROSS; }
 
-{D}+"."[_A-Za-z][A-Za-z_]*          {
-                                        std::vector<std::string> x = split(yytext, '.');
-                                        
-                                        yylval->node = new ExprNode("rstata_ident");
-                                        yylval->node->addData("level", x[0]);
-                                        yylval->node->addData("value", x[1]);
-                                        return token::TOK_IDENT_WITH_LEVEL;
-                                    }
-
 
 
                                     /* command verbs that have to be hardcoded into the grammar */
 (?i:capture)                        {
-                                        yylval->node = new ExprNode("rstata_general_cmd");
+                                        yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
                                         yylval->node->addData("verb", *(new std::string(yytext)));
                                         return token::TOK_CAPTURE;
                                     }
 (?i:quietly)                        {
-                                        yylval->node = new ExprNode("rstata_general_cmd");
+                                        yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
                                         yylval->node->addData("verb", *(new std::string(yytext)));
                                         return token::TOK_QUIETLY;
                                     }
 (?i:qui)                            {
-                                        yylval->node = new ExprNode("rstata_general_cmd");
+                                        yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
                                         yylval->node->addData("verb", *(new std::string("quietly")));
                                         return token::TOK_QUIETLY;
                                     }
 (?i:noisily)                        {
-                                        yylval->node = new ExprNode("rstata_general_cmd");
+                                        yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
                                         yylval->node->addData("verb", *(new std::string(yytext)));
                                         return token::TOK_NOISILY;
                                     }
 (?i:merge)                          {
-                                        yylval->node = new ExprNode("rstata_general_cmd");
+                                        yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
                                         yylval->node->addData("verb", *(new std::string(yytext)));
                                         return token::TOK_MERGE;
                                     }
 (?i:generate)                       {
-                                        yylval->node = new ExprNode("rstata_general_cmd");
+                                        yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
                                         yylval->node->addData("verb", *(new std::string(yytext)));
                                         return token::TOK_GENERATE;
                                     }
 (?i:gen)                            {
-                                        yylval->node = new ExprNode("rstata_general_cmd");
+                                        yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
                                         yylval->node->addData("verb", *(new std::string(yytext)));
                                         return token::TOK_GENERATE;
                                     }
 (?i:recast)                         {
-                                        yylval->node = new ExprNode("rstata_general_cmd");
+                                        yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
                                         yylval->node->addData("verb", *(new std::string(yytext)));
                                         return token::TOK_RECAST;
                                     }
 (?i:display)                        {
-                                        yylval->node = new ExprNode("rstata_general_cmd");
+                                        yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
                                         yylval->node->addData("verb", *(new std::string(yytext)));
                                         return token::TOK_DISPLAY;
                                     }
 (?i:format)                         {
-                                        yylval->node = new ExprNode("rstata_general_cmd");
+                                        yylval->node = new ExprNode({"rstata_cmd","rstata_modifier_cmd"});
                                         yylval->node->addData("verb", *(new std::string(yytext)));
                                         return token::TOK_FORMAT;
                                     }

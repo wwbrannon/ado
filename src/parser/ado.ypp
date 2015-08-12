@@ -92,7 +92,7 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 
                 /* Literals of various fundamental types */
 %token <node>   NUMBER NUMBER_MISSING
-%token <node>   IDENT IDENT_WITH_LEVEL
+%token <node>   IDENT
 %token <node>   STRING_LITERAL STRING_MISSING
 %token <node>   DATE DATETIME
 
@@ -303,7 +303,7 @@ modifier_cmd_list:
 nonmodifier_cmd:
       IDENT expression_list if_clause in_clause weight_clause using_clause option_list
     {
-        ExprNode *node = new ExprNode("rstata_general_cmd");
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
         node->appendChild("verb", $1);
         node->appendChild("varlist", $2);
         
@@ -336,7 +336,7 @@ nonmodifier_cmd:
     }
     | IDENT
     {
-        ExprNode *node = new ExprNode("rstata_general_cmd");
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
         node->appendChild("verb", $1);
         $$ = node;
     }
@@ -344,7 +344,7 @@ nonmodifier_cmd:
     /* commands with unusual enough syntax to parse them separately */
     | MERGE MERGE_SPEC expression_list using_clause option_list
     {
-        ExprNode *node = new ExprNode("rstata_general_cmd");
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
         node->appendChild("verb", $1);
         node->addData("merge_spec", *($2));
         
@@ -367,9 +367,9 @@ nonmodifier_cmd:
     }
     | GENERATE expression if_clause in_clause option_list
     {
-        ExprNode *node = new ExprNode("rstata_general_cmd");
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
         node->appendChild("verb", $1);
-        node->appendChild("newvar", $2);
+        node->appendChild("expression", $2);
         
         if($3->nChildren() > 0)
             node->appendChild("if_clause", $3);
@@ -390,10 +390,10 @@ nonmodifier_cmd:
     }
     | GENERATE type_spec expression if_clause in_clause option_list
     {
-        ExprNode *node = new ExprNode("rstata_general_cmd");
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
         node->appendChild("verb", $1);
         node->addData("type_spec", *($2));
-        node->appendChild("newvar", $3);
+        node->appendChild("expression", $3);
         
         if($4->nChildren() > 0)
             node->appendChild("if_clause", $4);
@@ -414,7 +414,7 @@ nonmodifier_cmd:
     }
     | RECAST type_spec expression_list option_list
     {
-        ExprNode *node = new ExprNode("rstata_general_cmd");
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
         node->appendChild("verb", $1);
         node->addData("type_spec", *($2));
 
@@ -429,7 +429,7 @@ nonmodifier_cmd:
     }
     | DISPLAY format_spec expression
     {
-        ExprNode *node = new ExprNode("rstata_general_cmd");
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
         node->appendChild("verb", $1);
         node->addData("format_spec", *($2));
         node->appendChild("expression", $3);
@@ -438,7 +438,7 @@ nonmodifier_cmd:
     }
     | DISPLAY expression
     {
-        ExprNode *node = new ExprNode("rstata_general_cmd");
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
         node->appendChild("verb", $1);
         node->appendChild("expression", $2);
         
@@ -446,7 +446,7 @@ nonmodifier_cmd:
     }
     | FORMAT format_spec expression_list
     {
-        ExprNode *node = new ExprNode("rstata_general_cmd");
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
         node->appendChild("verb", $1);
         node->addData("format_spec", *($2));
         node->appendChild("varlist", $3);
@@ -455,7 +455,7 @@ nonmodifier_cmd:
     }
     | FORMAT expression_list format_spec
     {
-        ExprNode *node = new ExprNode("rstata_general_cmd");
+        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
         node->appendChild("verb", $1);
         node->addData("format_spec", *($3));
         node->appendChild("varlist", $2);
@@ -545,7 +545,6 @@ cross_operator:
 
 primary_expression:
       IDENT
-    | IDENT_WITH_LEVEL
     | NUMBER
     | NUMBER_MISSING
     | STRING_LITERAL
