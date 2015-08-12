@@ -47,6 +47,9 @@ test_that("Postfix expressions parse", {
     expect_accept("disp func(foo, bar, baz)\n")
     expect_accept("disp seq(foo(), bar, baz)\n")
     expect_accept("disp val(foo() bar baz)\n")
+    expect_accept("disp var[36]\n")
+    expect_accept("disp var[-1]\n")
+    expect_accept("disp var[3+4 - 8*5]\n")
 })
 
 test_that("Format specifiers parse", {
@@ -172,8 +175,6 @@ test_that("Assignment expressions parse", {
     expect_accept("gen foo = -var\n")
     expect_accept("gen foo = (3 != var)\n")
     expect_accept("gen foo = 3 != var\n")
-    
-    #FIXME these tests pass but the parse is incorrect
     expect_accept("gen foo = var1 < var2 | var1 > var3\n")
     expect_accept("gen foo = (var1 < var2 | var1 > var3)\n")
 })
