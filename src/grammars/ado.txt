@@ -9,44 +9,104 @@
 #--------------------------------------------------------------------------------------------------------------
 #Top-level stuff.
 #Needs fleshing out with control-of-flow constructs, macros and other programming functionality.
+#options need to be able to go anywhere
+#immediate commands
+
 
 StataScript     ::= StataCmd, { StataCmd } ;
-StataCmd        ::= [ByExp, ":"] CmdVerb [Varlist] [AssignmentExp] [IfExp] [InExp] [Weight] [",", { Options}] ;
+StataCmd        ::= [PrefixCmd] CmdVerb [Varlist] [AssignmentExp] [IfExp] [InExp] [Weight] [",", { Options}] ;
 
 #--------------------------------------------------------------------------------------------------------------
-#Constituents of a command
+#Command constituents and modifiers
 
-ByExp           ::= "by", Varlist |
-                    "by", Varlist, "(", Varlist, ")" |
-                    "by", Varlist, ",", "sort" ;
+#Seems undesirable to hard-code the acceptable commands into the grammar
+CmdVerb         ::= !ReservedWord Word ;
 
 AssignmentExp   ::= "=", Expression ;
 
 IfExp           ::= "if", Expression ;
 
 InExp           ::= "in" Range ;
-Range           ::= (Integer | "f" | "F"), ["/", (Integer | "l" | "L")]
+Range           ::= (Integer | "f" | "F"), ["/", (Integer | "l" | "L")] ;
 
-Weight          ::= Weightword, "=", Expression
-weightword      ::= "weight" | ("fweight" | "frequency") | "pweight" | ("aweight" | "cellsize") | "iweight" ;
+Weight          ::= Weightword, "=", Expression ;
+Weightword      ::= "weight" | ("fweight" | "frequency") | "pweight" | ("aweight" | "cellsize") | "iweight" ;
 
-#Seems undesirable to hard-code the acceptable commands into the grammar
-CmdVerb         ::= Word
+#--------------------------------------------------------------------------------------------------------------
+#Prefix commands
+#how to handle abbreviation of these commands?
+
+PrefixCmd         ::= (ColonPrefixCmd, ":") | (NonColonPrefixCmd, [":"])
+
+NonColonPrefixCmd ::= CaptureCmd | NoisilyCmd | QuietlyCmd ;
+CaptureCmd        ::= "capture" ;
+NoisilyCmd        ::= "noisily" ;
+QuietlyCmd        ::= "quietly" ;
+
+ColonPrefixCmd    ::= XiCmd         |
+                      ByCmd         |
+		      StatsByCmd    |
+		      RollingCmd    |
+		      BootstrapCmd  |
+		      JackknifeCmd  |
+		      PermuteCmd    |
+		      SimulateCmd   |
+		      SvyCmd        |
+		      MiEstimateCmd |
+		      NestregCmd    |
+		      StepwiseCmd   |
+		      FpCmd         |
+		      MfpCmd        |
+		      VersionCmd ;
+
+#All of these have sufficiently unique syntax that the grammar
+#has to describe them individually (ugh).
+ByCmd           ::= "by", Varlist |
+                    "by", Varlist, "(", Varlist, ")" |
+                    "by", Varlist, ",", "sort" ;
+XiCmd           ::= 
+StatsByCmd      ::= 
+RollingCmd      ::= 
+BootstrapCmd    ::= 
+JackknifeCmd    ::= 
+PermuteCmd      ::= 
+SimulateCmd     ::= 
+SvyCmd          ::= 
+MiEstimateCmd   ::= 
+NestregCmd      ::= 
+StepwiseCmd     ::= 
+FpCmd           ::= 
+MfpCmd          ::= 
+VersionCmd      ::= 
 
 #--------------------------------------------------------------------------------------------------------------
 #Options
 
-Options         ::= Option, { Option } ;
-Option          ::= Word |
-                    Word, "(" OptionArgument, { OptionArgument }, ")" ;
-OptionArgument  ::= Numlist | Varlist |  
+OptionList         ::= Option, { Option } ;
+Option             ::= Word |
+                       Word, "(" OptionArgumentList ")" ;
+OptionArgumentList ::= OptionArgument, { (",", OptionArgument) } ;
+OptionArgument     ::= Numlist | Varlist | Expression ;
 
 #--------------------------------------------------------------------------------------------------------------
-#Expressions in all their various forms
+#Expressions in all their various forms, including matrix expressions.
 Expression      ::= 
 
 #--------------------------------------------------------------------------------------------------------------
 #Labels
+
+
+#--------------------------------------------------------------------------------------------------------------
+#Strings
+
+
+#--------------------------------------------------------------------------------------------------------------
+#Dates and times
+
+
+#--------------------------------------------------------------------------------------------------------------
+#Characteristics
+
 
 #--------------------------------------------------------------------------------------------------------------
 #Numbers
@@ -64,6 +124,10 @@ Digit           ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
 
 #--------------------------------------------------------------------------------------------------------------
 #Identifiers
+#need factor variables
+#need to hard-code abbreviation syntax and wildcard characters
+
+ReservedWord    ::= 
 
 NewVarList      ::= Varname, "-", Varname ;
 Varlist         ::= AbbrevVar, { AbbrevVar } ;
