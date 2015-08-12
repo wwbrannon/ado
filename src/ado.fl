@@ -16,21 +16,16 @@
 , return COMMA;
 : return COLON;
 
-[0-9]+ return NUMBER;
+-?[0-9]+(\.[0-9]+)? return NUMBER;
 \* return TIMES;
 \+ return PLUS;
 \/ return DIVIDE;
-\- return SUBTRACT;
+\- return MINUS;
 
 (?i:insheet) return INSHEET;
 (?i:tab) return TABLE;
-(?i:reg) return REG;
-(?i:regress) return REG;
-(?i:logit) return LOGIT;
 (?i:sum) return SUM;
 (?i:summarize) return SUM;
-(?i:describe) return DESCRIBE;
-(?i:desc) return DESCRIBE;
 (?i:di) return DI;
 (?i:display) return DI;
 
@@ -41,7 +36,7 @@
 (?i:pweight) return PWEIGHT;
 (?i:aweight) return AWEIGHT;
 
-[_A-Za-z][A-Za-z0-9]* return IDENT;
+[_A-Za-z][A-Za-z0-9_]* return IDENT;
 
 \n /* do nothing */;
 [ \t]+ /* do nothing */;
