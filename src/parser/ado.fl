@@ -81,7 +81,7 @@ llocp->step();
                                     /* string literals and string (or string-ish) data types */
 \"\"                                {
                                         std::string *s = new std::string;
-                                        yylval->node = new ExprNode("rstata_string_literal");
+                                        yylval->node = new ExprNode({"rstata_literal", "rstata_string_literal"});
                                         yylval->node->addData("value", *s);
                                         return token::TOK_STRING_MISSING;
                                     }
@@ -90,7 +90,7 @@ llocp->step();
                                         std::string n = s->substr(1, s->length() - 1);
                                         delete s;
 
-                                        yylval->node = new ExprNode("rstata_string_literal");
+                                        yylval->node = new ExprNode({"rstata_literal", "rstata_string_literal"});
                                         yylval->node->addData("value", n);
                                         return token::TOK_STRING_LITERAL;
                                     }
@@ -99,7 +99,7 @@ llocp->step();
 
                                                         /* datetime literals */
 {D}{D}{M}{D}+                                           {
-                                                            yylval->node = new ExprNode("rstata_datetime");
+                                                            yylval->node = new ExprNode({"rstata_literal", "rstata_datetime"});
                                                             
                                                             std::string *s = new std::string(yytext);
                                                             s->append(" 00:00:00");
@@ -108,7 +108,7 @@ llocp->step();
                                                             return token::TOK_DATE;
                                                         }
 {D}{D}{M}{D}+[ \t]+{D}{D}:{D}{D}(:{D}{D}(\.{D}+)?)?     {
-                                                            yylval->node = new ExprNode("rstata_datetime");
+                                                            yylval->node = new ExprNode({"rstata_literal", "rstata_datetime"});
                                                             
                                                             std::string *s = new std::string(yytext);
                                                             yylval->node->addData("value", *s);
@@ -147,50 +147,50 @@ strL                                { yylval->str = new std::string(yytext); ret
                                         return token::TOK_NUMBER_MISSING;
                                     }
 \.[a-zA-Z]                          {
-                                        yylval->node = new ExprNode("rstata_number");
+                                        yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_NUMBER_MISSING;
                                     }
 
 [+-]?0[xX]{H}+                      { /* hex */
-                                        yylval->node = new ExprNode("rstata_number");
+                                        yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_NUMBER;
                                     }
 0{D}+                               { /* octal */
-                                        yylval->node = new ExprNode("rstata_number");
+                                        yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_NUMBER;
                                     }
 [+-]?{D}+                           { /* decimal integer */
-                                        yylval->node = new ExprNode("rstata_number");
+                                        yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_NUMBER;
                                     }
 [+-]?{D}+\.({D}+)?                  { /* decimal float */
-                                        yylval->node = new ExprNode("rstata_number");
+                                        yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_NUMBER;
                                     }
 {D}+{E}                             { /* scientific notation */
-                                        yylval->node = new ExprNode("rstata_number");
+                                        yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_NUMBER;
                                     }
 {D}*"."{D}+({E})?                   {
-                                        yylval->node = new ExprNode("rstata_number");
+                                        yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_NUMBER;
                                     }
 {D}+"."{D}*({E})?                   {
-                                        yylval->node = new ExprNode("rstata_number");
+                                        yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_NUMBER;
@@ -478,7 +478,7 @@ i?"o("\ *{D}+\ *\/{D}+\ *")."       {
 
                                     /* all non-keyword identifiers */
 [_A-Za-z][A-Za-z0-9_]*              {
-                                        yylval->node = new ExprNode("rstata_ident");
+                                        yylval->node = new ExprNode({"rstata_literal", "rstata_ident"});
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_IDENT;
                                     }
@@ -486,6 +486,7 @@ i?"o("\ *{D}+\ *\/{D}+\ *")."       {
 <<EOF>>                             { yylval->str = new std::string("END"); return token::TOK_END; }
 
 .                                   { yylval->str = new std::string(yytext); return token::TOK_ILLEGAL_CHARACTER;  }
+
 %%
 
 // Functions to eat comments
