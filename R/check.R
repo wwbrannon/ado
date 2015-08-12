@@ -315,7 +315,7 @@ function(node)
 verifynode.rstata_special_cmd <-
 function(node)
 {
-  verb <- tolower(node$children$verb["value"])
+  verb <- tolower(node$children$verb$data["value"])
   func <- paste0("rstata_", verb)
   
   raiseifnot(verb %in% c("merge", "generate", "recast", "display", "format"))
