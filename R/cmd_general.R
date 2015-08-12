@@ -33,11 +33,10 @@ function(expression_list, options=NULL, return.match.call=NULL)
 rstata_cmd_exit <-
 function(return.match.call=NULL)
 {
+    raiseCondition("Exit requested", "ExitRequestedException")
+
     if(!is.null(return.match.call) && return.match.call)
-    {
-        raiseCondition("Exit requested", "ExitRequestedException")
         return(match.call())
-    }
 }
 
 
@@ -88,11 +87,10 @@ function(varlist, return.match.call=NULL)
 rstata_cmd_quit <-
 function(return.match.call=NULL)
 {
+    raiseCondition("Exit requested", "ExitRequestedException")
+
     if(!is.null(return.match.call) && return.match.call)
-    {
-        raiseCondition("Exit requested", "ExitRequestedException")
         return(match.call())
-    }
 }
 
 rstata_cmd_restore <-
