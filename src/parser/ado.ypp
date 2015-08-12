@@ -75,37 +75,37 @@
 ;
 
 /* Literals of various fundamental types */
-%token <NumberExprNode> NUMBER NUMBER_MISSING
-%token <IdentExprNode> IDENT
-%token <StringExprNode> STRING_LITERAL STRING_MISSING
-%token <DatetimeExprNode> DATE TIME DATETIME
+%token <NumberExprNode *> NUMBER NUMBER_MISSING
+%token <IdentExprNode *> IDENT
+%token <StringExprNode *> STRING_LITERAL STRING_MISSING
+%token <DatetimeExprNode *> DATE TIME DATETIME
 
 /* Commands with unusual enough syntax they have to be parsed separately */
-%token <EmbeddedRCmd> EMBEDDED_R;
-%token <GeneralStataCmd> QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
-%token <GeneralStataCmd> MERGE
+%token <EmbeddedRCmd *> EMBEDDED_R;
+%token <GeneralStataCmd *> QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
+%token <GeneralStataCmd *> MERGE
 
 /* Command components and keywords */
 %token <std::string> USING IF IN
 %token <std::string> MERGE_SPEC
 
 /* Nonterminal token types */
-%type <BranchExprNode> translation_unit external_statement compound_cmd cmds modifier_cmd_list
+%type <BranchExprNode *> translation_unit external_statement compound_cmd cmds modifier_cmd_list
 
-%type <GeneralStataCmd> cmd modifier_cmd nonmodifier_cmd
+%type <GeneralStataCmd *> cmd modifier_cmd nonmodifier_cmd
 
 %type <std::string> assignment_operator unary_operator power_operator equality_operator
 %type <std::string> multiplication_operator additive_operator relational_operator
 
-%type <BranchExprNode> if_clause in_clause weight_clause using_clause
+%type <BranchExprNode *> if_clause in_clause weight_clause using_clause
 
-%type <BranchExprNode> expression
-%type <BranchExprNode> primary_expression postfix_expression power_expression
-%type <BranchExprNode> unary_expression multiplication_expression additive_expression
-%type <BranchExprNode> relational_expression equality_expression logical_and_expression logical_or_expression
+%type <BranchExprNode *> expression
+%type <BranchExprNode *> primary_expression postfix_expression power_expression
+%type <BranchExprNode *> unary_expression multiplication_expression additive_expression
+%type <BranchExprNode *> relational_expression equality_expression logical_and_expression logical_or_expression
 
-%type <BranchExprNode> option
-%type <BranchExprNode> option_list argument_expression_list expression_list
+%type <BranchExprNode *> option
+%type <BranchExprNode *> option_list argument_expression_list expression_list
 
 %start translation_unit
 %%
@@ -144,7 +144,7 @@ external_statement:
     ;
 
 compound_cmd:
-    '{' cmds '}'
+    "{" cmds "}"
     {
         $$ = $2;
     }
@@ -159,7 +159,7 @@ cmds:
     }
     | cmds "\n" cmd
     {
-        $1->appendChild($2);
+        $1->appendChild($3);
         $$ = $1;
     }
     ;
@@ -173,11 +173,11 @@ cmd:
     {
         
     }
-    | modifier_cmd_list ':' nonmodifier_cmd
+    | modifier_cmd_list ":" nonmodifier_cmd
     {
 
     }
-    | modifier_cmd_list nonmodifier_cmd ':' nonmodifier_cmd
+    | modifier_cmd_list nonmodifier_cmd ":" nonmodifier_cmd
     {
     }
     ;
@@ -264,58 +264,31 @@ equality_operator:
 
 primary_expression:
       IDENT
-    {
-        $$ = new IdentExprNode($1);
-    }
     | NUMBER
-    {
-        $$ = new NumberExprNode($1);
-    }
     | NUMBER_MISSING
-    {
-        $$ = new NumberExprNode("");
-    }
     | STRING_LITERAL
-    {
-        $$ = new StringExprNode($1);
-    }
     | STRING_MISSING
-    {
-        $$ = new StringExprNode("");
-    }
     | DATE
-    {
-        $$ = new DatetimeExprNode($1, "");
-    }
     | TIME
-    {
-        $$ = new DatetimeExprNode("", $1);
-    }
     | DATETIME
-    {
-        $$ = new DatetimeExprNode($1);
-    }
-    | '(' expression ')'
-    {
-        $$ = $2;
-    }
+    | "(" expression ")"
     ;
 
 postfix_expression:
       primary_expression
-    | postfix_expression '[' expression ']' %prec '['
+    | postfix_expression "[" expression "]" %prec "["
     {
         BranchExprNode *node = new BranchExprNode("expression", "[]");
         node->setChildren( {$1, $3} );
         $$ = node;
     }
-    | postfix_expression '(' ')' %prec '('
+    | postfix_expression "(" ")" %prec "("
     {
         BranchExprNode *node = new BranchExprNode("expression", "()");
         node->appendChild($1);
         $$ = node;
     }
-    | postfix_expression '(' argument_expression_list ')'
+    | postfix_expression "(" argument_expression_list ")"
     {
         BranchExprNode *node = new BranchExprNode("expression", "()");
         node->setChildren( {$1, $3} );
@@ -410,7 +383,7 @@ argument_expression_list:
         node->appendChild($1);
         $$ = node;
     }
-    | argument_expression_list ',' logical_or_expression
+    | argument_expression_list "," logical_or_expression
     {
         $1->appendChild($3);
         $$ = $1;
@@ -452,7 +425,7 @@ option_list:
     {
         $$ = new BranchExprNode("option_list", "");
     }
-    | option_list ',' option
+    | option_list "," option
     {
         $1->appendChild($3);
         $$ = $1;
@@ -466,7 +439,7 @@ option:
         node->appendChild($1);
         $$ = node;
     }
-    | IDENT '(' expression_list ')'
+    | IDENT "(" expression_list ")"
     {
         BranchExprNode *node = new BranchExprNode("option", "");
         node->setChildren( {$1, $3} );
@@ -485,7 +458,7 @@ weight_clause:
     {
         $$ = new BranchExprNode("weight_clause", "");
     }
-    | '[' IDENT '=' expression ']'
+    | "[" IDENT "=" expression "]"
     {
         BranchExprNode *node = new BranchExprNode("weight_clause", "");
         node->setChildren( {$2, $4} );
@@ -506,7 +479,7 @@ if_clause:
     }
     | IF expression
     {
-        BranchExprNode *node = new BranchExprNode("if_clause", "")
+        BranchExprNode *node = new BranchExprNode("if_clause", "");
         node->appendChild($2);
         $$ = node;
     }
@@ -523,7 +496,7 @@ in_clause:
     {
         $$ = new BranchExprNode("in_clause", "");
     }
-    | IN NUMBER '/' NUMBER
+    | IN NUMBER "/" NUMBER
     {
         BranchExprNode *node = new BranchExprNode("in_clause", "");
         node->setChildren( {$2, $4} );
@@ -544,13 +517,13 @@ using_clause:
     }
     | USING STRING_LITERAL
     {
-        BranchExprNode *node = new BranchExprNode("using_clause", "")
+        BranchExprNode *node = new BranchExprNode("using_clause", "");
         node->appendChild($2);
         $$ = node;
     }
     | USING IDENT
     {
-        BranchExprNode *node = new BranchExprNode("using_clause", "")
+        BranchExprNode *node = new BranchExprNode("using_clause", "");
         node->appendChild($2);
         $$ = node;
     }

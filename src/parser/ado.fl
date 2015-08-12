@@ -67,29 +67,29 @@ B           [ \t\v\r\f]
 
 
                             /* string literals and string (or string-ish) data types */
-\"\"                        return yy::RStataParser::make_STRING_MISSING(StringExprNode(""), loc);
-\"(\\.|[^"\\])*\"           return yy::RStataParser::make_STRING_LITERAL(StringExprNode(yytext), loc);
+\"\"                        return yy::RStataParser::make_STRING_MISSING(new StringExprNode(""), loc);
+\"(\\.|[^"\\])*\"           return yy::RStataParser::make_STRING_LITERAL(new StringExprNode(yytext), loc);
 
 
 
                                                         /* datetime literals */
-{D}{D}{M}{D}+                                           return yy::RStataParser::make_DATE(DatetimeExprNode(std::string(yytext), std::string("")), loc);
-{D}{D}:{D}{D}(:{D}{D}(\.{D}+)?)?                        return yy::RStataParser::make_TIME(DatetimeExprNode(std::string(""), std::string(yytext)), loc);
-{D}{D}{M}{D}+[ \t]+{D}{D}:{D}{D}(:{D}{D}(\.{D}+)?)?     return yy::RStataParser::make_DATETIME(DatetimeExprNode(yytext), loc);
+{D}{D}{M}{D}+                                           return yy::RStataParser::make_DATE(new DatetimeExprNode(std::string(yytext), std::string("")), loc);
+{D}{D}:{D}{D}(:{D}{D}(\.{D}+)?)?                        return yy::RStataParser::make_TIME(new DatetimeExprNode(std::string(""), std::string(yytext)), loc);
+{D}{D}{M}{D}+[ \t]+{D}{D}:{D}{D}(:{D}{D}(\.{D}+)?)?     return yy::RStataParser::make_DATETIME(new DatetimeExprNode(yytext), loc);
 
 
 
                             /* numbers and numeric data types */
-\.                          return yy::RStataParser::make_NUMBER_MISSING(NumberExprNode(""), loc);
-\.{L}                       return yy::RStataParser::make_NUMBER_MISSING(NumberExprNode(""), loc);
+\.                          return yy::RStataParser::make_NUMBER_MISSING(new NumberExprNode(""), loc);
+\.{L}                       return yy::RStataParser::make_NUMBER_MISSING(new NumberExprNode(""), loc);
 
-[+-]?0[xX]{H}+              return yy::RStataParser::make_NUMBER(NumberExprNode(yytext), loc); /* hex */
-0{D}+                       return yy::RStataParser::make_NUMBER(NumberExprNode(yytext), loc); /* octal */
-[+-]?{D}+(\.{D}+)?          return yy::RStataParser::make_NUMBER(NumberExprNode(yytext), loc); /* decimal */
+[+-]?0[xX]{H}+              return yy::RStataParser::make_NUMBER(new NumberExprNode(yytext), loc); /* hex */
+0{D}+                       return yy::RStataParser::make_NUMBER(new NumberExprNode(yytext), loc); /* octal */
+[+-]?{D}+(\.{D}+)?          return yy::RStataParser::make_NUMBER(new NumberExprNode(yytext), loc); /* decimal */
 
-{D}+{E}                     return yy::RStataParser::make_NUMBER(NumberExprNode(yytext), loc); /* scientific notation */
-{D}*"."{D}+({E})?           return yy::RStataParser::make_NUMBER(NumberExprNode(yytext), loc);
-{D}+"."{D}*({E})?           return yy::RStataParser::make_NUMBER(NumberExprNode(yytext), loc);
+{D}+{E}                     return yy::RStataParser::make_NUMBER(new NumberExprNode(yytext), loc); /* scientific notation */
+{D}*"."{D}+({E})?           return yy::RStataParser::make_NUMBER(new NumberExprNode(yytext), loc);
+{D}+"."{D}*({E})?           return yy::RStataParser::make_NUMBER(new NumberExprNode(yytext), loc);
 
 
 
@@ -143,7 +143,7 @@ B           [ \t\v\r\f]
 
 
                             /* all non-keyword identifiers */
-[_A-Za-z][A-Za-z0-9_]*      return yy::RStataParser::make_IDENT(IdentExprNode(yytext), loc);
+[_A-Za-z][A-Za-z0-9_]*      return yy::RStataParser::make_IDENT(new IdentExprNode(yytext), loc);
 
 %%
 
