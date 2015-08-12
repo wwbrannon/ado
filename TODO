@@ -1,13 +1,24 @@
-* Edit the help file skeletons in 'man', possibly combining help files
-  for multiple functions.
-* Edit the exports in 'NAMESPACE', and add necessary imports.
-* Put any C/C++/Fortran code in 'src'.
-* If you have compiled code, add a useDynLib() directive to
-  'NAMESPACE'.
-* Run R CMD build to build the package tarball.
-* Run R CMD check to check the package tarball.
+======================================================================
+Roadmap:
 
-Read "Writing R Extensions" for more information.
+Immediate TODO:
+    o) figure out the right data structure (an R expression?) to rep-
+       resent Stata expressions, modifiers, etc
+    o) finish expression-parsing code in ado.ypp and the di command
+    o) finish code to translate such data structures from C to R
+    o) test
+
+Next up:
+    o) C macros or some other way to fill in STATA_CMD_T - it's so
+       much text to write out the full struct
+    o) fill in syntax rules and actions for remaining commands
+    o) edit the grammar to support missings, dates, other number
+       formats, general varlists
+    o) grammar for flow control
+
+Semantics:
+    o) start implementing eval_stata() and a semantics
+======================================================================
 
 ======================================================================
 Things the grammar doesn't but should support:
@@ -29,4 +40,20 @@ basic flow control
 macros...
 
 a syntax for running R code within ado
+======================================================================
+
+======================================================================
+Deploy checklist:
+
+* Edit the help file skeletons in 'man', possibly combining help files
+  for multiple functions.
+* Edit the exports in 'NAMESPACE', and add necessary imports.
+* Put any C/C++/Fortran code in 'src'.
+* If you have compiled code, add a useDynLib() directive to
+  'NAMESPACE'.
+* Run R CMD build to build the package tarball.
+* Run R CMD check to check the package tarball.
+
+Read "Writing R Extensions" for more information.
+======================================================================
 
