@@ -1,20 +1,24 @@
-context("Parser accepts all and only valid input")
-
-#It's important to provide both valid and invalid input to see
-#if invalid input is correctly rejected.
+context("The parser accepts all and only valid input")
 
 #The expectation functions we're going to use here
 expect_accept <- function(str) eval(bquote(expect_equal(parse_accept(.(str)), 1)))
 expect_reject <- function(str) eval(bquote(expect_equal(parse_accept(.(str)), 0)))
 
 test_that("Numeric literals parse", {
-    #FIXME
+    expect_accept("disp 1")
+    expect_accept("disp -11")
+    expect_accept("disp 0xdeadbeef")
+    expect_accept("disp ")
 })
 
 test_that("Arithmetic expressions parse", {
     #FIXME
 })
 
+test_that("Datetime literals parse", {
+    #FIXME
+})
+    
 test_that("String expressions, with double and compound double quotes, parse", {
     #FIXME
 })
@@ -52,23 +56,43 @@ test_that("Long comments parse", {
 })
 
 test_that("Both statement delimiters parse", {
-    #FIXME
+    #All of these statements appear elsewhere with a newline and are accepted
+    expect_accept('collapse (mean) support voteprop;')
+    expect_accept('collapse (mean) support voteprop (first) state;')
+    expect_reject('qui gen foobar = 1')
+    expect_accept('qui cap gen foo = 1;')
+    expect_accept('local foo = 1+1;')
+    expect_reject('tempfile foobar')
+    expect_accept('recode treat1 treat2 (2 3 = 1) (4 5 = 9);')
+    expect_accept('recode treat1 treat2 (2 3 = 1) (4/5 = 9);')
 })
 
 test_that("Compound command blocks parse", {
-    #FIXME
+    expect_reject("{ }")
+    expect_accept("{ display 1+1; }")
+    expect_accept("{
+        local name=1+1;
+        disp 45;
+        qui sum foo;
+    }")
 })
 
-test_that("Empty general commands parse", {
-    #FIXME
+test_that("General commands with no expression_list parse", {
+    expect_accept("exit\n")
+    expect_accept("clear\n")
 })
 
 test_that("General commands with an expression_list parse", {
-    #FIXME
+    expect_accept("gen foo = 1")
+    expect_accept("tab support treat")
+    expect_accept("gen byte foo = 10")
+    expect_accept("disp \"I'm a string\"")
 })
 
 test_that("General commands with an option list parse", {
-    #FIXME
+    expect_accept("exit, clear")
+    expect_accept("count, opt")
+    expect_accept("cmd, opt(arg) opt2(arg1) opt3(arg233) opt4")
 })
 
 test_that("General commands with an if clause and an option list parse", {
