@@ -568,7 +568,7 @@ size_t macro_length = 0;
                                      * A Stata loop is a directive to the macro processor (this
                                      * scanner, in this case) to bind a macro name over a set of
                                      * values and for each such value, reparse and execute a block
-                                     * of text containing that macro.
+                                     * of text containing the macro.
                                      
                                      * The basic idea here is this: once we see one of the looping
                                      * keywords foreach or forvalues, specially lex a) the macro name,
@@ -579,9 +579,9 @@ size_t macro_length = 0;
                                      * functions that implement them set up the macro context, and for each
                                      * value of the macro, invoke a new parser/scanner instance to reparse
                                      * and execute the text block. If there are nested loops, there can be
-                                     * three or more scanners running at once. (That's why it's so important
-                                     * that both the parser and the scanner be reentrant, even though R
-                                     * isn't multithreaded.) */
+                                     * three or more scanners running at once, in interleaved timeslices.
+                                     * (That's why it's so important that both the parser and the scanner be
+                                     * reentrant, even though R isn't multithreaded.) */
 <INITIAL>^{B}*foreach               {
                                         R_ECHO(yytext);
 
@@ -649,22 +649,76 @@ size_t macro_length = 0;
 
 
 <FOREACH>{
-
+    \n                              {
+                                        /* shift into the ACCUMULATE state */
+                                    }
+    local                           {
+                                        R_ECHO(yytext);
+                                        return token::TOK_LOCAL;
+                                    }
+    global                          {
+                                        R_ECHO(yytext);
+                                        return token::TOK_GLOBAL;
+                                    }
+    varlist                         {
+                                        R_ECHO(yytext);
+                                        return token::TOK_VARLIST;
+                                    }
+    newlist                         {
+                                        R_ECHO(yytext);
+                                        return token::TOK_NEWLIST;
+                                    }
+    numlist                         {
+                                        R_ECHO(yytext);
+                                        return token::TOK_NUMLIST;
+                                    }
+    of                              {
+                                        R_ECHO(yytext);
+                                        return token::TOK_OF;
+                                    }
+    <<EOF>>                         {
+                                        // getting to EOF in this state is an error
+                                        do {
+                                            yy_pop_state(yyscanner);
+                                        } while(yy_top_state(yyscanner) != INITIAL);
+                                        
+                                        driver.error(*llocp, "Foreach loop without a statement body");
+                                        yyterminate();
+                                    }
 }
 
 
 
 <FORVALUES>{
-    \{$                             {
-                                        /* Start accumulating text */
-                                    }
-    
     \n                              {
-                                        // In this state, a newline not immediately following
-                                        // a "{" is a syntax error
+                                        /* shift into the ACCUMULATE state */
                                     }
-    
-    {B}*\}{B}*                      {
+    to                              {
+                                        R_ECHO(yytext);
+                                        return token::TOK_TO;
+                                    }
+    <<EOF>>                         {
+                                        // getting to EOF in this state is an error
+                                        do {
+                                            yy_pop_state(yyscanner);
+                                        } while(yy_top_state(yyscanner) != INITIAL);
+                                        
+                                        driver.error(*llocp, "Foreach loop without a statement body");
+                                        yyterminate();
+                                    }
+}
+
+
+
+<ACCUMULATE>{
+    <<EOF>>                         {
+                                        // getting to EOF in this state is an error
+                                        do {
+                                            yy_pop_state(yyscanner);
+                                        } while(yy_top_state(yyscanner) != INITIAL);
+                                        
+                                        driver.error(*llocp, "Foreach loop without a statement body");
+                                        yyterminate();
                                     }
 }
 
@@ -849,12 +903,16 @@ size_t macro_length = 0;
                                         cdquote_buf += std::string(yytext);
                                     }
 
-                                    /* Unlike in Stata, strings can continue over multiple lines */
-    [\n]+                           {
+    \n                              {
+                                        // this is an error
                                         R_ECHO(yytext);
-                                        
                                         llocp->lines(yyleng);
-                                        cdquote_buf += std::string(yytext);
+                                        
+                                        cdquote_buf.clear();
+                                        yy_pop_state(yyscanner);
+
+                                        driver.error(*llocp, "Unclosed compound double quote");
+                                        yyterminate();
                                     }
 
     \\\$                            {
@@ -967,12 +1025,16 @@ size_t macro_length = 0;
                                         return token::TOK_STRING_LITERAL;
                                     }
 
-                                    /* Unlike in Stata, strings can continue over multiple lines */
-    [\n]+                           {
+    \n                              {
+                                        // this is an error
                                         R_ECHO(yytext);
-                                        
                                         llocp->lines(yyleng);
-                                        string_buf += std::string(yytext);
+                                        
+                                        string_buf.clear();
+                                        yy_pop_state(yyscanner);
+
+                                        driver.error(*llocp, "Unclosed string literal");
+                                        yyterminate();
                                     }
 
     \\\"                            {
