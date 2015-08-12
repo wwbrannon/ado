@@ -127,8 +127,7 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
                 /* Nonterminal token types */
 %type <node>    error cmd_sep
 %type <node>    translation_unit external_statement compound_cmd cmds modifier_cmd_list cmd
-
-%type <node>    modifier_cmd nonmodifier_cmd long_modifier_cmd
+%type <node>    modifier_cmd nonmodifier_cmd long_modifier_cmd if_cmd
 
 %type <node>    unary_factor_operator
 
@@ -205,20 +204,17 @@ translation_unit:
 external_statement:
       cmd
     | compound_cmd
+    | if_cmd
     ;
 
-cmd_sep:
-      NEWLINE
+if_cmd:
+    IF expression compound_cmd
     {
-        $1; // suppressing a stupid bison warning
-
-        $$ = new ExprNode();
-    }
-    | ";"
-    {
-        $1; // suppressing a stupid bison warning
-
-        $$ = new ExprNode();
+        ExprNode *node = new ExprNode("rstata_if_cmd");
+        node->appendChild("expression", $2);
+        node->appendChild("compound_cmd", $3);
+       
+        $$ = node;
     }
     ;
 
@@ -327,6 +323,21 @@ cmd:
         $1->appendChild("main_cmd", $4);
 
         $$ = $1;
+    }
+    ;
+
+cmd_sep:
+      NEWLINE
+    {
+        $1; // suppressing a stupid bison warning
+
+        $$ = new ExprNode();
+    }
+    | ";"
+    {
+        $1; // suppressing a stupid bison warning
+
+        $$ = new ExprNode();
     }
     ;
 

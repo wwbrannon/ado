@@ -1,17 +1,25 @@
 Now:
+  o) a couple FIXMEs
+
+  o) segfaults on misused "///" - all the dereferences in the ado.ypp file are unsafe
+
+  o) gen is saying "incorrect arg types for command"
+
+  o) better error messages
+      o) from check() and codegen()
+      o) methods take debug_level arguments; now they need to act on them
+
+  o) Macro substitution
+    o) need to find a way to lex nested macros and recursively substitute
+       their values from the symbol table - use flex start conditions
+    o) "compound double quotes"
+
   o) syntax for weird commands
     o) collapse
     o) recode
     o) possibly egen
     o) possibly gsort
     o) possible pctile
-
-  o) if block construct
-
-  o) Macro substitution
-    o) need to find a way to lex nested macros and recursively substitute
-       their values from the symbol table - use flex start conditions
-    o) "compound double quotes"
 
 Backend:
   o) the way you're trying to make rstata_env's contents be in scope isn't working
@@ -23,10 +31,6 @@ Backend:
 
   o) R functions for initial general commands
 
-  o) better error messages
-      o) from check() and codegen()
-      o) methods take debug_level arguments; now they need to act on them
-
   o) Stata's "stored results"
 
   o) complete all the commands which now have stubs
@@ -35,6 +39,8 @@ Backend:
 
 Frontend:
   o) Loops: much harder, because of macros
+
+  o) syntax for stats commands - how bad is this?
 
 ===============================================================================
 Systematic debugging:

@@ -223,8 +223,26 @@ function(node, debug_level=0)
   raiseifnot(every(vapply(node$children,
                           function(x) x %is% "rstata_embedded_code" ||    #embedded R or sh code
                                       x %is% "rstata_cmd" ||              #a usual Stata cmd
+                                      x %is% "rstata_if_cmd" ||              #an if expr { } block
                                       x %is% "rstata_modifier_cmd_list",  #a Stata cmd with modifiers
                           TRUE)))
+
+  invisible(TRUE)
+}
+
+#' @export
+verifynode.rstata_if_cmd <-
+function(node, debug_level=0)
+{
+  #Data members - length, names, values
+  raiseifnot(length(node$data) == 0)
+
+  #Children - length, names, types
+  raiseifnot(length(node$children) == 2)
+  raiseifnot(every(c("expression", "compound_cmd") %in% names(node$children)))
+
+  raiseifnot(node$children$expression %is% "rstata_expression")
+  raiseifnot(node$children$compound_cmd %is% "rstata_compound_cmd")
 
   invisible(TRUE)
 }
@@ -248,6 +266,8 @@ function(node, debug_level=0)
 
   pos <- match("main_cmd", names(node$children))
   raiseifnot(pos == length(names(node$children)))
+
+  invisible(TRUE)
 }
 
 #' @export
@@ -890,4 +910,3 @@ function(node, debug_level=0)
 
   invisible(TRUE)
 }
-

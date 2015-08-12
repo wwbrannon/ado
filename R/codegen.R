@@ -24,6 +24,15 @@ function(node, debug_level=0)
 }
 
 #' @export
+codegen.rstata_if_cmd <-
+function(node, debug_level=0)
+{
+    as.call(list(as.symbol("rstata_cmd_if"),
+            expression=codegen(node$children$expression),
+            compound_cmd=codegen(node$children$compound_cmd)))
+}
+
+#' @export
 codegen.rstata_embedded_code <-
 function(node, debug_level=0)
 {
@@ -31,7 +40,7 @@ function(node, debug_level=0)
     return(parse(text=node$data["value"]))
 
   if(node$data["lang"] == "shell")
-    return(as.call(list(as.symbol("system", command=node$data["value"]))))
+    return(as.call(list(as.symbol("system"), command=node$data["value"])))
 }
 
 #' @export

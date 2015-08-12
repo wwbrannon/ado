@@ -31,6 +31,7 @@ function(expression_list)
     invisible(TRUE)
 }
 
+#FIXME need to implement the "_all" special name
 rstata_cmd_global <-
 function(expression_list)
 {
@@ -78,7 +79,6 @@ function(expression_list)
     invisible(TRUE)
 }
 
-#FIXME allow "macro global", "macro local", and "macro tempfile"
 rstata_cmd_macro <-
 function(expression_list)
 {
@@ -105,8 +105,11 @@ function(expression_list)
         raiseifnot(is.symbol(exprs[[2]]) || is.character(exprs[[2]]))
 
         #FIXME - how does Stata handle local vs global macros for drop?
-        #FIXME need to implement the "_all" special name
-        rm(list=as.character(exprs[[2]]), envir=env)
+        del <- as.character(exprs[[2]])
+        if(del == "_all")
+            rm(list=ls(envir=env), envir=env)
+        else
+            rm(list=del, envir=env)
     } else if(what == "dir" || what == "list")
     {
         #we don't need to worry about using deparse because only
@@ -116,4 +119,3 @@ function(expression_list)
 
     invisible(TRUE)
 }
-

@@ -274,7 +274,8 @@ unabbreviateName <-
 function(name, choices, cls="error")
 {
   matched <- charmatch(name, choices)
-  raiseifnot(length(matched) == 1, cls=cls)
+  raiseifnot(length(matched) == 1 && matched != 0 && !is.na(matched), cls=cls,
+             msg="Ambiguous abbreviation")
 
   choices[matched]
 }
