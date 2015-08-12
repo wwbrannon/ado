@@ -98,7 +98,7 @@ embedded_r_cmd:
     ;
 
 flow_control_statement:
-      WHILE NUMBER '/' NUMBER compound_cmd
+      WHILE expression compound_cmd
     | FORVALUES IDENT '=' NUMBER '/' NUMBER compound_cmd
     | foreach
     ;
