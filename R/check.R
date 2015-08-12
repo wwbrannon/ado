@@ -67,13 +67,17 @@ function(node, debug_level=0)
 verifynode.rstata_number <-
 function(node, debug_level=0)
 {
-  val <- as.numeric(node$data["value"])
-  valid_missings <- c(".", paste0(".", letters, sep=""))
-  raiseifnot((!is.na(val) && !is.null(val)) ||
-             node$data["value"] %in% valid_missings,
-             msg=if(debug_level) NULL else "Invalid numeric literal")
+  if(node$data["value"] == ".")
+  {
+      invisible(TRUE)
+  } else
+  {
+      val <- as.numeric(node$data["value"])
+      raiseifnot((!is.na(val) && !is.null(val)),
+                 msg=if(debug_level) NULL else "Invalid numeric literal")
 
-  invisible(TRUE)
+      invisible(TRUE)
+  }
 }
 
 #' @export

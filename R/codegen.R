@@ -261,14 +261,22 @@ function(node, debug_level=0)
 codegen.rstata_number <-
 function(node, debug_level=0)
 {
-  as.numeric(node$data["value"])
+  if(node$data["value"] == ".")
+      NA
+  else
+      as.numeric(node$data["value"])
 }
 
 #' @export
 codegen.rstata_string_literal <-
 function(node, debug_level=0)
 {
-  as.character(node$data["value"])
+  val <- as.character(node$data["value"])
+
+  if(val == "")
+      NA
+  else
+      val
 }
 
 #' @export
