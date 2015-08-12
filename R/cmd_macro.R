@@ -78,7 +78,7 @@ function(expression_list)
     invisible(TRUE)
 }
 
-#we only implement "macro drop" and "macro dir" / "macro list"
+#FIXME allow "macro global", "macro local", and "macro tempfile"
 rstata_cmd_macro <-
 function(expression_list)
 {
@@ -86,16 +86,27 @@ function(expression_list)
     exprs <- expression_list
 
     raiseifnot(length(exprs) >= 1, "EvalErrorException")
-
     what <- as.character(exprs[[1]])
-    raiseifnot(what %in% c("drop", "dir", "list"))
+    raiseifnot(what %in% c("drop", "dir", "list", "local", "global", "tempfile"),
+               "EvalErrorException")
 
-    if(what == "drop")
+    if(what == "local")
+    {
+        return(rstata_cmd_local(exprs[-1]))
+    } else if(what == "global")
+    {
+        return(rstata_cmd_global(exprs[-1]))
+    } else if(what == "tempfile")
+    {
+        return(rstata_cmd_tempfile(exprs[-1]))
+    } else if(what == "drop")
     {
         raiseifnot(length(exprs) == 2)
         raiseifnot(is.symbol(exprs[[2]]) || is.character(exprs[[2]]))
 
-        rm(exprs[[2]], envir=env)
+        #FIXME - how does Stata handle local vs global macros for drop?
+        #FIXME need to implement the "_all" special name
+        rm(list=as.character(exprs[[2]]), envir=env)
     } else if(what == "dir" || what == "list")
     {
         #we don't need to worry about using deparse because only
