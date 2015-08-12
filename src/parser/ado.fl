@@ -301,20 +301,20 @@ std::stack<std::vector<std::string>> macro_stack;
                                     /* Eat long comments */
 <INITIAL>"/*"                       { yy_push_state(LONG_COMMENT); }
 <LONG_COMMENT>{
-    "/*"                            { yy_push_state(LONG_COMMENT); }
-    "/"+[^\n]                       { /* skip "/" if not followed by a newline */ }
-    "/"+[^\*]                       { /* skip "/" if not followed by "*" */ }
-    [^/\*\n]*                       { /* skip anything but "*", "/" and newline */ }
-    "*"+[^\*/\n]*                   { /* skip "*"s not followed by a "/" or newline */ }
-    [\n]+                           { llocp->lines(yyleng); }
-    "*"+"/"                         { yy_pop_state(); }
+                                    /* Got a close-comment marker, all done */
+    "*/"                            { yy_pop_state(); }
 
+    [^\*\n]+                        { /* Eat this chunk of comment */ }
+    \*                              { /* Eat a single asterisk */ }
+    [\n]+                           { llocp->lines(yyleng); }
+    
     <<EOF>>                         {
                                         yy_pop_state();
                                         driver.error(*llocp, "Unclosed comment");
                                         yyterminate();
                                     }
 }
+
 
 
                                     /* Allow a triple slash at EOL as a line extender */
