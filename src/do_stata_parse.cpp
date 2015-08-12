@@ -29,10 +29,7 @@ List do_stata_parse(std::string line)
         // ask the BaseStataCmd object to give us its R form
         Language res = Language("as.call", obj->as_list());
         
-        if(ret.length() == 0)
-            ret.push_front(res);
-        else
-            ret = Language("list", ret, res).eval(); // append res to ret
+        ret.push_back(res);
     }
 
     return ret;
