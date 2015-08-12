@@ -21,7 +21,7 @@ function(dta = NULL, conn=stdin(), assign.back=TRUE)
         {
             expr_list <- do_stata_parse(inpt)
             
-            res <- lapply(expr_list, function(x) eval(x, dta, environment))
+            res <- lapply(expr_list, function(x) eval(x, dta, environment()))
             res <- do.call(paste0, c(res, list(collapse="\n")))
         },
         error = function(c) c,
