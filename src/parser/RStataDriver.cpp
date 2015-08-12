@@ -83,22 +83,25 @@ RStataDriver::parse()
 void
 RStataDriver::wrap_cmd_action(Rcpp::List ast)
 {
-  int ret = Rcpp::as<int>(cmd_action(ast, debug_level));
+  Rcpp::List ret = cmd_action(ast, debug_level);
   
+  int status = Rcpp::as<int>(ret[0]);
+  std::string msg = Rcpp::as<std::string>(ret[1]);
+
   // success
-  if(ret == 0)
+  if(status == 0)
     return;
   
   // an error in the semantic analyzer or code generator
-  if(ret == 1)
-    throw BadCommandException();
+  if(status == 1)
+    throw BadCommandException(msg);
 
   // a runtime error in evaluation or printing
-  if(ret == 2)
-    throw EvalErrorException();
+  if(status == 2)
+    throw EvalErrorException(msg);
 
-  if(ret == 3)
-    throw ExitRequestedException();
+  if(status == 3)
+    throw ExitRequestedException(msg);
 }
 
 void

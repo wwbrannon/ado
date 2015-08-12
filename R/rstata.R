@@ -85,7 +85,8 @@ function(dta = NULL, filename=NULL, string=NULL,
             {
               cat("\n") #so the new R prompt is on a new line
               break
-            } else if(inherits(val, "BadCommandException"))
+            } else if(inherits(val, "BadCommandException") ||
+                      inherits(val, "EvalErrorException"))
             {
               cat(paste0(val$message, sep=""))
               
@@ -156,7 +157,7 @@ function(ast, debug_level=0)
   #C++ layer is quite tricky, so we're going to return ints and have
   #the C++ code re-raise the exceptions in a more controllable way
   if(inherits(ret_p1, "bad_command") || inherits(ret_p1, "error"))
-    return(1)
+    return( list(1, ret_p1$message) )
 
   #Evaluate the generated calls for their side effects and for printable objects
   ret_p2 <-
@@ -172,10 +173,10 @@ function(ast, debug_level=0)
   exit=function(c) c)
   
   if(inherits(ret_p2, "error"))
-    return(2)
+    return( list(2, ret_p2$message) )
   
   if(inherits(ret_p2, "exit"))
-    return(3)
+    return( list(3, ret_p2$message) )
   
-  return(0);
+  return( list(0, "Success") );
 }

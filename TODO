@@ -1,7 +1,5 @@
 Now:
     o) better error messages
-        o) in general, attached to exceptions that propagate up from callback;
-           you'll have to give your exception classes constructors that take strings
         o) from check() and codegen() and ultimately raiseifnot
         o) methods take debug_level arguments; now they need to act on them
 
