@@ -115,7 +115,7 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 %token <node>   EMBEDDED_CODE
 %token <node>   BY XI
 %token <node>   QUIETLY CAPTURE NOISILY /* Prefix commands that can be used without a colon */
-%token <node>   GENERATE RECAST DISPLAY FORMAT MERGE
+%token <node>   DISPLAY FORMAT MERGE
 
                 /* Command components and keywords */
 %token          USING IF IN
@@ -134,8 +134,8 @@ void yy::RStataParser::error(const location_type& l, const std::string& m)
 
 %type <str>     unary_operator power_operator equality_operator
 %type <str>     multiplication_operator additive_operator relational_operator logical_operator
-%type <str>     cross_operator
-%type <str>     type_spec format_spec
+%type <str>     cross_operator type_operator
+%type <str>     format_spec
 
 %type <node>    if_clause in_clause weight_clause using_clause
 
@@ -434,54 +434,6 @@ nonmodifier_cmd:
 
         $$ = node;
     }
-    | GENERATE expression if_clause in_clause option_list
-    {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_special_cmd"});
-        node->appendChild("verb", $1);
-        node->appendChild("expression_list", $2);
-
-        if($3->nChildren() > 0)
-            node->appendChild("if_clause", $3);
-
-        if($4->nChildren() > 0)
-            node->appendChild("in_clause", $4);
-
-        if($5->nChildren() > 0)
-            node->appendChild("option_list", $5);
-
-        $$ = node;
-    }
-    | GENERATE type_spec expression if_clause in_clause option_list
-    {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_special_cmd"});
-        node->appendChild("verb", $1);
-        node->addData("type_spec", *($2));
-        node->appendChild("expression_list", $3);
-
-        if($4->nChildren() > 0)
-            node->appendChild("if_clause", $4);
-
-        if($5->nChildren() > 0)
-            node->appendChild("in_clause", $5);
-
-        if($6->nChildren() > 0)
-            node->appendChild("option_list", $6);
-
-        $$ = node;
-    }
-    | RECAST type_spec expression_list option_list
-    {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_special_cmd"});
-        node->appendChild("verb", $1);
-        node->addData("type_spec", *($2));
-
-        node->appendChild("expression_list", $3);
-
-        if($4->nChildren() > 0)
-            node->appendChild("option_list", $4);
-
-        $$ = node;
-    }
     | DISPLAY format_spec expression
     {
         ExprNode *node = new ExprNode({"rstata_cmd", "rstata_special_cmd"});
@@ -529,15 +481,6 @@ nonmodifier_cmd:
 
     ;
 
-type_spec:
-      BYTE
-    | INT
-    | LONG
-    | FLOAT
-    | DOUBLE
-    | STRING_TYPE_SPEC
-    ;
-
 format_spec:
       STRING_FORMAT
     | NUMBER_FORMAT
@@ -550,6 +493,15 @@ format_spec:
  * syntactically, even if they're not semantically.
  ************************************************************
 */
+
+type_operator:
+      BYTE
+    | INT
+    | LONG
+    | FLOAT
+    | DOUBLE
+    | STRING_TYPE_SPEC
+    ;
 
 assignment_operator:
     "="
@@ -615,6 +567,22 @@ primary_expression:
     | "(" expression ")"
     {
         $$ = $2;
+    }
+    | type_operator "(" expression_list ")"
+    {
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_type_expression"});
+        node->addData("verb", *($1));
+        node->appendChild("left", $3);
+
+        $$ = node;
+    }
+    | type_operator IDENT
+    {
+        ExprNode *node = new ExprNode({"rstata_expression", "rstata_type_expression"});
+        node->addData("verb", *($1));
+        node->appendChild("left", $2);
+
+        $$ = node;
     }
     ;
 
@@ -791,14 +759,6 @@ expression_list:
     {
         $1->appendChild($2);
         $$ = $1;
-    }
-    | type_spec "(" expression_list ")"
-    {
-        ExprNode *node = new ExprNode("rstata_type_constructor");
-        node->addData("type_spec", *($1));
-        node->appendChild("expression_list", $3);
-
-        $$ = node;
     }
     ;
 

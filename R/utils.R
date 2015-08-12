@@ -159,7 +159,6 @@ function(children)
 
       types <- vapply(children[[n]]$children,
                       function(x) x %is% "rstata_ident" ||
-                                  x %is% "rstata_label_expression" ||
                                   x %is% "rstata_factor_expression" ||
                                   x %is% "rstata_cross_expression",
                       TRUE)
@@ -260,6 +259,9 @@ function(name)
 
   if(name == "#")
     return(as.symbol("%#%"))
+
+  if(valid_data_type(name))
+    return(as.symbol(name))
 }
 
 #For use with a function's list of its acceptable Stata options,

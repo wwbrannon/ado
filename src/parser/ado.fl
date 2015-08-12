@@ -70,7 +70,7 @@ llocp->step();
                                         
                                         yylval->node = new ExprNode("rstata_embedded_code");
                                         yylval->node->addData("value", n);
-                                        yylval->node->addData("type", "R");
+                                        yylval->node->addData("lang", "R");
                                         return token::TOK_EMBEDDED_CODE;
                                     }
                                     /* similarly, lines that start with "!" or "shell" are sh commands */
@@ -82,7 +82,7 @@ llocp->step();
                                         
                                         yylval->node = new ExprNode("rstata_embedded_code");
                                         yylval->node->addData("value", n);
-                                        yylval->node->addData("type", "shell");
+                                        yylval->node->addData("lang", "shell");
                                         return token::TOK_EMBEDDED_CODE;
                                     }
 ^(?i:shell)[^\n]*$                  {
@@ -501,24 +501,6 @@ i?"o("\ *{D}+\ *\/{D}+\ *")."       {
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         
                                         return token::TOK_MERGE;
-                                    }
-(?i:generate)                       {
-                                        yylval->node = new ExprNode({"rstata_literal", "rstata_ident"});
-                                        yylval->node->addData("value", *(new std::string(yytext)));
-                                        
-                                        return token::TOK_GENERATE;
-                                    }
-(?i:gen)                            {
-                                        yylval->node = new ExprNode({"rstata_literal", "rstata_ident"});
-                                        yylval->node->addData("value", "generate");
-                                        
-                                        return token::TOK_GENERATE;
-                                    }
-(?i:recast)                         {
-                                        yylval->node = new ExprNode({"rstata_literal", "rstata_ident"});
-                                        yylval->node->addData("value", *(new std::string(yytext)));
-                                        
-                                        return token::TOK_RECAST;
                                     }
 (?i:display)                        {
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_ident"});

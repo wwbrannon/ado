@@ -1,23 +1,21 @@
 Now:
-  o) get rid of type_spec and use the type_constructor class
-    o) should format_spec and maybe merge_spec also be expressions?
-
-  o) syntax for collapse
-    o) any other weirdly formed commands?
+  o) syntax for weird commands
+    o) collapse
+    o) recode
+    o) possibly egen
+    o) possibly gsort
+    o) possible pctile
 
   o) if block construct
 
-  o) Macros, without loops
+  o) Macro substitution
     o) need to find a way to lex nested macros and recursively substitute
        their values from the symbol table - use flex start conditions
     o) "compound double quotes"
 
+Backend:
   o) the way you're trying to make rstata_env's contents be in scope isn't working
 
-Parser / lexer:
-  o) Loops: much harder, because of macros
-
-Backend:
   o) infrastructural R functions
     o) varlist_to_formula
     o) for operators - how many of these even need to exist?
@@ -33,6 +31,12 @@ Backend:
 
   o) complete all the commands which now have stubs
 
+  o) "special" abreviations like tab
+
+Frontend:
+  o) Loops: much harder, because of macros
+
+===============================================================================
 Systematic debugging:
   o) use testthat and travis
   o) write a unit test suite
@@ -59,5 +63,3 @@ Wishlist functionality:
      calling convention as a Stata command, persistently
 
   o) graphics
-
-  o) "special" abreviations like tab

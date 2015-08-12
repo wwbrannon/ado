@@ -17,7 +17,7 @@ function()
 
 ## Data manipulation commands
 rstata_cmd_generate <-
-function(expression, type_spec=NULL, if_clause=NULL, in_clause=NULL, option_list=NULL)
+function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL)
 {
   match.call()
 }
@@ -73,12 +73,6 @@ function()
 
 }
 
-rstata_cmd_file <-
-function()
-{
-
-}
-
 rstata_cmd_preserve <-
 function()
 {
@@ -98,6 +92,12 @@ function()
 }
 
 rstata_cmd_do <-
+function()
+{
+
+}
+
+rstata_cmd_run <-
 function()
 {
 

@@ -4,7 +4,7 @@ rstata_cmd_local <-
 function(expression_list)
 {
     env <- get("rstata_macro_env", envir=rstata_env)
-    exprs <- expression_list[[2]]
+    exprs <- expression_list
 
     if(length(exprs) == 1) #an assignment
     {
@@ -35,7 +35,7 @@ rstata_cmd_global <-
 function(expression_list)
 {
     env <- get("rstata_macro_env", envir=rstata_env)
-    exprs <- expression_list[[2]]
+    exprs <- expression_list
 
     if(length(exprs) == 1) #an assignment
     {
@@ -64,7 +64,7 @@ rstata_cmd_tempfile <-
 function(expression_list)
 {
     env <- get("rstata_macro_env", envir=rstata_env)
-    exprs <- expression_list[[2]]
+    exprs <- expression_list
 
     raiseifnot(length(exprs) >= 1, "EvalErrorException")
     for(nm in exprs)
@@ -83,7 +83,7 @@ rstata_cmd_macro <-
 function(expression_list)
 {
     env <- get("rstata_macro_env", envir=rstata_env)
-    exprs <- expression_list[[2]]
+    exprs <- expression_list
 
     raiseifnot(length(exprs) >= 1, "EvalErrorException")
 
@@ -105,3 +105,4 @@ function(expression_list)
 
     invisible(TRUE)
 }
+

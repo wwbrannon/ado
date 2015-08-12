@@ -1,4 +1,10 @@
-### Functions implementing certain infix ado operators
+### Functions providing certain infix ado operators.
+### Several of these functions don't need to be implemented, but
+### having stubs here to document their existence is clearer.
+
+#type constructor operators don't appear here, but the
+#function_for_ado_operator function can return each valid
+#type name as a symbol
 
 #the "c." operator
 op_cont <-

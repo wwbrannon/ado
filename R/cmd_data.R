@@ -136,6 +136,12 @@ function()
 
 }
 
+rstata_cmd_ls <-
+function()
+{
+
+}
+
 rstata_cmd_merge <-
 function()
 {
@@ -184,6 +190,12 @@ function()
 
 }
 
+rstata_cmd_rm <-
+function()
+{
+
+}
+
 rstata_cmd_rmdir <-
 function()
 {
@@ -203,12 +215,6 @@ function()
 }
 
 rstata_cmd_separate <-
-function()
-{
-
-}
-
-rstata_cmd_shell <-
 function()
 {
 
@@ -238,3 +244,8 @@ function()
 
 }
 
+rstata_cmd_xtile <-
+function()
+{
+
+}

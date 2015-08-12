@@ -27,10 +27,10 @@ function(node, debug_level=0)
 codegen.rstata_embedded_code <-
 function(node, debug_level=0)
 {
-  if(node$data["type"] == "R")
+  if(node$data["lang"] == "R")
     return(parse(text=node$data["value"]))
 
-  if(node$data["type"] == "shell")
+  if(node$data["lang"] == "shell")
     return(as.call(list(as.symbol("system", command=node$data["value"]))))
 }
 
@@ -194,21 +194,14 @@ function(node, debug_level=0)
 codegen.rstata_expression_list <-
 function(node, debug_level=0)
 {
-  list(NULL, lapply(node$children, codegen))
+  lapply(node$children, codegen)
 }
 
 #' @export
 codegen.rstata_argument_expression_list <-
 function(node, debug_level=0)
 {
-  list(NULL, lapply(node$children, codegen))
-}
-
-#' @export
-codegen.rstata_type_constructor <-
-function(node, debug_level=0)
-{
-  list(node$data["type_spec"], lapply(node$children, codegen))
+  lapply(node$children, codegen)
 }
 
 ##############################################################################

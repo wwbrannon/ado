@@ -260,8 +260,8 @@ function(node, debug_level=0)
   raiseifnot("value" %in% names(node$data))
   raiseifnot(!is.na(as.character(node$data["value"])))
 
-  raiseifnot("type" %in% names(node$data))
-  raiseifnot(!is.na(as.character(node$data["type"])))
+  raiseifnot("lang" %in% names(node$data))
+  raiseifnot(!is.na(as.character(node$data["lang"])))
 
   #Children - length, names, types
   raiseifnot(length(node$children) == 0)
@@ -403,20 +403,6 @@ function(node, debug_level=0)
     raiseifnot(length(node$data) == 1)
     raiseifnot(names(node$data) == c("merge_spec"))
     raiseifnot(node$data["merge_spec"] %in% c("m:m", "m:1", "1:m", "1:1"))
-  } else if(func == "rstata_cmd_generate")
-  {
-    raiseifnot(length(node$data) %in% c(0, 1))
-
-    if(length(node$data == 1))
-    {
-      raiseifnot(names(node$data) == c("type_spec"))
-      raiseifnot(valid_data_type(node$data["type_spec"]))
-    }
-  } else if(func == "rstata_cmd_recast")
-  {
-    raiseifnot(length(node$data) == 1)
-    raiseifnot(names(node$data) == c("type_spec"))
-    raiseifnot(valid_data_type(node$data["type_spec"]))
   } else if(func == "display")
   {
     raiseifnot(length(node$data) %in% c(0, 1))
@@ -457,24 +443,6 @@ function(node, debug_level=0)
 }
 
 #' @export
-verifynode.rstata_type_constructor <-
-function(node, debug_level=0)
-{
-  #Data members - length, names, values
-  raiseifnot(length(node$data) == 1)
-  raiseifnot(names(node$data) == c("type_spec"))
-  raiseifnot(valid_data_type(node$data["type_spec"]))
-
-  #Children - length, names, types
-  raiseifnot(length(node$children) == 1)
-  raiseifnot(names(node$children) == c("expression_list")) #this is a varlist
-  raiseifnot(node$children[[1]] %is% "rstata_expression_list")
-  raiseifnot(every(vapply(node$children[[1]], function(x) x %is% "rstata_ident", TRUE)))
-
-  invisible(TRUE)
-}
-
-#' @export
 verifynode.rstata_argument_expression_list <-
 function(node, debug_level=0)
 {
@@ -506,6 +474,24 @@ function(node, debug_level=0)
   raiseifnot("verb" %in% names(node$data))
 
   NextMethod()
+}
+
+#' @export
+verifynode.rstata_type_expression <-
+function(node, debug_level=0)
+{
+  #Data members - length, names, values
+  raiseifnot(length(node$data) == 0)
+
+  #Children - length, names, types
+  raiseifnot(length(node$children) == 1)
+  raiseifnot(names(node$children) == c("left"))
+  raiseifnot(node$children$left %is% "rstata_expression_list" ||
+             node$children$left %is% "rstata_ident")
+  if(node$children$left %is% "rstata_expression_list")
+    raiseifnot(every(vapply(node$children$left$children, function(x) x %is% "rstata_ident", TRUE)))
+
+  invisible(TRUE)
 }
 
 ## Tightly binding factor operators
@@ -721,7 +707,8 @@ function(node, debug_level=0)
   raiseifnot(
     !(
       node$children$left %is% "rstata_factor_expression" ||
-        node$children$left %is% "rstata_cross_expression"
+      node$children$left %is% "rstata_type_expression" ||
+      node$children$left %is% "rstata_cross_expression"
     )
 
     &&
@@ -735,6 +722,7 @@ function(node, debug_level=0)
   raiseifnot(
     !(
       node$children$right %is% "rstata_factor_expression" ||
+      node$children$right %is% "rstata_type_expression" ||
         node$children$right %is% "rstata_cross_expression"
     )
 
@@ -764,6 +752,7 @@ function(node, debug_level=0)
   raiseifnot(
     !(
       node$children$left %is% "rstata_factor_expression" ||
+      node$children$left %is% "rstata_type_expression" ||
         node$children$left %is% "rstata_cross_expression"
     )
 
@@ -778,6 +767,7 @@ function(node, debug_level=0)
   raiseifnot(
     !(
       node$children$right %is% "rstata_factor_expression" ||
+      node$children$right %is% "rstata_type_expression" ||
         node$children$right %is% "rstata_cross_expression"
     )
 
@@ -807,6 +797,7 @@ function(node, debug_level=0)
   raiseifnot(
     !(
       node$children$left %is% "rstata_factor_expression" ||
+      node$children$left %is% "rstata_type_expression" ||
         node$children$left %is% "rstata_cross_expression"
     )
 
@@ -821,6 +812,7 @@ function(node, debug_level=0)
   raiseifnot(
     !(
       node$children$right %is% "rstata_factor_expression" ||
+      node$children$right %is% "rstata_type_expression" ||
         node$children$right %is% "rstata_cross_expression"
     )
 
@@ -847,7 +839,7 @@ function(node, debug_level=0)
   raiseifnot(length(node$children) %in% c(1, 2))
 
   raiseifnot("left" %in% names(node$children))
-  raiseifnot(node$children$left %is% "rstata_literal")
+  raiseifnot(node$children$left %is% "rstata_ident")
 
   if(length(node$children) == 2)
   {
@@ -860,6 +852,7 @@ function(node, debug_level=0)
         )
         && !(node$children$right %is% "rstata_factor_expression")
         && !(node$children$right %is% "rstata_cross_expression")
+        && !(node$children$right %is% "rstata_type_expression")
     )
   }
 
@@ -883,6 +876,7 @@ function(node, debug_level=0)
   raiseifnot(
     !(
       node$children$right %is% "rstata_factor_expression" ||
+      node$children$right %is% "rstata_type_expression" ||
         node$children$right %is% "rstata_cross_expression"
     )
 
@@ -896,3 +890,4 @@ function(node, debug_level=0)
 
   invisible(TRUE)
 }
+
