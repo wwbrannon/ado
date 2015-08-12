@@ -1,16 +1,10 @@
 #the REPL loop and environment-handling logic for rstata
 library(Rcpp)
 
-do_stata_parse <-
-function()
-{
-    .Call('rcpp_do_stata_parse', PACKAGE = 'rstata')
-}
-
 eval_stata <-
 function(expr_list)
 {
-    TRUE; #TBD
+    expr_list; #don't do anything at all with them yet
 }
 
 rstata <-
@@ -28,12 +22,12 @@ function(dta = NULL, conn=stdin(), assign.back=TRUE)
     while(TRUE)
     {
         cat(". ")
-        line <- readLines(conn)
+        inpt <- readLines(conn)
 
         val <-
         tryCatch(
         {
-            expr_list <- do_stata_parse(line)
+            expr_list <- do_stata_parse(inpt)
             val <- eval_stata(expr_list)
         },
         error = function(c) c,
