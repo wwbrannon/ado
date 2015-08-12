@@ -117,7 +117,9 @@ llocp->step();
                                     }
 \"(\\.|[^"\\])*\"                   {
                                         std::string *s = new std::string(yytext);
-                                        std::string n = s->substr(1, s->length() - 1);
+                                        s->pop_back(); // remove trailing double quote
+
+                                        std::string n = s->substr(1, s->length()); // remove leading double quote
                                         delete s;
 
                                         yylval->node = new ExprNode({"rstata_literal", "rstata_string_literal"});
