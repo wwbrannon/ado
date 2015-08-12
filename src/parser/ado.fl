@@ -1,5 +1,6 @@
 %option stack
 %option bison-bridge
+%option noyywrap
 
 %{ /* -*- C++ -*- */
 #include <cstring>
@@ -29,16 +30,19 @@ std::string trim(const std::string& str, const std::string& what = " ");
 
 typedef yy::RStataParser::token token;
 
-extern "C" int
-yywrap()
-{
-    yypop_buffer_state();
-    
-    if(!YY_CURRENT_BUFFER)
-        return 1;
-    else
-        return 0;
-}
+// Because of macro expansion, we can't use flex's buffer stack. (The
+// reason being that if each macro and the main source were a buffer,
+// tokens would have to be able to cross buffer boundaries.) So we'll
+// redefine YY_INPUT instead.
+// 
+// Read a character at a time from a) the macro_buf buffer if it has
+// length greater than 0, or b) yyin if not. If we read a character from
+// macro_buf, erase() that character.
+// FIXME does it have to be a character at a time?
+#define YY_INPUT(buf,result,max_size) \
+    {\
+        // FIXME \
+    }
 
 // Code run each time a pattern is matched
 #define YY_USER_ACTION  { llocp->columns(yyleng); }
@@ -69,10 +73,12 @@ B           [ \t\v\r\f]
 llocp->step();
 
 // Buffers and stacks for state machines
-std::string cdquote_buf;
 std::string embed_buf;
+std::string cdquote_buf;
 std::string string_buf;
+
 std::stack<std::vector<std::string>> macro_stack;
+std::string macro_buf;
 %}
                                     /* if you write {{{ ... }}}, the ... will be executed as R code */
 <INITIAL>"{{{"                      {
@@ -199,7 +205,7 @@ std::stack<std::vector<std::string>> macro_stack;
                                                     // don't try to scan from the empty string an undefined
                                                     // macro returns as its replacement text
                                                     if(replacement.length() > 0)
-                                                        yypush_buffer_state(yy_scan_string(replacement.c_str()));
+                                                        macro_buf = std::string(replacement);
                                                     break;
                                                 default:
                                                     driver.error(*llocp, "Macro in impossible location");
@@ -230,7 +236,6 @@ std::stack<std::vector<std::string>> macro_stack;
                                     }
 }
 
-                                    /* FIXME */
 <GLOBAL_MACRO>{
     \`                              {
                                         // create and push a stack frame
@@ -247,39 +252,87 @@ std::stack<std::vector<std::string>> macro_stack;
                                         yy_push_state(GLOBAL_MACRO);
                                     }
 
-    [{B}|\n]+                       {
-                                        // concatenate all the strings in the current frame and get the
-                                        // expansion text from the R layer via the callback function, and then:
-                                        // a) if there's a previous frame on the stack, push the expansion text
-                                        //    to the back of that;
-                                        // b) if we're at the bottom of the stack, check the previous state:
-                                        //    append the text to cdquote_buf or string_buf if appropriate;
-                                        // c) if we're at the bottom of the stack and the previous state is
-                                        //    INITIAL, you'll have to arrange for the lexer to scan the new
-                                        //    buffer for the expansion text and then switch back to the old
-                                        //    buffer once it's exhausted
-                                        yy_pop_state();
+                                    /* The delimiter characters that mean we're at the end of the macro */
+    [{B}|\n|\;]+                    {
+                                        std::vector<std::string> frame = macro_stack.top();
+                                        std::string combined, replacement;
+
+                                        macro_stack.pop();
+                                        
+                                        for(size_t i = 0; i < frame.size(); i++)
+                                            combined += frame[i];
+                                        
+                                        replacement = driver.get_macro_value(combined);
+
+                                        if(!macro_stack.empty())
+                                        {
+                                            std::vector<std::string> prev = macro_stack.top();
+                                            macro_stack.pop();
+
+                                            prev.push_back(replacement);
+                                            macro_stack.push(prev);
+                                            
+                                            yy_pop_state();
+                                        } else
+                                        {
+                                            yy_pop_state();
+
+                                            switch(yy_top_state())
+                                            {
+                                                case CDQUOTE:
+                                                    cdquote_buf += replacement;
+                                                    break;
+                                                case STRING:
+                                                    string_buf += replacement;
+                                                    break;
+                                                case INITIAL:
+                                                    // don't try to scan from the empty string an undefined
+                                                    // macro returns as its replacement text
+                                                    if(replacement.length() > 0)
+                                                        macro_buf = std::string(replacement);
+                                                    break;
+                                                default:
+                                                    driver.error(*llocp, "Macro in impossible location");
+                                                    yyterminate();
+                                            }
+                                        }
                                     }
 
-                                    /* these are balanced delimiters, but they can't be nested */
+                                    /* The ${...} syntax. These are balanced delimiters, but they can't be nested. */
     \{[^\{\}\n\$\`]+\}              {
+                                        // push yytext to the back of the current frame, removing the "{" and "}"
+                                        std::string s = std::string(yytext);
+                                        s.erase(s.begin(), 1);
+                                        s.pop_back();
+                                        
+                                        std::vector<std::string> frame = macro_stack.top();
+                                        macro_stack.pop();
 
+                                        frame.push_back(s);
+                                        macro_stack.push(frame);
                                     }
 
-    ({L}|{D})+                      { /* something with macro_stack */ }
-    
-    <<EOF>>                         {
-                                        // concatenate all the strings in the current frame and get the
-                                        // expansion text from the R layer via the callback function, and then:
-                                        // a) if there's a previous frame on the stack, push the expansion text
-                                        //    to the back of that;
-                                        // b) if we're at the bottom of the stack, check the previous state:
-                                        //    append the text to cdquote_buf or string_buf if appropriate;
-                                        // c) if we're at the bottom of the stack and the previous state is
-                                        //    INITIAL, you'll have to arrange for the lexer to scan the new
-                                        //    buffer for the expansion text and then switch back to the old
-                                        //    buffer once it's exhausted
-                                        yy_pop_state();
+                                    /* A global macro name that doesn't need to be disambiguated with braces */
+    ({L}|{D})+                      {
+                                        // push yytext to the back of the current frame
+                                        std::vector<std::string> frame = macro_stack.top();
+                                        macro_stack.pop();
+
+                                        frame.push_back(std::string(yytext));
+                                        macro_stack.push(frame);
+                                    }
+   
+                                    /* Any other character is an error. */
+    .                               {
+                                        while(!macro_stack.empty())
+                                            macro_stack.pop();
+                                        
+                                        do {
+                                            yy_pop_state();
+                                        } while(yy_top_state() != INITIAL);
+                                        
+                                        driver.error(*llocp, "Invalid global macro");
+                                        yyterminate();
                                     }
 }
 
