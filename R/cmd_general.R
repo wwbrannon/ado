@@ -2,14 +2,15 @@
 ### selection of Stata features and will help test the infrastructure
 ### other commands will eventually rely on.
 
-## Self-explanatory
+## Quitting the REPL
 rstata_exit <-
 function()
 {
 
 }
 
-rstata_quit <- rstata_exit
+rstata_quit <-
+rstata_exit
 
 ## Data manipulation commands
 rstata_generate <-
