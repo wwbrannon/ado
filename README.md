@@ -1,25 +1,11 @@
 rstata
 ==========
 
-A Stata-like shell for R, implemented as a loadable package. It's intended to serve as training wheels for Stata users who'd like to switch or need to use R, but don't know much about R or programming in general.
+An interpreter for Stata's ado language built on top of R, currently under development.
 
-An example of the intended usage:
-    
-    user@host:~$ R -q
-    > require(rstata)
-    > rstata("data")
-    . insheet using "/home/user/data.csv"
-    . count
-      48473
-    . bysort address: egen hh_rep = seq()
-    . drop if hh_rep != 1
-    . count
-      37845
+Loops, macros, data manipulation commands and statistics commands are all
+supported, as are multiple ways to embed R code and use R for writing ado-
+language commands. (The language this package implements has about the same
+relationship to Stata that various dialects of SQL have to each other.)
 
-    ...
-
-    . logit treat age gender countyname // a Stata comment
-        <output>
-    . ^D
-    > summary(data)
-    #after statashell, there's a data frame with changes made in Stata code
+This package is not in any way affiliated with or endorsed by StataCorp.
