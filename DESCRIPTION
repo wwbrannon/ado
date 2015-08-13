@@ -1,13 +1,26 @@
 Package: rstata
-Type: Package
-Title: What the package does (short line)
-Version: 1.0
-Date: 2015-06-26
-Author: William Brannon
-Maintainer: William Brannon <will.brannon@gmail.com>
+Authors@R: c(
+  person("William", "Brannon", , "will.brannon@gmail.com", c("aut", "cre"))
+  )
+Version: 0.1.0
+Title: An implementation of Stata's ado language for R
 Description: An interpreter for Stata's ado language built on top of R.
+  Loops, macros, data manipulation commands and statistics commands are all
+  supported, as are multiple ways to embed R code and use R for writing ado-
+  language commands. (The language this package implements has about the same
+  relationship to Stata that various dialects of SQL have to each other.)
+  This package is not in any way affiliated with or endorsed by StataCorp.
 License: GPL-2
-Imports: Rcpp (>= 0.11.6)
-LinkingTo: Rcpp
-SystemRequirements: C++11
-Suggests: testthat
+URL: https://github.com/wwbrannon/rstata
+BugReports: https://github.com/wwbrannon/rstata/issues
+LazyData: true
+Depends:
+  R (>= 3.2.0)
+Imports:
+  Rcpp (>= 0.11.6)
+LinkingTo:
+  Rcpp
+SystemRequirements:
+  C++11
+Suggests:
+  testthat
