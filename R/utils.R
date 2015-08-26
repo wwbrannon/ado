@@ -62,7 +62,7 @@ function(expr, envir=parent.frame(),
             ret[[length(ret)+1]] <- deep_eval(chld, envir=envir, enclos=enclos)
         else
         {
-            tmp <- withVisible(eval(chld, envir=envir, enclos=enclos))
+            tmp <- suppressWarnings(withVisible(eval(chld, envir=envir, enclos=enclos)))
             ret[[length(ret)+1]] <- tmp$value
 
             if(print.results && tmp$visible)
