@@ -55,8 +55,6 @@ function(expr, envir=parent.frame(),
                     baseenv(),
          print.results=TRUE)
 {
-    raiseifnot(expr %is% "rstata_expression_list", msg="Malformed expression list")
-    
     ret <- list()
     for(chld in expr)
     {

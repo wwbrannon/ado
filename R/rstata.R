@@ -219,11 +219,13 @@ function(ast, debug_level=0)
     },
     error=function(c) c,
     EvalErrorException=function(c) c,
+    BadCommandException=function(c) c,
     ExitRequestedException=function(c) c,
     ContinueException=function(c) c,
     BreakException=function(c) c)
 
-    if(inherits(ret_p2, "EvalErrorException") || inherits(ret_p2, "error"))
+    if(inherits(ret_p2, "EvalErrorException") || inherits(ret_p2, "BadCommandException") ||
+       inherits(ret_p2, "error"))
         return( list(2, ret_p2$message) )
 
     if(inherits(ret_p2, "ExitRequestedException"))
