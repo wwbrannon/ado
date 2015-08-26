@@ -150,19 +150,97 @@ function(expression_list, option_list=NULL, return.match.call=NULL)
     return(match.call())
 }
 
-
 rstata_cmd_insheet <-
 function(using_clause, varlist=NULL, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
-    return(match.call())
+        return(match.call())
+    
+    valid_opts <- c("tab", "comma", "delimiter", "clear", "case", "names", "nonames")
+    raiseifnot(validateOpts(option_list, valid_opts))
+    
+    raiseifnot(hasOption(option_list, "clear") || dataset_dim()[1] == 0,
+               msg="No; data in memory would be lost")
+    
+    if(hasOption(option_list, "nonames"))
+        header <- FALSE
+    else
+        header <- TRUE
+    
+    #not for the first time, this is questionable behavior we're implementing
+    #because Stata does it
+    ext <- tools::file_ext(using_clause)
+    if(ext == "")
+        filename <- paste0(using_clause, ".raw")
+    else
+        filename <- using_clause
+    
+    if(hasOption(option_list, "comma"))
+        delim <- ","
+    else if(hasOption(option_list, "tab"))
+        delim <- "\t"
+    else if(hasOption(option_list, "delimiter"))
+    {
+        args <- optionArgs(option_list, "delimiter")
+        raiseifnot(length(args) == 1, msg="Too many delimiters")
+        raiseifnot(nchar(args[[1]]) == 1, msg="Bad delimiter")
+        
+        delim <- args[[1]]
+    } else
+    {
+        #We have to guess the delimiter, which is only worth doing
+        #because Stata does. First, let's check the extension.
+        if(ext == "csv")
+            delim <- ","
+        if(ext %in% c("tsv", "txt"))
+            delim <- "\t"
+        else
+        {
+            #As a last resort, read in the first five lines and see if there's
+            #a character that appears the same number of times in all three lines.
+            con = file(filename, "r")
+            cnt <- char_count(readLines(con, n=5, warn=FALSE))
+            
+            nm <- Reduce(intersect, lapply(cnt, names))
+            if(length(nm) == 0)
+                raiseCondition("Cannot determine delimiter character",
+                               cls="EvalErrorException")
+            cands <-
+            vapply(nm, function(x)
+            {
+                length(unique(lapply(cnt, function(y) y[x])))
+            }, integer(1))
+            
+            if(length(which(cands == 1)) == 1)
+                delim <- names(cands)[which(cands == 1)]
+            else
+                raiseCondition("Cannot determine delimiter character",
+                               cls="EvalErrorException")
+            
+            close(con)
+        }
+    }
+    
+    #actually read the thing in
+    op <- bquote(rstata_dta <- read.csv(.(filename), header=.(header),
+                                        sep=.(delim)))
+    eval(op, envir=rstata_env)
+    
+    if(!hasOption(option_list, "case"))
+    {
+        op <- quote(names(rstata_dta) <- tolower(names(rstata_dta)))
+        eval(op, envir=rstata_env)
+    }
+    
+    dims <- dataset_dim()
+    paste0("(", dims[2], " vars, ", dims[1], " obs)")
 }
 
 rstata_cmd_isid <-
 function(expression_list, using_clause=NULL, option_list=NULL, return.match.call=NULL)
 {
-  if(!is.null(return.match.call) && return.match.call)
-    return(match.call())
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
 }
 
 rstata_cmd_keep <-

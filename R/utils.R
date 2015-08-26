@@ -1,7 +1,24 @@
+#Because writing this out in each command would do two bad
+#things: it would be verbose and hard to maintain, and it might
+#also involve copying this possibly large data frame
+dataset_dim <-
+function()
+{
+    op <- quote(dim(rstata_dta))
+    eval(op, envir=rstata_env)
+}
+
+validateOpts <-
+function(option_list, valid_opts)
+{
+    #FIXME
+}
+
+#FIXME this function and optionArgs should do option unabbreviation
 hasOption <-
 function(option_list, opt)
 {
-    nm <- vapply(option_list, function(v) v[[name]], logical(1))
+    nm <- vapply(option_list, function(v) v[["name"]], logical(1))
 
     opt %in% nm
 }
@@ -33,6 +50,20 @@ function(name)
 {
     settings_env <- get("rstata_settings_env", envir=rstata_env)
     get(name, envir=settings_env)
+}
+
+#returns a list of vectors, each with names the unique characters
+#occurring in str, and values the number of times each apppears
+char_count <-
+function(strs)
+{
+    sp <- strsplit(strs, "", fixed=TRUE)
+    
+    lapply(sp, function(y)
+        vapply(unique(y),
+               function(x) length(which(sp == x)),
+               integer(1))
+    )
 }
 
 flatten <-

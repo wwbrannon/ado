@@ -38,11 +38,11 @@ function(dta = NULL, filename=NULL, string=NULL,
     #but make sure we have a data frame
     if(is.null(dta))
     {
-        assign("rstata_dta", data.frame(), envir=rstata_env)
+        assign("rstata_dta", dplyr::data_frame(), envir=rstata_env)
         varname <- "dta"
     } else
     {
-        assign("rstata_dta", dta, envir=rstata_env)
+        assign("rstata_dta", dplyr::as_data_frame(dta), envir=rstata_env)
         varname <- deparse(substitute(dta))
     }
 
