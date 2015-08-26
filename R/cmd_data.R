@@ -39,8 +39,10 @@ function(expression_list, if_clause=NULL, in_clause=NULL, by_dta=NULL,
 rstata_cmd_count <-
 function(if_clause=NULL, in_clause=NULL, by_dta=NULL, return.match.call=NULL)
 {
-  if(!is.null(return.match.call) && return.match.call)
-    return(match.call())
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+    
+    
 }
 
 rstata_cmd_decode <-
@@ -222,8 +224,8 @@ function(using_clause, varlist=NULL, option_list=NULL, return.match.call=NULL)
     }
     
     #actually read the thing in
-    op <- bquote(rstata_dta <- read.csv(.(filename), header=.(header),
-                                        sep=.(delim)))
+    op <- bquote(rstata_dta <- utils::read.csv(.(filename), header=.(header),
+                                               sep=.(delim)))
     eval(op, envir=rstata_env)
     
     if(!hasOption(option_list, "case"))
@@ -232,8 +234,7 @@ function(using_clause, varlist=NULL, option_list=NULL, return.match.call=NULL)
         eval(op, envir=rstata_env)
     }
     
-    dims <- dataset_dim()
-    paste0("(", dims[2], " vars, ", dims[1], " obs)")
+    structure(dataset_dim(), class="rstata_dataset_dim")
 }
 
 rstata_cmd_isid <-

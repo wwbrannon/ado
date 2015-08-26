@@ -4,7 +4,7 @@
 #    o) the dataset,
 #    o) the symbol table for macro substitution, and
 #    o) settings and parameters that commands can see or modify.
-rstata_env <- new.env(parent=emptyenv())
+rstata_env <- new.env(parent=baseenv())
 
 #Flags you can bitwise OR to enable debugging features.
 #It's important that these have the same numeric values as in the C++ header file.
