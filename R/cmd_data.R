@@ -158,8 +158,10 @@ function(using_clause, varlist=NULL, option_list=NULL, return.match.call=NULL)
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
     
+    #validate the options given against the valid list, raising a condition if
+    #they fail to validate, and return the unabbreviated options
     valid_opts <- c("tab", "comma", "delimiter", "clear", "case", "names", "nonames")
-    raiseifnot(validateOpts(option_list, valid_opts))
+    option_list <- validateOpts(option_list, valid_opts)
     
     raiseifnot(hasOption(option_list, "clear") || dataset_dim()[1] == 0,
                msg="No; data in memory would be lost")
