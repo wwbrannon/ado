@@ -28,6 +28,10 @@ function(option_list, valid_opts)
     #error condition if an option is invalid or ambiguous.
     given <- vapply(given, function(x) unabbreviateName(x, valid_opts), character(1))
     
+    #The same option can't be given more than once
+    raiseifnot(length(given) == length(unique(given)),
+               msg="Option given more than once")
+    
     #Update the names
     for(i in 1:length(given))
         option_list[[i]]$name <- given[i]
