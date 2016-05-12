@@ -1,16 +1,4 @@
 ### ===========================================================================
-### Dataset accessor methods
-dataset_dim <-
-function()
-{
-    #Because writing this out in each command would do two bad
-    #things: it would be more verbose, and it might
-    #also involve copying this possibly large data frame.
-    op <- quote(dim(rstata_dta))
-    eval(op, envir=rstata_env)
-}
-
-### ===========================================================================
 ### Option-list accessor methods
 
 #Validate and unabbreviate the provided options against the list of valid

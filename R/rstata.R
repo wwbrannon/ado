@@ -35,31 +35,27 @@ function(dta = NULL, filename=NULL, string=NULL,
     assign("rstata_rclass_env", new.env(parent=emptyenv()), envir=rstata_env)
   
     #Sanity checks: create an empty dataset if none provided,
-    #but make sure we have a data frame
+    #but make sure we have a dataset object
     if(is.null(dta))
     {
-        assign("rstata_dta", dplyr::data_frame(), envir=rstata_env)
+        assign("rstata_dta", Dataset$new(), envir=rstata_env)
         varname <- "dta"
     } else
     {
-        assign("rstata_dta", dplyr::as_data_frame(dta), envir=rstata_env)
+        assign("rstata_dta", Dataset$new(dta), envir=rstata_env)
         varname <- deparse(substitute(dta))
     }
 
-    stopifnot(is.data.frame(get("rstata_dta", envir=rstata_env)))
-
     #Sanity checks: make sure file and string aren't both set
     if(!is.null(filename) && !is.null(string))
-    {
         stop("Cannot specify both the filename and string arguments")
-    }
 
     #Should we, on exit, put the final dataset back into the variable
     #we were given as if we had a pointer to it?
     if(!is.null(assign.back))
         on.exit(if(assign.back)
         {
-            obj <- get("rstata_dta", envir=rstata_env)
+            obj <- as.data.frame(get("rstata_dta", envir=rstata_env)$underlying())
             assign(varname, obj, pos=parent.frame())
         })
 
@@ -187,7 +183,7 @@ function(dta = NULL, filename=NULL, string=NULL,
                                 echo=ifelse(is.null(echo), 1, echo))
     }
 
-    return(invisible(get("rstata_dta", envir=rstata_env)));
+    return(invisible(as.data.frame(get("rstata_dta", envir=rstata_env)$underlying())));
 }
 
 #Callbacks: the main command-processing callback function for the parser
