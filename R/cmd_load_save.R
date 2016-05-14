@@ -1,0 +1,227 @@
+rstata_cmd_insheet <-
+function(using_clause, varlist=NULL, option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+    
+    #validate the options given against the valid list, raising a condition if
+    #they fail to validate, and return the unabbreviated options
+    valid_opts <- c("tab", "comma", "delimiter", "clear", "case", "names", "nonames")
+    option_list <- validateOpts(option_list, valid_opts)
+    
+    raiseifnot(hasOption(option_list, "clear") || dt$dim[1] == 0,
+               msg="No; data in memory would be lost")
+    
+    if(hasOption(option_list, "nonames"))
+        header <- FALSE
+    else
+        header <- TRUE
+    
+    #not for the first time, this is questionable behavior we're implementing
+    #because Stata does it
+    ext <- tools::file_ext(using_clause)
+    if(ext == "")
+        filename <- paste0(using_clause, ".raw")
+    else
+        filename <- using_clause
+    
+    if(hasOption(option_list, "comma"))
+        delim <- ","
+    else if(hasOption(option_list, "tab"))
+        delim <- "\t"
+    else if(hasOption(option_list, "delimiter"))
+    {
+        args <- optionArgs(option_list, "delimiter")
+        raiseifnot(length(args) == 1, msg="Too many delimiters")
+        raiseifnot(nchar(args[[1]]) == 1, msg="Bad delimiter")
+        
+        delim <- args[[1]]
+    } else
+        delim <- NULL
+    
+    dt <- get("rstata_dta", envir=rstata_env)
+    
+    #Actually read the thing in
+    dt$read_csv(filename=filename, header=header, sep=delim)
+    
+    if(!hasOption(option_list, "case"))
+        dt$setnames(tolower(dt$names))
+    
+    #As is common in return values from these command functions,
+    #this is an S3 class so it can pretty-print
+    structure(dt$dim(), class="rstata_cmd_insheet")
+}
+
+rstata_cmd_save <-
+function(expression=NULL, option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+    
+    #Handle options
+    valid_opts <- c("replace", "emptyok")
+    option_list <- validateOpts(option_list, valid_opts)
+    repl <- hasOption(option_list, "replace")
+    emptyok <- hasOption(option_list, "emptyok")
+    
+    #Handle the path we got or perhaps didn't get
+    if(is.null(expression))
+        pth <- rstata_func_c("filename")
+    else
+    {
+        raiseifnot(length(expression) == 1, msg="Too many filenames given to save")
+        pth <- expression[[1]]
+        
+        #If the path we've been given doesn't have an extension in the sense of
+        #tools::file_ext, append ".dta"
+        if(tools::file_ext(pth) == "")
+            pth <- pth %p% ".dta"
+    }
+    
+    dt <- get("rstata_dta", envir=rstata_env)
+    dt$save(pth, replace=repl, emptyok=emptyok)
+    
+    return(structure(pth, class="rstata_cmd_save"))
+}
+
+rstata_cmd_saveold <-
+function(expression=NULL, option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+    
+    #Handle options
+    valid_opts <- c("replace")
+    option_list <- validateOpts(option_list, valid_opts)
+    repl <- hasOption(option_list, "replace")
+    
+    #Handle the path we got or perhaps didn't get
+    if(is.null(expression))
+        pth <- rstata_func_c("filename")
+    else
+    {
+        raiseifnot(length(expression) == 1, msg="Too many filenames given to save")
+        pth <- expression[[1]]
+        
+        #If the path we've been given doesn't have an extension in the sense of
+        #tools::file_ext, append ".dta"
+        if(tools::file_ext(pth) == "")
+            pth <- pth %p% ".dta"
+    }
+    
+    dt <- get("rstata_dta", envir=rstata_env)
+    dt$saveold(pth, replace=repl)
+    
+    return(structure(pth, class="rstata_cmd_save"))
+}
+
+rstata_cmd_use <-
+function(expression, option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+    
+    valid_opts <- c("clear")
+    option_list <- validateOpts(option_list, valid_opts)
+    
+    dt <- get("rstata_dta", envir=rstata_env)
+    raiseifnot(hasOption(option_list, "clear") || dt$dim[1] == 0,
+               msg="No; data in memory would be lost")
+    
+    #We only support the load-the-whole-dataset form of this command,
+    #because the underlying dta-reading packages don't provide Stata's
+    #ability to filter the file as it's read in
+    pth <- expression_list[[1]]
+    
+    #If the path we've been given doesn't have an extension in the sense of
+    #tools::file_ext, append ".dta"
+    if(tools::file_ext(pth) == "")
+        pth <- pth %p% ".dta"
+    
+    #Load the dataset
+    dt$use(pth)
+    
+    if(is.null(dt$data_label))
+        return(structure("Data loaded", class="rstata_cmd_use"))
+    else
+        return(structure(dt$data_label, class="rstata_cmd_use"))
+}
+
+#This is a bit different from the Stata version of sysuse:
+#    o) The datasets are different; these are the R datasets package's datasets
+#    o) The argument isn't a filename, it's a string coercible to a symbol name
+#       exported from the datasets pacakge
+#    o) correspondingly there is no logic about a ".dta" extension
+rstata_cmd_sysuse <-
+function(expression, option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+    
+    valid_opts <- c("clear")
+    option_list <- validateOpts(option_list, valid_opts)
+
+    if(is.symbol(expression[[1]]))
+    {
+        raiseifnot(as.character(expression[[1]]) == "dir",
+                   msg="Unrecognized subcommand to sysuse")
+        
+        datasets <- ls(as.environment("package:datasets"))
+        return(structure(datasets, class="rstata_cmd_sysuse"))
+    }
+    else
+    {
+        dt <- get("rstata_dta", envir=rstata_env)
+        raiseifnot(hasOption(option_list, "clear") || dt$dim[1] == 0,
+                   msg="No; data in memory would be lost")
+        
+        dt$load_dataframe(expression[[1]], envir=as.environment("package:datasets"))
+        
+        if(is.null(dt$data_label))
+            return(structure("Data loaded", class="rstata_cmd_use"))
+        else
+            return(structure(dt$data_label, class="rstata_cmd_use"))
+    }
+}
+
+rstata_cmd_webuse <-
+function(expression_list, option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+    
+    valid_opts <- c("clear")
+    option_list <- validateOpts(option_list, valid_opts)
+
+    default_url <- 'http://www.stata-press.com/data/r13/'
+    
+    dt <- get("rstata_dta", envir=rstata_env)
+    raiseifnot(hasOption(option_list, "clear") || dt$dim[1] == 0,
+               msg="No; data in memory would be lost")
+    
+    if(is.symbol(expression_list[[1]]))
+    {
+        if(as.character(expression_list[[1]]) == "query")
+        {
+            #FIXME need to set this somehow during initialization
+            return(cat(rstata_func_c("webuse_url")))
+        }
+        else if(as.character(expression_list[[1]]) == "set")
+        {
+            if(length(expression_list) == 1)
+                setCClassValue("webuse_url", default_url)
+            else if(length(expression_list) == 2)
+                setCClassValue("webuse_url", as.character(expression_list[[2]]))
+            else
+                raiseCondition("Incorrect use of webuse set: too many arguments")
+        }
+        else
+            raiseCondition("Unrecognized subcommand to webuse")
+    }
+    else
+    {
+        #Download this dataset from the Stata website and save it to a tempfile
+        
+        #Call dt$use() on the tempfile path
+    }
+}

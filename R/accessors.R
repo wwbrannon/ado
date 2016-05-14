@@ -69,3 +69,11 @@ function(name)
     settings_env <- get("rstata_settings_env", envir=rstata_env)
     get(name, envir=settings_env)
 }
+
+#=============================================================================
+### Methods to set c-class values
+setCClassValue <-
+function(name, value)
+{
+    #FIXME
+}
