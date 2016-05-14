@@ -10,6 +10,8 @@
 #clear
 #data_label
 #use
+#use_dataframe
+#use_url
 
 Dataset <-
 R6::R6Class("Dataset",

@@ -175,7 +175,8 @@ function(expression, option_list=NULL, return.match.call=NULL)
         raiseifnot(hasOption(option_list, "clear") || dt$dim[1] == 0,
                    msg="No; data in memory would be lost")
         
-        dt$load_dataframe(expression[[1]], envir=as.environment("package:datasets"))
+        df <- get(expression[[1]], envir=as.environment("package:datasets"))
+        dt$use_dataframe(df)
         
         if(is.null(dt$data_label))
             return(structure("Data loaded", class="rstata_cmd_use"))
@@ -214,14 +215,31 @@ function(expression_list, option_list=NULL, return.match.call=NULL)
                 setCClassValue("webuse_url", as.character(expression_list[[2]]))
             else
                 raiseCondition("Incorrect use of webuse set: too many arguments")
+            
+            return(invisible(NULL))
         }
         else
             raiseCondition("Unrecognized subcommand to webuse")
     }
     else
     {
-        #Download this dataset from the Stata website and save it to a tempfile
+        raiseifnot(length(expression_list) == 1, msg="Too many arguments to webuse")
         
-        #Call dt$use() on the tempfile path
+        #Put together the actual URL we should fetch from
+        pth <- expression_list[[1]]
+        if(tools::file_ext(pth) == "")
+            pth <- pth %p% ".dta"
+        
+        url_base <- rstata_func_c("webuse_url")
+        url <- url_base %p% pth
+        
+        #Pass off fetching and loading to the Dataset object (and specifically
+        #data.table's fread() method)
+        dt$use_url(url)
+        
+        if(is.null(dt$data_label))
+            return(structure("Data loaded", class="rstata_cmd_use"))
+        else
+            return(structure(dt$data_label, class="rstata_cmd_use"))
     }
 }
