@@ -70,4 +70,5 @@ Hash: 77da8f1df873a4b91e5c4a68fe2fb1b6
 Package: testthat
 Source: CRAN
 Version: 1.0.2
+Hash: 88d5291104227f9dc2e7c7c1d0eb6c74
 Requires: R6, crayon, digest, magrittr, praise
