@@ -67,6 +67,12 @@ Source: CRAN
 Version: 1.0.0
 Hash: 77da8f1df873a4b91e5c4a68fe2fb1b6
 
+Package: readstata13
+Source: CRAN
+Version: 0.8.2
+Hash: 4cb22c0a5493fff6a9ffe1ddc24828a7
+Requires: Rcpp
+
 Package: testthat
 Source: CRAN
 Version: 1.0.2

@@ -131,7 +131,7 @@ function(expression, option_list=NULL, return.match.call=NULL)
     #We only support the load-the-whole-dataset form of this command,
     #because the underlying dta-reading packages don't provide Stata's
     #ability to filter the file as it's read in
-    pth <- expression_list[[1]]
+    pth <- expression[[1]]
     
     #If the path we've been given doesn't have an extension in the sense of
     #tools::file_ext, append ".dta"
