@@ -70,7 +70,42 @@ function(expression, return.match.call=NULL)
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
     
-    eval(expression_list[[1]])
+    ret <- eval(expression_list[[1]])
+    return(structure(ret, class=c("rstata_cmd_display", class(ret))))
+}
+
+rstata_cmd_preserve <-
+function(option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+    
+    valid_opts <- c("memory")
+    option_list <- validateOpts(option_list, valid_opts)
+    
+    mem <- hasOption(option_list, "memory")
+    
+    dt <- get("rstata_dta", envir=rstata_env)
+    dt$preserve(memory=mem)
+    
+    return(invisible(NULL))
+}
+
+rstata_cmd_restore <-
+function(option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+    
+    valid_opts <- c("not")
+    option_list <- validateOpts(option_list, valid_opts)
+    
+    cancel <- hasOption(option_list, "not")
+    
+    dt <- get("rstata_dta", envir=rstata_env)
+    dt$restore(cancel=cancel)
+    
+    return(invisible(NULL))
 }
 
 rstata_cmd_return <-
@@ -109,22 +144,8 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
         return(match.call())
 }
 
-rstata_cmd_preserve <-
-function(option_list=NULL, return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-}
-
 rstata_cmd_query <-
 function(varlist, return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-}
-
-rstata_cmd_restore <-
-function(option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
