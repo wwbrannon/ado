@@ -1,6 +1,26 @@
 ## First, things that are more nearly flow-control constructs than
 ## "commands" in the usual sense
 
+rstata_cmd_quit <-
+function(return.match.call=NULL)
+{
+    #Don't do anything with return.match.call because otherwise we can't get
+    #out of rstata() when testing with return.match.call
+    raiseCondition("Exit requested", "ExitRequestedException")
+}
+
+rstata_cmd_continue <-
+function(option_list=NULL, return.match.call=NULL)
+{
+    if(hasOption(option_list, "break"))
+        raiseCondition("Break", "BreakException")
+    else
+        raiseCondition("Continue", "ContinueException")
+    
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+}
+
 #The if expr { } construct
 rstata_cmd_if <-
 function(expression, compound_cmd, return.match.call=NULL)
@@ -16,26 +36,6 @@ function(expression_list, options=NULL, return.match.call=NULL)
     return(match.call())
 }
 
-rstata_cmd_quit <-
-function(return.match.call=NULL)
-{
-  #Don't do anything with return.match.call because otherwise we can't get
-  #out of rstata() when testing with return.match.call
-  raiseCondition("Exit requested", "ExitRequestedException")
-}
-
-rstata_cmd_continue <-
-function(option_list=NULL, return.match.call=NULL)
-{
-  if(hasOption(option_list, "break"))
-    raiseCondition("Break", "BreakException")
-  else
-    raiseCondition("Continue", "ContinueException")
-  
-  if(!is.null(return.match.call) && return.match.call)
-    return(match.call())
-}
-
 rstata_cmd_exit <- rstata_cmd_quit
 rstata_cmd_run <- rstata_cmd_do
 
@@ -46,6 +46,11 @@ function(return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
+    
+    fields <- c("Package", "Authors@R", "Version", "Title", "License", "URL", "BugReports")
+    desc <- packageDescription(packageName(), fields=fields)
+    
+    return(structure(desc, class=c("rstata_cmd_about", class(desc))))
 }
 
 rstata_cmd_return <-
