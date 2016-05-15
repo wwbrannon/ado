@@ -135,40 +135,6 @@ function(node, debug_level=0)
 }
 
 #' @export
-codegen.rstata_special_cmd <-
-function(node, debug_level=0)
-{
-  name <- as.character(codegen(node$children$verb, debug_level))
-  name <- unabbreviateCommand(paste0("rstata_cmd_", name))
-  verb <- get(name, mode="function")
-
-  args <- node$children
-  args <- args[names(args) != "verb"]
-
-  nm <- names(args)
-  forms <- names(formals(verb))
-  if("expression_list" %in% nm)
-  {
-      if("expression_list" %in% forms)
-          TRUE #do nothing
-      if("varlist" %in% forms)
-          nm[nm == "expression_list"] <- "varlist"
-      if("expression" %in% forms)
-          nm[nm == "expression_list"] <- "expression"
-  }
-
-  args <- lapply(args, function(x) codegen(x, debug_level))
-  names(args) <- nm
-
-  if(debug_level)
-      ret <- c(as.symbol(name), args, node$data, return.match.call=TRUE)
-  else
-      ret <- c(as.symbol(name), args, node$data)
-
-  as.call(ret)
-}
-
-#' @export
 codegen.rstata_modifier_cmd <-
 function(node, debug_level=0)
 {

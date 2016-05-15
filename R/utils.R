@@ -1,40 +1,18 @@
-hasOption <-
-function(option_list, opt)
+#Returns a list of vectors, each with names the unique characters
+#occurring in str, and values the number of times each apppears
+char_count <-
+function(strs)
 {
-    nm <- vapply(option_list, function(v) v[[name]], logical(1))
-
-    opt %in% nm
-}
-
-optionArgs <-
-function(option_list, opt)
-{
-    if(!hasOption(option_list, opt))
-        return(NULL)
+    sp <- strsplit(strs, "", fixed=TRUE)
     
-    nm <- vapply(option_list, function(v) v[[name]], logical(1))
-    val <- nm[which(nm == opt)]
-
-    if("args" %in% names(val))
-        return(val[[args]])
-    else
-        return(NULL)
+    lapply(sp, function(y)
+        vapply(unique(y),
+               function(x) length(which(sp == x)),
+               integer(1))
+    )
 }
 
-assignSetting <-
-function(name, value)
-{
-    settings_env <- get("rstata_settings_env", envir=rstata_env)
-    assign(name, value, envir=settings_env)
-}
-
-getSettingValue <-
-function(name)
-{
-    settings_env <- get("rstata_settings_env", envir=rstata_env)
-    get(name, envir=settings_env)
-}
-
+#Recursively flatten a possibly nested list
 flatten <-
 function(x)
 {
@@ -47,6 +25,7 @@ function(x)
     }
 }
 
+#Like any(), but check if _all_ elements of the argument are TRUE
 every <-
 function(vec)
 {
@@ -58,11 +37,16 @@ function(vec)
         return(TRUE)
 }
 
+#Some useful infix operators
 `%is%` <- function(x, y) every(y %in% class(x))
 `%p%` <- function(x, y) paste0(x, y)
+
+#As in C, for handling bitwise ops on flags
 `%|%` <- function(x, y) bitwOr(x, y)
 `%&%` <- function(x, y) bitwAnd(x, y)
 
+#Recursive evaluation of the sort of expression object that the parser builds.
+#This function both evaluates the exps and prints the results.
 deep_eval <-
 function(expr, envir=parent.frame(),
          enclos=if(is.list(envir) || is.pairlist(envir))
@@ -78,7 +62,7 @@ function(expr, envir=parent.frame(),
             ret[[length(ret)+1]] <- deep_eval(chld, envir=envir, enclos=enclos)
         else
         {
-            tmp <- withVisible(eval(chld, envir=envir, enclos=enclos))
+            tmp <- suppressWarnings(withVisible(eval(chld, envir=envir, enclos=enclos)))
             ret[[length(ret)+1]] <- tmp$value
 
             if(print.results && tmp$visible)
@@ -88,7 +72,6 @@ function(expr, envir=parent.frame(),
 
     ret
 }
-
 
 #Reverse a vector of strings
 rev_string <-
@@ -100,6 +83,9 @@ function(str)
     simplify2array(pts)
 }
 
+#The process_cmd callback catches certain types of conditions signaled in
+#code that it calls, so we want to have a concise idiom for signaling those
+#conditions. That way we can use them for exception handling.
 raiseCondition <-
 function(msg, cls="BadCommandException")
 {
@@ -110,6 +96,8 @@ function(msg, cls="BadCommandException")
     invisible(NULL)
 }
 
+#Like stopifnot(), but rather than actually calling stop(), just throw an
+#exception to the point in process_cmd where it's caught and handled.
 raiseifnot <-
 function(expr, cls="BadCommandException", msg=NULL)
 {
@@ -132,19 +120,20 @@ function(expr, cls="BadCommandException", msg=NULL)
     invisible(NULL)
 }
 
-#We're reading from the console one line at a time, so we have to handle
-#the /// construct in this function as well as in the parser
+#Read a line from the console in interactive use, printing a prompt, and
+#handling Stata's /// construct (which we have to do here as well as in
+#the parser because it extends the line this function should read).
 read_interactive <-
 function()
 {
     res = ""
-    while(TRUE)
+    
+    repeat
     {
         inpt <- readline(". ")
 
-        if(length(inpt) == 0) #at EOF
-            raiseCondition("End of file", "ExitRequestedException")
-
+        #We're reading from the console one line at a time, so we have to handle
+        #the /// construct in this function as well as in the parser
         if(substring(rev_string(inpt), 1, 3) == "///")
         {
             res <- paste(res, inpt, sep="\n")
@@ -154,8 +143,8 @@ function()
         #we got a line that doesn't continue onto the next line
         res <- paste(res, inpt, sep="\n")
 
-        #the grammar requires a newline or semicolon as a statement
-        #terminator, so add a few in case we didn't get one at EOF
+        #Our ado grammar requires a newline or semicolon as a statement
+        #terminator, so add one in case we didn't get one at EOF
         res <- paste0(res, "\n")
 
         break
@@ -164,7 +153,8 @@ function()
     res
 }
 
-#Functions for validating parts of general and special commands
+#Is the command part that the semantic analyzer has seen actually a valid
+#part of a command object?
 valid_cmd_part <-
 function(name)
 {
@@ -173,6 +163,9 @@ function(name)
               "using_clause", "option_list", "expression")
 }
 
+#Now that we know the command object has parts with the correct names,
+#are the things within it that have those names of the correct S3 types?
+#Are they well-formed?
 correct_arg_types_for_cmd <-
 function(children)
 {
@@ -275,6 +268,8 @@ function(children)
   return(TRUE)
 }
 
+#We have something that syntactically has to be a data type name.
+#Is it a valid one?
 valid_data_type <-
 function(name)
 {
@@ -291,6 +286,7 @@ function(name)
   return(FALSE)
 }
 
+#Is this a valid format specifier?
 valid_format_spec <-
 function(fmt)
 {
@@ -313,13 +309,16 @@ function(fmt)
   return(FALSE)
 }
 
+#Take a format specifier string and transform it to an R list that encodes
+#the format, setting the appropriate S3 class.
 expand_format_spec <-
 function(fmt)
 {
     #FIXME
 }
 
-#Functions for generating code
+#Take the name of an ado-language operator, whether unary or binary, and return
+#a symbol for the R function that implements that operator.
 function_for_ado_operator <-
 function(name)
 {
@@ -374,10 +373,11 @@ function(name)
   raiseCondition("Bad operator or function", cls="BadCommandException")
 }
 
+#Wrap around charmatch but check that the match is unambiguous.
 #For use with a function's list of its acceptable Stata options,
-#or with the names attribute of the dataset
+#or with the colnames of the dataset (i.e., with dataset variables).
 unabbreviateName <-
-function(name, choices, cls="error", msg=NULL)
+function(name, choices, cls="EvalErrorException", msg=NULL)
 {
   matched <- charmatch(name, choices)
   raiseifnot(length(matched) == 1 && matched != 0 && !is.na(matched), cls=cls, msg=msg)
@@ -386,7 +386,7 @@ function(name, choices, cls="error", msg=NULL)
 }
 
 #For unabbreviating command names against the list of all the
-#rstata_* command-implementing functions
+#rstata_* command-implementing functions.
 unabbreviateCommand <-
 function(name, cls="error", msg=NULL)
 {
@@ -397,10 +397,11 @@ function(name, cls="error", msg=NULL)
 }
 
 #Those commands which take a varlist and interpret it as an R formula
-#can call this function to convert it to one
+#can call this function to convert it to one. If the dv flag is TRUE,
+#the first element of varlist must be a symbol or character that becomes
+#the LHS of the formula.
 varlist_to_formula <-
 function(varlist, dv=TRUE)
 {
     #FIXME
 }
-

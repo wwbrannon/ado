@@ -1,10 +1,12 @@
 ### The REPL, batch-processing and environment-handling logic for rstata
 
+#FIXME: should call the Dataset object's clear() method on exit to avoid taking up too much memory
+
 #Create a package-wide environment used to hold three things:
 #    o) the dataset,
 #    o) the symbol table for macro substitution, and
 #    o) settings and parameters that commands can see or modify.
-rstata_env <- new.env(parent=emptyenv())
+rstata_env <- new.env(parent=baseenv())
 
 #Flags you can bitwise OR to enable debugging features.
 #It's important that these have the same numeric values as in the C++ header file.
@@ -35,31 +37,27 @@ function(dta = NULL, filename=NULL, string=NULL,
     assign("rstata_rclass_env", new.env(parent=emptyenv()), envir=rstata_env)
   
     #Sanity checks: create an empty dataset if none provided,
-    #but make sure we have a data frame
+    #but make sure we have a dataset object
     if(is.null(dta))
     {
-        assign("rstata_dta", data.frame(), envir=rstata_env)
+        assign("rstata_dta", Dataset$new(), envir=rstata_env)
         varname <- "dta"
     } else
     {
-        assign("rstata_dta", dta, envir=rstata_env)
+        assign("rstata_dta", Dataset$new(dta), envir=rstata_env)
         varname <- deparse(substitute(dta))
     }
 
-    stopifnot(is.data.frame(get("rstata_dta", envir=rstata_env)))
-
     #Sanity checks: make sure file and string aren't both set
     if(!is.null(filename) && !is.null(string))
-    {
         stop("Cannot specify both the filename and string arguments")
-    }
 
     #Should we, on exit, put the final dataset back into the variable
     #we were given as if we had a pointer to it?
     if(!is.null(assign.back))
         on.exit(if(assign.back)
         {
-            obj <- get("rstata_dta", envir=rstata_env)
+            obj <- as.data.frame(get("rstata_dta", envir=rstata_env)$underlying)
             assign(varname, obj, pos=parent.frame())
         })
 
@@ -187,7 +185,7 @@ function(dta = NULL, filename=NULL, string=NULL,
                                 echo=ifelse(is.null(echo), 1, echo))
     }
 
-    return(invisible(get("rstata_dta", envir=rstata_env)));
+    return(invisible(as.data.frame(get("rstata_dta", envir=rstata_env)$underlying)));
 }
 
 #Callbacks: the main command-processing callback function for the parser
@@ -219,11 +217,13 @@ function(ast, debug_level=0)
     },
     error=function(c) c,
     EvalErrorException=function(c) c,
+    BadCommandException=function(c) c,
     ExitRequestedException=function(c) c,
     ContinueException=function(c) c,
     BreakException=function(c) c)
 
-    if(inherits(ret_p2, "EvalErrorException") || inherits(ret_p2, "error"))
+    if(inherits(ret_p2, "EvalErrorException") || inherits(ret_p2, "BadCommandException") ||
+       inherits(ret_p2, "error"))
         return( list(2, ret_p2$message) )
 
     if(inherits(ret_p2, "ExitRequestedException"))
