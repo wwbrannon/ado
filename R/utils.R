@@ -5,9 +5,11 @@ function(strs)
 {
     sp <- strsplit(strs, "", fixed=TRUE)
     
+    uniqs <- unique(Reduce(c, sp))
+    
     lapply(sp, function(y)
-        vapply(unique(y),
-               function(x) length(which(sp == x)),
+        vapply(uniqs,
+               function(x) length(which(y == x)),
                integer(1))
     )
 }

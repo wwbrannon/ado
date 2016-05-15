@@ -1,6 +1,7 @@
 rstata_cmd_insheet <-
 function(using_clause, varlist=NULL, option_list=NULL, return.match.call=NULL)
 {
+    #FIXME use varlist
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
     
@@ -9,14 +10,12 @@ function(using_clause, varlist=NULL, option_list=NULL, return.match.call=NULL)
     valid_opts <- c("tab", "comma", "delimiter", "clear", "case", "names", "nonames")
     option_list <- validateOpts(option_list, valid_opts)
     
+    dt <- get("rstata_dta", envir=rstata_env)
     raiseifnot(hasOption(option_list, "clear") || dt$dim[1] == 0,
                msg="No; data in memory would be lost")
     
-    if(hasOption(option_list, "nonames"))
-        header <- FALSE
-    else
-        header <- TRUE
-    
+    header <- hasOption(option_list, "nonames")
+
     #not for the first time, this is questionable behavior we're implementing
     #because Stata does it
     ext <- tools::file_ext(using_clause)
@@ -31,25 +30,23 @@ function(using_clause, varlist=NULL, option_list=NULL, return.match.call=NULL)
         delim <- "\t"
     else if(hasOption(option_list, "delimiter"))
     {
-        args <- optionArgs(option_list, "delimiter")
-        raiseifnot(length(args) == 1, msg="Too many delimiters")
-        raiseifnot(nchar(args[[1]]) == 1, msg="Bad delimiter")
+        a <- optionArgs(option_list, "delimiter")
+        raiseifnot(length(a) == 1, msg="Too many delimiters")
+        raiseifnot(nchar(a[[1]]) == 1, msg="Bad delimiter")
         
-        delim <- args[[1]]
+        delim <- a[[1]]
     } else
         delim <- NULL
     
-    dt <- get("rstata_dta", envir=rstata_env)
-    
     #Actually read the thing in
     dt$use_csv(filename=filename, header=header, sep=delim)
-    
+
     if(!hasOption(option_list, "case"))
         dt$setnames(tolower(dt$names))
     
     #As is common in return values from these command functions,
     #this is an S3 class so it can pretty-print
-    structure(dt$dim(), class="rstata_cmd_insheet")
+    return(structure(dt$dim, class="rstata_cmd_insheet"))
 }
 
 rstata_cmd_save <-
@@ -66,8 +63,9 @@ function(expression=NULL, option_list=NULL, return.match.call=NULL)
     
     #Handle the path we got or perhaps didn't get
     if(is.null(expression))
+    {
         pth <- rstata_func_c("filename")
-    else
+    } else
     {
         raiseifnot(length(expression) == 1, msg="Too many filenames given to save")
         pth <- expression[[1]]

@@ -73,7 +73,8 @@ function(if_clause=NULL, in_clause=NULL, by_dta=NULL, return.match.call=NULL)
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
     
-    
+    dt <- get("rstata_dta", envir=rstata_env)
+    return(dt$dim[1])
 }
 
 rstata_cmd_decode <-

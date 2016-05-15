@@ -14,7 +14,7 @@ R6::R6Class("Dataset",
             raiseifnot(length(names) == ncol(private$dt),
                        msg="Incorrect number of column names to setnames")
             
-            setnames(private$dt, names)
+            data.table::setnames(private$dt, names)
         },
         
         #Save the data we currently have loaded in either the new or
@@ -36,7 +36,7 @@ R6::R6Class("Dataset",
             if(!replace && file.exists(path))
                 raiseCondition("Cannot save dataset; file exists")
             
-            readstata13::stata_pre13_save(private$dt, path)
+            foreign::write.dta(private$dt, path)
             
             return(invisible(TRUE))
         },
@@ -44,7 +44,8 @@ R6::R6Class("Dataset",
         #Drop the current dataset
         clear=function()
         {
-            private$dt <- NULL #the old table is garbage collected
+            private$dt <- NULL #the old table is garbage-collected
+            private$dt <- data.table::data.table()
         },
         
         #Methods to load in data from different sources
@@ -55,17 +56,26 @@ R6::R6Class("Dataset",
             read_args <- list(...)
             read_args$file <- path
             
-            df <- do.call(readstata13::read.dta13, read_args)
-            attrs <- attributes(df)
-            
-            #This is duplicated from use_dataframe because calling that fn would
-            #copy the data.frame. It could be one of R's not-quite-macros with
-            #substitute, but it's tricky to fit that into the structure of this
-            #class. Pass-by-reference semantics are nice sometimes...
-            private$dt <- data.table::data.table(df)
-            private$append_attributes(attrs)
-            
-            return(invisible(TRUE))
+            df <- tryCatch(do.call(readstata13::read.dta13, read_args),
+                           message=function(c) c)
+            if(inherits(df, "condition")) #something went wrong
+            {
+                #Re-raise this in a way our further-up layers will catch
+                raiseCondition(df$message)
+            }
+            else
+            {
+                attrs <- attributes(df)
+                
+                #This is duplicated from use_dataframe because calling that fn would
+                #copy the data.frame. It could be one of R's not-quite-macros with
+                #substitute, but it's tricky to fit that into the structure of this
+                #class. Pass-by-reference semantics are nice sometimes...
+                private$dt <- data.table::data.table(df)
+                private$append_attributes(attrs)
+                
+                return(invisible(TRUE))
+            }
         },
         use_dataframe=function(df)
         {
@@ -86,42 +96,48 @@ R6::R6Class("Dataset",
         {
             read_args <- list(...)
             read_args$header <- header
+            read_args$file <- filename
             
             #We need to figure out the separator if it wasn't given
             if(is.null(sep))
             {
                 ext <- tools::file_ext(filename)
-                
                 #We have to guess the delimiter, which is only worth doing
                 #because Stata does. First, let's check the extension.
                 if(ext == "csv")
+                {
                     delim <- ","
-                if(ext %in% c("tsv", "txt"))
+                } else if(ext %in% c("tsv", "txt"))
+                {
                     delim <- "\t"
+                }
                 else
                 {
                     #As a last resort, read in the first five lines and see if there's
-                    #a character that appears the same number of times in all three lines.
-                    con = file(filename, "r")
-                    cnt <- char_count(readLines(con, n=5, warn=FALSE))
+                    #a character that appears the same number of times in all five lines.
+                    rows <- readLines(filename, n=5, warn=FALSE)
+                    cnt <- char_count(rows)
                     
                     nm <- Reduce(intersect, lapply(cnt, names))
                     if(length(nm) == 0)
+                    {
                         raiseCondition("Cannot determine delimiter character",
                                        cls="EvalErrorException")
-                    cands <-
-                        vapply(nm, function(x)
+                    }
+                    
+                    cands <- vapply(nm, function(x)
                         {
                             length(unique(lapply(cnt, function(y) y[x])))
                         }, integer(1))
                     
                     if(length(which(cands == 1)) == 1)
+                    {
                         delim <- names(cands)[which(cands == 1)]
-                    else
+                    } else
+                    {
                         raiseCondition("Cannot determine delimiter character",
                                        cls="EvalErrorException")
-                    
-                    close(con)
+                    }
                 }
             }
             
@@ -130,7 +146,7 @@ R6::R6Class("Dataset",
             
             #Actually read in the data. There are no attributes worth
             #preserving on a read-in CSV.
-            private <- data.table::data.table(do.call(read.csv, read_args))
+            private$dt <- data.table::data.table(do.call(read.csv, read_args))
     
             return(invisible(TRUE))
         }
@@ -149,7 +165,7 @@ R6::R6Class("Dataset",
             to_set <- attrs[to_set]
             
             for(nm in names(to_set))
-                attr(private$dt, nm) <- to_set[nm]
+                attr(private$dt, nm) <- to_set[[nm]]
             
             return(invisible(TRUE))
         }

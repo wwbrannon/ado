@@ -7,7 +7,7 @@ function(x)
 print.rstata_cmd_save <-
 function(x)
 {
-    cat(paste0("file ", x, "saved"), "\n")
+    cat(paste0("file ", x, " saved"), "\n")
 }
 
 print.rstata_cmd_use <-
