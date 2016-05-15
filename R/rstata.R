@@ -1,5 +1,7 @@
 ### The REPL, batch-processing and environment-handling logic for rstata
 
+#FIXME: should call the Dataset object's clear() method on exit to avoid taking up too much memory
+
 #Create a package-wide environment used to hold three things:
 #    o) the dataset,
 #    o) the symbol table for macro substitution, and
@@ -55,7 +57,7 @@ function(dta = NULL, filename=NULL, string=NULL,
     if(!is.null(assign.back))
         on.exit(if(assign.back)
         {
-            obj <- as.data.frame(get("rstata_dta", envir=rstata_env)$underlying())
+            obj <- as.data.frame(get("rstata_dta", envir=rstata_env)$underlying)
             assign(varname, obj, pos=parent.frame())
         })
 
@@ -183,7 +185,7 @@ function(dta = NULL, filename=NULL, string=NULL,
                                 echo=ifelse(is.null(echo), 1, echo))
     }
 
-    return(invisible(as.data.frame(get("rstata_dta", envir=rstata_env)$underlying())));
+    return(invisible(as.data.frame(get("rstata_dta", envir=rstata_env)$underlying)));
 }
 
 #Callbacks: the main command-processing callback function for the parser

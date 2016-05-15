@@ -42,7 +42,7 @@ function(using_clause, varlist=NULL, option_list=NULL, return.match.call=NULL)
     dt <- get("rstata_dta", envir=rstata_env)
     
     #Actually read the thing in
-    dt$read_csv(filename=filename, header=header, sep=delim)
+    dt$use_csv(filename=filename, header=header, sep=delim)
     
     if(!hasOption(option_list, "case"))
         dt$setnames(tolower(dt$names))
