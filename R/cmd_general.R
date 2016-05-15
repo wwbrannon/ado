@@ -53,6 +53,26 @@ function(return.match.call=NULL)
     return(structure(desc, class=c("rstata_cmd_about", class(desc))))
 }
 
+rstata_cmd_sleep <-
+function(expression, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+    
+    Sys.sleep(expression[[1]])
+    
+    return(invisible(NULL))
+}
+
+rstata_cmd_display <-
+function(expression, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+    
+    eval(expression_list[[1]])
+}
+
 rstata_cmd_return <-
 function(expression, return.match.call=NULL)
 {
@@ -72,16 +92,6 @@ function(expression, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-}
-
-rstata_cmd_display <-
-function(expression_list=NULL, return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-
-    #FIXME to handle format specs later
-    eval(expression_list[[1]])
 }
 
 rstata_cmd_help <-
@@ -125,17 +135,6 @@ function(expression_list, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-}
-
-rstata_cmd_sleep <-
-function(expression, return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-    
-    Sys.sleep(expression[[1]])
-    
-    return(invisible(NULL))
 }
 
 rstata_cmd_di <- rstata_cmd_display
