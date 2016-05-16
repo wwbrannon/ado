@@ -44,6 +44,9 @@ function(using_clause, varlist=NULL, option_list=NULL, return.match.call=NULL)
     if(!hasOption(option_list, "case"))
         dt$setnames(tolower(dt$names))
     
+    if(!is.null(varlist))
+        dt$drop_columns(varlist)
+    
     #As is common in return values from these command functions,
     #this is an S3 class so it can pretty-print
     return(structure(dt$dim, class="rstata_cmd_insheet"))
