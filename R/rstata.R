@@ -1,14 +1,5 @@
 ### The REPL, batch-processing and environment-handling logic for rstata
-
-#FIXME: should call the Dataset object's clear() method on exit to avoid taking up too much memory
-#FIXME: factor rstata_env initialization into a function; call it when rstata() runs and also during
-#package initialization; set up a function to tear it all down that runs when rstata() exits
-
-#Create a package-wide environment used to hold three things:
-#    o) the dataset,
-#    o) the symbol table for macro substitution, and
-#    o) settings and parameters that commands can see or modify.
-rstata_env <- new.env(parent=baseenv())
+#TODO: this should really be factored into a more OO design; use R6?
 
 #Flags you can bitwise OR to enable debugging features.
 #It's important that these have the same numeric values as in the C++ header file.
@@ -27,44 +18,40 @@ function(dta = NULL, filename=NULL, string=NULL,
 {
     #We have a package-wide environment because of scoping issues,
     #but the data in it shouldn't persist across calls to this function
-    rm(list=ls(rstata_env), envir=rstata_env)
-
-    #Create the settings cache and macro symbol table
-    assign("rstata_macro_env", new.env(parent=emptyenv()), envir=rstata_env)
-    assign("rstata_settings_env", new.env(parent=emptyenv()), envir=rstata_env)
-  
-    #Create environments to represent Stata's "e-class" and "r-class" objects
-    #for stored results; another one for c-class objects that's not the only
-    #place c-class values are looked up
-    assign("rstata_cclass_env", new.env(parent=emptyenv()), envir=rstata_env)
-    assign("rstata_rclass_env", new.env(parent=emptyenv()), envir=rstata_env)
-    assign("rstata_eclass_env", new.env(parent=emptyenv()), envir=rstata_env)
+    initialize()
     
-    #Sanity checks: create an empty dataset if none provided,
-    #but make sure we have a dataset object
+    #If we got a data.frame to use, set up the dataset object to use it
     if(is.null(dta))
     {
-        assign("rstata_dta", Dataset$new(), envir=rstata_env)
         varname <- "dta"
     } else
     {
-        assign("rstata_dta", Dataset$new(dta), envir=rstata_env)
+        dt <- get("rstata_dta", envir=rstata_env)
+        dt$use_dataframe(dta)
+        
         varname <- deparse(substitute(dta))
     }
 
     #Sanity checks: make sure file and string aren't both set
     if(!is.null(filename) && !is.null(string))
+    {
         stop("Cannot specify both the filename and string arguments")
+    }
 
     #Should we, on exit, put the final dataset back into the variable
     #we were given as if we had a pointer to it?
     if(!is.null(assign.back))
+    {
         on.exit(if(assign.back)
         {
-            obj <- as.data.frame(get("rstata_dta", envir=rstata_env)$underlying)
+            obj <- as.data.frame(get("rstata_dta", envir=rstata_env)$as_data_frame)
             assign(varname, obj, pos=parent.frame())
         })
+    }
 
+    #Call the finalizer on exit to make sure the dataset is cleared
+    on.exit(finalize())
+    
     #We should put the debug_level argument into settings_env so that it's
     #accessible for nested invocations of do_parse_with_callbacks to handle
     #do files or the body blocks of loops.
@@ -162,10 +149,8 @@ function(dta = NULL, filename=NULL, string=NULL,
     } else if(!is.null(filename))
     {
         #We should read from a do-file
-        con = file(filename, "r")
-        on.exit(close(con), add=TRUE)
-
-        inpt <- readLines(con)
+        inpt <- readLines(filename)
+        
         inpt <- Reduce(function(x, y) paste(x, y, sep="\n"), inpt)
         inpt <- paste0(inpt, "\n")
 
@@ -175,9 +160,10 @@ function(dta = NULL, filename=NULL, string=NULL,
                                 echo=ifelse(is.null(echo), 1, echo))
     } else
     {
-        #We should read from a string
+        #We should read from a string; it's not important to close
+        #this connection because (as in the R docs for textConnection)
+        #it's not really an OS resource
         con = textConnection(string)
-        on.exit(close(con), add=TRUE)
 
         inpt <- readLines(con)
         inpt <- Reduce(function(x, y) paste(x, y, sep="\n"), inpt)
@@ -189,7 +175,7 @@ function(dta = NULL, filename=NULL, string=NULL,
                                 echo=ifelse(is.null(echo), 1, echo))
     }
 
-    return(invisible(as.data.frame(get("rstata_dta", envir=rstata_env)$underlying)));
+    return(invisible(as.data.frame(get("rstata_dta", envir=rstata_env)$as_data_frame)))
 }
 
 #Callbacks: the main command-processing callback function for the parser
@@ -211,8 +197,10 @@ function(ast, debug_level=0)
     #C++ layer is quite tricky, so we're going to return ints and have
     #the C++ code re-raise the exceptions in a more controllable way
     if(inherits(ret_p1, "BadCommandException") || inherits(ret_p1, "error"))
+    {
         return( list(1, ret_p1$message) )
-
+    }
+    
     #Evaluate the generated calls for their side effects and for printable objects
     ret_p2 <-
     tryCatch(
@@ -228,16 +216,24 @@ function(ast, debug_level=0)
 
     if(inherits(ret_p2, "EvalErrorException") || inherits(ret_p2, "BadCommandException") ||
        inherits(ret_p2, "error"))
+    {
         return( list(2, ret_p2$message) )
-
+    }
+    
     if(inherits(ret_p2, "ExitRequestedException"))
+    {
         return( list(3, ret_p2$message) )
+    }
 
     if(inherits(ret_p2, "ContinueException"))
+    {
         return( list(4, ret_p2$message) )
+    }
 
     if(inherits(ret_p2, "BreakException"))
+    {
         return( list(5, ret_p2$message) )
+    }
 
     return( list(0, "Success") );
 }
@@ -286,8 +282,11 @@ function(name)
 
     #a normal macro
     if(!(name %in% ls(env)))
+    {
         return("")
-    else
+    } else
+    {
         return(get(name, envir=env, inherits=FALSE))
+    }
 }
 
