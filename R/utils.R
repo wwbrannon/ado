@@ -42,6 +42,7 @@ function(vec)
 #Some useful infix operators
 `%is%` <- function(x, y) every(y %in% class(x))
 `%p%` <- function(x, y) paste0(x, y)
+`%not_in%` <- function(x, y) (!(x %in% y))
 
 #As in C, for handling bitwise ops on flags
 `%|%` <- function(x, y) bitwOr(x, y)
