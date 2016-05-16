@@ -1,6 +1,8 @@
 ### The REPL, batch-processing and environment-handling logic for rstata
 
 #FIXME: should call the Dataset object's clear() method on exit to avoid taking up too much memory
+#FIXME: factor rstata_env initialization into a function; call it when rstata() runs and also during
+#package initialization; set up a function to tear it all down that runs when rstata() exits
 
 #Create a package-wide environment used to hold three things:
 #    o) the dataset,
@@ -32,10 +34,12 @@ function(dta = NULL, filename=NULL, string=NULL,
     assign("rstata_settings_env", new.env(parent=emptyenv()), envir=rstata_env)
   
     #Create environments to represent Stata's "e-class" and "r-class" objects
-    #for stored results
-    assign("rstata_eclass_env", new.env(parent=emptyenv()), envir=rstata_env)
+    #for stored results; another one for c-class objects that's not the only
+    #place c-class values are looked up
+    assign("rstata_cclass_env", new.env(parent=emptyenv()), envir=rstata_env)
     assign("rstata_rclass_env", new.env(parent=emptyenv()), envir=rstata_env)
-  
+    assign("rstata_eclass_env", new.env(parent=emptyenv()), envir=rstata_env)
+    
     #Sanity checks: create an empty dataset if none provided,
     #but make sure we have a dataset object
     if(is.null(dta))
