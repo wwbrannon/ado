@@ -19,5 +19,17 @@ function(x)
 print.rstata_cmd_sysuse <-
 function(x)
 {
-    print(x)
+    NextMethod()
+}
+
+print.rstata_cmd_about <-
+function(x)
+{
+    NextMethod()
+}
+
+print.rstata_cmd_display <-
+function(x)
+{
+    NextMethod()
 }
