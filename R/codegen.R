@@ -75,9 +75,17 @@ function(node, debug_level=0)
 codegen.rstata_if_cmd <-
 function(node, debug_level=0)
 {
-    as.call(list(as.symbol("rstata_cmd_if"),
-                 expression=codegen(node$children$expression, debug_level),
-                 compound_cmd=codegen(node$children$compound_cmd, debug_level)))
+    #FIXME
+    exp <- codegen(node$children$expression, debug_level)
+    cmp <- codegen(node$children$compound_cmd, debug_level)
+    
+    if(debug_level)
+        ret <- c(as.symbol("rstata_cmd_if"), list(expression=exp, compound_cmd=cmp),
+                           return.match.call=TRUE)
+    else
+        ret <- c(as.symbol("rstata_cmd_if"), list(expression=exp, compound_cmd=cmp))
+
+    as.call(ret)
 }
 
 #' @export
