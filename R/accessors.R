@@ -138,9 +138,19 @@ rstata_func_c <-
 function(val)
 {
     #FIXME - handle special c-class values before falling back to looking val
-    #up in the c-class environment. Need to fix a list of which c-class values
-    #we'll support to finalize this; may need to set some of them during the
-    #still-TODO rstata_env initialization function.
+    #up in the c-class environment. May need to set some of them during the
+    #package initialize() function.
+    
+    #The full tentative list of c-class values to support
+    c('current_date', 'current_time', 'rstata_version', 'bit', 'processors',
+      'processors_mach', 'mode', 'console', 'os', 'osdtl', 'hostname', 'machine_type',
+      'byteorder', 'username', 'tmpdir', 'pwd', 'dirsep', 'max_N_theory', 'max_k_theory',
+      'max_width_theory', 'max_macrolen', 'macrolen', 'max_cmdlen', 'cmdlen', 'namelen',
+      'mindouble', 'maxdouble', 'epsdouble', 'smallestdouble', 'minfloat', 'maxfloat',
+      'epsfloat', 'minlong', 'maxlong', 'minint', 'maxint', 'minbyte', 'maxbyte', 'maxstrvarlen',
+      'maxstrlvarlen', 'N', 'k', 'width', 'changed', 'filename', 'filedate', 'memory', 'maxvar',
+      'niceness', 'maxiter', 'seed', 'odbcmgr', 'pi', 'alpha', 'ALPHA', 'Mons', 'Months', 'Wdays',
+      'Weekdays', 'rc', 'webuse_url')
     
     cls_env <- get("rstata_cclass_env", envir=env, inherits=FALSE)
     return(get(val, envir=cls_env, inherits=FALSE))
