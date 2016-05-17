@@ -33,3 +33,14 @@ function(x)
 {
     NextMethod()
 }
+
+print.rstata_cmd_creturn <-
+function(x)
+{
+    cat("System Values: \n\n")
+    
+    for(nm in names(x))
+    {
+        cat("c(" %p% nm %p% "):    " %p% x[[nm]] %p% "\n")
+    }
+}
