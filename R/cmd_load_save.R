@@ -1,7 +1,6 @@
 rstata_cmd_insheet <-
 function(using_clause, varlist=NULL, option_list=NULL, return.match.call=NULL)
 {
-    #FIXME use varlist
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
     
@@ -195,7 +194,8 @@ function(expression_list, option_list=NULL, return.match.call=NULL)
     valid_opts <- c("clear")
     option_list <- validateOpts(option_list, valid_opts)
 
-    default_url <- 'http://www.stata-press.com/data/r13/'
+    default_url <- rstata_func_c("default_webuse_url")
+    webuse_url <- getSettingValue("webuse_url")
     
     dt <- get("rstata_dta", envir=rstata_env)
     raiseifnot(hasOption(option_list, "clear") || dt$dim[1] == 0,
@@ -205,8 +205,7 @@ function(expression_list, option_list=NULL, return.match.call=NULL)
     {
         if(as.character(expression_list[[1]]) == "query")
         {
-            #FIXME need to set this somehow during initialization
-            return(cat(rstata_func_c("webuse_url")))
+            return(cat(webuse_url))
         }
         else if(as.character(expression_list[[1]]) == "set")
         {

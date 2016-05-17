@@ -37,18 +37,17 @@ function()
     #We want it in a known-good state before initializing
     finalize()
     
+    #===================================================
     #Set up the dataset object
     assign("rstata_dta", Dataset$new(), envir=rstata_env)
     
-    #Create the settings cache and macro symbol table
-    assign("rstata_macro_env", new.env(parent=emptyenv()), envir=rstata_env)
-    assign("rstata_settings_env", new.env(parent=emptyenv()), envir=rstata_env)
-    
+    #===================================================
     #Create environments to represent Stata's "e-class" and "r-class" objects
     #for stored results
     assign("rstata_rclass_env", new.env(parent=emptyenv()), envir=rstata_env)
     assign("rstata_eclass_env", new.env(parent=emptyenv()), envir=rstata_env)
     
+    #===================================================
     #Another env for c-class objects that's not the only place c-class values
     #are looked up. Still need to set certain values here.
     cc_env <- new.env(parent=emptyenv())
@@ -71,7 +70,18 @@ function()
     assign("Wdays", pi, envir=cc_env)
     assign("Weekdays", pi, envir=cc_env)
 
+    #URLs for webuse
+    assign('default_webuse_url', 'http://www.stata-press.com/data/r13/', envir=cc_env)
+    
     assign("rstata_cclass_env", cc_env, envir=rstata_env)
+    
+    #===================================================
+    #Create the settings cache and macro symbol table
+    assign("rstata_macro_env", new.env(parent=emptyenv()), envir=rstata_env)
+    
+    s_env <- new.env(parent=emptyenv())
+    assign("webuse_url", 'http://www.stata-press.com/data/r13/', envir=s_env)
+    assign("rstata_settings_env", s_env, envir=rstata_env)
     
     return(invisible(NULL))
 }
