@@ -168,8 +168,168 @@ function(val=NULL, enum=FALSE)
     }
     
     #FIXME - handle special c-class values before falling back to looking val
-    #up in the c-class environment. May need to set some of them during the
-    #package initialize() function.
-    
-    return(get(val, envir=env, inherits=FALSE))
+    #up in the c-class environment
+    if(val == 'current_date')
+    {
+        return(Sys.Date())
+    } else if(val == 'current_time')
+    {
+        return(Sys.time())
+    } else if(val == 'rstata_version')
+    {
+        
+    } else if(val == 'bit')
+    {
+        
+    } else if(val == 'processors')
+    {
+        
+    } else if(val == 'processors_mach')
+    {
+        
+    } else if(val == 'mode')
+    {
+        
+    } else if(val == 'console')
+    {
+        
+    } else if(val == 'os')
+    {
+        
+    } else if(val == 'osdtl')
+    {
+        
+    } else if(val == 'hostname')
+    {
+        
+    } else if(val == 'machine_type')
+    {
+        
+    } else if(val == 'byteorder')
+    {
+        
+    } else if(val == 'username')
+    {
+        
+    } else if(val == 'tmpdir')
+    {
+        
+    } else if(val == 'pwd')
+    {
+        
+    } else if(val == 'dirsep')
+    {
+        
+    } else if(val == 'max_N_theory')
+    {
+        
+    } else if(val == 'max_k_theory')
+    {
+        
+    } else if(val == 'max_width_theory')
+    {
+        
+    } else if(val == 'max_macrolen')
+    {
+        
+    } else if(val == 'macrolen')
+    {
+        
+    } else if(val == 'max_cmdlen')
+    {
+        
+    } else if(val == 'cmdlen')
+    {
+        
+    } else if(val == 'namelen')
+    {
+        
+    } else if(val == 'mindouble')
+    {
+        
+    } else if(val == 'maxdouble')
+    {
+        
+    } else if(val == 'epsdouble')
+    {
+        
+    } else if(val == 'smallestdouble')
+    {
+        
+    } else if(val == 'minfloat')
+    {
+        
+    } else if(val == 'maxfloat')
+    {
+        
+    } else if(val == 'epsfloat')
+    {
+        
+    } else if(val == 'minlong')
+    {
+        
+    } else if(val == 'maxlong')
+    {
+        
+    } else if(val == 'minint')
+    {
+        
+    } else if(val == 'maxint')
+    {
+        
+    } else if(val == 'minbyte')
+    {
+        
+    } else if(val == 'maxbyte')
+    {
+        
+    } else if(val == 'maxstrvarlen')
+    {
+        
+    } else if(val == 'maxstrlvarlen')
+    {
+        
+    } else if(val == 'N')
+    {
+        
+    } else if(val == 'k')
+    {
+        
+    } else if(val == 'width')
+    {
+        
+    } else if(val == 'changed')
+    {
+        
+    } else if(val == 'filename')
+    {
+        
+    } else if(val == 'filedate')
+    {
+        
+    } else if(val == 'memory')
+    {
+        
+    } else if(val == 'maxvar')
+    {
+        
+    } else if(val == 'niceness')
+    {
+        
+    } else if(val == 'maxiter')
+    {
+        
+    } else if(val == 'seed')
+    {
+        
+    } else if(val == 'odbcmgr')
+    {
+        
+    } else if(val == 'rc')
+    {
+        
+    } else
+    {
+        return(get(val, envir=env, inherits=FALSE))
+    }
 }
