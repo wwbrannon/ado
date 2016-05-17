@@ -50,7 +50,7 @@ function(dta = NULL, filename=NULL, string=NULL,
     }
 
     #Call the finalizer on exit to make sure the dataset is cleared
-    on.exit(finalize())
+    on.exit(finalize(), add=TRUE)
     
     #We should put the debug_level argument into settings_env so that it's
     #accessible for nested invocations of do_parse_with_callbacks to handle
