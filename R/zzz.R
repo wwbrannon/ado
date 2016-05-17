@@ -37,20 +37,41 @@ function()
     #We want it in a known-good state before initializing
     finalize()
     
-    #Now, set up objects
+    #Set up the dataset object
+    assign("rstata_dta", Dataset$new(), envir=rstata_env)
+    
     #Create the settings cache and macro symbol table
     assign("rstata_macro_env", new.env(parent=emptyenv()), envir=rstata_env)
     assign("rstata_settings_env", new.env(parent=emptyenv()), envir=rstata_env)
     
     #Create environments to represent Stata's "e-class" and "r-class" objects
-    #for stored results; another one for c-class objects that's not the only
-    #place c-class values are looked up
-    assign("rstata_cclass_env", new.env(parent=emptyenv()), envir=rstata_env)
+    #for stored results
     assign("rstata_rclass_env", new.env(parent=emptyenv()), envir=rstata_env)
     assign("rstata_eclass_env", new.env(parent=emptyenv()), envir=rstata_env)
     
-    #Set up the dataset object
-    assign("rstata_dta", Dataset$new(), envir=rstata_env)
+    #Another env for c-class objects that's not the only place c-class values
+    #are looked up. Still need to set certain values here.
+    cc_env <- new.env(parent=emptyenv())
+    
+    #Mathematical constants
+    assign("pi", pi, envir=cc_env)
+    assign("e", exp(1), envir=cc_env)
+    
+    #Letters
+    assign("alpha", paste0(letters, collapse=" "), envir=cc_env)
+    assign("ALPHA", paste0(LETTERS, collapse=" "), envir=cc_env)
+
+    #Months - the Stata docs imply these aren't localized, but they should be
+    assign("Mons", paste0(format(ISOdate(2000, 1:12, 1), "%b"), collapse=" "),
+           envir=cc_env)
+    assign("Months", paste0(format(ISOdate(2000, 1:12, 1), "%B"), collapse=" "),
+           envir=cc_env)
+
+    #Weekdays
+    assign("Wdays", pi, envir=cc_env)
+    assign("Weekdays", pi, envir=cc_env)
+
+    assign("rstata_cclass_env", cc_env, envir=rstata_env)
     
     return(invisible(NULL))
 }

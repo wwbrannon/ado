@@ -59,15 +59,15 @@ function(option_list, opt)
 assignSetting <-
 function(name, value)
 {
-    settings_env <- get("rstata_settings_env", envir=rstata_env)
-    assign(name, value, envir=settings_env)
+    env <- get("rstata_settings_env", envir=rstata_env)
+    assign(name, value, envir=env)
 }
 
 getSettingValue <-
 function(name)
 {
-    settings_env <- get("rstata_settings_env", envir=rstata_env)
-    get(name, envir=settings_env)
+    env <- get("rstata_settings_env", envir=rstata_env)
+    get(name, envir=env)
 }
 
 #=============================================================================
@@ -123,35 +123,53 @@ function(name, value)
 rstata_func_e <-
 function(val)
 {
-    cls_env <- get("rstata_eclass_env", envir=env, inherits=FALSE)
-    return(get(val, envir=cls_env, inherits=FALSE))
+    env <- get("rstata_eclass_env", envir=rstata_env, inherits=FALSE)
+    return(get(val, envir=env, inherits=FALSE))
 }
 
 rstata_func_r <-
 function(val)
 {
-    cls_env <- get("rstata_rclass_env", envir=env, inherits=FALSE)
-    return(get(val, envir=cls_env, inherits=FALSE))
+    env <- get("rstata_rclass_env", envir=rstata_env, inherits=FALSE)
+    return(get(val, envir=env, inherits=FALSE))
 }
 
 rstata_func_c <-
-function(val)
+function(val=NULL, enum=FALSE)
 {
+    if(is.null(val) && !enum)
+    {
+        raiseCondition("Must provide argument to rstata_func_c")
+    }
+    
+    env <- get("rstata_cclass_env", envir=rstata_env, inherits=FALSE)
+    
+    #If explictly requested, return a list of all the c-class values known.
+    #The calls to this function built by codegen() will never have enum=TRUE.
+    if(enum)
+    {
+        ret <- ls(envir=env)
+        
+        #These are the ones implemented below
+        ret <- c(ret,
+                 'current_date', 'current_time', 'rstata_version', 'bit',
+                 'processors', 'processors_mach', 'mode', 'console', 'os',
+                 'osdtl', 'hostname', 'machine_type', 'byteorder', 'username',
+                 'tmpdir', 'pwd', 'dirsep', 'max_N_theory', 'max_k_theory',
+                 'max_width_theory', 'max_macrolen', 'macrolen', 'max_cmdlen',
+                 'cmdlen', 'namelen', 'mindouble', 'maxdouble', 'epsdouble',
+                 'smallestdouble', 'minfloat', 'maxfloat', 'epsfloat', 'minlong',
+                 'maxlong', 'minint', 'maxint', 'minbyte', 'maxbyte',
+                 'maxstrvarlen', 'maxstrlvarlen', 'N', 'k', 'width', 'changed',
+                 'filename', 'filedate', 'memory', 'maxvar', 'niceness', 'maxiter',
+                 'seed', 'odbcmgr', 'rc', 'webuse_url')
+        
+        return(ret)
+    }
+    
     #FIXME - handle special c-class values before falling back to looking val
     #up in the c-class environment. May need to set some of them during the
     #package initialize() function.
     
-    #The full tentative list of c-class values to support
-    c('current_date', 'current_time', 'rstata_version', 'bit', 'processors',
-      'processors_mach', 'mode', 'console', 'os', 'osdtl', 'hostname', 'machine_type',
-      'byteorder', 'username', 'tmpdir', 'pwd', 'dirsep', 'max_N_theory', 'max_k_theory',
-      'max_width_theory', 'max_macrolen', 'macrolen', 'max_cmdlen', 'cmdlen', 'namelen',
-      'mindouble', 'maxdouble', 'epsdouble', 'smallestdouble', 'minfloat', 'maxfloat',
-      'epsfloat', 'minlong', 'maxlong', 'minint', 'maxint', 'minbyte', 'maxbyte', 'maxstrvarlen',
-      'maxstrlvarlen', 'N', 'k', 'width', 'changed', 'filename', 'filedate', 'memory', 'maxvar',
-      'niceness', 'maxiter', 'seed', 'odbcmgr', 'pi', 'alpha', 'ALPHA', 'Mons', 'Months', 'Wdays',
-      'Weekdays', 'rc', 'webuse_url')
-    
-    cls_env <- get("rstata_cclass_env", envir=env, inherits=FALSE)
-    return(get(val, envir=cls_env, inherits=FALSE))
+    return(get(val, envir=env, inherits=FALSE))
 }
