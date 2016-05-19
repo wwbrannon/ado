@@ -67,8 +67,14 @@ function()
            envir=cc_env)
 
     #Weekdays
-    assign("Wdays", pi, envir=cc_env)
-    assign("Weekdays", pi, envir=cc_env)
+    Wdays <- weekdays(seq(as.Date("2013-06-03"), by=1, len=7), abbreviate=TRUE)
+    Wdays <- paste0(Wdays, collapse=" ")
+    
+    Weekdays <- weekdays(seq(as.Date("2013-06-03"), by=1, len=7))
+    Weekdays <- paste0(Weekdays, collapse=" ")
+    
+    assign("Wdays", Wdays, envir=cc_env)
+    assign("Weekdays", Weekdays, envir=cc_env)
 
     #URLs for webuse
     assign('default_webuse_url', 'http://www.stata-press.com/data/r13/', envir=cc_env)
