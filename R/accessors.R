@@ -177,157 +177,206 @@ function(val=NULL, enum=FALSE)
         return(Sys.time())
     } else if(val == 'rstata_version')
     {
-        
+        return(packageVersion(packageName()))
     } else if(val == 'bit')
     {
-        
+        return(8 * .Machine$sizeof.pointer)
     } else if(val == 'processors')
     {
-        
+        return(parallel::detectCores())
     } else if(val == 'processors_mach')
     {
-        
+        return(parallel::detectCores())
+    } else if(val == 'processors_max')
+    {
+        return(parallel::detectCores())
     } else if(val == 'mode')
     {
-        
+        if(interactive())
+        {
+            return("")
+        } else
+        {
+            return("batch")
+        }
     } else if(val == 'console')
     {
-        
+        if(.Platform$GUI == "unknown")
+        {
+            return("console")
+        } else
+        {
+            return("")
+        }
     } else if(val == 'os')
     {
-        
+        if(.Platform$OS.type == "windows")
+        {
+            return("Windows")
+        } else if(Sys.info()["sysname"] == "Darwin")
+        {
+            return("MacOSX")
+        } else
+        {
+            return("Unix")
+        }
     } else if(val == 'osdtl')
     {
-        
+        s <- Sys.info()
+        return(s$release %p% " " %p% s$version)
+    } else if(val == 'rversion')
+    {
+        return(R.version$version.string)
     } else if(val == 'hostname')
     {
-        
+        return(Sys.info()["nodename"])
     } else if(val == 'machine_type')
     {
-        
+        return(sessionInfo()$platform)
     } else if(val == 'byteorder')
     {
-        
+        if(.Platform$endian == 'big')
+            return("hilo")
+        else
+            return("lohi")
     } else if(val == 'username')
     {
-        
+        return(Sys.info()["user"])
     } else if(val == 'tmpdir')
     {
-        
+        return(tempdir())
     } else if(val == 'pwd')
     {
-        
+        return(getwd())
     } else if(val == 'dirsep')
     {
-        
+        return(.Platform["file.sep"])
     } else if(val == 'max_N_theory')
     {
-        
+        return(2^31 - 1)
     } else if(val == 'max_k_theory')
     {
-        
+        return(2^31 - 1)
     } else if(val == 'max_width_theory')
     {
-        
+        #This corresponds to a data.frame of 2^31 - 1 columns and 2^31 - 1 rows,
+        #where each cell is a string of 2^31 - 1 bytes' length. There's a reason that
+        #this variable's name ends in "theory".
+        return( (2^31 - 1)^3 )
     } else if(val == 'max_macrolen')
     {
-        
+        #As hardcoded into our lexer: see ado.fl's redefinition
+        #of the C macro YYLMAX
+        return(2^16)
     } else if(val == 'macrolen')
     {
-        
+        return(2^16)
     } else if(val == 'max_cmdlen')
     {
-        
+        #The real limit is on the length of a single lexer token, which can
+        #be no longer than 2^16 bytes. There's no limit on the length of
+        #commands, provided they can be represented as R strings, and an R
+        #string can be no longer than 2^31 - 1 bytes. Note that encountering
+        #a single token longer than YYLMAX = 2^16 bytes will cause yylex() to
+        #raise an R error condition rather than calling the C exit() function
+        #on the R process.
+        return(2^31 - 1)
     } else if(val == 'cmdlen')
     {
-        
+        return(2^31 - 1)
     } else if(val == 'namelen')
     {
-        
+        #The maximum length of the symbol type as of R 2.13.0
+        return(10000)
     } else if(val == 'mindouble')
     {
-        
+        #Almost if not quite exactly right
+        return(-.Machine$double.xmax)
     } else if(val == 'maxdouble')
     {
-        
+        return(.Machine$double.xmax)
     } else if(val == 'epsdouble')
     {
-        
+        return(.Machine$double.eps)
     } else if(val == 'smallestdouble')
     {
-        
-    } else if(val == 'minfloat')
-    {
-        
-    } else if(val == 'maxfloat')
-    {
-        
-    } else if(val == 'epsfloat')
-    {
-        
+        return(.Machine$double.xmin)
     } else if(val == 'minlong')
     {
-        
+        #R does have a 4-byte integer type, even though integers are
+        #generally represented as doubles
+        return(-2^31 + 1)
     } else if(val == 'maxlong')
     {
-        
-    } else if(val == 'minint')
+        return(2^31 - 1)
+    } else if(val == 'minfloat')
     {
-        
-    } else if(val == 'maxint')
+        #Almost if not quite exactly right
+        return(-.Machine$double.xmax)
+    } else if(val == 'maxfloat')
     {
-        
-    } else if(val == 'minbyte')
+        return(.Machine$double.xmax)
+    } else if(val == 'epsfloat')
     {
-        
-    } else if(val == 'maxbyte')
-    {
-        
+        return(.Machine$double.eps)
     } else if(val == 'maxstrvarlen')
     {
-        
+        return(2^31 - 1)
     } else if(val == 'maxstrlvarlen')
     {
-        
+        #The str# and strL types as we implement them are the same
+        return(2^31 - 1)
     } else if(val == 'N')
     {
-        
+        dt <- get("rstata_dta", envir=rstata_env)
+        return(dt$dim[0])
     } else if(val == 'k')
     {
-        
+        dt <- get("rstata_dta", envir=rstata_env)
+        return(dt$dim[1])
     } else if(val == 'width')
     {
-        
+        dt <- get("rstata_dta", envir=rstata_env)
+        return(object.size(dt))
     } else if(val == 'changed')
     {
-        
+        dt <- get("rstata_dta", envir=rstata_env)
+        return(dt$changed)
     } else if(val == 'filename')
     {
-        
+        dt <- get("rstata_dta", envir=rstata_env)
+        return(dt$filename)
     } else if(val == 'filedate')
     {
-        
+        dt <- get("rstata_dta", envir=rstata_env)
+        return(dt$filedate)
     } else if(val == 'memory')
     {
-        
+        #it's appalling that this is the recommended way to check mem usage
+        mem <- gc()
+        return( 1024 * (mem[1, "(Mb)"] + mem[2, "(Mb)"]) )
     } else if(val == 'maxvar')
     {
-        
+        #This is the limit on vector size hardcoded into R in various places;
+        #the newer long vectors can be, of course, longer, but using them is
+        #still difficult and we've made no effort to do so.
+        return(2^31 - 1)
     } else if(val == 'niceness')
     {
-        
-    } else if(val == 'maxiter')
+        return(tools::psnice())
+    } else if(val == 'rng')
     {
-        
-    } else if(val == 'seed')
+        return(paste0(RNGkind(), collapse=" "))
+    } else if(val == 'rngstate')
     {
-        
-    } else if(val == 'odbcmgr')
-    {
-        
+        return(paste0(.Random.seed, collapse=","))
     } else if(val == 'rc')
     {
-        
+        #FIXME - need to implement the machinery for commands to have
+        #return codes; it's not clear what this should look like in an
+        #implementation where control flow at a low level is based on
+        #calls to signalCondition().
+        return(0)
     } else
     {
         return(get(val, envir=env, inherits=FALSE))
