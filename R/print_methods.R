@@ -31,7 +31,16 @@ function(x)
 print.rstata_cmd_display <-
 function(x)
 {
-    NextMethod()
+    if(length(x) == 0)
+    {
+        cat(" ")
+    } else if(is.na(x))
+    {
+        cat(".")
+    } else
+    {
+        cat(x)
+    }
 }
 
 print.rstata_cmd_creturn <-

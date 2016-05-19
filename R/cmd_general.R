@@ -70,7 +70,7 @@ function(expression, return.match.call=NULL)
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
     
-    ret <- eval(expression_list[[1]])
+    ret <- eval(expression[[1]])
     return(structure(ret, class=c("rstata_cmd_display", class(ret))))
 }
 
