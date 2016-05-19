@@ -245,39 +245,46 @@ function(name)
     env <- get("rstata_macro_env", envir=rstata_env)
 
     #Implement the e() and r() stored results objects, and the c() system
-    #values object. All of the regexes here are a little screwy: if the e(),
+    #values object. All of the regexes here are a little screwy: when the e(),
     #r(), or c() appears at the beginning of the macro text, everything after
     #the close paren is ignored. But this is actually Stata's behavior,
-    #so we'll run with it.
+    #so we'll run with it. These three are ONLY recognized when at the start
+    #of a macro text.
 
     #the e() class
-    m <- regexpr("^e\\((?<match>.*)\\)", name, perl=TRUE)
+    m <- regexpr("^e_?\\((?<match>.*)\\)", name, perl=TRUE)
     start <- attr(m, "capture.start")
     len <- attr(m, "capture.length")
     if(start != -1)
     {
-        val <- substr(name, start, start + len - 1)
-        return(rstata_func_e(val))
+        txt <- substr(name, start, start + len - 1)
+        val <- as.character(rstata_func_e(txt))
+        
+        return(val)
     }
 
     #the r() class
-    m <- regexpr("^r\\((?<match>.*)\\)", name, perl=TRUE)
+    m <- regexpr("^_?r\\((?<match>.*)\\)", name, perl=TRUE)
     start <- attr(m, "capture.start")
     len <- attr(m, "capture.length")
     if(start != -1)
     {
-        val <- substr(name, start, start + len - 1)
-        return(rstata_func_r(val))
+        txt <- substr(name, start, start + len - 1)
+        val <- as.character(rstata_func_r(txt))
+        
+        return(val)
     }
 
     #the c() class
-    m <- regexpr("^r\\((?<match>.*)\\)", name, perl=TRUE)
+    m <- regexpr("^_?c\\((?<match>.*)\\)", name, perl=TRUE)
     start <- attr(m, "capture.start")
     len <- attr(m, "capture.length")
     if(start != -1)
     {
-        val <- substr(name, start, start + len - 1)
-        return(rstata_func_c(val))
+        txt <- substr(name, start, start + len - 1)
+        val <- as.character(rstata_func_c(txt))
+        
+        return(val)
     }
 
     #a normal macro

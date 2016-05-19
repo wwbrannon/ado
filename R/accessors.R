@@ -151,24 +151,20 @@ function(val=NULL, enum=FALSE)
         ret <- ls(envir=env)
         
         #These are the ones implemented below
-        ret <- c(ret,
-                 'current_date', 'current_time', 'rstata_version', 'bit',
-                 'processors', 'processors_mach', 'mode', 'console', 'os',
-                 'osdtl', 'hostname', 'machine_type', 'byteorder', 'username',
-                 'tmpdir', 'pwd', 'dirsep', 'max_N_theory', 'max_k_theory',
-                 'max_width_theory', 'max_macrolen', 'macrolen', 'max_cmdlen',
-                 'cmdlen', 'namelen', 'mindouble', 'maxdouble', 'epsdouble',
-                 'smallestdouble', 'minfloat', 'maxfloat', 'epsfloat', 'minlong',
-                 'maxlong', 'minint', 'maxint', 'minbyte', 'maxbyte',
-                 'maxstrvarlen', 'maxstrlvarlen', 'N', 'k', 'width', 'changed',
-                 'filename', 'filedate', 'memory', 'maxvar', 'niceness', 'maxiter',
-                 'seed', 'odbcmgr', 'rc', 'webuse_url')
-        
+        ret <- c(ret, 'current_date', 'current_time', 'rstata_version', 'bit',
+                 'processors', 'processors_mach', 'processors_max', 'mode',
+                 'console', 'os', 'osdtl', 'rversion', 'hostname', 'machine_type',
+                 'byteorder', 'username', 'tmpdir', 'pwd', 'dirsep', 'max_N_theory',
+                 'max_k_theory', 'max_width_theory', 'max_macrolen', 'macrolen',
+                 'max_cmdlen', 'cmdlen', 'namelen', 'mindouble', 'maxdouble',
+                 'epsdouble', 'smallestdouble', 'minlong', 'maxlong', 'minfloat',
+                 'maxfloat', 'epsfloat', 'maxstrvarlen', 'maxstrlvarlen', 'N', 'k',
+                 'width', 'changed', 'filename', 'filedate', 'memory', 'maxvar',
+                 'niceness', 'rng', 'rc', 'rngstate')
+                 
         return(ret)
     }
     
-    #FIXME - handle special c-class values before falling back to looking val
-    #up in the c-class environment
     if(val == 'current_date')
     {
         return(Sys.Date())
@@ -223,7 +219,7 @@ function(val=NULL, enum=FALSE)
     } else if(val == 'osdtl')
     {
         s <- Sys.info()
-        return(s$release %p% " " %p% s$version)
+        return(s["release"] %p% " " %p% s["version"])
     } else if(val == 'rversion')
     {
         return(R.version$version.string)
@@ -250,7 +246,7 @@ function(val=NULL, enum=FALSE)
         return(getwd())
     } else if(val == 'dirsep')
     {
-        return(.Platform["file.sep"])
+        return(.Platform$file.sep)
     } else if(val == 'max_N_theory')
     {
         return(2^31 - 1)
@@ -329,11 +325,11 @@ function(val=NULL, enum=FALSE)
     } else if(val == 'N')
     {
         dt <- get("rstata_dta", envir=rstata_env)
-        return(dt$dim[0])
+        return(dt$dim[1])
     } else if(val == 'k')
     {
         dt <- get("rstata_dta", envir=rstata_env)
-        return(dt$dim[1])
+        return(dt$dim[2])
     } else if(val == 'width')
     {
         dt <- get("rstata_dta", envir=rstata_env)
