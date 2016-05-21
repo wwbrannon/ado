@@ -36,6 +36,26 @@ function(expression=NULL, return.match.call=NULL)
     return(invisible(NULL))    
 }
 
+rstata_cmd_head <-
+function(option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+    
+    valid_opts <- c("n")
+    option_list <- validateOpts(option_list, valid_opts)
+    
+    dt <- get("rstata_dta", envir=rstata_env)
+    
+    n <- 5
+    if(hasOption(option_list, "n"))
+    {
+        n <- optionArgs(option_list, "n")
+    }
+    
+    return(dt$head(n))
+}
+
 rstata_cmd_append <-
 function(using_clause, option_list=NULL, return.match.call=NULL)
 {

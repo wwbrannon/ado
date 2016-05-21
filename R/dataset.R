@@ -211,13 +211,29 @@ R6::R6Class("Dataset",
         
         drop_columns = function(cols)
         {
+            for(col in cols)
+            {
+                if(col %not_in% names(private$dt))
+                {
+                    raiseCondition("Column does not exist")
+                }
+                
+                #FIXME Does this work?
+                private$dt[, eval(quote(col)) := NULL]
+            }
             
+            return(invisible(TRUE))
+        },
+        
+        head = function(n=5)
+        {
+            return(utils::head(private$dt, n))
         }
     ),
     private = list(
         dt = data.table::data.table(), #a null data.table makes names and dim work
-        preserve_cpy <- NULL,
-        preserve_file <- NULL,
+        preserve_cpy = NULL,
+        preserve_file = NULL,
         
         append_attributes = function(attrs)
         {
@@ -247,15 +263,15 @@ R6::R6Class("Dataset",
         as_data_frame = function() private$dt,
     
         #The current Stata dataset label
-        data_label=function() attr(private$dt, "datalabel"),
+        data_label = function() attr(private$dt, "datalabel"),
         
         #Has the dataset been modified since it was loaded?
-        changed=function() private$changed, #FIXME
+        changed = function() private$changed, #FIXME
         
         #What filename did we last save to?
-        filename=function() private$filename, #FIXME
+        filename = function() private$filename, #FIXME
         
         #When did we last save?
-        filedate=function()private$filedate #FIXME
+        filedate = function()private$filedate #FIXME
     )
 )
