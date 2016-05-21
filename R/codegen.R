@@ -75,7 +75,6 @@ function(node, debug_level=0)
 codegen.rstata_if_cmd <-
 function(node, debug_level=0)
 {
-    #FIXME
     exp <- codegen(node$children$expression, debug_level)
     cmp <- codegen(node$children$compound_cmd, debug_level)
     

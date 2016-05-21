@@ -19,6 +19,7 @@ function(dta = NULL, filename=NULL, string=NULL,
     #We have a package-wide environment because of scoping issues,
     #but the data in it shouldn't persist across calls to this function
     initialize()
+    dt <- get("rstata_dta", envir=rstata_env)
     
     #If we got a data.frame to use, set up the dataset object to use it
     if(is.null(dta))
@@ -26,9 +27,7 @@ function(dta = NULL, filename=NULL, string=NULL,
         varname <- "dta"
     } else
     {
-        dt <- get("rstata_dta", envir=rstata_env)
         dt$use_dataframe(dta)
-        
         varname <- deparse(substitute(dta))
     }
 
@@ -44,12 +43,13 @@ function(dta = NULL, filename=NULL, string=NULL,
     {
         on.exit(if(assign.back)
         {
-            obj <- as.data.frame(get("rstata_dta", envir=rstata_env)$as_data_frame)
+            obj <- as.data.frame(dt$as_data_frame)
             assign(varname, obj, pos=parent.frame())
         })
     }
 
-    #Call the finalizer on exit to make sure the dataset is cleared
+    #Call the finalizer on exit to make sure the dataset is cleared and
+    #memory is released
     on.exit(finalize(), add=TRUE)
     
     #We should put the debug_level argument into settings_env so that it's
@@ -147,7 +147,7 @@ function(dta = NULL, filename=NULL, string=NULL,
                                 echo=ifelse(is.null(echo), 1, echo))
     }
 
-    return(invisible(as.data.frame(get("rstata_dta", envir=rstata_env)$as_data_frame)))
+    return(invisible((dt$as_data_frame)))
 }
 
 #Callbacks: the main command-processing callback function for the parser
