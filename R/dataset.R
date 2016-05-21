@@ -149,10 +149,76 @@ R6::R6Class("Dataset",
             private$dt <- data.table::data.table(do.call(read.csv, read_args))
     
             return(invisible(TRUE))
+        },
+        
+        preserve = function(memory=FALSE)
+        {
+            #Default to preserving to disk
+            if(memory)
+            {
+                private$preserve_cpy <- copy(private$dt)
+            } else
+            {
+                private$preserve_file <- tempfile()
+                dput(private$dt, file=private$preserve_file)
+            }
+            
+            return(invisible(TRUE))
+        },
+        
+        restore = function(cancel=FALSE)
+        {
+            if(cancel)
+            {
+                if(!is.null(private$preserve_cpy))
+                {
+                    #The garbage collector destroys the object
+                    private$preserve_cpy <- NULL
+                } else if(!is.null(private$preserve_file))
+                {
+                    unlink(private$preserve_file)
+                    private$preserve_file <- NULL
+                } else
+                {
+                    raiseCondition("Cannot cancel preserve: no preserve set up")
+                }
+            } else
+            {
+                if(!is.null(private$preserve_cpy))
+                {
+                    #The garbage collector will tear down both dt and preserve_cpy
+                    #once we set the refs to NULL, which frees up memory
+                    
+                    private$dt <- NULL
+                    private$dt <- private$preserve_cpy
+                    
+                    private$preserve_cpy <- NULL
+                } else if(!is.null(private$preserve_file))
+                {
+                    #Load the serialized object back in
+                    private$dt <- NULL
+                    private$dt <- dget(private$preserve_file)
+                    
+                    #Unlink the copy on disk to free up space
+                    unlink(private$preserve_file)
+                    private$preserve_file <- NULL
+                } else
+                {
+                    raiseCondition("Cannot restore: no preserve set up")
+                }
+            }
+        },
+        
+        drop_columns = function(cols)
+        {
+            
         }
     ),
     private = list(
         dt = data.table::data.table(), #a null data.table makes names and dim work
+        preserve_cpy <- NULL,
+        preserve_file <- NULL,
+        
         append_attributes = function(attrs)
         {
             #read.dta13 creates a lot of attributes with information about the
@@ -181,6 +247,15 @@ R6::R6Class("Dataset",
         as_data_frame = function() private$dt,
     
         #The current Stata dataset label
-        data_label=function() attr(private$dt, "datalabel")
+        data_label=function() attr(private$dt, "datalabel"),
+        
+        #Has the dataset been modified since it was loaded?
+        changed=function() private$changed, #FIXME
+        
+        #What filename did we last save to?
+        filename=function() private$filename, #FIXME
+        
+        #When did we last save?
+        filedate=function()private$filedate #FIXME
     )
 )
