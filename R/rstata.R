@@ -2,7 +2,8 @@
 #TODO: this should really be factored into a more OO design; use R6?
 
 #Flags you can bitwise OR to enable debugging features.
-#It's important that these have the same numeric values as in the C++ header file.
+#It's important that these have the same numeric values as
+#the macros in the C++ header file.
 DEBUG_PARSE_TRACE <- 4
 DEBUG_MATCH_CALL <- 8
 DEBUG_VERBOSE_ERROR <- 16
@@ -13,8 +14,7 @@ DEBUG_NO_PARSE_ERROR <- 32
 #' @import Rcpp
 rstata <-
 function(dta = NULL, filename=NULL, string=NULL,
-         assign.back=TRUE, save.history=TRUE,
-         debug_level=0, echo=NULL)
+         assign.back=TRUE, debug_level=0, echo=NULL)
 {
     #We have a package-wide environment because of scoping issues,
     #but the data in it shouldn't persist across calls to this function
@@ -63,40 +63,12 @@ function(dta = NULL, filename=NULL, string=NULL,
     {
         #We're reading from stdin, interactively:
         #time for a read-eval-print loop
-
-        #Save the command history before we get started
-        if(!is.null(save.history) && save.history)
-        {
-            #the R command history before this function was invoked
-            orig_cmdhist <- tempfile()
-            savehistory(orig_cmdhist)
-
-            #our command history
-            cmdhist <- tempfile()
-            cat("", file=cmdhist)
-            loadhistory(cmdhist) #start with empty history
-
-            on.exit(
-            {
-                loadhistory(orig_cmdhist)
-
-                unlink(cmdhist)
-                unlink(orig_cmdhist)
-            }, add=TRUE)
-        }
-
         while(TRUE)
         {
             val <-
             tryCatch(
             {
                 inpt <- read_interactive()
-
-                if(!is.null(save.history) && save.history)
-                {
-                    cat(inpt, "\n", file=cmdhist, append=TRUE)
-                    loadhistory(cmdhist) #it's brutal how much disk access this is
-                }
 
                 #Send the input to the bison parser, which, after reading
                 #each command, invokes the process_cmd callback
@@ -248,8 +220,11 @@ function(name)
     #values object. All of the regexes here are a little screwy: when the e(),
     #r(), or c() appears at the beginning of the macro text, everything after
     #the close paren is ignored. But this is actually Stata's behavior,
-    #so we'll run with it. These three are ONLY recognized when at the start
-    #of a macro text.
+    #so we'll run with it.
+    
+    #The (e,r,c)-classes are ONLY recognized when at the start of a macro text.
+    #The "_?" in the regexes matches them when used in either a local macro
+    #(which the parser expands into a global with a prefixed "_") or a global.
 
     #the e() class
     m <- regexpr("^e_?\\((?<match>.*)\\)", name, perl=TRUE)
