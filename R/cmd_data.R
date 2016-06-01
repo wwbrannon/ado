@@ -1,5 +1,4 @@
 #head and list need to be combined
-#drop and keep, and corresponding dataset methods
 
 rstata_cmd_clear <-
 function(expression=NULL, return.match.call=NULL)
@@ -68,24 +67,89 @@ function(expression_list=NULL, if_clause=NULL, in_clause=NULL, option_list=NULL,
 }
 
 rstata_cmd_drop <-
-function(expression_list=NULL, if_clause=NULL, in_clause=NULL,
-         return.match.call=NULL)
+function(varlist=NULL, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
     
+    #Only certain combinations of these arguments are valid
+    raiseif(is.null(varlist) && is.null(if_clause) && is.null(in_clause),
+            msg="Must specify what to drop")
+    raiseif(!is.null(varlist) && (!is.null(if_clause) || !is.null(in_clause)),
+            msg="Cannot drop both columns and rows at once")
+    raiseif(!is.null(if_clause) && !is.null(in_clause),
+            msg="Cannot specify both an in clause and an if clause at once")
     
+    dt <- get("rstata_dta", envir=rstata_env)
+    varlist <- lapply(varlist, as.character)
+    
+    #One Stata syntax: we're dropping columns
+    if(!is.null(varlist))
+    {
+        dt$drop_columns(varlist)
+    }
+    
+    #We're dropping rows but keeping all columns
+    if(!is.null(if_clause))
+    {
+        rows <- dt$rows_where(if_clause)
+        dt$drop_rows(rows)
+    }
+    
+    if(!is.null(in_clause))
+    {
+        rn <- dt$in_clause_to_row_numbers(in_clause)
+        dt$drop_rows(seq.int(rn[1], rn[2]))
+    }
+    
+    return(invisible(NULL))
 }
 
 rstata_cmd_keep <-
-function(varlist=NULL, if_clause=NULL, in_clause=NULL,
-         return.match.call=NULL)
+function(varlist=NULL, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-}
 
-#==============================================================================
+    #Only certain combinations of these arguments are valid
+    raiseif(is.null(varlist) && is.null(if_clause) && is.null(in_clause),
+            msg="Must specify what to keep")
+    raiseif(!is.null(varlist) && (!is.null(if_clause) || !is.null(in_clause)),
+            msg="Cannot keep both columns and rows at once")
+    raiseif(!is.null(if_clause) && !is.null(in_clause),
+            msg="Cannot specify both an in clause and an if clause at once")
+    
+    dt <- get("rstata_dta", envir=rstata_env)
+    varlist <- lapply(varlist, as.character)
+    
+    #One Stata syntax: we're dropping columns
+    if(!is.null(varlist))
+    {
+        cols <- setdiff(dt$names, varlist)
+        dt$drop_columns(cols)
+    }
+    
+    #We're dropping rows but keeping all columns
+    if(!is.null(if_clause))
+    {
+        all_rows = seq.int(dt$dim[1], dt$dim[2])
+        rows <- dt$rows_where(if_clause)
+        
+        dt$drop_rows(setdiff(all_rows, rows))
+    }
+    
+    if(!is.null(in_clause))
+    {
+        rn <- dt$in_clause_to_row_numbers(in_clause)
+        
+        all_rows = seq.int(dt$dim[1], dt$dim[2])
+        rows <- seq.int(rn[1], rn[2])
+        
+        dt$drop_rows(setdiff(all_rows, rows))
+    }
+    
+    return(invisible(NULL))
+}
 
 rstata_cmd_append <-
 function(using_clause, option_list=NULL, return.match.call=NULL)
