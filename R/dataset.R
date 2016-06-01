@@ -228,6 +228,42 @@ R6::R6Class("Dataset",
         head = function(n=5)
         {
             return(utils::head(private$dt, n))
+        },
+        
+        in_clause_to_row_numbers = function(in_clause)
+        {
+            #Update bounds if they're given as f/F or l/L, and translate
+            #negative row numbers to positive ones
+            for(n in names(in_clause))
+            {
+                if(in_clause[[n]] == as.symbol("f") || in_clause[[n]] == as.symbol("F"))
+                {
+                    in_clause[[n]] <- 1
+                }
+                
+                if(in_clause[[n]] == as.symbol("l") || in_clause[[n]] == as.symbol("L"))
+                {
+                    in_clause[[n]] <- self$dim[1]
+                }
+                
+                #Handle negative bounds: -n becomes (n-1) rows before the end of the
+                #dataset. If self$dim[1] == 100, -1 => 100 + 1 -1 == 100, the last
+                #indexable row.
+                if(in_clause[[n]] < 0)
+                {
+                    in_clause[[n]] <- self$dim[1] + 1 + in_clause[[n]]
+                }
+            }
+            
+            #Raise if the bounds are bad
+            raiseifnot(in_clause$lower < in_clause$upper,
+                       msg="In clause: start row occurs after end row")
+            raiseifnot(in_clause$upper < self$dim[1],
+                       msg="In clause: end row exceeds dataset length")
+            raiseifnot(in_clause$lower >= 1,
+                       msg="In clause: start row too low")
+            
+            return(c(in_clause$lower, in_clause$upper))
         }
     ),
     private = list(
