@@ -171,6 +171,43 @@ function(varlist=NULL, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
     return(invisible(NULL))
 }
 
+rstata_cmd_count <-
+function(if_clause=NULL, in_clause=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+    
+    raiseif(!is.null(if_clause) && !is.null(in_clause),
+            msg="Cannot give both an if clause and an in clause at once")
+    
+    dt <- get("rstata_dta", envir=rstata_env)
+    
+    #We don't need to do any expensive copying here, fortunately
+    if(!is.null(if_clause))
+    {
+        rows <- dt$rows_where(if_clause)
+        return(length(rows))
+    } else if(!is.null(in_clause))
+    {
+        rn <- dt$in_clause_to_row_numbers(in_clause)
+        return(rn[2] - rn[1])
+    } else
+    {
+        return(dt$dim[1])
+    }
+}
+
+# =============================================================================
+
+rstata_cmd_isid <-
+function(varlist, using_clause=NULL, option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+}
+
+# =============================================================================
+
 rstata_cmd_append <-
 function(using_clause, option_list=NULL, return.match.call=NULL)
 {
@@ -200,16 +237,6 @@ function(expression_list, if_clause=NULL, in_clause=NULL,
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-}
-
-rstata_cmd_count <-
-function(if_clause=NULL, in_clause=NULL, return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-    
-    dt <- get("rstata_dta", envir=rstata_env)
-    return(dt$dim[1])
 }
 
 rstata_cmd_decode <-
@@ -292,13 +319,6 @@ function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
 
 rstata_cmd_gsort <-
 function(expression_list, option_list=NULL, return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-}
-
-rstata_cmd_isid <-
-function(varlist, using_clause=NULL, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
