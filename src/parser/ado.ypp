@@ -1620,6 +1620,14 @@ in_clause:
 
         $$ = node;
     }
+    | IN unary_expression
+    {
+        ExprNode *node = new ExprNode("rstata_in_clause");
+        node->appendChild("upper", $2);
+        node->appendChild("lower", $2);
+
+        $$ = node;
+    }
     ;
 
 /*

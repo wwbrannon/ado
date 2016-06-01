@@ -261,6 +261,9 @@ test_that("General commands with an expression list and an in clause parse", {
     expect_accept("logit y x1 x2 x3 in 3 / 4\n")
     expect_accept("drop in -5 / 6\n")
     expect_accept("gen y = 1 in 34 / L\n")
+    expect_accept("gen y = 1 in F / 34\n")
+    expect_accept("gen y = 1 in 34\n")
+    expect_accept("gen y = 1 in l\n")
     expect_accept("replace income = 0 in -24 / F\n")
 })
 
