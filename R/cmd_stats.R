@@ -142,7 +142,6 @@ function(expression_list, option_list=NULL, return.match.call=NULL)
     return(match.call())
 }
 
-
 rstata_cmd_margins <-
 function(varlist=NULL, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
          option_list=NULL, return.match.call=NULL)
@@ -256,14 +255,6 @@ function(varlist=NULL, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
     return(match.call())
 }
 
-rstata_cmd_tab <-
-function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
-         option_list=NULL, return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-      return(match.call())
-}
-
 rstata_cmd_tab1 <-
 function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
          option_list=NULL, return.match.call=NULL)
@@ -327,3 +318,4 @@ function(..., return.match.call=NULL)
     return(match.call())
 }
 
+rstata_cmd_tab <- rstata_cmd_tabulate
