@@ -1,3 +1,6 @@
+#head and list need to be combined
+#drop and keep, and corresponding dataset methods
+
 rstata_cmd_clear <-
 function(expression=NULL, return.match.call=NULL)
 {
@@ -7,7 +10,7 @@ function(expression=NULL, return.match.call=NULL)
     if(is.null(expression))
     {
         drop_data <- TRUE
-        drop_results <- FALSE        
+        drop_results <- FALSE
     } else if(as.character(expression[[1]]) == "all")
     {
         drop_data <- TRUE
@@ -56,6 +59,34 @@ function(option_list=NULL, return.match.call=NULL)
     return(dt$head(n))
 }
 
+rstata_cmd_list <-
+function(expression_list=NULL, if_clause=NULL, in_clause=NULL, option_list=NULL,
+         return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+}
+
+rstata_cmd_drop <-
+function(expression_list=NULL, if_clause=NULL, in_clause=NULL,
+         return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+    
+    
+}
+
+rstata_cmd_keep <-
+function(varlist=NULL, if_clause=NULL, in_clause=NULL,
+         return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+}
+
+#==============================================================================
+
 rstata_cmd_append <-
 function(using_clause, option_list=NULL, return.match.call=NULL)
 {
@@ -80,7 +111,7 @@ function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
 }
 
 rstata_cmd_compare <-
-function(expression_list, if_clause=NULL, in_clause=NULL, by_dta=NULL,
+function(expression_list, if_clause=NULL, in_clause=NULL,
          return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -88,7 +119,7 @@ function(expression_list, if_clause=NULL, in_clause=NULL, by_dta=NULL,
 }
 
 rstata_cmd_count <-
-function(if_clause=NULL, in_clause=NULL, by_dta=NULL, return.match.call=NULL)
+function(if_clause=NULL, in_clause=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
@@ -120,14 +151,6 @@ function(expression_list=NULL, option_list=NULL, return.match.call=NULL)
         return(match.call())
 }
 
-rstata_cmd_drop <-
-function(expression_list=NULL, if_clause=NULL, in_clause=NULL, by_dta=NULL,
-         return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-}
-
 rstata_cmd_duplicates <-
 function(expression_list=NULL, if_clause=NULL, in_clause=NULL, option_list=NULL,
          return.match.call=NULL)
@@ -137,7 +160,7 @@ function(expression_list=NULL, if_clause=NULL, in_clause=NULL, option_list=NULL,
 }
 
 rstata_cmd_egen <-
-function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL, by_dta=NULL,
+function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
          return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -162,7 +185,7 @@ function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
 
 rstata_cmd_flist <-
 function(expression_list=NULL, if_clause=NULL, in_clause=NULL, option_list=NULL,
-         by_dta=NULL, return.match.call=NULL)
+         return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
@@ -176,7 +199,7 @@ function(expression_list=NULL, return.match.call=NULL)
 }
 
 rstata_cmd_generate <-
-function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL, by_dta=NULL,
+function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
          return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -197,25 +220,9 @@ function(varlist, using_clause=NULL, option_list=NULL, return.match.call=NULL)
         return(match.call())
 }
 
-rstata_cmd_keep <-
-function(varlist=NULL, if_clause=NULL, in_clause=NULL, by_dta=NULL,
-         return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-}
-
 rstata_cmd_label <-
 function(expression_list, using_clause=NULL, option_list=NULL,
          return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-}
-
-rstata_cmd_list <-
-function(expression_list=NULL, if_clause=NULL, in_clause=NULL, option_list=NULL,
-         by_dta=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
@@ -272,7 +279,7 @@ function(expression_list=NULL, option_list=NULL, return.match.call=NULL)
 }
 
 rstata_cmd_sample <-
-function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL, by_dta=NULL,
+function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
          return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
