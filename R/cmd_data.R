@@ -197,24 +197,6 @@ function(if_clause=NULL, in_clause=NULL, return.match.call=NULL)
     }
 }
 
-# =============================================================================
-
-rstata_cmd_isid <-
-function(varlist, using_clause=NULL, option_list=NULL, return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-}
-
-rstata_cmd_sort <-
-function(expression, in_clause=NULL, option_list=NULL, return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-    
-    
-}
-
 rstata_cmd_gsort <-
 function(expression_list, option_list=NULL, return.match.call=NULL)
 {
@@ -241,6 +223,41 @@ function(expression_list, option_list=NULL, return.match.call=NULL)
     ords <- lapply(proc, function(x) x$asc)
     
     dt$sort(cols, asc=ords, row_number=rn, na.last=na.last)
+    
+    return(invisible(TRUE))
+}
+
+rstata_cmd_sort <-
+function(varlist, in_clause=NULL, option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+    
+    valid_opts <- c("stable")
+    option_list <- validateOpts(option_list, valid_opts)
+    stable <- hasOption(option_list, "stable")
+    
+    dt <- get("rstata_dta", envir=rstata_env)
+    
+    rows <- NULL
+    if(!is.null(in_clause))
+    {
+        rn <- dt$in_clause_to_row_numbers(in_clause)
+        rows <- seq.int(rn[1], rn[2])
+    }
+    
+    dt$sort(varlist, rows=rows, stable=stable)
+    
+    return(invisible(TRUE))
+}
+
+# =============================================================================
+
+rstata_cmd_isid <-
+function(varlist, using_clause=NULL, option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
 }
 
 rstata_cmd_order <-

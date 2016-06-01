@@ -282,7 +282,7 @@ R6::R6Class("Dataset",
         },
         
         sort = function(cols, rows=NULL, asc=replicate(length(cols), TRUE),
-                        row_number=NULL, na.last=TRUE)
+                        row_number=NULL, na.last=TRUE, stable=FALSE)
         {
             #FIXME
         }
