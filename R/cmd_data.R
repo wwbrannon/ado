@@ -206,6 +206,50 @@ function(varlist, using_clause=NULL, option_list=NULL, return.match.call=NULL)
         return(match.call())
 }
 
+rstata_cmd_sort <-
+function(expression, in_clause=NULL, option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+    
+    
+}
+
+rstata_cmd_gsort <-
+function(expression_list, option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+    
+    valid_opts <- c("generate", "mfirst")
+    option_list <- validateOpts(option_list, valid_opts)
+    
+    na.last <- !hasOption(option_list, "mfirst")
+    
+    rn <- NULL
+    if(hasOption(option_list, "generate"))
+    {
+        rn <- optionArgs(option_list, "generate")
+    }
+    
+    dt <- get("rstata_dta", envir=rstata_env)
+    
+    #These are unevaluated calls to rstata_func_ functions, so they
+    #need to be evaluated before being used.
+    proc <- lapply(expression_list, eval)
+    cols <- lapply(proc, function(x) x$col)
+    ords <- lapply(proc, function(x) x$asc)
+    
+    dt$sort(cols, asc=ords, row_number=rn, na.last=na.last)
+}
+
+rstata_cmd_order <-
+function(expression_list, option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+}
+
 # =============================================================================
 
 rstata_cmd_append <-
@@ -309,13 +353,6 @@ function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
         return(match.call())
 }
 
-rstata_cmd_gsort <-
-function(expression_list, option_list=NULL, return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-}
-
 rstata_cmd_label <-
 function(expression_list, using_clause=NULL, option_list=NULL,
          return.match.call=NULL)
@@ -333,13 +370,6 @@ function(expression_list, return.match.call=NULL)
 
 rstata_cmd_merge <-
 function(varlist, using_clause, option_list=NULL, return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-}
-
-rstata_cmd_order <-
-function(expression_list, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
@@ -385,13 +415,6 @@ function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
 rstata_cmd_separate <-
 function(expression, option_list, if_clause=NULL, in_clause=NULL,
          return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-}
-
-rstata_cmd_sort <-
-function(expression, in_clause=NULL, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())

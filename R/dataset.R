@@ -225,9 +225,19 @@ R6::R6Class("Dataset",
             return(invisible(TRUE))
         },
         
+        drop_rows = function(rows)
+        {
+            #FIXME
+        },
+        
         head = function(n=5)
         {
             return(utils::head(private$dt, n))
+        },
+        
+        iloc = function(row_indexer, col_indexer, ...)
+        {
+            #FIXME
         },
         
         in_clause_to_row_numbers = function(in_clause)
@@ -264,6 +274,17 @@ R6::R6Class("Dataset",
                        msg="In clause: start row too low")
             
             return(c(in_clause$lower, in_clause$upper))
+        },
+        
+        rows_where = function(expr)
+        {
+            #FIXME
+        },
+        
+        sort = function(cols, rows=NULL, asc=replicate(length(cols), TRUE),
+                        row_number=NULL, na.last=TRUE)
+        {
+            #FIXME
         }
     ),
     private = list(

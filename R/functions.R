@@ -1,15 +1,15 @@
 #Helper functions for gsort - ascending sort
 rstata_func_asc <-
-function(vec)
+function(col)
 {
-    #FIXME
+    return(list(asc=TRUE, col=as.character(col)))
 }
 
 #Helper functions for gsort - descending sort
 rstata_func_desc <-
-function(vec)
+function(col)
 {
-    #FIXME
+    return(list(asc=FALSE, col=as.character(col)))
 }
 
 rstata_func_recode_rule_ident <-
