@@ -43,6 +43,7 @@ function(vec)
 `%is%` <- function(x, y) every(y %in% class(x))
 `%p%` <- function(x, y) paste0(x, y)
 `%not_in%` <- function(x, y) (!(x %in% y))
+`%xor%` <- function(x, y) xor(x, y)
 
 #As in C, for handling bitwise ops on flags
 `%|%` <- function(x, y) bitwOr(x, y)
@@ -99,9 +100,15 @@ function(msg, cls="BadCommandException")
     invisible(NULL)
 }
 
+raiseifnot <-
+function(expr, cls="BadCommandException", msg=NULL)
+{
+    raiseif(!expr, cls=cls, msg=msg)
+}
+
 #Like stopifnot(), but rather than actually calling stop(), just throw an
 #exception to the point in process_cmd where it's caught and handled.
-raiseifnot <-
+raiseif <-
 function(expr, cls="BadCommandException", msg=NULL)
 {
     if(is.null(msg))
@@ -117,7 +124,7 @@ function(expr, cls="BadCommandException", msg=NULL)
     }
 
     #Check and raise a condition if it fails
-    if (length(expr) == 0 || !is.logical(expr) || is.na(expr) || !expr)
+    if (length(expr) == 0 || !is.logical(expr) || is.na(expr) || expr)
       raiseCondition(errmsg, cls)
 
     invisible(NULL)
