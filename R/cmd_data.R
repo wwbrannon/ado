@@ -1,5 +1,3 @@
-#head and list need to be combined
-
 rstata_cmd_clear <-
 function(expression=NULL, return.match.call=NULL)
 {
@@ -47,23 +45,45 @@ function(option_list=NULL, return.match.call=NULL)
     valid_opts <- c("n")
     option_list <- validateOpts(option_list, valid_opts)
     
-    dt <- get("rstata_dta", envir=rstata_env)
-    
     n <- 5
     if(hasOption(option_list, "n"))
     {
         n <- optionArgs(option_list, "n")
     }
     
-    return(dt$head(n))
+    return(rstata_cmd_list(in_clause=list(upper=n, lower=1)))
 }
 
 rstata_cmd_list <-
-function(expression_list=NULL, if_clause=NULL, in_clause=NULL, option_list=NULL,
-         return.match.call=NULL)
+function(varlist=NULL, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
+
+    raiseif(!is.null(if_clause) && !is.null(in_clause),
+            msg="Cannot specify both in clause and if clause at once")
+    
+    dt <- get("rstata_dta", envir=rstata_env)
+    
+    cols <- varlist
+    if(is.null(cols))
+    {
+        cols <- dt$names
+    }
+    
+    if(!is.null(if_clause))
+    {
+        rows <- dt$rows_where(if_clause)
+    } else if(!is.null(in_clause))
+    {
+        rn <- dt$in_clause_to_row_numbers(in_clause)
+        rows <- seq.int(rn[1], rn[2])
+    } else
+    {
+        rows <- seq.int(1, dt$dim[1])
+    }
+    
+    return(dt$iloc(rows, cols))
 }
 
 rstata_cmd_drop <-
