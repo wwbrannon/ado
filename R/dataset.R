@@ -218,8 +218,8 @@ R6::R6Class("Dataset",
                     raiseCondition("Column does not exist")
                 }
                 
-                #FIXME Does this work?
-                private$dt[, eval(quote(col)) := NULL]
+                col <- as.symbol(col)
+                private$dt[, eval(col) := NULL]
             }
             
             return(invisible(TRUE))
@@ -235,9 +235,15 @@ R6::R6Class("Dataset",
             return(utils::head(private$dt, n))
         },
         
-        iloc = function(row_indexer, col_indexer, ...)
+        iloc = function(row_indexer, col_indexer)
         {
-            #FIXME
+            return(private$dt[row_indexer, col_indexer, with=FALSE])
+        },
+        
+        subset = function(subset, select, ...)
+        {
+            args <- c(x=private$dt, subset=subset, select=select, list(...))
+            return(do.call(subset, args))
         },
         
         in_clause_to_row_numbers = function(in_clause)
