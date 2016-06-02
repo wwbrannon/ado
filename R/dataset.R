@@ -2,6 +2,8 @@
 #Rather than making every command-implementing function use data.table
 #or dplyr directly, this class takes care of the details.
 
+#FIXME - need to make sure column names are unique
+
 Dataset <-
 R6::R6Class("Dataset",
     public=list(

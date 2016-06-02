@@ -286,6 +286,27 @@ function(expression_list, return.match.call=NULL)
     return(df)
 }
 
+rstata_cmd_rename <-
+function(expression_list, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+    
+    raiseifnot(length(expression_list) == 2,
+               msg="Incorrect number of arguments")
+    
+    dt <- get("rstata_dta", envir=rstata_env)
+    expression_list <- lapply(expression_list, as.character)
+    
+    nm <- dt$names
+    ind <- which(nm == expression_list[[1]])
+    nm[ind] <- expression_list[[2]]
+    
+    dt$setnames(nm)
+    
+    return(invisible(TRUE))
+}
+
 # =============================================================================
 
 rstata_cmd_isid <-
@@ -445,13 +466,6 @@ function(expression, option_list=NULL, return.match.call=NULL)
 rstata_cmd_recode <-
 function(expression_list, if_clause=NULL, in_clause=NULL, option_list=NULL,
          return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-}
-
-rstata_cmd_rename <-
-function(expression_list, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
