@@ -15,6 +15,10 @@ R6::R6Class("Dataset",
                        msg="Incorrect number of column names to setnames")
             
             data.table::setnames(private$dt, names)
+            
+            private$.changed <- TRUE
+            
+            return(invisible(TRUE))
         },
         
         #Save the data we currently have loaded in either the new or
@@ -29,14 +33,23 @@ R6::R6Class("Dataset",
             
             readstata13::save.dta13(private$dt, path, data.label=self$data_label)
             
+            private$.changed <- FALSE
+            private$.filename <- path
+            private$.filedate <- date()
+            
             return(invisible(TRUE))
         },
+        
         saveold=function(path, replace=FALSE)
         {
             if(!replace && file.exists(path))
                 raiseCondition("Cannot save dataset; file exists")
             
             foreign::write.dta(private$dt, path)
+            
+            private$.changed <- FALSE
+            private$.filename <- path
+            private$.filedate <- date()
             
             return(invisible(TRUE))
         },
@@ -46,6 +59,12 @@ R6::R6Class("Dataset",
         {
             private$dt <- NULL #the old table is garbage-collected
             private$dt <- data.table::data.table()
+            
+            private$.changed <- NULL
+            private$.filename <- NULL
+            private$.filedate <- NULL
+            
+            return(invisible(NULL))
         },
         
         #Methods to load in data from different sources
@@ -74,9 +93,14 @@ R6::R6Class("Dataset",
                 private$dt <- data.table::data.table(df)
                 private$append_attributes(attrs)
                 
+                private$.changed <- FALSE
+                private$.filename <- NULL
+                private$.filedate <- NULL
+                
                 return(invisible(TRUE))
             }
         },
+        
         use_dataframe=function(df)
         {
             self$clear()
@@ -86,12 +110,18 @@ R6::R6Class("Dataset",
             private$dt <- data.table::data.table(df)
             private$append_attributes(attrs)
             
+            private$.changed <- FALSE
+            private$.filename <- NULL
+            private$.filedate <- NULL
+            
             return(invisible(TRUE))
         },
+        
         use_url=function(url)
         {
             return(self$use(url)) #read.dta13 handles URLs too
         },
+        
         use_csv=function(filename, header=TRUE, sep=',', ...)
         {
             read_args <- list(...)
@@ -148,6 +178,10 @@ R6::R6Class("Dataset",
             #preserving on a read-in CSV.
             private$dt <- data.table::data.table(do.call(read.csv, read_args))
     
+            private$.changed <- FALSE
+            private$.filename <- NULL
+            private$.filedate <- NULL
+            
             return(invisible(TRUE))
         },
         
@@ -222,12 +256,8 @@ R6::R6Class("Dataset",
                 private$dt[, eval(col) := NULL]
             }
             
+            private$.changed <- TRUE
             return(invisible(TRUE))
-        },
-        
-        drop_rows = function(rows)
-        {
-            #FIXME
         },
         
         head = function(n=5)
@@ -282,6 +312,14 @@ R6::R6Class("Dataset",
             return(c(in_clause$lower, in_clause$upper))
         },
         
+        drop_rows = function(rows)
+        {
+            #FIXME
+            
+            private$.changed <- TRUE
+            return(invisible(TRUE))
+        },
+        
         rows_where = function(expr)
         {
             #FIXME
@@ -291,12 +329,19 @@ R6::R6Class("Dataset",
                         row_number=NULL, na.last=TRUE, stable=FALSE)
         {
             #FIXME
+            
+            private$.changed <- TRUE
+            return(invisible(TRUE))
         }
     ),
     private = list(
         dt = data.table::data.table(), #a null data.table makes names and dim work
         preserve_cpy = NULL,
         preserve_file = NULL,
+        
+        .changed = NULL,
+        .filename = NULL,
+        .filedate = NULL,
         
         append_attributes = function(attrs)
         {
@@ -329,12 +374,12 @@ R6::R6Class("Dataset",
         data_label = function() attr(private$dt, "datalabel"),
         
         #Has the dataset been modified since it was loaded?
-        changed = function() private$changed, #FIXME
+        changed = function() private$.changed, #FIXME - preserve/restore?
         
         #What filename did we last save to?
-        filename = function() private$filename, #FIXME
+        filename = function() private$.filename,
         
         #When did we last save?
-        filedate = function()private$filedate #FIXME
+        filedate = function() private$.filedate
     )
 )
