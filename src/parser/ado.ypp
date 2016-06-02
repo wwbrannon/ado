@@ -1615,8 +1615,8 @@ in_clause:
         $3; // suppressing a stupid bison warning
 
         ExprNode *node = new ExprNode("rstata_in_clause");
-        node->appendChild("upper", $2);
-        node->appendChild("lower", $4);
+        node->appendChild("lower", $2);
+        node->appendChild("upper", $4);
 
         $$ = node;
     }
