@@ -1,3 +1,5 @@
+.datatable.aware <- TRUE
+
 .onLoad <-
 function(libname, pkgname)
 {
