@@ -302,9 +302,9 @@ R6::R6Class("Dataset",
             }
             
             #Raise if the bounds are bad
-            raiseifnot(in_clause$lower < in_clause$upper,
+            raiseifnot(in_clause$lower <= in_clause$upper,
                        msg="In clause: start row occurs after end row")
-            raiseifnot(in_clause$upper < self$dim[1],
+            raiseifnot(in_clause$upper <= self$dim[1],
                        msg="In clause: end row exceeds dataset length")
             raiseifnot(in_clause$lower >= 1,
                        msg="In clause: start row too low")

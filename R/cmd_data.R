@@ -190,7 +190,7 @@ function(if_clause=NULL, in_clause=NULL, return.match.call=NULL)
     } else if(!is.null(in_clause))
     {
         rn <- dt$in_clause_to_row_numbers(in_clause)
-        return(rn[2] - rn[1])
+        return(rn[2] - rn[1] + 1)
     } else
     {
         return(dt$dim[1])
