@@ -307,14 +307,57 @@ function(expression_list, return.match.call=NULL)
     return(invisible(TRUE))
 }
 
-# =============================================================================
-
 rstata_cmd_isid <-
 function(varlist, using_clause=NULL, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
+    
+    valid_opts <- c("sort", "missok")
+    option_list <- validateOpts(option_list, valid_opts)
+    sort <- hasOption(option_list, "sort")
+    missok <- hasOption(option_list, "missok")
+    
+    varlist <- vapply(varlist, as.character, character(1))
+    
+    #In typical inconsistent Stata fashion, the using clause here says to do
+    #something that doesn't involve the main dataset, so if needed, we'll set
+    #up a temporary dataset instead
+    if(!is.null(using_clause))
+    {
+        dt <- Dataset$new()
+        
+        if(tools::file_ext(using_clause) == "")
+            using_clause <- using_clause %p% ".dta"
+        
+        dt$use(using_clause)
+    } else
+    {
+        dt <- get("rstata_dta", envir=rstata_env)
+    }
+    
+    if(!missok)
+    {
+        func <- function(x) length(which(is.na(dt$as_data_frame[, x])))
+        missings <- vapply(varlist, func, numeric(1))
+        
+        raiseif(sum(missings) > 0,
+                msg="Missing values in id variables and missok not specified")
+    }
+    
+    if(sort)
+    {
+        dt$sort(varlist)
+    }
+    
+    n <- data.table::uniqueN(dt$as_data_frame, by=varlist)
+    raiseif(n < dt$dim[1],
+            msg="Variables do not uniquely identify observations")
+    
+    return(invisible(TRUE))
 }
+
+# =============================================================================
 
 rstata_cmd_order <-
 function(expression_list, option_list=NULL, return.match.call=NULL)
