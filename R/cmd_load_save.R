@@ -141,7 +141,7 @@ function(expression, option_list=NULL, return.match.call=NULL)
     #Load the dataset
     dt$use(pth)
     
-    if(is.null(dt$data_label))
+    if(length(dt$data_label) == 0 || dt$data_label == "")
         return(structure("Data loaded", class="rstata_cmd_use"))
     else
         return(structure(dt$data_label, class="rstata_cmd_use"))
@@ -178,7 +178,7 @@ function(expression, option_list=NULL, return.match.call=NULL)
         df <- get(expression[[1]], envir=as.environment("package:datasets"))
         dt$use_dataframe(df)
         
-        if(is.null(dt$data_label))
+        if(length(dt$data_label) == 0 || dt$data_label == "")
             return(structure("Data loaded", class="rstata_cmd_use"))
         else
             return(structure(dt$data_label, class="rstata_cmd_use"))
@@ -210,9 +210,9 @@ function(expression_list, option_list=NULL, return.match.call=NULL)
         else if(as.character(expression_list[[1]]) == "set")
         {
             if(length(expression_list) == 1)
-                setCClassValue("webuse_url", default_url)
+                assignSetting("webuse_url", default_url)
             else if(length(expression_list) == 2)
-                setCClassValue("webuse_url", as.character(expression_list[[2]]))
+                assignSetting("webuse_url", as.character(expression_list[[2]]))
             else
                 raiseCondition("Incorrect use of webuse set: too many arguments")
             
@@ -230,14 +230,14 @@ function(expression_list, option_list=NULL, return.match.call=NULL)
         if(tools::file_ext(pth) == "")
             pth <- pth %p% ".dta"
         
-        url_base <- rstata_func_c("webuse_url")
+        url_base <- getSettingValue("webuse_url")
         url <- url_base %p% pth
         
         #Pass off fetching and loading to the Dataset object (and specifically
         #data.table's fread() method)
         dt$use_url(url)
         
-        if(is.null(dt$data_label))
+        if(length(dt$data_label) == 0 || dt$data_label == "")
             return(structure("Data loaded", class="rstata_cmd_use"))
         else
             return(structure(dt$data_label, class="rstata_cmd_use"))
