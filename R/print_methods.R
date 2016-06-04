@@ -53,3 +53,9 @@ function(x)
         cat("c(" %p% nm %p% "):    " %p% x[[nm]] %p% "\n")
     }
 }
+
+print.rstata_cmd_sample <-
+function(x)
+{
+    cat("(" %p% as.character(x) %p% " observations deleted)")
+}
