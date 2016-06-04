@@ -314,6 +314,11 @@ R6::R6Class("Dataset",
             return(c(in_clause$lower, in_clause$upper))
         },
         
+        setcolorder = function(cols)
+        {
+            setcolorder(private$dt, cols)
+        },
+        
         drop_rows = function(rows)
         {
             #FIXME

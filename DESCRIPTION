@@ -20,7 +20,8 @@ Imports:
   Rcpp (>= 0.11.6),
   data.table (>= 1.9.6),
   readstata13 (>= 0.8.2),
-  R6 (>= 2.1.1)
+  R6 (>= 2.1.1),
+  gtools (>= 3.5.0)
 LinkingTo:
   Rcpp
 SystemRequirements:

@@ -419,6 +419,127 @@ function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
     return(structure(length(to_drop), class="rstata_cmd_sample"))
 }
 
+rstata_cmd_order <-
+function(varlist, option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+    
+    valid_opts <- c("first", "last", "before", "after", "alphabetic", "sequential")
+    option_list <- validateOpts(option_list, valid_opts)
+    
+    alphabetic <- hasOption(option_list, "alphabetic")
+    sequential <- hasOption(option_list, "sequential")
+    raiseif(alphabetic && sequential,
+            msg="Cannot specify both alphabetic and sequential at once")
+
+    first <- hasOption(option_list, "first")
+    last <- hasOption(option_list, "last")
+    before <- hasOption(option_list, "before")
+    after <- hasOption(option_list, "after")
+    
+    n <- sum(first, last, before, after)
+    raiseif(n > 1, msg="Cannot specify more than one position for re-ordered variables")
+    if(n == 0)
+    {
+        first <- TRUE
+    }
+    
+    if(before)
+    {
+        varname <- optionArgs(option_list, "before")
+        raiseif(length(varname) > 1,
+                msg="Too many variables specified")
+        varname <- as.character(varname[[1]])
+    } else if(after)
+    {
+        varname <- optionArgs(option_list, "after")
+        raiseif(length(varname) > 1,
+                msg="Too many variables specified")
+        varname <- as.character(varname[[1]])
+    } else
+    {
+        varname <- NULL
+    }
+    
+    varlist <- vapply(varlist, as.character, character(1))
+    dt <- get("rstata_dta", envir=rstata_env)
+    nm <- dt$names
+
+    raiseifnot(every(varlist %in% nm),
+               msg="Not all variable names specified exist in the dataset")
+    raiseifnot(length(varlist) == length(unique(varlist)),
+               msg="Some variable names specified more than once")
+    
+    if(alphabetic)
+    {
+        varlist <- sort(varlist)
+    } else if(sequential)
+    {
+        varlist <- gtools::mixedsort(varlist)
+    }
+    
+    if(first)
+    {
+        tmp <- setdiff(nm, varlist)
+        nm <- c(varlist, tmp)
+    } else if(last)
+    {
+        tmp <- setdiff(nm, varlist)
+        nm <- c(tmp, varlist)
+    } else if(before)
+    {
+        #Setdiff, despite being a set operation, preserves the actual order
+        #of elements in the vector that is its first argument in the return
+        #value, so we can simplify this a bit.
+        tmp <- setdiff(nm, varlist)
+        ind <- which(tmp == varname)
+        
+        if(ind > 1)
+        {
+            pre <- tmp[seq.int(1, ind - 1)]
+        } else
+        {
+            pre <- c()
+        }
+        
+        if(ind < length(tmp))
+        {
+            post <- tmp[seq.int(ind + 1, length(tmp))]
+        } else
+        {
+            post <- c()
+        }
+        
+        nm <- c(pre, varlist, varname, post)
+    } else if(after)
+    {
+        tmp <- setdiff(nm, varlist)
+        ind <- which(tmp == varname)
+        
+        if(ind > 1)
+        {
+            pre <- tmp[seq.int(1, ind - 1)]
+        } else
+        {
+            pre <- c()
+        }
+        
+        if(ind < length(tmp))
+        {
+            post <- tmp[seq.int(ind + 1, length(tmp))]
+        } else
+        {
+            post <- c()
+        }
+        
+        nm <- c(pre, varname, varlist, post)
+    }
+
+    dt$setcolorder(nm)
+    return(invisible(TRUE))
+}
+
 # =============================================================================
 
 rstata_cmd_duplicates <-
@@ -490,13 +611,6 @@ function(varlist, option_list=NULL, return.match.call=NULL)
 
 rstata_cmd_destring <-
 function(varlist=NULL, option_list=NULL, return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-}
-
-rstata_cmd_order <-
-function(expression_list, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
