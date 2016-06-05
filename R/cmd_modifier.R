@@ -50,26 +50,28 @@ function(to_call, return.match.call=NULL)
     }
 }
 
-#The next three commands (by, bysort, xi) all take an option to_call for
-#the subsidiary command object that they should evaluate. The to_call option
-#defaults to NULL in by and bysort not because it's an optional argument, but because
-#it's built and filled in later in the code generation process than the point
-#at which these arguments are checked. If it's not NULL, there's a spurious
+#The to_call argument defaults to NULL in by and bysort not because it's optional,
+#but because it's built and filled in later in the code generation process than
+#the point at which these arguments are checked. If it's not NULL, there's a spurious
 #missing-argument error, and it's not currently worth re-architecting to fix that.
-#The whole thing is a possible future FIXME.
 rstata_cmd_bysort <-
 function(varlist, to_call=NULL, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
     
+    if(is.null(to_call))
+    {
+        raiseCondition("Must specify a command for by/bysort to execute")
+    }
+    
     valid_opts <- c("rc0")
     option_list <- validateOpts(option_list, valid_opts)
     
-    #No point duplicating this code; let's call the by function
+    #No point duplicating code; let's call the by command
     option_list[[length(option_list)+1]] <- list(name=as.symbol("sort"))
-    
-    rstata_cmd_by(varlist, to_call, option_list, return.match.call)
+    rstata_cmd_by(varlist=varlist, to_call=to_call, option_list=option_list,
+                  return.match.call=return_match_call)
 }
 
 rstata_cmd_by <-
@@ -78,16 +80,34 @@ function(varlist, to_call=NULL, option_list=NULL, return.match.call=NULL)
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
     
-    dt <- get("rstata_dta", envir=rstata_env)
+    if(is.null(to_call))
+    {
+        raiseCondition("Must specify a command for by/bysort to execute")
+    }
     
     valid_opts <- c("sort", "rc0")
     option_list <- validateOpts(option_list, valid_opts)
+    
+    varlist <- vapply(varlist, as.character, character(1))
+    
+    dt <- get("rstata_dta", envir=rstata_env)
     
     #If requested, sort the dataset by the variables
     if(hasOption(option_list, "sort"))
         dt$sort(varlist)
     
-    #FIXME
+    #Get the variables saying what to group by
+    idx <- dt$iloc(rows, byvars)
+    
+    if(!hasOption(option_list, "rc0"))
+    {
+        
+    } else
+    {
+        
+    }
+    
+    return(structure(ret, class=c("rstata_cmd_by", class(ret))))
 }
 
 rstata_cmd_xi <-
@@ -97,9 +117,24 @@ function(expression_list=NULL, option_list=NULL, to_call=NULL,
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
 
-    #validate options
     valid_opts <- c("prefix", "omit", "noomit")
     option_list <- validateOpts(option_list, valid_opts)
+    
+    omit <- hasOption(option_list, "omit")
+    noomit <- hasOption(option_list, "noomit")
+    
+    if(omit && noomit)
+    {
+        raiseCondition("Cannot specify both omit and noomit at once")
+    }
+    
+    if(hasOption(option_list, "prefix"))
+    {
+        prefix <- optionArgs(option_list, "prefix")[[1]]
+    } else
+    {
+        prefix <- "_I"
+    }
     
     #expand the termlist we've gotten into indicator variables, which we'll
     #need to do regardless of whether there's a to_call command to execute
@@ -109,8 +144,8 @@ function(expression_list=NULL, option_list=NULL, to_call=NULL,
     #a modifier command and we need to eval it. If it's missing,
     #we're a main command and we can just return, printing nothing.
     if(!is.null(to_call))
-        eval(to_call, envir=parent.frame(), enclos=baseenv())
+        return(eval(to_call, envir=parent.frame(), enclos=baseenv()))
     else
-        invisible(NULL)
+        return(invisible(NULL))
 }
 
