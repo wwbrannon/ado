@@ -130,19 +130,50 @@ function(expr, cls="BadCommandException", msg=NULL)
     invisible(NULL)
 }
 
-#Read a line from the console in interactive use, printing a prompt, and
-#handling Stata's /// construct (which we have to do here as well as in
-#the parser because it extends the line this function should read).
-read_interactive <-
-function()
+#Read a line from the console in interactive use, or from a connection,
+#printing a prompt, and handling Stata's /// construct (which we have to
+#do here as well as in the parser because it extends the line this function
+#should read).
+read_input <-
+function(con=NULL)
 {
     res = ""
     
     repeat
     {
-        inpt <- readline(". ")
-
-        #We're reading from the console one line at a time, so we have to handle
+        if(is.null(con) && interactive())
+        {
+            inpt <- readline(". ")
+        } else if(!is.null(con))
+        {
+            inpt <- readLines(con, n=-1L, warn=FALSE)
+            inpt <- Reduce(function(x, y) paste(x, y, sep="\n"), inpt)
+        } else
+        {
+            stop("Cannot read without a connection in non-interactive mode")
+        }
+        
+        #We've hit EOF
+        if(length(inpt) == 0)
+        {
+            #An empty file or an incomplete "///" terminated line without anything
+            #on the next line, either of which is a syntax error. Return it for
+            #parsing and let the parser complain about the syntax error.
+            if(nchar(res) > 0)
+                break
+            else
+                return(character(0))
+        }
+        
+        #Skip blank lines
+        inpt <- trimws(inpt)
+        if(inpt == "")
+        {
+            cat("\n")
+            next;
+        }
+        
+        #When we're reading one line at a time, we have to handle
         #the /// construct in this function as well as in the parser
         if(substring(rev_string(inpt), 1, 3) == "///")
         {
@@ -150,12 +181,22 @@ function()
             next;
         }
 
-        #we got a line that doesn't continue onto the next line
-        res <- paste(res, inpt, sep="\n")
+        #We got a line that doesn't continue onto the next line
+        if(nchar(res) > 0)
+        {
+            res <- paste(res, inpt, sep="\n")
+        } else
+        {
+            res <- inpt
+        }
 
         #Our ado grammar requires a newline or semicolon as a statement
-        #terminator, so add one in case we didn't get one at EOF
-        res <- paste0(res, "\n")
+        #terminator, so add one if we didn't get one or discarded it
+        ch <- substr(res, nchar(res), nchar(res))
+        if(ch %not_in% c("\n", ";"))
+        {
+            res <- paste0(res, "\n")
+        }
 
         break
     }

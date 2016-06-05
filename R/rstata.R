@@ -13,8 +13,8 @@ DEBUG_NO_PARSE_ERROR <- 32
 #' @useDynLib rstata
 #' @import Rcpp
 rstata <-
-function(dta = NULL, filename=NULL, string=NULL,
-         assign.back=TRUE, debug_level=0, echo=NULL)
+function(dta = NULL, filename=NULL, string=NULL, assign.back=FALSE,
+         debug_level=0, echo=NULL)
 {
     #We have a package-wide environment because of scoping issues,
     #but the data in it shouldn't persist across calls to this function
@@ -35,6 +35,13 @@ function(dta = NULL, filename=NULL, string=NULL,
     if(!is.null(filename) && !is.null(string))
     {
         stop("Cannot specify both the filename and string arguments")
+    }
+    
+    #Sanity checks: make sure we get one of filename and string if not
+    #in interactive mode
+    if(!interactive() && is.null(filename) && is.null(string))
+    {
+        stop("Must specify filename or string if not in interactive mode")
     }
 
     #Should we, on exit, put the final dataset back into the variable
@@ -57,96 +64,90 @@ function(dta = NULL, filename=NULL, string=NULL,
     #do files or the body blocks of loops.
     assignSetting("debug_level", debug_level)
 
-    #=========================================================================
-    #The actual work of parsing and executing commands is here
+    #Set up the object to read from
     if(interactive() && is.null(filename) && is.null(string))
     {
-        #We're reading from stdin, interactively:
-        #time for a read-eval-print loop
-        while(TRUE)
+        con <- NULL
+    } else if(is.null(filename) && is.null(string))
+    {
+        con <- stdin()
+    } else if(!is.null(filename))
+    {
+        con <- file(filename, "rb")
+        on.exit(close(con), add=TRUE)
+    } else
+    {
+        #It's not important to close this connection because (as in
+        #the R docs for textConnection) it's not really an OS resource
+        con <- textConnection(string)
+    }
+
+    #Should we echo input? Don't echo when interactive and reading from
+    #stdin, because then the cmd text is already visible on the console.
+    if(is.null(echo))
+    {
+        if(is.null(con))
+            echo <- 0
+        else
+            echo <- 1
+    }
+    
+    #=========================================================================
+    #The actual work of parsing and executing commands is here: time for an REPL,
+    #whether input is interactive from the console or not
+    while(TRUE)
+    {
+        val <-
+        tryCatch(
         {
-            val <-
-            tryCatch(
+            inpt <- read_input(con)
+        
+            #We've hit EOF
+            if(length(inpt) == 0)
             {
-                inpt <- read_interactive()
+                raiseCondition("Exit requested", c("error", "ExitRequestedException"))
+            }
+            
+            #Send the input to the bison parser, which, after reading
+            #each command, invokes the process_cmd callback
+            do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
+                                    macro_value_accessor=macro_value_accessor,
+                                    debug_level=debug_level, echo=echo)
+        },
+        error = function(c) c)
 
-                #Send the input to the bison parser, which, after reading
-                #each command, invokes the process_cmd callback
-                do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
-                                        macro_value_accessor=macro_value_accessor,
-                                        debug_level=debug_level,
-                                        echo=ifelse(is.null(echo), 0, echo))
-            },
-            error = function(c) c)
-
-            if(inherits(val, "error"))
+        if(inherits(val, "error"))
+        {
+            if(inherits(val, "ExitRequestedException"))
             {
-                if(inherits(val, "ExitRequestedException"))
-                {
-                    break
-                } else if(inherits(val, "BadCommandException") ||
-                          inherits(val, "EvalErrorException") ||
-                          inherits(val, "ContinueException") ||
-                          inherits(val, "BreakException"))
-                {
-                    cat(paste0(val$message, "\n\n"))
+                break
+            } else if(inherits(val, "BadCommandException") ||
+                      inherits(val, "EvalErrorException") ||
+                      inherits(val, "ContinueException") ||
+                      inherits(val, "BreakException"))
+            {
+                cat(paste0(val$message, "\n\n"))
 
-                    next
-                } else
-                {
-                    cat(paste0(val$message, "\n\n"))
+                next
+            } else
+            {
+                cat(paste0(val$message, "\n\n"))
 
+                if(interactive())
+                {
                     s <- substr(readline("Save dataset to R workspace? "), 1, 1)
                     if(s == "Y" || s == "y")
                         assign.back <- TRUE
-
-                    break
                 }
-            } else
-            {
-                cat("\n")
+                
+                break
             }
+        } else
+        {
+            cat("\n")
         }
-    } else if(is.null(filename) && is.null(string))
-    {
-        #We should read from stdin, but not interactively
-        inpt <- readLines(con=stdin(), warn=FALSE)
-        inpt <- Reduce(function(x, y) paste(x, y, sep="\n"), inpt)
-        inpt <- paste0(inpt, "\n")
-
-        do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
-                                macro_value_accessor=macro_value_accessor,
-                                debug_level=debug_level,
-                                echo=ifelse(is.null(echo), 1, echo))
-    } else if(!is.null(filename))
-    {
-        #We should read from a do-file
-        inpt <- readLines(filename)
-        
-        inpt <- Reduce(function(x, y) paste(x, y, sep="\n"), inpt)
-        inpt <- paste0(inpt, "\n")
-
-        do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
-                                macro_value_accessor=macro_value_accessor,
-                                debug_level=debug_level,
-                                echo=ifelse(is.null(echo), 1, echo))
-    } else
-    {
-        #We should read from a string; it's not important to close
-        #this connection because (as in the R docs for textConnection)
-        #it's not really an OS resource
-        con = textConnection(string)
-
-        inpt <- readLines(con)
-        inpt <- Reduce(function(x, y) paste(x, y, sep="\n"), inpt)
-        inpt <- paste0(inpt, "\n")
-
-        do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
-                                macro_value_accessor=macro_value_accessor,
-                                debug_level=debug_level,
-                                echo=ifelse(is.null(echo), 1, echo))
     }
-
+    
     return(invisible((dt$as_data_frame)))
 }
 
