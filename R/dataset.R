@@ -370,6 +370,9 @@ R6::R6Class("Dataset",
     active = list(
         #Return a 2-element numeric vector of (nrows, ncols)
         dim = function() base::dim(private$dt),
+        
+        nrow = function() base::nrow(private$dt),
+        ncol = function() base::ncol(private$dt),
     
         #Return the current dataset column names
         names = function() base::names(private$dt),
