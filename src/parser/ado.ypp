@@ -679,7 +679,7 @@ nonmodifier_cmd:
         opt->appendChild("args", arglist);
         
         $5->appendChild(opt);
-        $1->appendChild("option_list", $5);
+        node->appendChild("option_list", $5);
 
         $$ = node;
     }
