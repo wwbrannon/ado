@@ -266,22 +266,9 @@ function(expression_list, return.match.call=NULL)
         ind <- c(ind, grep(re, dt$names))
     }
     
-    cols <- dt$names[ind]
-    
-    fn <- function(x)
-    {
-        val <- dt$as_data_frame[[x]]
-        if(is.factor(val))
-        {
-            return("factor")
-        } else
-        {
-            return(mode(val))
-        }
-    }
-    
-    modes <- vapply(cols, fn, character(1))
-    df <- data.frame(variable_name=cols, storage_type=modes, row.names=NULL)
+    df <- data.frame(variable_name=dt$names[ind],
+                     storage_type=dt$dtypes[ind],
+                     row.names=NULL)
     
     return(df)
 }
@@ -542,6 +529,18 @@ function(varlist, option_list=NULL, return.match.call=NULL)
 
 # =============================================================================
 
+rstata_cmd_compare <-
+function(varlist, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+    
+    raiseifnot(length(varlist) == 2,
+               msg="Incorrect number of arguments")
+    
+    
+}
+
 rstata_cmd_duplicates <-
 function(varlist, if_clause=NULL, in_clause=NULL, option_list=NULL,
          return.match.call=NULL)
@@ -637,14 +636,6 @@ function(expression_list=NULL, if_clause=NULL, in_clause=NULL,
 rstata_cmd_collapse <-
 function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
          option_list=NULL, return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-}
-
-rstata_cmd_compare <-
-function(expression_list, if_clause=NULL, in_clause=NULL,
-         return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())

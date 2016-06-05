@@ -387,6 +387,18 @@ R6::R6Class("Dataset",
         filename = function() private$.filename,
         
         #When did we last save?
-        filedate = function() private$.filedate
+        filedate = function() private$.filedate,
+        
+        #Column data types
+        dtypes = function() vapply(private$dt, function(x)
+        {
+            if(is.factor(x))
+            {
+                return("factor")
+            } else
+            {
+                return(mode(x))
+            }
+        }, character(1))
     )
 )
