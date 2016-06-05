@@ -49,9 +49,12 @@ function(node, debug_level=0)
                 lower=lower)
     
     if("increment" %in% names(node$children))
+    {
         ret[["increment"]] <- codegen(node$children$increment, debug_level)
-    else
+    } else if("increment_t" %in% names(node$children))
+    {
         ret[["increment_t"]] <- codegen(node$children$increment_t, debug_level)
+    }
     
     as.call(ret)
 }

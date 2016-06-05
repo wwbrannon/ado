@@ -90,15 +90,27 @@ function(macro_name, text, upper, lower,
     #Generate the sequence we should be looping over
     if(is.null(increment) && is.null(increment_t))
     {
-        vals <- seq.int(lower, upper, 1)
+        inc <- 1
     } else if(!is.null(increment))
     {
-        vals <- seq.int(lower, upper, increment)
+        inc <- increment
     } else if(!is.null(increment_t))
     {
-        vals <- seq.int(lower, upper, increment_t - lower)
+        inc <- increment_t - lower
     }
-
+    
+    ret <-
+    tryCatch(
+    {
+        vals <- seq.int(lower, upper, inc)
+    },
+    error=function(c) c)
+    
+    if(inherits(ret, "error"))
+    {
+        raiseCondition("Bad values for foreach limits / increment")
+    }
+    
     #And now let's loop
     for(val in vals)
     {
