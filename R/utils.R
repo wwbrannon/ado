@@ -319,14 +319,6 @@ function(fmt)
   return(FALSE)
 }
 
-#Take a format specifier string and transform it to an R list that encodes
-#the format, setting the appropriate S3 class.
-expand_format_spec <-
-function(fmt)
-{
-    #FIXME
-}
-
 #Take the name of an ado-language operator, whether unary or binary, and return
 #a symbol for the R function that implements that operator.
 function_for_ado_operator <-
@@ -406,12 +398,33 @@ function(name, cls="error", msg=NULL)
   unabbreviateName(name, funcs, cls=cls, msg=msg)
 }
 
-#Those commands which take a varlist and interpret it as an R formula
+#FIXME - this doesn't handle large parts of stata formula syntax yet
+#Those commands which take an exp list and interpret it as an R formula
 #can call this function to convert it to one. If the dv flag is TRUE,
 #the first element of varlist must be a symbol or character that becomes
 #the LHS of the formula.
-varlist_to_formula <-
-function(varlist, dv=TRUE)
+expression_list_to_formula <-
+function(expression_list, dv=TRUE)
+{
+    if(dv)
+    {
+        y <- as.character(expression_list[[1]])
+        expression_list <- expression_list[2:length(expression_list)]
+    } else
+    {
+        y <- ""
+    }
+    
+    st <- lapply(expression_list, as.character)
+    form <- as.formula(y %p% " ~ " %p% paste0(st, collapse="+"))
+    
+    return(form)
+}
+
+#Take a format specifier string and transform it to an R list that encodes
+#the format, setting the appropriate S3 class.
+expand_format_spec <-
+function(fmt)
 {
     #FIXME
 }
