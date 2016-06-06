@@ -116,28 +116,6 @@ function(option_list=NULL, return.match.call=NULL)
     return(invisible(NULL))
 }
 
-rstata_cmd_creturn <-
-function(expression, return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-    
-    #Must be invoked as "creturn list"
-    if(as.character(expression[[1]]) != "list")
-    {
-        raiseCondition("Unrecognized subcommand to creturn")
-    }
-    
-    #Get the values and put them into a list with their names as
-    #the list names. This format is easier for the print method
-    #to work with.
-    nm <- rstata_func_c(enum=TRUE)
-    vals <- lapply(nm, rstata_func_c)
-    names(vals) <- nm
-    
-    return(structure(vals, class="rstata_cmd_creturn"))
-}
-
 rstata_cmd_query <-
 function(varlist=NULL, return.match.call=NULL)
 {
@@ -234,11 +212,48 @@ function(expression_list=NULL, return.match.call=NULL)
     return(invisible(NULL))
 }
 
+rstata_cmd_creturn <-
+function(expression, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+    
+    #Must be invoked as "creturn list"
+    if(as.character(expression[[1]]) != "list")
+    {
+        raiseCondition("Unrecognized subcommand")
+    }
+    
+    #Get the values and put them into a list with their names as
+    #the list names. This format is easier for the print method
+    #to work with.
+    nm <- rstata_func_c(enum=TRUE)
+    vals <- lapply(nm, rstata_func_c)
+    names(vals) <- nm
+    
+    return(structure(vals, class="rstata_cmd_creturn"))
+}
+
 rstata_cmd_return <-
 function(expression, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
+
+    #Must be invoked as "return list"
+    if(as.character(expression[[1]]) != "list")
+    {
+        raiseCondition("Unrecognized subcommand")
+    }
+    
+    #Get the values and put them into a list with their names as
+    #the list names. This format is easier for the print method
+    #to work with.
+    nm <- rstata_func_r(enum=TRUE)
+    vals <- lapply(nm, rstata_func_r)
+    names(vals) <- nm
+    
+    return(structure(vals, class="rstata_cmd_return"))
 }
 
 rstata_cmd_ereturn <-
@@ -246,6 +261,21 @@ function(expression, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
+
+    #Must be invoked as "ereturn list"
+    if(as.character(expression[[1]]) != "list")
+    {
+        raiseCondition("Unrecognized subcommand")
+    }
+    
+    #Get the values and put them into a list with their names as
+    #the list names. This format is easier for the print method
+    #to work with.
+    nm <- rstata_func_e(enum=TRUE)
+    vals <- lapply(nm, rstata_func_e)
+    names(vals) <- nm
+    
+    return(structure(vals, class="rstata_cmd_ereturn"))
 }
 
 rstata_cmd_help <-

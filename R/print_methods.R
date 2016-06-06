@@ -54,6 +54,28 @@ function(x)
     }
 }
 
+print.rstata_cmd_return <-
+function(x)
+{
+    cat("r()-class values: \n\n")
+    
+    for(nm in names(x))
+    {
+        cat("r(" %p% nm %p% "):    " %p% x[[nm]] %p% "\n")
+    }
+}
+
+print.rstata_cmd_ereturn <-
+function(x)
+{
+    cat("e()-class values: \n\n")
+    
+    for(nm in names(x))
+    {
+        cat("e(" %p% nm %p% "):    " %p% x[[nm]] %p% "\n")
+    }
+}
+
 print.rstata_cmd_sample <-
 function(x)
 {

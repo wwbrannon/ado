@@ -129,17 +129,41 @@ function(name, value)
 #here, and we're not going to come up with another way to do so.
 
 rstata_func_e <-
-function(val)
+function(val=NULL, enum=FALSE)
 {
+    if(is.null(val) && !enum)
+    {
+        raiseCondition("Must provide argument to rstata_func_e")
+    }
+    
     env <- get("rstata_eclass_env", envir=rstata_env, inherits=FALSE)
-    return(get(val, envir=env, inherits=FALSE))
+    
+    if(enum)
+    {
+        return(ls(envir=env))
+    } else
+    {
+        return(get(val, envir=env, inherits=FALSE))
+    }
 }
 
 rstata_func_r <-
-function(val)
+function(val=NULL, enum=FALSE)
 {
+    if(is.null(val) && !enum)
+    {
+        raiseCondition("Must provide argument to rstata_func_r")
+    }
+    
     env <- get("rstata_rclass_env", envir=rstata_env, inherits=FALSE)
-    return(get(val, envir=env, inherits=FALSE))
+    
+    if(enum)
+    {
+        return(ls(envir=env))
+    } else
+    {
+        return(get(val, envir=env, inherits=FALSE))
+    }
 }
 
 rstata_func_c <-
