@@ -56,6 +56,14 @@ function(option_list, opt)
 
 #=============================================================================
 ### Setting accessor methods
+allSettings <-
+function()
+{
+    env <- get("rstata_settings_env", envir=rstata_env)
+    
+    ls(envir=env)
+}
+
 assignSetting <-
 function(name, value)
 {

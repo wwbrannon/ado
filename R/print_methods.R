@@ -59,3 +59,14 @@ function(x)
 {
     cat("(" %p% as.character(x) %p% " observations deleted)")
 }
+
+print.rstata_cmd_query <-
+function(x)
+{
+    cat("Setting Values: \n\n")
+    
+    for(nm in names(x))
+    {
+        cat("set " %p% nm %p% ":    " %p% x[[nm]] %p% "\n")
+    }
+}

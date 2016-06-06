@@ -1,6 +1,6 @@
+#====================================================================
 ## First, things that are more nearly flow-control constructs than
 ## "commands" in the usual sense
-
 rstata_cmd_quit <-
 function(return.match.call=NULL)
 {
@@ -12,25 +12,33 @@ function(return.match.call=NULL)
 rstata_cmd_continue <-
 function(option_list=NULL, return.match.call=NULL)
 {
+    #Similarly, we shouldn't return match.call here because
+    #then it's impossible to test loops properly, and this command
+    #is pretty simple: its arguments are hard to screw up.
     if(hasOption(option_list, "break"))
+        #Whoever thought of "continue, break" should be
+        #ashamed of themselves...
         raiseCondition("Break", "BreakException")
     else
         raiseCondition("Continue", "ContinueException")
-    
+}
+
+rstata_cmd_do <-
+function(expression_list, option_list=NULL, return.match.call=NULL)
+{
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
+    
+    valid_opts <- c("nostop")
+    option_list <- validateOpts(option_list, valid_opts)
+    nostop <- hasOption(option_list, "nostop")
+    
+    
 }
 
 #The if expr { } construct
 rstata_cmd_if <-
 function(expression, compound_cmd, return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-}
-
-rstata_cmd_do <-
-function(expression_list, options=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
@@ -130,6 +138,32 @@ function(expression, return.match.call=NULL)
     return(structure(vals, class="rstata_cmd_creturn"))
 }
 
+rstata_cmd_query <-
+function(varlist, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+    
+    #Subcommand is accepted for compatibility but (currently) ignored.
+    #If the list of settings settles down in the future, we might implement
+    #groups of them that this command can print selectively, the way Stata does.
+    raiseifnot(length(varlist) %in% c(0, 1),
+               msg="Too many arguments to query")
+    
+    nm <- allSettings()
+    vals <- lapply(nm, getSettingValue)
+    names(vals) <- nm
+    
+    return(structure(vals, class="rstata_cmd_query"))
+}
+
+rstata_cmd_set <-
+function(expression_list, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+}
+
 rstata_cmd_return <-
 function(expression, return.match.call=NULL)
 {
@@ -154,20 +188,6 @@ function(expression_list, option_list=NULL, return.match.call=NULL)
 rstata_cmd_log <-
 function(expression_list=NULL, using_clause=NULL, option_list=NULL,
          return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-}
-
-rstata_cmd_query <-
-function(varlist, return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-}
-
-rstata_cmd_set <-
-function(expression_list, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
