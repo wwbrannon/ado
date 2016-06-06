@@ -139,7 +139,7 @@ function(expression, return.match.call=NULL)
 }
 
 rstata_cmd_query <-
-function(varlist, return.match.call=NULL)
+function(varlist=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
@@ -147,8 +147,8 @@ function(varlist, return.match.call=NULL)
     #Subcommand is accepted for compatibility but (currently) ignored.
     #If the list of settings settles down in the future, we might implement
     #groups of them that this command can print selectively, the way Stata does.
-    raiseifnot(length(varlist) %in% c(0, 1),
-               msg="Too many arguments to query")
+    raiseifnot(is.null(varlist) || length(varlist) == 1,
+               msg="Wrong number of arguments to query")
     
     nm <- allSettings()
     vals <- lapply(nm, getSettingValue)
@@ -158,10 +158,80 @@ function(varlist, return.match.call=NULL)
 }
 
 rstata_cmd_set <-
-function(expression_list, return.match.call=NULL)
+function(expression_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
+    
+    if(is.null(expression_list))
+    {
+        return(rstata_cmd_query())
+    }
+    
+    raiseifnot(length(expression_list) == 2,
+               msg="Wrong number of arguments to set")
+    
+    setting <- expression_list[[1]]
+    raiseifnot(is.symbol(setting) || is.character(setting),
+               msg="Bad setting name")
+    if(is.symbol(setting))
+    {
+        setting <- as.character(setting)
+    }
+    
+    value <- expression_list[[2]]
+    if(!is.numeric(value))
+    {
+        value <- as.character(value)
+    }
+    
+    #Need to handle some settings (seed, rng, rngstate, obs) which affect
+    #the R interpreter's internal state, or the dataset object's state,
+    #differently from other settings.
+    if(setting == "seed")
+    {
+        if(!is.numeric(value))
+        {
+            raiseCondition("Bad seed value")
+        }
+        
+        set.seed(value)
+    } else if(setting == "rng")
+    {
+        if(is.numeric(value))
+        {
+            raiseCondition("Bad RNG kind value")
+        }
+        
+        RNGkind(kind=value)
+    } else if(setting == "rngstate")
+    {
+        if(is.numeric(value))
+        {
+            raiseCondition("Bad RNG state")
+        }
+        
+        #Deparse the representation in c(rngstate)
+        val <- strsplit(value, ",", fixed=TRUE)[[1]]
+        val <- vapply(val, as.numeric, numeric(1))
+        
+        .Random.seed <- val
+    } else if(setting == "obs")
+    {
+        if(!is.numeric(value))
+        {
+            raiseCondition("Bad # of obs to set")
+        }
+        
+        dt <- get("rstata_dta", envir=rstata_env)
+        dt$set_obs(value)
+    } else
+    {
+        env <- get("rstata_settings_env", envir=rstata_env)
+        assign(setting, value, envir=env)
+    }
+    
+    return(invisible(NULL))
 }
 
 rstata_cmd_return <-

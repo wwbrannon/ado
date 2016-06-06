@@ -1,6 +1,6 @@
 #Define an R6 class to encapsulate low-level access to the dataset.
 #Rather than making every command-implementing function use data.table
-#or dplyr directly, this class takes care of the details.
+#directly, this class takes care of the details.
 
 #FIXME - need to make sure column names are unique
 
@@ -339,6 +339,11 @@ R6::R6Class("Dataset",
             
             private$.changed <- TRUE
             return(invisible(TRUE))
+        },
+        
+        set_obs = function(nobs)
+        {
+            #FIXME
         }
     ),
     private = list(
