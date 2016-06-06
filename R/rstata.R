@@ -92,30 +92,44 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=FALSE,
             echo <- 1
     }
     
+    #Make the echo level into a setting as well
+    assignSetting("echo", echo)
+    
     #=========================================================================
     #The actual work of parsing and executing commands is here: time for an REPL,
-    #whether input is interactive from the console or not
+    #whether input is interactive from the console or not. The logic is split out
+    #into a separate function so that it can be re-used in the -do- command, rather
+    #than being duplicated there.
+    repl(con)
+    
+    return(invisible((dt$as_data_frame)))
+}
+
+repl <-
+function(con=NULL, debug_level=getSettingValue("debug_level"),
+         echo=getSettingValue("echo"))
+{
     while(TRUE)
     {
         val <-
-        tryCatch(
-        {
-            inpt <- read_input(con)
+            tryCatch(
+                {
+                    inpt <- read_input(con)
+                    
+                    #We've hit EOF
+                    if(length(inpt) == 0)
+                    {
+                        raiseCondition("Exit requested", c("error", "ExitRequestedException"))
+                    }
+                    
+                    #Send the input to the bison parser, which, after reading
+                    #each command, invokes the process_cmd callback
+                    do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
+                                            macro_value_accessor=macro_value_accessor,
+                                            debug_level=debug_level, echo=echo)
+                },
+                error = function(c) c)
         
-            #We've hit EOF
-            if(length(inpt) == 0)
-            {
-                raiseCondition("Exit requested", c("error", "ExitRequestedException"))
-            }
-            
-            #Send the input to the bison parser, which, after reading
-            #each command, invokes the process_cmd callback
-            do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
-                                    macro_value_accessor=macro_value_accessor,
-                                    debug_level=debug_level, echo=echo)
-        },
-        error = function(c) c)
-
         if(inherits(val, "error"))
         {
             if(inherits(val, "ExitRequestedException"))
@@ -127,18 +141,11 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=FALSE,
                       inherits(val, "BreakException"))
             {
                 cat(paste0(val$message, "\n\n"))
-
+                
                 next
             } else
             {
                 cat(paste0(val$message, "\n\n"))
-
-                if(interactive())
-                {
-                    s <- substr(readline("Save dataset to R workspace? "), 1, 1)
-                    if(s == "Y" || s == "y")
-                        assign.back <- TRUE
-                }
                 
                 break
             }
@@ -147,8 +154,8 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=FALSE,
             cat("\n")
         }
     }
-    
-    return(invisible((dt$as_data_frame)))
+
+    return(invisible(NULL))    
 }
 
 #Callbacks: the main command-processing callback function for the parser

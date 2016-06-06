@@ -24,16 +24,49 @@ function(option_list=NULL, return.match.call=NULL)
 }
 
 rstata_cmd_do <-
-function(expression_list, option_list=NULL, return.match.call=NULL)
+function(expression_list, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
     
-    valid_opts <- c("nostop")
-    option_list <- validateOpts(option_list, valid_opts)
-    nostop <- hasOption(option_list, "nostop")
+    filename <- as.character(expression_list[[1]])
+    if(tools::file_ext(filename) == "")
+    {
+        filename <- filename %p% ".do"
+    }
     
+    #Set numbered macros if there are any
+    if(length(expression_list) > 1)
+    {
+        vals <- expression_list[2:length(expression_list)]
+        inds <- seq_along(vals)
+        
+        for(ind in inds)
+        {
+            mname <- as.symbol(as.character(ind))
+            val <- as.character(vals[ind])
+            
+            rstata_cmd_local(expression_list=list(mname, val))
+        }
+    }
     
+    #Set up the connection and execute what's in it, echoing the commands
+    #even if we're interactive and that normally wouldn't be done.
+    con <- file(filename, "rb")
+    on.exit(close(con), add=TRUE)
+    repl(con, echo=1)
+    
+    #Finally, tear down the numbered macros
+    if(length(expression_list) > 1)
+    {
+        for(ind in inds)
+        {
+            mname <- as.symbol(as.character(ind))
+            rstata_cmd_local(expression_list=list(mname))
+        }
+    }
+    
+    return(invisible(TRUE))
 }
 
 #The if expr { } construct
@@ -279,10 +312,15 @@ function(expression, return.match.call=NULL)
 }
 
 rstata_cmd_help <-
-function(expression_list, option_list=NULL, return.match.call=NULL)
+function(expression_list, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
+    
+    raiseifnot(length(expression_list) == 1,
+               msg="Wrong number of arguments")
+    
+    
 }
 
 rstata_cmd_log <-
