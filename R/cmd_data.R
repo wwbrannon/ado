@@ -51,7 +51,14 @@ function(option_list=NULL, return.match.call=NULL)
         n <- optionArgs(option_list, "n")
     }
     
-    return(rstata_cmd_list(in_clause=list(upper=n, lower=1)))
+    dt <- get("rstata_dta", envir=rstata_env)
+    if(dt$dim[1] == 0)
+    {
+        return(invisible(NULL))
+    } else
+    {
+        return(rstata_cmd_list(in_clause=list(upper=n, lower=1)))
+    }
 }
 
 rstata_cmd_list <-
@@ -83,7 +90,13 @@ function(varlist=NULL, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
         rows <- seq.int(1, dt$dim[1])
     }
     
-    return(dt$iloc(rows, cols))
+    if(dt$dim[1] == 0)
+    {
+        return(invisible(NULL))
+    } else
+    {
+        return(dt$iloc(rows, cols))
+    }
 }
 
 rstata_cmd_drop <-
@@ -538,7 +551,31 @@ function(varlist, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
     raiseifnot(length(varlist) == 2,
                msg="Incorrect number of arguments")
     
+    raiseif(!is.null(if_clause) && !is.null(in_clause),
+            msg="Cannot specify both if and in clause at once")
+
+    dt <- get("rstata_dta", envir=rstata_env)
     
+    if(!is.null(in_clause))
+    {
+        rn <- dt$in_clause_to_row_numbers(in_clause)
+        rows <- seq.int(rn[1], rn[2])
+    } else if(!is.null(if_clause))
+    {
+        rows <- dt$rows_where(if_clause)
+    } else
+    {
+        rows <- seq.int(1, dt$dim[1])
+    }
+    
+    v1 <- dt$iloc(rows, as.character(varlist[[1]]))
+    v2 <- dt$iloc(rows, as.character(varlist[[2]]))
+        
+    ret <- list()
+    
+    #Always get the relative patterns of missings
+    
+    #If both are n
 }
 
 rstata_cmd_duplicates <-
@@ -550,6 +587,9 @@ function(varlist, if_clause=NULL, in_clause=NULL, option_list=NULL,
     
     raiseifnot(length(varlist) >= 1,
                msg="Must specify subcommand")
+
+    raiseif(!is.null(if_clause) && !is.null(in_clause),
+            msg="Cannot specify both if clause and in clause at once")
     
     valid_opts <- c("generate", "force")
     option_list <- validateOpts(option_list, valid_opts)
@@ -558,7 +598,6 @@ function(varlist, if_clause=NULL, in_clause=NULL, option_list=NULL,
     
     dt <- get("rstata_dta", envir=rstata_env)
     
-    subcommand <- as.character(varlist[[1]])
     if(length(varlist) == 1)
     {
         varlist <- dt$names
@@ -566,11 +605,30 @@ function(varlist, if_clause=NULL, in_clause=NULL, option_list=NULL,
     {
         varlist <- varlist[2:length(varlist)]
     }
-    
-    if(subcommand == "report")
+
+    if(!is.null(in_clause))
     {
+        rn <- dt$in_clause_to_row_numbers(in_clause)
+        rows <- seq.int(rn[1], rn[2])
+    } else if(!is.null(if_clause))
+    {
+        rows <- dt$rows_where(if_clause)
+    } else
+    {
+        rows <- seq.int(dt$dim[1], dt$dim[2])
+    }
+    
+    subcommands <- c("tag", "report", "list", "examples", "drop")
+    subcommand <- as.character(varlist[[1]])
+    subcommand <- unabbreviateName(subcommand, subcommands, msg="Invalid subcommand")
+    
+    if(subcommand == "tag")
+    {
+        raiseifnot(gen, msg="The generate option is required")
+        nm <- optionArgs(option_list, "generate")[[1]]
         
-    } else if(subcommand == "tag")
+        
+    } else if(subcommand == "report")
     {
         
     } else if(subcommand == "list")
@@ -588,6 +646,21 @@ function(varlist, if_clause=NULL, in_clause=NULL, option_list=NULL,
     }
 }
 
+rstata_cmd_append <-
+function(expression_list=NULL, using_clause=NULL, option_list=NULL,
+         return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+}
+
+rstata_cmd_merge <-
+function(varlist, using_clause, option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+}
+
 rstata_cmd_split <-
 function(varlist, if_clause=NULL, in_clause=NULL, option_list=NULL,
          return.match.call=NULL)
@@ -599,30 +672,6 @@ function(varlist, if_clause=NULL, in_clause=NULL, option_list=NULL,
                     "destring", "ignore", "force", "percent")
     option_list <- validateOpts(option_list, valid_opts)
     
-}
-
-rstata_cmd_tostring <-
-function(varlist, option_list=NULL, return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-}
-
-rstata_cmd_destring <-
-function(varlist=NULL, option_list=NULL, return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-}
-
-# =============================================================================
-
-rstata_cmd_append <-
-function(expression_list=NULL, using_clause=NULL, option_list=NULL,
-         return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
 }
 
 rstata_cmd_codebook <-
@@ -641,16 +690,70 @@ function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
         return(match.call())
 }
 
-rstata_cmd_decode <-
-function(expression, if_clause=NULL, in_clause=NULL, option_list,
+rstata_cmd_describe <-
+function(expression_list=NULL, using_clause=NULL, option_list=NULL,
          return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
 }
 
-rstata_cmd_describe <-
-function(expression_list=NULL, using_clause=NULL, option_list=NULL,
+rstata_cmd_expand <-
+function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
+         return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+}
+
+rstata_cmd_recode <-
+function(expression_list, if_clause=NULL, in_clause=NULL, option_list=NULL,
+         return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+}
+
+rstata_cmd_reshape <-
+function(expression_list=NULL, option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+}
+
+rstata_cmd_separate <-
+function(expression, option_list, if_clause=NULL, in_clause=NULL,
+         return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+}
+
+# =============================================================================
+
+rstata_cmd_recast <-
+function(expression, option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+}
+
+rstata_cmd_tostring <-
+function(varlist, option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+}
+
+rstata_cmd_destring <-
+function(varlist=NULL, option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+}
+
+rstata_cmd_decode <-
+function(expression, if_clause=NULL, in_clause=NULL, option_list,
          return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -667,14 +770,6 @@ function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
 
 rstata_cmd_encode <-
 function(expression, if_clause=NULL, in_clause=NULL, option_list,
-         return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-}
-
-rstata_cmd_expand <-
-function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
          return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -706,51 +801,6 @@ function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
 rstata_cmd_label <-
 function(expression_list, using_clause=NULL, option_list=NULL,
          return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-}
-
-rstata_cmd_merge <-
-function(varlist, using_clause, option_list=NULL, return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-}
-
-rstata_cmd_recast <-
-function(expression, option_list=NULL, return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-}
-
-rstata_cmd_recode <-
-function(expression_list, if_clause=NULL, in_clause=NULL, option_list=NULL,
-         return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-}
-
-rstata_cmd_reshape <-
-function(expression_list=NULL, option_list=NULL, return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-}
-
-rstata_cmd_separate <-
-function(expression, option_list, if_clause=NULL, in_clause=NULL,
-         return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-}
-
-rstata_cmd_xtile <-
-function(expression, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
-         option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())

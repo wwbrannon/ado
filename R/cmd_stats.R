@@ -1,3 +1,78 @@
+# =============================================================================
+rstata_cmd_regress <-
+function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+}
+
+rstata_cmd_glm <-
+function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+}
+
+rstata_cmd_binreg <-
+function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+}
+
+rstata_cmd_nbreg <-
+function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+}
+
+rstata_cmd_gnbreg <-
+function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+}
+
+rstata_cmd_logistic <-
+function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+}
+
+rstata_cmd_logit <-
+function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+}
+
+rstata_cmd_poisson <-
+function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+}
+
+rstata_cmd_probit <-
+function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+}
+
+# =============================================================================
+
 rstata_cmd_ameans <-
 function(varlist=NULL, if_clause=NULL, in_clause=NULL,
          weight_clause=NULL, option_list=NULL, return.match.call=NULL)
@@ -17,14 +92,6 @@ function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
 rstata_cmd_areg <-
 function(varlist, option_list, if_clause=NULL, in_clause=NULL,
          weight_clause=NULL, return.match.call=NULL)
-{
-  if(!is.null(return.match.call) && return.match.call)
-    return(match.call())
-}
-
-rstata_cmd_binreg <-
-function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
-         option_list=NULL, return.match.call=NULL)
 {
   if(!is.null(return.match.call) && return.match.call)
     return(match.call())
@@ -71,22 +138,6 @@ function(varlist, option_list=NULL, return.match.call=NULL)
     return(match.call())
 }
 
-rstata_cmd_glm <-
-function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
-         option_list=NULL, return.match.call=NULL)
-{
-  if(!is.null(return.match.call) && return.match.call)
-    return(match.call())
-}
-
-rstata_cmd_gnbreg <-
-function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
-         option_list=NULL, return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-      return(match.call())
-}
-
 rstata_cmd_icc <-
 function(varlist, if_clause=NULL, in_clause=NULL, option_list=NULL,
          return.match.call=NULL)
@@ -119,22 +170,6 @@ function(expression, option_list, if_clause=NULL, in_clause=NULL,
     return(match.call())
 }
 
-rstata_cmd_logistic <-
-function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
-         option_list=NULL, return.match.call=NULL)
-{
-  if(!is.null(return.match.call) && return.match.call)
-    return(match.call())
-}
-
-rstata_cmd_logit <-
-function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
-         option_list=NULL, return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-      return(match.call())
-}
-
 rstata_cmd_lrtest <-
 function(expression_list, option_list=NULL, return.match.call=NULL)
 {
@@ -158,14 +193,6 @@ function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
     return(match.call())
 }
 
-rstata_cmd_nbreg <-
-function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
-         option_list=NULL, return.match.call=NULL)
-{
-  if(!is.null(return.match.call) && return.match.call)
-    return(match.call())
-}
-
 rstata_cmd_ologit <-
 function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
          option_list=NULL, return.match.call=NULL)
@@ -182,25 +209,9 @@ function(expression, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
       return(match.call())
 }
 
-rstata_cmd_poisson <-
-function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
-         option_list=NULL, return.match.call=NULL)
-{
-  if(!is.null(return.match.call) && return.match.call)
-    return(match.call())
-}
-
 rstata_cmd_predict <-
 function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
          return.match.call=NULL)
-{
-  if(!is.null(return.match.call) && return.match.call)
-    return(match.call())
-}
-
-rstata_cmd_probit <-
-function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
-         option_list=NULL, return.match.call=NULL)
 {
   if(!is.null(return.match.call) && return.match.call)
     return(match.call())
@@ -226,14 +237,6 @@ function(varlist=NULL, if_clause=NULL, in_clause=NULL,
 rstata_cmd_ranksum <-
 function(expression, option_list, if_clause=NULL, in_clause=NULL,
          weight_clause=NULL, return.match.call=NULL)
-{
-  if(!is.null(return.match.call) && return.match.call)
-    return(match.call())
-}
-
-rstata_cmd_regress <-
-function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
-         option_list=NULL, return.match.call=NULL)
 {
   if(!is.null(return.match.call) && return.match.call)
     return(match.call())
@@ -308,6 +311,14 @@ function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
 {
   if(!is.null(return.match.call) && return.match.call)
     return(match.call())
+}
+
+rstata_cmd_xtile <-
+function(expression, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
+         option_list=NULL, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
 }
 
 #FIXME
