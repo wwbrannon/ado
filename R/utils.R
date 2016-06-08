@@ -410,8 +410,18 @@ function(name)
   if(name == "%anova_error%")
     return(as.symbol("%anova_error%"))
 
+  #Type constructors
   if(valid_data_type(name))
-    return(as.symbol(name))
+  {
+      if(substr(name, 1, 3) == "str")
+      {
+          return(as.symbol('rstata_type_str'))
+      }
+      else
+      {
+          return(as.symbol('rstata_type_' %p% name))
+      }
+  }
 
   raiseCondition("Bad operator or function", cls="BadCommandException")
 }

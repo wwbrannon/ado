@@ -1,3 +1,8 @@
+### Functions providing certain infix ado operators, type constructors,
+### and Stata function calls. Some of these functions may not need to
+### be implemented, but having stubs here to document their existence
+### makes things clearer.
+
 #Helper functions for gsort - ascending sort
 rstata_func_asc <-
 function(col)
@@ -54,3 +59,84 @@ function(args)
     #FIXME
 }
 
+#the "c." operator
+op_cont <-
+function(arg)
+{
+    #FIXME
+}
+
+#the "i." operator
+op_ind <-
+function(arg)
+{
+    #FIXME
+}
+
+#the "o." operator
+op_omit <-
+function(arg)
+{
+    #FIXME
+}
+
+#the "ib." and "b." operators
+op_base <-
+function(arg)
+{
+    #FIXME
+}
+
+#the "#" operator
+`%#%` <-
+function(left, right)
+{
+    #FIXME
+}
+
+#the "##" operator
+`%##%` <-
+function(left, right)
+{
+    #FIXME
+}
+
+#a version of "==" that handles NA the way Stata does
+`%==%` <-
+function(left, right)
+{
+    #FIXME
+}
+
+#a pair of infix operators allowed only in expressions given
+#to the anova command
+`%anova_nest%` <-
+function(left, right)
+{
+    #FIXME
+}
+
+`%anova_error%` <-
+function(left, right)
+{
+    #FIXME
+}
+
+#type constructor operators
+rstata_type_double <-
+function(vars)
+{
+    #FIXME
+}
+
+rstata_type_str <-
+function(vars)
+{
+    #FIXME
+}
+
+rstata_type_byte <- rstata_type_double
+rstata_type_int <- rstata_type_double
+rstata_type_long <- rstata_type_double
+rstata_type_float <- rstata_type_double
+rstata_type_double <- rstata_type_double
