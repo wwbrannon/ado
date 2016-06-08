@@ -15,9 +15,11 @@ function(option_list=NULL, return.match.call=NULL)
     #Similarly, we shouldn't return match.call here because
     #then it's impossible to test loops properly, and this command
     #is pretty simple: its arguments are hard to screw up.
-    if(hasOption(option_list, "break"))
-        #Whoever thought of "continue, break" should be
-        #ashamed of themselves...
+    valid_opts <- c("break")
+    option_list <- validateOpts(option_list, valid_opts)
+    brk <- hasOption(option_list, "break")
+    
+    if(brk)
         raiseCondition("Break", "BreakException")
     else
         raiseCondition("Continue", "ContinueException")
@@ -279,9 +281,6 @@ function(expression, return.match.call=NULL)
         raiseCondition("Unrecognized subcommand")
     }
     
-    #Get the values and put them into a list with their names as
-    #the list names. This format is easier for the print method
-    #to work with.
     nm <- rstata_func_r(enum=TRUE)
     vals <- lapply(nm, rstata_func_r)
     names(vals) <- nm
@@ -301,9 +300,6 @@ function(expression, return.match.call=NULL)
         raiseCondition("Unrecognized subcommand")
     }
     
-    #Get the values and put them into a list with their names as
-    #the list names. This format is easier for the print method
-    #to work with.
     nm <- rstata_func_e(enum=TRUE)
     vals <- lapply(nm, rstata_func_e)
     names(vals) <- nm
