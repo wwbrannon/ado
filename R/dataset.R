@@ -321,7 +321,23 @@ R6::R6Class("Dataset",
         
         drop_rows = function(rows)
         {
-            #FIXME
+            to_keep <- setdiff(seq.int(1, self$nrow), rows)
+            
+            nm <- temporary_name(self$names)
+            private$dt[, nm := seq.int(1, self$nrow), with=FALSE]
+            
+            subst <- data.table(col1 = private$dt[[nm]][to_keep])
+            setnames(subst, c(nm))
+            
+            for(col in setdiff(self$names, c(nm)))
+            {
+                subst[, col := private$dt[[col]][to_keep], with=FALSE]
+                private$dt[, col := NULL, with=FALSE] #delete it
+            }
+            
+            private$dt <- NULL
+            private$dt <- subst
+            private$dt[, nm := NULL, with=FALSE]
             
             private$.changed <- TRUE
             return(invisible(TRUE))
