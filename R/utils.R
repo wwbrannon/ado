@@ -1,3 +1,26 @@
+temporary_name <-
+function(lst=NULL, len=10)
+{
+    chars <- c(letters, LETTERS, vapply(0:9, as.character, character(1)))
+    
+    nm <- paste0(sample(chars, len), collapse="")
+    
+    if(!is.null(lst))
+    {
+        repeat
+        {
+            if(nm %not_in% lst)
+            {
+                break
+            }
+            
+            nm <- paste0(sample(chars, len), collapse="")
+        }
+    }
+    
+    nm
+}
+
 #Returns a list of vectors, each with names the unique characters
 #occurring in str, and values the number of times each apppears
 char_count <-
