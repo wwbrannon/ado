@@ -2,7 +2,7 @@ language: r
 cache: packages
 sudo: true
 
-install:
+before_install:
     - ./travis-install.sh
 
 r:
