@@ -22,9 +22,10 @@ Package: *
 Pin: release o=Ubuntu
 Pin-Priority: -10
 EOF
-
 sudo mv /tmp/apt_preferences /etc/apt/preferences
-sudo cat /etc/apt/sources.list | sed 's/precise/trusty' > /etc/apt/sources.list.d/trusty.list
+
+cat /etc/apt/sources.list | sed 's/precise/trusty' > /tmp/trusty.list
+sudo mv /tmp/trusty.list /etc/apt/sources.list.d/trusty.list
 
 sudo apt-get update
 sudo apt-get upgrade
