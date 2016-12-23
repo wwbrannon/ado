@@ -1,6 +1,22 @@
 ### The REPL, batch-processing and environment-handling logic for rstata
 #TODO: this should really be factored into a more OO design; use R6?
 
+#' rstata: An implementation of Stata's ado language in R.
+#'
+#' The rstata package provides an interpreter for Stata's ado language built on
+#' top of R. Loops, macros, data manipulation commands and statistics commands
+#' are all supported, as are multiple ways to embed R code and use R for writing
+#' ado- language commands. (The language this package implements has about the
+#' same relationship to Stata that various dialects of SQL have to each other.)
+#' This package is not in any way affiliated with or endorsed by StataCorp.
+#'
+#' @section Functionality overview:
+#' TODO
+#'
+#' @docType package
+#' @name rstata
+NULL
+
 #Flags you can bitwise OR to enable debugging features.
 #It's important that these have the same numeric values as
 #the macros in the C++ header file.
@@ -20,7 +36,7 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=FALSE,
     #but the data in it shouldn't persist across calls to this function
     initialize()
     dt <- get("rstata_dta", envir=rstata_env)
-    
+
     #If we got a data.frame to use, set up the dataset object to use it
     if(is.null(dta))
     {
@@ -36,7 +52,7 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=FALSE,
     {
         stop("Cannot specify both the filename and string arguments")
     }
-    
+
     #Sanity checks: make sure we get one of filename and string if not
     #in interactive mode
     if(!interactive() && is.null(filename) && is.null(string))
@@ -58,7 +74,7 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=FALSE,
     #Call the finalizer on exit to make sure the dataset is cleared and
     #memory is released
     on.exit(finalize(), add=TRUE)
-    
+
     #We should put the debug_level argument into settings_env so that it's
     #accessible for nested invocations of do_parse_with_callbacks to handle
     #do files or the body blocks of loops.
@@ -91,17 +107,17 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=FALSE,
         else
             echo <- 1
     }
-    
+
     #Make the echo level into a setting as well
     assignSetting("echo", echo)
-    
+
     #=========================================================================
     #The actual work of parsing and executing commands is here: time for an REPL,
     #whether input is interactive from the console or not. The logic is split out
     #into a separate function so that it can be re-used in the -do- command, rather
     #than being duplicated there.
     repl(con)
-    
+
     return(invisible((dt$as_data_frame)))
 }
 
@@ -115,13 +131,13 @@ function(con=NULL, debug_level=getSettingValue("debug_level"),
             tryCatch(
                 {
                     inpt <- read_input(con)
-                    
+
                     #We've hit EOF
                     if(length(inpt) == 0)
                     {
                         raiseCondition("Exit requested", c("error", "ExitRequestedException"))
                     }
-                    
+
                     #Send the input to the bison parser, which, after reading
                     #each command, invokes the process_cmd callback
                     do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
@@ -129,7 +145,7 @@ function(con=NULL, debug_level=getSettingValue("debug_level"),
                                             debug_level=debug_level, echo=echo)
                 },
                 error = function(c) c)
-        
+
         if(inherits(val, "error"))
         {
             if(inherits(val, "ExitRequestedException"))
@@ -141,12 +157,12 @@ function(con=NULL, debug_level=getSettingValue("debug_level"),
                       inherits(val, "BreakException"))
             {
                 cat(paste0(val$message, "\n\n"))
-                
+
                 next
             } else
             {
                 cat(paste0(val$message, "\n\n"))
-                
+
                 break
             }
         } else
@@ -155,7 +171,7 @@ function(con=NULL, debug_level=getSettingValue("debug_level"),
         }
     }
 
-    return(invisible(NULL))    
+    return(invisible(NULL))
 }
 
 #Callbacks: the main command-processing callback function for the parser
@@ -180,7 +196,7 @@ function(ast, debug_level=0)
     {
         return( list(1, ret_p1$message) )
     }
-    
+
     #Evaluate the generated calls for their side effects and for printable objects
     ret_p2 <-
     tryCatch(
@@ -199,7 +215,7 @@ function(ast, debug_level=0)
     {
         return( list(2, ret_p2$message) )
     }
-    
+
     if(inherits(ret_p2, "ExitRequestedException"))
     {
         return( list(3, ret_p2$message) )
@@ -229,7 +245,7 @@ function(name)
     #r(), or c() appears at the beginning of the macro text, everything after
     #the close paren is ignored. But this is actually Stata's behavior,
     #so we'll run with it.
-    
+
     #The (e,r,c)-classes are ONLY recognized when at the start of a macro text.
     #The "_?" in the regexes matches them when used in either a local macro
     #(which the parser expands into a global with a prefixed "_") or a global.
@@ -242,7 +258,7 @@ function(name)
     {
         txt <- substr(name, start, start + len - 1)
         val <- as.character(rstata_func_e(txt))
-        
+
         return(val)
     }
 
@@ -254,7 +270,7 @@ function(name)
     {
         txt <- substr(name, start, start + len - 1)
         val <- as.character(rstata_func_r(txt))
-        
+
         return(val)
     }
 
@@ -266,7 +282,7 @@ function(name)
     {
         txt <- substr(name, start, start + len - 1)
         val <- as.character(rstata_func_c(txt))
-        
+
         return(val)
     }
 
