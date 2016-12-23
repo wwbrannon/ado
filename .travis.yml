@@ -1,5 +1,9 @@
 language: r
 cache: packages
+sudo: true
+
+install:
+    - ./travis-install.sh
 
 r:
 #    - oldrel
