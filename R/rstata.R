@@ -1,22 +1,6 @@
 ### The REPL, batch-processing and environment-handling logic for rstata
 #TODO: this should really be factored into a more OO design; use R6?
 
-#' rstata: An implementation of Stata's ado language in R.
-#'
-#' The rstata package provides an interpreter for Stata's ado language built on
-#' top of R. Loops, macros, data manipulation commands and statistics commands
-#' are all supported, as are multiple ways to embed R code and use R for writing
-#' ado- language commands. (The language this package implements has about the
-#' same relationship to Stata that various dialects of SQL have to each other.)
-#' This package is not in any way affiliated with or endorsed by StataCorp.
-#'
-#' @section Functionality overview:
-#' TODO
-#'
-#' @docType package
-#' @name rstata
-NULL
-
 #Flags you can bitwise OR to enable debugging features.
 #It's important that these have the same numeric values as
 #the macros in the C++ header file.
@@ -25,10 +9,33 @@ DEBUG_MATCH_CALL <- 8
 DEBUG_VERBOSE_ERROR <- 16
 DEBUG_NO_PARSE_ERROR <- 32
 
+#' Interpret ado code interactively or from a file.
+#'
+#' An interpreter for a dialect of Stata's ado language. The ado dialect is
+#' close to the one Stata provides; see the package vignettes for full details.
+#'
+#' @param dta If NULL, start with an empty dataset; if a data.frame, use a copy
+#'            of the data.frame to initialize the dataset.
+#' @param filename The path to an ado script to execute. At least one of filename
+#'                 and string must be NULL.
+#' @param string A length-1 character vector to read command input from. At least
+#'                 one of filename and string must be NULL.
+#' @param assign.back If TRUE, copy the final dataset state to a variable in the
+#'                    caller's environment on function exit. The variable name is
+#'                    the name (in the caller's environment) of the data.frame
+#'                    passed as the dta argument, or if dta was NULL, the name "dta"
+#'                    is used. The effect is to modify the passed data.frame, though
+#'                    the old value will not necessarily be garbage-collected.
+#' @param debug_level How verbose debug messages should be.
+#' @param echo Whether to echo command input. Values 0, 1, and NULL are accepted;
+#'             if NULL, echo only when running non-interactively.
+#'
+#' @return Invisible NULL.
+#'
 #' @export
 #' @useDynLib rstata
 #' @import Rcpp
-rstata <-
+ado <-
 function(dta = NULL, filename=NULL, string=NULL, assign.back=FALSE,
          debug_level=0, echo=NULL)
 {

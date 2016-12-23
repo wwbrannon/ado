@@ -3,7 +3,6 @@
 ### one unevaluated call for each Stata command. Next, we'll evaluate these objects
 ### for a) their side effects, b) values which are objects with print() methods.
 
-#' @export
 codegen <-
 function(node, debug_level=0)
     UseMethod("codegen")
@@ -23,12 +22,12 @@ function(node, debug_level=0)
 {
     what <- setdiff(names(node$children), c("macro_name", "text"))
     val <- codegen(node$children[[what]], debug_level)
-    
+
     ret <- list(as.symbol("rstata_foreach"),
                 macro_name=codegen(node$children$macro_name, debug_level),
                 text=codegen(node$children$text, debug_level))
     ret[[what]] <- val
-    
+
     as.call(ret)
 }
 
@@ -38,16 +37,16 @@ function(node, debug_level=0)
 {
     macro_name <- codegen(node$children$macro_name, debug_level)
     text <- codegen(node$children$text, debug_level)
-    
+
     upper <- codegen(node$children$upper, debug_level)
     lower <- codegen(node$children$lower, debug_level)
-    
+
     ret <- list(as.symbol("rstata_forvalues"),
                 macro_name=macro_name,
                 text=text,
                 upper=upper,
                 lower=lower)
-    
+
     if("increment" %in% names(node$children))
     {
         ret[["increment"]] <- codegen(node$children$increment, debug_level)
@@ -55,7 +54,7 @@ function(node, debug_level=0)
     {
         ret[["increment_t"]] <- codegen(node$children$increment_t, debug_level)
     }
-    
+
     as.call(ret)
 }
 
@@ -67,10 +66,10 @@ function(node, debug_level=0)
 {
     lst <- list()
     chlds <- lapply(node$children, function(x) codegen(x, debug_level))
-    
+
     for(chld in chlds)
         lst[[length(lst)+1]] <- chld
-    
+
     do.call(expression, lst)
 }
 
@@ -80,13 +79,13 @@ function(node, debug_level=0)
 {
     exp <- codegen(node$children$expression, debug_level)
     cmp <- codegen(node$children$compound_cmd, debug_level)
-    
+
     if(debug_level)
         ret <- c(as.symbol("rstata_cmd_if"), list(expression=exp, compound_cmd=cmp),
                  return.match.call=TRUE)
     else
         ret <- c(as.symbol("rstata_cmd_if"), list(expression=exp, compound_cmd=cmp))
-    
+
     as.call(ret)
 }
 
@@ -96,7 +95,7 @@ function(node, debug_level=0)
 {
     if(node$data["lang"] == "R")
         return(parse(text=node$data["value"]))
-    
+
     if(node$data["lang"] == "shell")
         return(as.call(list(as.symbol("system"), command=node$data["value"])))
 }
@@ -115,10 +114,10 @@ function(node, debug_level=0)
     name <- as.character(codegen(node$children$verb, debug_level))
     name <- unabbreviateCommand(paste0("rstata_cmd_", name))
     verb <- get(name, mode="function")
-    
+
     args <- node$children
     args <- args[names(args) != "verb"]
-    
+
     nm <- names(args)
     forms <- names(formals(verb))
     if("expression_list" %in% nm)
@@ -130,17 +129,17 @@ function(node, debug_level=0)
         if("expression" %in% forms)
             nm[nm == "expression_list"] <- "expression"
     }
-    
+
     args <- lapply(args, function(x) codegen(x, debug_level))
     names(args) <- nm
-    
+
     #No data elements in a general command
-    
+
     if(debug_level)
         ret <- c(as.symbol(name), args, return.match.call=TRUE)
     else
         ret <- c(as.symbol(name), args)
-    
+
     as.call(ret)
 }
 
@@ -151,12 +150,12 @@ function(node, debug_level=0)
     name <- as.character(codegen(node$children$verb, debug_level))
     name <- unabbreviateCommand(paste0("rstata_cmd_", name))
     verb <- get(name, mode="function")
-    
+
     if(debug_level)
         lst <- list(as.symbol(name), return.match.call=TRUE)
     else
         lst <- list(as.symbol(name))
-    
+
     as.call(lst)
 }
 
@@ -166,14 +165,14 @@ function(node, debug_level=0)
 {
     lst <- unlist(lapply(node$children, function(x) codegen(x, debug_level)))
     lst <- rev(lst)
-    
+
     Reduce(function(y, x)
     {
         x[[length(x)+1]] <- y
-        
+
         #length(x) is one larger now
         names(x)[length(x)] <- "to_call"
-        
+
         x
     }, lst)
 }
@@ -193,12 +192,12 @@ function(node, debug_level=0)
 {
     upper <- codegen(node$children$upper, debug_level)
     lower <- upper
-    
+
     if("lower" %in% names(node$children))
     {
         lower <- codegen(node$children$lower, debug_level)
     }
-    
+
     list(upper=upper, lower=lower)
 }
 
@@ -235,7 +234,7 @@ function(node, debug_level=0)
     nm <- names(node$children)
     ret <- lapply(node$children, function(x) codegen(x, debug_level))
     names(ret) <- nm
-    
+
     ret
 }
 
@@ -264,7 +263,7 @@ function(node, debug_level=0)
     #Get the function to call and its arguments in lists
     op <- node$data["verb"]
     args <- node$children[names(node$children) != "verb"]
-    
+
     #If we want to be able to pass this function to do.call, it can't
     #have a name like "c" that masks something important from base R.
     #This is kind of a hack, but it works...
@@ -272,11 +271,11 @@ function(node, debug_level=0)
     {
         args$left$data["value"] <- paste0("rstata_func_", args$left$data["value"])
     }
-    
+
     op <- function_for_ado_operator(op)
     args <- lapply(args, function(x) codegen(x, debug_level))
     names(args) <- NULL
-    
+
     as.call(c(list(op), args))
 }
 
@@ -311,7 +310,7 @@ codegen.rstata_string_literal <-
 function(node, debug_level=0)
 {
     val <- as.character(node$data["value"])
-    
+
     if(val == "")
         NA
     else
@@ -330,7 +329,7 @@ codegen.rstata_format_spec <-
 function(node, debug_level=0)
 {
     val <- as.character(node$data["value"])
-    
+
     structure(val, class=c(class(val), "format_spec"))
 }
 
