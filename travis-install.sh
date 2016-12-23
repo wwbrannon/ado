@@ -4,6 +4,14 @@
 # travis's R support includes by default
 
 cat > /tmp/apt_preferences << EOF
+Package: build-essential
+Pin: release n=trusty
+Pin-Priority: 990
+
+Package: g++
+Pin: release n=trusty
+Pin-Priority: 990
+
 Package: bison
 Pin: release n=trusty
 Pin-Priority: 990
@@ -28,4 +36,4 @@ cat /etc/apt/sources.list | sed -e 's/precise/trusty/g' > /tmp/trusty.list
 sudo mv /tmp/trusty.list /etc/apt/sources.list.d/trusty.list
 
 sudo apt-get update
-sudo apt-get -y install --only-upgrade bison
+sudo apt-get -y install --only-upgrade bison build-essential g++
