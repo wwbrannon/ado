@@ -8,7 +8,7 @@ Description: An interpreter for Stata's ado language built on top of R.
     language commands. (The language this package implements has about the same
     relationship to Stata that various dialects of SQL have to each other.)
     This package is not in any way affiliated with or endorsed by StataCorp.
-License: GPL-2
+License: MIT + file LICENSE
 URL: https://github.com/wwbrannon/rstata
 BugReports: https://github.com/wwbrannon/rstata/issues
 LazyData: true
