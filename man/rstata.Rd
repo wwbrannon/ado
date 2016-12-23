@@ -6,15 +6,26 @@
 \alias{rstata-package}
 \title{rstata: An implementation of Stata's ado language in R.}
 \description{
-The rstata package provides an interpreter for Stata's ado language built on
-top of R. Loops, macros, data manipulation commands and statistics commands
+The rstata package provides an R-based interpreter for a dialect of Stata's
+ado language. Loops, macros, data manipulation commands and statistics commands
 are all supported, as are multiple ways to embed R code and use R for writing
-ado- language commands. (The language this package implements has about the
-same relationship to Stata that various dialects of SQL have to each other.)
-This package is not in any way affiliated with or endorsed by StataCorp.
+ado- language commands.
 }
-\section{Functionality overview}{
+\details{
+See the package vignettes for an introduction to the provided
+ado-language functionality.
+}
+\section{Interface}{
 
-TODO
+The only entry point from R is the ado() function, which interprets ado code.
+Command input can be read interactively (from the R prompt), from a file or
+from a string. The various types of global state that Stata maintains (settings,
+macros, the dataset, etc) are all kept in internal package data structures that
+do not persist across calls to the ado() function.
+}
+
+\section{Disclaimer}{
+
+This package is not in any way affiliated with or endorsed by StataCorp.
 }
 
