@@ -3,7 +3,7 @@
 # Install more recent versions of certain packages than
 # travis's R support includes by default
 
-sudo cat > /etc/apt/preferences << EOF
+cat > /tmp/apt_preferences << EOF
 Package: bison
 Pin: release n=trusty
 Pin-Priority: 990
@@ -23,6 +23,7 @@ Pin: release o=Ubuntu
 Pin-Priority: -10
 EOF
 
+sudo mv /tmp/apt_preferences /etc/apt/preferences
 sudo cat /etc/apt/sources.list | sed 's/precise/trusty' > /etc/apt/sources.list.d/trusty.list
 
 sudo apt-get update

@@ -6,3 +6,4 @@
 ^src/parser/ado.a$
 ^.travis.yml$
 ^README.Rmd$
+^travis-install.sh$
