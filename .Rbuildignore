@@ -5,3 +5,4 @@
 ^src/parser/build/
 ^src/parser/ado.a$
 ^.travis.yml$
+^README.Rmd$
