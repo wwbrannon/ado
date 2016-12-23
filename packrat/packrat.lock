@@ -1,61 +1,40 @@
 PackratFormat: 1.4
 PackratVersion: 0.4.7.1
-RVersion: 3.3.0
+RVersion: 3.3.2
 Repos: CRAN=https://cran.rstudio.com/
-
-Package: BH
-Source: CRAN
-Version: 1.60.0-2
-Hash: be2967bcff307e561d9ba17faf03205c
 
 Package: R6
 Source: CRAN
-Version: 2.1.2
-Hash: c515e41c73294952cbb33ee1c1be5a2d
+Version: 2.2.0
+Hash: 712773a3439bd32db5c40938e1a9aac2
 
 Package: Rcpp
 Source: CRAN
-Version: 0.12.4
-Hash: 115167d29098a4fd1e572fdbef809438
-
-Package: chron
-Source: CRAN
-Version: 2.3-47
-Hash: d25d96d908cd21080f24c89eed4c80a0
+Version: 0.12.5
+Hash: 625a95cb4ef523a77ad02e140b715db6
 
 Package: crayon
 Source: CRAN
-Version: 1.3.1
-Hash: b61d34886cf0f4b4fc4e4f52ea249390
-Requires: memoise
+Version: 1.3.2
+Hash: 576a9d297a567d6a5ebd164ca5221590
 
 Package: data.table
 Source: CRAN
-Version: 1.9.6
-Hash: f92ef1f73afa43bf6fd69a22f3794abd
-Requires: chron
+Version: 1.10.0
 
 Package: digest
 Source: CRAN
-Version: 0.6.9
-Hash: fd55d5a024f160fc001a5ece1e27782d
+Version: 0.6.10
+Hash: 87165608ca8aeb0958835c3c5b52b6b7
 
-Package: haven
+Package: gtools
 Source: CRAN
-Version: 0.2.0
-Hash: 0695494b83f47973274c62ae90c08ad7
-Requires: BH, Rcpp
+Version: 3.5.0
 
 Package: magrittr
 Source: CRAN
 Version: 1.5
 Hash: bdc4d48c3135e8f3b399536ddf160df4
-
-Package: memoise
-Source: CRAN
-Version: 1.0.0
-Hash: 56e7087c3559eb7ba72a9afb349bf896
-Requires: digest
 
 Package: packrat
 Source: CRAN
@@ -69,8 +48,7 @@ Hash: 77da8f1df873a4b91e5c4a68fe2fb1b6
 
 Package: readstata13
 Source: CRAN
-Version: 0.8.2
-Hash: 4cb22c0a5493fff6a9ffe1ddc24828a7
+Version: 0.8.5
 Requires: Rcpp
 
 Package: testthat
