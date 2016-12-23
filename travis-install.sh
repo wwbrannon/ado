@@ -28,4 +28,4 @@ cat /etc/apt/sources.list | sed -e 's/precise/trusty/g' > /tmp/trusty.list
 sudo mv /tmp/trusty.list /etc/apt/sources.list.d/trusty.list
 
 sudo apt-get update
-sudo apt-get upgrade
+sudo apt-get -y upgrade
