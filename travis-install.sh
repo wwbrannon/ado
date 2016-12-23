@@ -24,7 +24,7 @@ Pin-Priority: -10
 EOF
 sudo mv /tmp/apt_preferences /etc/apt/preferences
 
-cat /etc/apt/sources.list | sed 's/precise/trusty' > /tmp/trusty.list
+cat /etc/apt/sources.list | sed -e 's/precise/trusty/g' > /tmp/trusty.list
 sudo mv /tmp/trusty.list /etc/apt/sources.list.d/trusty.list
 
 sudo apt-get update
