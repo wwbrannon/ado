@@ -14,14 +14,7 @@ function(libname, pkgname)
 .onDetach <-
 function(libpath)
 {
-    #Written defensively so as not to throw an error if
-    #for whatever reason .onAttach fails and this env
-    #doesn't exist
-    pkg_env <- as.environment("package:" %p% pkgname)
-    if("rstata_env" %in% ls(envir=pkg_env))
-    {
-        finalize()
-    }
+    finalize()
 }
 
 #Do the same thing on unload as on detach

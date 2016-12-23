@@ -18,7 +18,7 @@ function(option_list=NULL, return.match.call=NULL)
     valid_opts <- c("break")
     option_list <- validateOpts(option_list, valid_opts)
     brk <- hasOption(option_list, "break")
-    
+
     if(brk)
         raiseCondition("Break", "BreakException")
     else
@@ -30,34 +30,34 @@ function(expression_list, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     filename <- as.character(expression_list[[1]])
     if(tools::file_ext(filename) == "")
     {
         filename <- filename %p% ".do"
     }
-    
+
     #Set numbered macros if there are any
     if(length(expression_list) > 1)
     {
         vals <- expression_list[2:length(expression_list)]
         inds <- seq_along(vals)
-        
+
         for(ind in inds)
         {
             mname <- as.symbol(as.character(ind))
             val <- as.character(vals[ind])
-            
+
             rstata_cmd_local(expression_list=list(mname, val))
         }
     }
-    
+
     #Set up the connection and execute what's in it, echoing the commands
     #even if we're interactive and that normally wouldn't be done.
     con <- file(filename, "rb")
     on.exit(close(con), add=TRUE)
     repl(con, echo=1)
-    
+
     #Finally, tear down the numbered macros
     if(length(expression_list) > 1)
     {
@@ -67,7 +67,7 @@ function(expression_list, return.match.call=NULL)
             rstata_cmd_local(expression_list=list(mname))
         }
     }
-    
+
     return(invisible(TRUE))
 }
 
@@ -89,10 +89,10 @@ function(return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     fields <- c("Package", "Authors@R", "Version", "Title", "License", "URL", "BugReports")
-    desc <- packageDescription(packageName(), fields=fields)
-    
+    desc <- utils::packageDescription(utils::packageName(), fields=fields)
+
     return(structure(desc, class=c("rstata_cmd_about", class(desc))))
 }
 
@@ -101,9 +101,9 @@ function(expression, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     Sys.sleep(expression[[1]])
-    
+
     return(invisible(NULL))
 }
 
@@ -112,7 +112,7 @@ function(expression, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     ret <- eval(expression[[1]])
     return(structure(ret, class=c("rstata_cmd_display", class(ret))))
 }
@@ -122,15 +122,15 @@ function(option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     valid_opts <- c("memory")
     option_list <- validateOpts(option_list, valid_opts)
-    
+
     mem <- hasOption(option_list, "memory")
-    
+
     dt <- get("rstata_dta", envir=rstata_env)
     dt$preserve(memory=mem)
-    
+
     return(invisible(NULL))
 }
 
@@ -139,15 +139,15 @@ function(option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     valid_opts <- c("not")
     option_list <- validateOpts(option_list, valid_opts)
-    
+
     cancel <- hasOption(option_list, "not")
-    
+
     dt <- get("rstata_dta", envir=rstata_env)
     dt$restore(cancel=cancel)
-    
+
     return(invisible(NULL))
 }
 
@@ -156,17 +156,17 @@ function(varlist=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     #Subcommand is accepted for compatibility but (currently) ignored.
     #If the list of settings settles down in the future, we might implement
     #groups of them that this command can print selectively, the way Stata does.
     raiseifnot(is.null(varlist) || length(varlist) == 1,
                msg="Wrong number of arguments to query")
-    
+
     nm <- allSettings()
     vals <- lapply(nm, getSettingValue)
     names(vals) <- nm
-    
+
     return(structure(vals, class="rstata_cmd_query"))
 }
 
@@ -175,15 +175,15 @@ function(expression_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     if(is.null(expression_list))
     {
         return(rstata_cmd_query())
     }
-    
+
     raiseifnot(length(expression_list) == 2,
                msg="Wrong number of arguments to set")
-    
+
     setting <- expression_list[[1]]
     raiseifnot(is.symbol(setting) || is.character(setting),
                msg="Bad setting name")
@@ -191,13 +191,13 @@ function(expression_list=NULL, return.match.call=NULL)
     {
         setting <- as.character(setting)
     }
-    
+
     value <- expression_list[[2]]
     if(!is.numeric(value))
     {
         value <- as.character(value)
     }
-    
+
     #Need to handle some settings (seed, rng, rngstate, obs) which affect
     #the R interpreter's internal state, or the dataset object's state,
     #differently from other settings.
@@ -207,7 +207,7 @@ function(expression_list=NULL, return.match.call=NULL)
         {
             raiseCondition("Bad seed value")
         }
-        
+
         set.seed(value)
     } else if(setting == "rng")
     {
@@ -215,7 +215,7 @@ function(expression_list=NULL, return.match.call=NULL)
         {
             raiseCondition("Bad RNG kind value")
         }
-        
+
         RNGkind(kind=value)
     } else if(setting == "rngstate")
     {
@@ -223,11 +223,11 @@ function(expression_list=NULL, return.match.call=NULL)
         {
             raiseCondition("Bad RNG state")
         }
-        
+
         #Deparse the representation in c(rngstate)
         val <- strsplit(value, ",", fixed=TRUE)[[1]]
         val <- vapply(val, as.numeric, numeric(1))
-        
+
         .Random.seed <- val
     } else if(setting == "obs")
     {
@@ -235,7 +235,7 @@ function(expression_list=NULL, return.match.call=NULL)
         {
             raiseCondition("Bad # of obs to set")
         }
-        
+
         dt <- get("rstata_dta", envir=rstata_env)
         dt$set_obs(value)
     } else
@@ -243,7 +243,7 @@ function(expression_list=NULL, return.match.call=NULL)
         env <- get("rstata_settings_env", envir=rstata_env)
         assign(setting, value, envir=env)
     }
-    
+
     return(invisible(NULL))
 }
 
@@ -252,20 +252,20 @@ function(expression, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     #Must be invoked as "creturn list"
     if(as.character(expression[[1]]) != "list")
     {
         raiseCondition("Unrecognized subcommand")
     }
-    
+
     #Get the values and put them into a list with their names as
     #the list names. This format is easier for the print method
     #to work with.
     nm <- rstata_func_c(enum=TRUE)
     vals <- lapply(nm, rstata_func_c)
     names(vals) <- nm
-    
+
     return(structure(vals, class="rstata_cmd_creturn"))
 }
 
@@ -280,11 +280,11 @@ function(expression, return.match.call=NULL)
     {
         raiseCondition("Unrecognized subcommand")
     }
-    
+
     nm <- rstata_func_r(enum=TRUE)
     vals <- lapply(nm, rstata_func_r)
     names(vals) <- nm
-    
+
     return(structure(vals, class="rstata_cmd_return"))
 }
 
@@ -299,11 +299,11 @@ function(expression, return.match.call=NULL)
     {
         raiseCondition("Unrecognized subcommand")
     }
-    
+
     nm <- rstata_func_e(enum=TRUE)
     vals <- lapply(nm, rstata_func_e)
     names(vals) <- nm
-    
+
     return(structure(vals, class="rstata_cmd_ereturn"))
 }
 
@@ -312,11 +312,11 @@ function(expression_list, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     raiseifnot(length(expression_list) == 1,
                msg="Wrong number of arguments")
-    
-    
+
+
 }
 
 rstata_cmd_log <-

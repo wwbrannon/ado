@@ -3,13 +3,13 @@ function(expression=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     if(is.null(expression))
         return(rstata_cmd_pwd(return.match.call=return.match.call))
     else
     {
         raiseifnot(length(expression) == 1, msg="Too many arguments to cd/chdir")
-        
+
         setwd(expression[[1]])
         return(cat(expression[[1]]))
     }
@@ -20,7 +20,7 @@ function(return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     return(cat(getwd()))
 }
 
@@ -29,11 +29,11 @@ function(expression, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     raiseifnot(length(expression) == 1, msg="Too many arguments to rm/erase")
-    
+
     file.remove(expression[[1]])
-    
+
     return(invisible(NULL))
 }
 
@@ -42,17 +42,17 @@ function(expression, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     valid_opts <- c("public")
     option_list <- validateOpts(option_list, valid_opts)
-    
+
     raiseifnot(length(expression) == 1, msg="Too many arguments to mkdir")
-    
+
     if(hasOption(option_list, "public"))
         dir.create(expression[[1]], mode="0755")
     else
         dir.create(expression[[1]])
-    
+
     return(invisible(NULL))
 }
 
@@ -61,15 +61,15 @@ function(expression=NULL, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     valid_opts <- c("wide")
     option_list <- validateOpts(option_list, valid_opts)
-    
+
     if(is.null(expression))
         fspec <- ""
     else
         fspec <- expression[[1]]
-    
+
     if(hasOption(option_list, "wide"))
         return(system("ls -F -C " %p% fspec))
     else
@@ -81,23 +81,23 @@ function(expression_list=NULL, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     valid_opts <- c("public", "replace", "recursive")
     option_list <- validateOpts(option_list, valid_opts)
-    
+
     raiseifnot(length(expression_list) == 2,
                msg="Need one source file and one destination file for cp/copy")
-    
+
     if(hasOption(option_list, "replace"))
         overwrite <- TRUE
     else
         overwrite <- FALSE
-    
+
     if(hasOption(option_list, "recursive"))
         recursive <- TRUE
     else
         recursive <- FALSE
-    
+
     #Actually do the copy
     file.copy(from=expression_list[[1]], to=expression_list[[2]],
               overwrite=overwrite, recursive=recursive)
@@ -105,12 +105,12 @@ function(expression_list=NULL, option_list=NULL, return.match.call=NULL)
     #Update destination permissions if requested
     if(hasOption(option_list, "public"))
     {
-        if(file_test("-d", expression_list[[2]]))
+        if(utils::file_test("-d", expression_list[[2]]))
             Sys.chmod(expression_list[[2]], mode="0755")
         else
             Sys.chmod(expression_list[[2]], mode="0644")
     }
-    
+
     return(invisible(NULL))
 }
 
@@ -122,13 +122,13 @@ function(expression, option_list=NULL, return.match.call=NULL)
 
     valid_opts <- c("showtabs", "starbang", "lines")
     option_list <- validateOpts(option_list, valid_opts)
-    
+
     raiseifnot(length(expression) == 1, msg="Too many arguments to cat/type")
-    
+
     #Read in the file - it's your own fault if you specify a file
     #that's too big to handle
     lines <- readLines(expression[[1]])
-    
+
     #Check this first to avoid processing showtabs/starbang requests
     #for lines we're not going to print
     if(hasOption(option_list, "lines"))
@@ -136,7 +136,7 @@ function(expression, option_list=NULL, return.match.call=NULL)
         n <- optionArgs(option_list, "lines")
         lines <- lines[seq_len(n)]
     }
-    
+
     if(hasOption(option_list, "showtabs"))
         lines <- lapply(lines, function(x) gsub('\t', '<T>', x, fixed=TRUE))
 

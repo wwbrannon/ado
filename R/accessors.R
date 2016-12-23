@@ -8,22 +8,22 @@ function(option_list, valid_opts)
 {
     if(length(option_list) == 0)
         return(option_list)
-    
+
     #Extract the option names as strings
     given <- vapply(option_list, function(x) as.character(x$name), character(1))
-    
+
     #Unabbreviate each option. The unabbreviateName function will raise an
     #error condition if an option is invalid or ambiguous.
     given <- vapply(given, function(x) unabbreviateName(x, valid_opts), character(1))
-    
+
     #The same option can't be given more than once
     raiseifnot(length(given) == length(unique(given)),
                msg="Option given more than once")
-    
+
     #Update the names
     for(i in 1:length(given))
         option_list[[i]]$name <- given[i]
-    
+
     option_list
 }
 
@@ -43,10 +43,10 @@ optionArgs <-
 function(option_list, opt)
 {
     raiseifnot(hasOption(option_list, opt), msg="Option not provided")
-    
+
     #extract the option names as strings
     nm <- vapply(option_list, function(v) as.character(v$name), character(1))
-    
+
     ind <- which(nm == opt)
     if("args" %in% names(option_list[[ind]]))
         return(option_list[[ind]]$args)
@@ -60,7 +60,7 @@ allSettings <-
 function()
 {
     env <- get("rstata_settings_env", envir=rstata_env)
-    
+
     ls(envir=env)
 }
 
@@ -96,7 +96,7 @@ function(name, value)
 {
     env <- get("rstata_cclass_env", envir=rstata_env)
     assign(name, value, envir=env)
-    
+
     return(invisible(NULL))
 }
 
@@ -105,7 +105,7 @@ function(name, value)
 {
     env <- get("rstata_eclass_env", envir=rstata_env)
     assign(name, value, envir=env)
-    
+
     return(invisible(NULL))
 }
 
@@ -114,7 +114,7 @@ function(name, value)
 {
     env <- get("rstata_rclass_env", envir=rstata_env)
     assign(name, value, envir=env)
-    
+
     return(invisible(NULL))
 }
 
@@ -135,9 +135,9 @@ function(val=NULL, enum=FALSE)
     {
         raiseCondition("Must provide argument to rstata_func_e")
     }
-    
+
     env <- get("rstata_eclass_env", envir=rstata_env, inherits=FALSE)
-    
+
     if(enum)
     {
         return(ls(envir=env))
@@ -154,9 +154,9 @@ function(val=NULL, enum=FALSE)
     {
         raiseCondition("Must provide argument to rstata_func_r")
     }
-    
+
     env <- get("rstata_rclass_env", envir=rstata_env, inherits=FALSE)
-    
+
     if(enum)
     {
         return(ls(envir=env))
@@ -173,15 +173,15 @@ function(val=NULL, enum=FALSE)
     {
         raiseCondition("Must provide argument to rstata_func_c")
     }
-    
+
     env <- get("rstata_cclass_env", envir=rstata_env, inherits=FALSE)
-    
+
     #If explictly requested, return a list of all the c-class values known.
     #The calls to this function built by codegen() will never have enum=TRUE.
     if(enum)
     {
         ret <- ls(envir=env)
-        
+
         #These are the ones implemented below
         ret <- c(ret, 'current_date', 'current_time', 'rstata_version', 'bit',
                  'processors', 'processors_mach', 'processors_max', 'mode',
@@ -193,10 +193,10 @@ function(val=NULL, enum=FALSE)
                  'maxfloat', 'epsfloat', 'maxstrvarlen', 'maxstrlvarlen', 'N', 'k',
                  'width', 'changed', 'filename', 'filedate', 'memory', 'maxvar',
                  'niceness', 'rng', 'rc', 'rngstate')
-                 
+
         return(ret)
     }
-    
+
     if(val == 'current_date')
     {
         return(Sys.Date())
@@ -205,7 +205,7 @@ function(val=NULL, enum=FALSE)
         return(Sys.time())
     } else if(val == 'rstata_version')
     {
-        return(packageVersion(packageName()))
+        return(utils::packageVersion(utils::packageName()))
     } else if(val == 'bit')
     {
         return(8 * .Machine$sizeof.pointer)
@@ -260,7 +260,7 @@ function(val=NULL, enum=FALSE)
         return(Sys.info()["nodename"])
     } else if(val == 'machine_type')
     {
-        return(sessionInfo()$platform)
+        return(utils::sessionInfo()$platform)
     } else if(val == 'byteorder')
     {
         if(.Platform$endian == 'big')
@@ -365,7 +365,7 @@ function(val=NULL, enum=FALSE)
     } else if(val == 'width')
     {
         dt <- get("rstata_dta", envir=rstata_env)
-        return(object.size(dt))
+        return(utils::object.size(dt))
     } else if(val == 'changed')
     {
         dt <- get("rstata_dta", envir=rstata_env)

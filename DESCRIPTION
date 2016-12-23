@@ -1,7 +1,5 @@
 Package: rstata
-Authors@R: c(
-  person("William", "Brannon", , "will.brannon@gmail.com", c("aut", "cre"))
-  )
+Authors@R: c(person("William", "Brannon", email="wwbrannon@email.wm.edu", role=c("aut", "cre")))
 Version: 0.1.0
 Title: An implementation of Stata's ado language for R
 Description: An interpreter for Stata's ado language built on top of R.

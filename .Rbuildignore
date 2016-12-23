@@ -2,3 +2,6 @@
 ^\.Rproj\.user$
 ^packrat/
 ^\.Rprofile$
+^src/parser/build/
+^src/parser/ado.a$
+^.travis.yml$

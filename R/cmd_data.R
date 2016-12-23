@@ -3,7 +3,7 @@ function(expression=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     if(is.null(expression))
     {
         drop_data <- TRUE
@@ -20,20 +20,20 @@ function(expression=NULL, return.match.call=NULL)
     {
         raiseCondition("Bad subcommand to clear")
     }
-    
+
     if(drop_data)
     {
         dt <- get("rstata_dta", envir=rstata_env)
         dt$clear()
     }
-    
+
     if(drop_results)
     {
-        rstata_cmd_return(expression_list=list(as.symbol("clear")))
-        rstata_cmd_ereturn(expression_list=list(as.symbol("clear")))
+        rstata_cmd_return(expression=as.call(list(as.symbol("clear"))))
+        rstata_cmd_ereturn(expression=as.call(list(as.symbol("clear"))))
     }
-    
-    return(invisible(NULL))    
+
+    return(invisible(NULL))
 }
 
 rstata_cmd_head <-
@@ -41,16 +41,16 @@ function(option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     valid_opts <- c("n")
     option_list <- validateOpts(option_list, valid_opts)
-    
+
     n <- 5
     if(hasOption(option_list, "n"))
     {
         n <- optionArgs(option_list, "n")
     }
-    
+
     dt <- get("rstata_dta", envir=rstata_env)
     if(dt$dim[1] == 0)
     {
@@ -69,15 +69,15 @@ function(varlist=NULL, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
 
     raiseif(!is.null(if_clause) && !is.null(in_clause),
             msg="Cannot specify both in clause and if clause at once")
-    
+
     dt <- get("rstata_dta", envir=rstata_env)
-    
+
     cols <- varlist
     if(is.null(cols))
     {
         cols <- dt$names
     }
-    
+
     if(!is.null(if_clause))
     {
         rows <- dt$rows_where(if_clause)
@@ -89,7 +89,7 @@ function(varlist=NULL, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
     {
         rows <- seq.int(1, dt$dim[1])
     }
-    
+
     if(dt$dim[1] == 0)
     {
         return(invisible(NULL))
@@ -104,7 +104,7 @@ function(varlist=NULL, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     #Only certain combinations of these arguments are valid
     raiseif(is.null(varlist) && is.null(if_clause) && is.null(in_clause),
             msg="Must specify what to drop")
@@ -112,29 +112,29 @@ function(varlist=NULL, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
             msg="Cannot drop both columns and rows at once")
     raiseif(!is.null(if_clause) && !is.null(in_clause),
             msg="Cannot specify both an in clause and an if clause at once")
-    
+
     dt <- get("rstata_dta", envir=rstata_env)
     varlist <- lapply(varlist, as.character)
-    
+
     #One Stata syntax: we're dropping columns
     if(!is.null(varlist))
     {
         dt$drop_columns(varlist)
     }
-    
+
     #We're dropping rows but keeping all columns
     if(!is.null(if_clause))
     {
         rows <- dt$rows_where(if_clause)
         dt$drop_rows(rows)
     }
-    
+
     if(!is.null(in_clause))
     {
         rn <- dt$in_clause_to_row_numbers(in_clause)
         dt$drop_rows(seq.int(rn[1], rn[2]))
     }
-    
+
     return(invisible(NULL))
 }
 
@@ -151,36 +151,36 @@ function(varlist=NULL, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
             msg="Cannot keep both columns and rows at once")
     raiseif(!is.null(if_clause) && !is.null(in_clause),
             msg="Cannot specify both an in clause and an if clause at once")
-    
+
     dt <- get("rstata_dta", envir=rstata_env)
     varlist <- lapply(varlist, as.character)
-    
+
     #One Stata syntax: we're dropping columns
     if(!is.null(varlist))
     {
         cols <- setdiff(dt$names, varlist)
         dt$drop_columns(cols)
     }
-    
+
     #We're dropping rows but keeping all columns
     if(!is.null(if_clause))
     {
         all_rows = seq.int(dt$dim[1], dt$dim[2])
         rows <- dt$rows_where(if_clause)
-        
+
         dt$drop_rows(setdiff(all_rows, rows))
     }
-    
+
     if(!is.null(in_clause))
     {
         rn <- dt$in_clause_to_row_numbers(in_clause)
-        
+
         all_rows = seq.int(dt$dim[1], dt$dim[2])
         rows <- seq.int(rn[1], rn[2])
-        
+
         dt$drop_rows(setdiff(all_rows, rows))
     }
-    
+
     return(invisible(NULL))
 }
 
@@ -189,12 +189,12 @@ function(if_clause=NULL, in_clause=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     raiseif(!is.null(if_clause) && !is.null(in_clause),
             msg="Cannot give both an if clause and an in clause at once")
-    
+
     dt <- get("rstata_dta", envir=rstata_env)
-    
+
     #We don't need to do any expensive copying here, fortunately
     if(!is.null(if_clause))
     {
@@ -215,28 +215,28 @@ function(expression_list, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     valid_opts <- c("generate", "mfirst")
     option_list <- validateOpts(option_list, valid_opts)
-    
+
     na.last <- !hasOption(option_list, "mfirst")
-    
+
     rn <- NULL
     if(hasOption(option_list, "generate"))
     {
         rn <- optionArgs(option_list, "generate")
     }
-    
+
     dt <- get("rstata_dta", envir=rstata_env)
-    
+
     #These are unevaluated calls to rstata_func_ functions, so they
     #need to be evaluated before being used.
     proc <- lapply(expression_list, eval)
     cols <- lapply(proc, function(x) x$col)
     ords <- lapply(proc, function(x) x$asc)
-    
+
     dt$sort(cols, asc=ords, row_number=rn, na.last=na.last)
-    
+
     return(invisible(TRUE))
 }
 
@@ -245,22 +245,22 @@ function(varlist, in_clause=NULL, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     valid_opts <- c("stable")
     option_list <- validateOpts(option_list, valid_opts)
     stable <- hasOption(option_list, "stable")
-    
+
     dt <- get("rstata_dta", envir=rstata_env)
-    
+
     rows <- NULL
     if(!is.null(in_clause))
     {
         rn <- dt$in_clause_to_row_numbers(in_clause)
         rows <- seq.int(rn[1], rn[2])
     }
-    
+
     dt$sort(varlist, rows=rows, stable=stable)
-    
+
     return(invisible(TRUE))
 }
 
@@ -269,7 +269,7 @@ function(expression_list, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     dt <- get("rstata_dta", envir=rstata_env)
 
     ind <- numeric(0)
@@ -278,11 +278,11 @@ function(expression_list, return.match.call=NULL)
         re <- ".*" %p% as.character(expr) %p% ".*"
         ind <- c(ind, grep(re, dt$names))
     }
-    
+
     df <- data.frame(variable_name=dt$names[ind],
                      storage_type=dt$dtypes[ind],
                      row.names=NULL)
-    
+
     return(df)
 }
 
@@ -291,19 +291,19 @@ function(expression_list, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     raiseifnot(length(expression_list) == 2,
                msg="Incorrect number of arguments")
-    
+
     dt <- get("rstata_dta", envir=rstata_env)
     expression_list <- lapply(expression_list, as.character)
-    
+
     nm <- dt$names
     ind <- which(nm == expression_list[[1]])
     nm[ind] <- expression_list[[2]]
-    
+
     dt$setnames(nm)
-    
+
     return(invisible(TRUE))
 }
 
@@ -312,48 +312,48 @@ function(varlist, using_clause=NULL, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     valid_opts <- c("sort", "missok")
     option_list <- validateOpts(option_list, valid_opts)
     sort <- hasOption(option_list, "sort")
     missok <- hasOption(option_list, "missok")
-    
+
     varlist <- vapply(varlist, as.character, character(1))
-    
+
     #In typical inconsistent Stata fashion, the using clause here says to do
     #something that doesn't involve the main dataset, so if needed, we'll set
     #up a temporary dataset instead
     if(!is.null(using_clause))
     {
         dt <- Dataset$new()
-        
+
         if(tools::file_ext(using_clause) == "")
             using_clause <- using_clause %p% ".dta"
-        
+
         dt$use(using_clause)
     } else
     {
         dt <- get("rstata_dta", envir=rstata_env)
     }
-    
+
     if(!missok)
     {
         func <- function(x) length(which(is.na(dt$as_data_frame[, x])))
         missings <- vapply(varlist, func, numeric(1))
-        
+
         raiseif(sum(missings) > 0,
                 msg="Missing values in id variables and missok not specified")
     }
-    
+
     if(sort)
     {
         dt$sort(varlist)
     }
-    
+
     n <- data.table::uniqueN(dt$as_data_frame, by=varlist)
     raiseif(n < dt$dim[1],
             msg="Variables do not uniquely identify observations")
-    
+
     return(invisible(TRUE))
 }
 
@@ -363,10 +363,10 @@ function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     raiseif(!is.null(if_clause) && !is.null(in_clause),
             msg="Cannot specify both if clause and in clause at once")
-    
+
     valid_opts <- c("count", "by")
     option_list <- validateOpts(option_list, valid_opts)
     count <- hasOption(option_list, "count")
@@ -378,7 +378,7 @@ function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
     {
         byvars <- NULL
     }
-    
+
     dt <- get("rstata_dta", envir=rstata_env)
     if(!is.null(in_clause))
     {
@@ -391,7 +391,7 @@ function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
     {
         rows <- seq.int(1, dt$dim[1])
     }
-    
+
     if(count)
     {
         cnt <- min(as.numeric(expression), length(rows))
@@ -399,21 +399,21 @@ function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
     {
         cnt <- ceiling(as.numeric(expression) * length(rows))
     }
-    
+
     raiseifnot(!is.na(cnt) && cnt >= 1 && cnt <= length(rows),
                msg="Bad count or proportion of rows to sample")
-    
+
     if(is.null(byvars))
     {
         samp <- sample(rows, cnt)
     } else
     {
         idx <- dt$iloc(rows, byvars)
-        
+
         samp <- c(tapply(rows, idx, function(x) sample(x, cnt), simplify=TRUE))
         samp <- samp[which(!is.na(samp))]
     }
-    
+
     to_drop <- setdiff(rows, samp)
     dt$drop_rows(to_drop)
     return(structure(length(to_drop), class="rstata_cmd_sample"))
@@ -424,10 +424,10 @@ function(varlist, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     valid_opts <- c("first", "last", "before", "after", "alphabetic", "sequential")
     option_list <- validateOpts(option_list, valid_opts)
-    
+
     alphabetic <- hasOption(option_list, "alphabetic")
     sequential <- hasOption(option_list, "sequential")
     raiseif(alphabetic && sequential,
@@ -437,14 +437,14 @@ function(varlist, option_list=NULL, return.match.call=NULL)
     last <- hasOption(option_list, "last")
     before <- hasOption(option_list, "before")
     after <- hasOption(option_list, "after")
-    
+
     n <- sum(first, last, before, after)
     raiseif(n > 1, msg="Cannot specify more than one position for re-ordered variables")
     if(n == 0)
     {
         first <- TRUE
     }
-    
+
     if(before)
     {
         varname <- optionArgs(option_list, "before")
@@ -461,7 +461,7 @@ function(varlist, option_list=NULL, return.match.call=NULL)
     {
         varname <- NULL
     }
-    
+
     varlist <- vapply(varlist, as.character, character(1))
     dt <- get("rstata_dta", envir=rstata_env)
     nm <- dt$names
@@ -470,7 +470,7 @@ function(varlist, option_list=NULL, return.match.call=NULL)
                msg="Not all variable names specified exist in the dataset")
     raiseifnot(length(varlist) == length(unique(varlist)),
                msg="Some variable names specified more than once")
-    
+
     if(alphabetic)
     {
         varlist <- sort(varlist)
@@ -478,7 +478,7 @@ function(varlist, option_list=NULL, return.match.call=NULL)
     {
         varlist <- gtools::mixedsort(varlist)
     }
-    
+
     if(first)
     {
         tmp <- setdiff(nm, varlist)
@@ -494,7 +494,7 @@ function(varlist, option_list=NULL, return.match.call=NULL)
         #value, so we can simplify this a bit.
         tmp <- setdiff(nm, varlist)
         ind <- which(tmp == varname)
-        
+
         if(ind > 1)
         {
             pre <- tmp[seq.int(1, ind - 1)]
@@ -502,7 +502,7 @@ function(varlist, option_list=NULL, return.match.call=NULL)
         {
             pre <- c()
         }
-        
+
         if(ind < length(tmp))
         {
             post <- tmp[seq.int(ind + 1, length(tmp))]
@@ -510,13 +510,13 @@ function(varlist, option_list=NULL, return.match.call=NULL)
         {
             post <- c()
         }
-        
+
         nm <- c(pre, varlist, varname, post)
     } else if(after)
     {
         tmp <- setdiff(nm, varlist)
         ind <- which(tmp == varname)
-        
+
         if(ind > 1)
         {
             pre <- tmp[seq.int(1, ind - 1)]
@@ -524,7 +524,7 @@ function(varlist, option_list=NULL, return.match.call=NULL)
         {
             pre <- c()
         }
-        
+
         if(ind < length(tmp))
         {
             post <- tmp[seq.int(ind + 1, length(tmp))]
@@ -532,7 +532,7 @@ function(varlist, option_list=NULL, return.match.call=NULL)
         {
             post <- c()
         }
-        
+
         nm <- c(pre, varname, varlist, post)
     }
 
@@ -547,15 +547,15 @@ function(varlist, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     raiseifnot(length(varlist) == 2,
                msg="Incorrect number of arguments")
-    
+
     raiseif(!is.null(if_clause) && !is.null(in_clause),
             msg="Cannot specify both if and in clause at once")
 
     dt <- get("rstata_dta", envir=rstata_env)
-    
+
     if(!is.null(in_clause))
     {
         rn <- dt$in_clause_to_row_numbers(in_clause)
@@ -567,14 +567,14 @@ function(varlist, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
     {
         rows <- seq.int(1, dt$dim[1])
     }
-    
+
     v1 <- dt$iloc(rows, as.character(varlist[[1]]))
     v2 <- dt$iloc(rows, as.character(varlist[[2]]))
-        
+
     ret <- list()
-    
+
     #Always get the relative patterns of missings
-    
+
     #If both are n
 }
 
@@ -584,20 +584,20 @@ function(varlist, if_clause=NULL, in_clause=NULL, option_list=NULL,
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     raiseifnot(length(varlist) >= 1,
                msg="Must specify subcommand")
 
     raiseif(!is.null(if_clause) && !is.null(in_clause),
             msg="Cannot specify both if clause and in clause at once")
-    
+
     valid_opts <- c("generate", "force")
     option_list <- validateOpts(option_list, valid_opts)
     gen <- hasOption(option_list, "generate")
     fr <- hasOption(option_list, "force")
-    
+
     dt <- get("rstata_dta", envir=rstata_env)
-    
+
     if(length(varlist) == 1)
     {
         varlist <- dt$names
@@ -617,29 +617,29 @@ function(varlist, if_clause=NULL, in_clause=NULL, option_list=NULL,
     {
         rows <- seq.int(dt$dim[1], dt$dim[2])
     }
-    
+
     subcommands <- c("tag", "report", "list", "examples", "drop")
     subcommand <- as.character(varlist[[1]])
     subcommand <- unabbreviateName(subcommand, subcommands, msg="Invalid subcommand")
-    
+
     if(subcommand == "tag")
     {
         raiseifnot(gen, msg="The generate option is required")
         nm <- optionArgs(option_list, "generate")[[1]]
-        
-        
+
+
     } else if(subcommand == "report")
     {
-        
+
     } else if(subcommand == "list")
     {
-        
+
     } else if(subcommand == "examples")
     {
-        
+
     } else if(subcommand == "drop")
     {
-        
+
     } else
     {
         raiseCondition("Unrecognized subcommand")
@@ -667,11 +667,11 @@ function(varlist, if_clause=NULL, in_clause=NULL, option_list=NULL,
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     valid_opts <- c("generate", "parse", "limit", "notrim",
                     "destring", "ignore", "force", "percent")
     option_list <- validateOpts(option_list, valid_opts)
-    
+
 }
 
 rstata_cmd_codebook <-

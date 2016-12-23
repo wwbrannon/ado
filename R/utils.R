@@ -2,9 +2,9 @@ temporary_name <-
 function(lst=NULL, len=10)
 {
     chars <- c(letters, LETTERS, vapply(0:9, as.character, character(1)))
-    
+
     nm <- paste0(sample(chars, len), collapse="")
-    
+
     if(!is.null(lst))
     {
         repeat
@@ -13,11 +13,11 @@ function(lst=NULL, len=10)
             {
                 break
             }
-            
+
             nm <- paste0(sample(chars, len), collapse="")
         }
     }
-    
+
     nm
 }
 
@@ -27,9 +27,9 @@ char_count <-
 function(strs)
 {
     sp <- strsplit(strs, "", fixed=TRUE)
-    
+
     uniqs <- unique(Reduce(c, sp))
-    
+
     lapply(sp, function(y)
         vapply(uniqs,
                function(x) length(which(y == x)),
@@ -161,7 +161,7 @@ read_input <-
 function(con=NULL)
 {
     res = ""
-    
+
     repeat
     {
         if(is.null(con) && interactive())
@@ -175,7 +175,7 @@ function(con=NULL)
         {
             stop("Cannot read without a connection in non-interactive mode")
         }
-        
+
         #We've hit EOF
         if(length(inpt) == 0)
         {
@@ -187,7 +187,7 @@ function(con=NULL)
             else
                 return(character(0))
         }
-        
+
         #Skip blank lines
         inpt <- trimws(inpt)
         if(inpt == "")
@@ -195,7 +195,7 @@ function(con=NULL)
             cat("\n")
             next;
         }
-        
+
         #When we're reading one line at a time, we have to handle
         #the /// construct in this function as well as in the parser
         if(substring(rev_string(inpt), 1, 3) == "///")
@@ -367,11 +367,11 @@ function(fmt)
   #string formats
   if(length(grep("%[-~]?[0-9]+s", fmt)) > 0)
     return(TRUE)
-  
+
   #datetime formats
   if(length(grep("%t[Ccdwmqh][A-Za-z\\.\\,\\:\\-\\_\\/\\\\\\+]*", fmt)) > 0)
     return(TRUE)
-  
+
   #numeric formats
   if(length(grep("%-?[0-9]+\\.[0-9]+(g|f|e|gc|fc)", fmt)) > 0)
     return(TRUE)
@@ -488,10 +488,10 @@ function(expression_list, dv=TRUE)
     {
         y <- ""
     }
-    
+
     st <- lapply(expression_list, as.character)
-    form <- as.formula(y %p% " ~ " %p% paste0(st, collapse="+"))
-    
+    form <- stats::as.formula(y %p% " ~ " %p% paste0(st, collapse="+"))
+
     return(form)
 }
 
