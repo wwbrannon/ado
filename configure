@@ -2728,8 +2728,11 @@ fi
 if test -z "${R_HOME}"; then
     as_fn_error $? "Could not determine R_HOME." "$LINENO" 5
 fi
+
 CXX=`${R_HOME}/bin/R CMD config CXX`
+CPPFLAGS=`"${R_HOME}/bin/R" CMD config CPPFLAGS`
 CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXXFLAGS`
+
 
 
 

@@ -24,9 +24,12 @@ AC_PROG_R
 if test -z "${R_HOME}"; then
     AC_MSG_ERROR([Could not determine R_HOME.])   
 fi
+
 CXX=`${R_HOME}/bin/R CMD config CXX`
+CPPFLAGS=`"${R_HOME}/bin/R" CMD config CPPFLAGS`
 CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXXFLAGS`
 
+AC_SUBST(CPPFLAGS)
 AC_SUBST(CXXFLAGS)
 AC_SUBST(LDFLAGS)
 AC_OUTPUT(src/Makevars)
