@@ -2,7 +2,7 @@
 ### by/xi commands that can accompany other "main" commands. Others may be implemented
 ### in the future.
 
-rstata_cmd_quietly <-
+ado_cmd_quietly <-
 function(to_call, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -13,7 +13,7 @@ function(to_call, return.match.call=NULL)
     invisible(eval(to_call, envir=parent.frame(), enclos=baseenv()))
 }
 
-rstata_cmd_noisily <-
+ado_cmd_noisily <-
 function(to_call, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -23,7 +23,7 @@ function(to_call, return.match.call=NULL)
     eval(to_call, envir=parent.frame(), enclos=baseenv())
 }
 
-rstata_cmd_capture <-
+ado_cmd_capture <-
 function(to_call, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -54,7 +54,7 @@ function(to_call, return.match.call=NULL)
 #but because it's built and filled in later in the code generation process than
 #the point at which these arguments are checked. If it's not NULL, there's a spurious
 #missing-argument error, and it's not currently worth re-architecting to fix that.
-rstata_cmd_bysort <-
+ado_cmd_bysort <-
 function(varlist, to_call=NULL, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -70,11 +70,11 @@ function(varlist, to_call=NULL, option_list=NULL, return.match.call=NULL)
 
     #No point duplicating code; let's call the by command
     option_list[[length(option_list)+1]] <- list(name=as.symbol("sort"))
-    rstata_cmd_by(varlist=varlist, to_call=to_call, option_list=option_list,
+    ado_cmd_by(varlist=varlist, to_call=to_call, option_list=option_list,
                   return.match.call=return.match.call)
 }
 
-rstata_cmd_by <-
+ado_cmd_by <-
 function(varlist, to_call=NULL, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -90,7 +90,7 @@ function(varlist, to_call=NULL, option_list=NULL, return.match.call=NULL)
 
     varlist <- vapply(varlist, as.character, character(1))
 
-    dt <- get("rstata_dta", envir=rstata_env)
+    dt <- get("ado_dta", envir=ado_env)
 
     #If requested, sort the dataset by the variables
     if(hasOption(option_list, "sort"))
@@ -107,10 +107,10 @@ function(varlist, to_call=NULL, option_list=NULL, return.match.call=NULL)
     #
     #}
     #
-    #return(structure(ret, class=c("rstata_cmd_by", class(ret))))
+    #return(structure(ret, class=c("ado_cmd_by", class(ret))))
 }
 
-rstata_cmd_xi <-
+ado_cmd_xi <-
 function(expression_list=NULL, option_list=NULL, to_call=NULL,
          return.match.call=NULL)
 {

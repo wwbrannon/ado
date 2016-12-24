@@ -1,6 +1,6 @@
 #include <cstdio>
 #include <Rcpp.h>
-#include "RStata.hpp"
+#include "Ado.hpp"
 
 ExprNode::ExprNode()
 {
@@ -14,7 +14,7 @@ ExprNode::ExprNode(std::string _type)
     dummy = false;
 
     types.clear();
-    types.push_back("rstata_ast_node");
+    types.push_back("ado_ast_node");
     types.push_back(_type);
 }
 
@@ -26,7 +26,7 @@ ExprNode::ExprNode(std::initializer_list<std::string> _types)
 
     types.clear();
 
-    types.push_back("rstata_ast_node");
+    types.push_back("ado_ast_node");
     for(auto elem : _types)
     {
         types.push_back(elem);

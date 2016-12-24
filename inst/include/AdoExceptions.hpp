@@ -1,5 +1,5 @@
-#ifndef RSTATA_EXCEPTION_H
-#define RSTATA_EXCEPTION_H
+#ifndef ADO_EXCEPTION_H
+#define ADO_EXCEPTION_H
 
 #include <exception>
 
@@ -133,4 +133,5 @@ class BreakException : public std::exception
     std::string msg;
 };
 
-#endif /* RSTATA_EXCEPTION_H */
+#endif /* ADO_EXCEPTION_H */
+

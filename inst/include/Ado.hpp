@@ -1,5 +1,5 @@
-#ifndef RSTATA_H
-#define RSTATA_H
+#ifndef ADO_H
+#define ADO_H
 
 #include <cstdio>
 #include <Rcpp.h>
@@ -55,5 +55,5 @@ class ExprNode
         std::vector<std::string> names;
 };
 
-#endif /* RSTATA_H */
+#endif /* ADO_H */
 

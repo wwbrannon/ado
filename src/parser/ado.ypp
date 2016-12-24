@@ -2,7 +2,7 @@
 %require "3.0.2"
 
 %defines
-%define parser_class_name { RStataParser }
+%define parser_class_name { AdoParser }
 %define parse.trace
 %define parse.error verbose
 %define api.token.prefix {TOK_}
@@ -13,13 +13,13 @@
 %code requires
 {
 #include <memory>
-#include "RStata.hpp"
-class RStataDriver;
+#include "Ado.hpp"
+class AdoDriver;
 typedef void* yyscan_t;
 
-#define YY_DECL int yylex(yy::RStataParser::semantic_type* yylval_param, \
-                          yy::RStataParser::location_type* llocp,        \
-                          RStataDriver& driver, yyscan_t yyscanner)      
+#define YY_DECL int yylex(yy::AdoParser::semantic_type* yylval_param, \
+                          yy::AdoParser::location_type* llocp,        \
+                          AdoDriver& driver, yyscan_t yyscanner)      
 
 #define R_ACTION(node) \
     if(driver.callbacks == 1 && !(driver.error_seen)) \
@@ -29,7 +29,7 @@ typedef void* yyscan_t;
 
 }
 
-%param { RStataDriver& driver }
+%param { AdoDriver& driver }
 %param { yyscan_t yyscanner }
 %locations
 
@@ -47,12 +47,12 @@ typedef void* yyscan_t;
 #include <cstring>
 #include <iostream>
 #include <Rcpp.h>
-#include "RStataDriver.hpp"
+#include "AdoDriver.hpp"
 
 YY_DECL;
 
 void
-yy::RStataParser::error(const location_type& l, const std::string& m)
+yy::AdoParser::error(const location_type& l, const std::string& m)
 {
         driver.error(l, m);
 }
@@ -187,12 +187,12 @@ translation_unit:
     {
         $1; // shut up, bison...
         
-        ExprNode *node = new ExprNode("rstata_compound_cmd");
+        ExprNode *node = new ExprNode("ado_compound_cmd");
         $$ = node;
     }
     | external_statement
     {
-        ExprNode *node = new ExprNode("rstata_compound_cmd");
+        ExprNode *node = new ExprNode("ado_compound_cmd");
         node->appendChild($1);
         driver.ast = node;
 
@@ -207,7 +207,7 @@ translation_unit:
 
         if( !($2->isDummy()) )
         {
-            ExprNode *node = new ExprNode("rstata_compound_cmd");
+            ExprNode *node = new ExprNode("ado_compound_cmd");
             node->appendChild($2);
 
             driver.ast = node;
@@ -361,7 +361,7 @@ foreach_sep:
 if_cmd:
     IF expression compound_cmd
     {
-        ExprNode *node = new ExprNode("rstata_if_cmd");
+        ExprNode *node = new ExprNode("ado_if_cmd");
         node->appendChild("expression", $2);
         node->appendChild("compound_cmd", $3);
 
@@ -379,7 +379,7 @@ compound_cmd:
 cmds:
       cmd
     {
-        ExprNode *node = new ExprNode("rstata_compound_cmd");
+        ExprNode *node = new ExprNode("ado_compound_cmd");
 
         node->appendChild($1);
 
@@ -433,7 +433,7 @@ cmd:
     }
     | long_modifier_cmd ":" nonmodifier_cmd cmd_sep
     {
-        ExprNode *node = new ExprNode("rstata_modifier_cmd_list");
+        ExprNode *node = new ExprNode("ado_modifier_cmd_list");
 
         $4; // suppressing a stupid bison warning
 
@@ -532,21 +532,21 @@ cmd_sep:
 modifier_cmd:
       CAPTURE
     {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_modifier_cmd"});
+        ExprNode *node = new ExprNode({"ado_cmd", "ado_modifier_cmd"});
         node->appendChild("verb", $1);
 
         $$ = node;
     }
     | QUIETLY
     {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_modifier_cmd"});
+        ExprNode *node = new ExprNode({"ado_cmd", "ado_modifier_cmd"});
         node->appendChild("verb", $1);
 
         $$ = node;
     }
     | NOISILY
     {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_modifier_cmd"});
+        ExprNode *node = new ExprNode({"ado_cmd", "ado_modifier_cmd"});
         node->appendChild("verb", $1);
 
         $$ = node;
@@ -556,7 +556,7 @@ modifier_cmd:
 long_modifier_cmd:
       BYSORT expression_list option_list
     {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        ExprNode *node = new ExprNode({"ado_cmd", "ado_general_cmd"});
         node->appendChild("verb", $1);
 
         node->appendChild("expression_list", $2);
@@ -568,7 +568,7 @@ long_modifier_cmd:
     }
     | BY expression_list option_list
     {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        ExprNode *node = new ExprNode({"ado_cmd", "ado_general_cmd"});
         node->appendChild("verb", $1);
 
         node->appendChild("expression_list", $2);
@@ -580,7 +580,7 @@ long_modifier_cmd:
     }
     | XI option_list
     {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        ExprNode *node = new ExprNode({"ado_cmd", "ado_general_cmd"});
         node->appendChild("verb", $1);
 
         if($2->nChildren() > 0)
@@ -593,7 +593,7 @@ long_modifier_cmd:
 modifier_cmd_list:
       modifier_cmd
     {
-        ExprNode *node = new ExprNode("rstata_modifier_cmd_list");
+        ExprNode *node = new ExprNode("ado_modifier_cmd_list");
         node->appendChild($1);
         $$ = node;
     }
@@ -607,7 +607,7 @@ modifier_cmd_list:
 nonmodifier_cmd:
       IDENT expression_list if_clause in_clause weight_clause using_clause option_list
     {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        ExprNode *node = new ExprNode({"ado_cmd", "ado_general_cmd"});
         node->appendChild("verb", $1);
         node->appendChild("expression_list", $2);
 
@@ -630,7 +630,7 @@ nonmodifier_cmd:
     }
     | IDENT if_clause in_clause weight_clause using_clause option_list
     {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        ExprNode *node = new ExprNode({"ado_cmd", "ado_general_cmd"});
         node->appendChild("verb", $1);
 
         if($2->nChildren() > 0)
@@ -657,7 +657,7 @@ nonmodifier_cmd:
      * we can do about it. */
     | MERGE MERGE_SPEC expression_list using_clause option_list
     {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        ExprNode *node = new ExprNode({"ado_cmd", "ado_general_cmd"});
         node->appendChild("verb", $1);
 
         if($3->nChildren() > 0)
@@ -667,13 +667,13 @@ nonmodifier_cmd:
             node->appendChild("using_clause", $4);
 
         // we're going to make the merge_spec an option
-        ExprNode *opt = new ExprNode("rstata_option");
-        ExprNode *name = new ExprNode({"rstata_literal", "rstata_ident"});
+        ExprNode *opt = new ExprNode("ado_option");
+        ExprNode *name = new ExprNode({"ado_literal", "ado_ident"});
         name->addData("value", *(new std::string("merge_spec")));
         opt->appendChild("name", name);
         
-        ExprNode *arglist = new ExprNode("rstata_argument_expression_list");
-        ExprNode *explist = new ExprNode("rstata_expression_list");
+        ExprNode *arglist = new ExprNode("ado_argument_expression_list");
+        ExprNode *explist = new ExprNode("ado_expression_list");
         explist->appendChild($2);
         arglist->appendChild(explist);
         opt->appendChild("args", arglist);
@@ -685,7 +685,7 @@ nonmodifier_cmd:
     }
     | XI expression_list option_list /* only necessary because this is a keyword */
     {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        ExprNode *node = new ExprNode({"ado_cmd", "ado_general_cmd"});
         node->appendChild("verb", $1);
 
         node->appendChild("expression_list", $2);
@@ -697,7 +697,7 @@ nonmodifier_cmd:
     }
     | IVREGRESS TSLS varlist "(" varlist "=" varlist ")" if_clause in_clause weight_clause option_list
     {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        ExprNode *node = new ExprNode({"ado_cmd", "ado_general_cmd"});
         node->appendChild("verb", $1);
 
         $3->prependChild($2);
@@ -713,21 +713,21 @@ nonmodifier_cmd:
             node->appendChild("weight_clause", $11);
 
         // We're going to make the other two varlists into options
-        ExprNode *endogenous_opt = new ExprNode("rstata_option");
-        ExprNode *endogenous_name = new ExprNode({"rstata_literal", "rstata_ident"});
+        ExprNode *endogenous_opt = new ExprNode("ado_option");
+        ExprNode *endogenous_name = new ExprNode({"ado_literal", "ado_ident"});
         endogenous_name->addData("value", *(new std::string("endogenous_vars")));
         endogenous_opt->appendChild("name", endogenous_name);
         
-        ExprNode *endogenous_args = new ExprNode("rstata_argument_expression_list");
+        ExprNode *endogenous_args = new ExprNode("ado_argument_expression_list");
         endogenous_args->appendChild($5);
         endogenous_opt->appendChild("args", endogenous_args);
 
-        ExprNode *instrumental_opt = new ExprNode("rstata_option");
-        ExprNode *instrumental_name = new ExprNode({"rstata_literal", "rstata_ident"});
+        ExprNode *instrumental_opt = new ExprNode("ado_option");
+        ExprNode *instrumental_name = new ExprNode({"ado_literal", "ado_ident"});
         instrumental_name->addData("value", *(new std::string("instrumental_vars")));
         instrumental_opt->appendChild("name", instrumental_name);
         
-        ExprNode *instrumental_args = new ExprNode("rstata_argument_expression_list");
+        ExprNode *instrumental_args = new ExprNode("ado_argument_expression_list");
         instrumental_args->appendChild($7);
         instrumental_opt->appendChild("args", instrumental_args);
         
@@ -739,7 +739,7 @@ nonmodifier_cmd:
     }
     | GSORT gsort_varlist option_list
     {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        ExprNode *node = new ExprNode({"ado_cmd", "ado_general_cmd"});
         node->appendChild("verb", $1);
 
         node->appendChild("expression_list", $2);
@@ -751,7 +751,7 @@ nonmodifier_cmd:
     }
     | COLLAPSE collapse_spec_base_list if_clause in_clause weight_clause option_list
     {
-        ExprNode *cmd = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        ExprNode *cmd = new ExprNode({"ado_cmd", "ado_general_cmd"});
         cmd->appendChild("verb", $1);
 
         /* the components which are correct as-is */
@@ -768,20 +768,20 @@ nonmodifier_cmd:
             cmd->appendChild("option_list", $6);
 
         /* the expression list we need to wrap in a function call */
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
+        ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", *(new std::string("()")));
         
         // the "left" child
-        ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
+        ExprNode *left = new ExprNode({"ado_literal", "ado_ident"});
         left->addData("value", *(new std::string("collapse_stat")));
         node->appendChild("left", left);
         
         // the "right" child
-        ExprNode *mean = new ExprNode({"rstata_literal", "rstata_ident"});
+        ExprNode *mean = new ExprNode({"ado_literal", "ado_ident"});
         mean->addData("value", *(new std::string("mean")));
 
-        ExprNode *explist = new ExprNode("rstata_expression_list");
-        ExprNode *arglist = new ExprNode("rstata_argument_expression_list");
+        ExprNode *explist = new ExprNode("ado_expression_list");
+        ExprNode *arglist = new ExprNode("ado_argument_expression_list");
         
         explist->appendChild(mean); // stat goes first
         arglist->appendChild(explist);
@@ -794,7 +794,7 @@ nonmodifier_cmd:
     }
     | COLLAPSE collapse_list if_clause in_clause weight_clause option_list
     {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        ExprNode *node = new ExprNode({"ado_cmd", "ado_general_cmd"});
         node->appendChild("verb", $1);
 
         node->appendChild("expression_list", $2);
@@ -815,7 +815,7 @@ nonmodifier_cmd:
     }
     | LRTEST modelspec_list option_list
     {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        ExprNode *node = new ExprNode({"ado_cmd", "ado_general_cmd"});
         node->appendChild("verb", $1);
 
         node->appendChild("expression_list", $2);
@@ -827,7 +827,7 @@ nonmodifier_cmd:
     }
     | ANOVA IDENT anova_term_list if_clause in_clause weight_clause option_list
     {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        ExprNode *node = new ExprNode({"ado_cmd", "ado_general_cmd"});
         node->appendChild("verb", $1);
 
         $3->prependChild($2);
@@ -849,7 +849,7 @@ nonmodifier_cmd:
     }
     | RECODE recode_rule_list if_clause in_clause option_list
     {
-        ExprNode *node = new ExprNode({"rstata_cmd", "rstata_general_cmd"});
+        ExprNode *node = new ExprNode({"ado_cmd", "ado_general_cmd"});
         node->appendChild("verb", $1);
 
         node->appendChild("expression_list", $2);
@@ -871,7 +871,7 @@ nonmodifier_cmd:
 varlist:
       IDENT
     {
-        ExprNode *node = new ExprNode("rstata_expression_list");
+        ExprNode *node = new ExprNode("ado_expression_list");
         node->appendChild($1);
         $$ = node;
     }
@@ -890,7 +890,7 @@ number_or_missing:
 numlist:
       number_or_missing
     {
-        ExprNode *node = new ExprNode("rstata_expression_list");
+        ExprNode *node = new ExprNode("ado_expression_list");
         node->appendChild($1);
         $$ = node;
     }
@@ -911,17 +911,17 @@ collapse_spec_base:
         // shouldn't be allowed in function argument lists. they're not allowed here
         // syntactically either, and it'd be an even uglier hack to allow them everywhere
         // just for this internal representation.
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
+        ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", *(new std::string("()")));
         
         // the "left" child
-        ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
+        ExprNode *left = new ExprNode({"ado_literal", "ado_ident"});
         left->addData("value", *(new std::string("collapse_newvar")));
         node->appendChild("left", left);
 
         // the "right" child
-        ExprNode *arglist = new ExprNode("rstata_argument_expression_list");
-        ExprNode *explist = new ExprNode("rstata_expression_list");
+        ExprNode *arglist = new ExprNode("ado_argument_expression_list");
+        ExprNode *explist = new ExprNode("ado_expression_list");
         explist->appendChild($1);
         explist->appendChild($3);
         arglist->appendChild(explist);
@@ -934,7 +934,7 @@ collapse_spec_base:
 collapse_spec_base_list:
       collapse_spec_base
     {
-        ExprNode *node = new ExprNode("rstata_expression_list");
+        ExprNode *node = new ExprNode("ado_expression_list");
         node->appendChild($1);
         $$ = node;
     }
@@ -948,18 +948,18 @@ collapse_spec_base_list:
 collapse_spec:
       "(" IDENT ")" collapse_spec_base_list
     {
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
+        ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", *(new std::string("()")));
         
         // the "left" child
-        ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
+        ExprNode *left = new ExprNode({"ado_literal", "ado_ident"});
         left->addData("value", *(new std::string("collapse_stat")));
         node->appendChild("left", left);
         
         // the "right" child
-        ExprNode *explist = new ExprNode("rstata_expression_list");
+        ExprNode *explist = new ExprNode("ado_expression_list");
         explist->appendChild($2); // stat goes first
-        ExprNode *arglist = new ExprNode("rstata_argument_expression_list");
+        ExprNode *arglist = new ExprNode("ado_argument_expression_list");
         arglist->appendChild(explist);
         arglist->appendChild($4); // variable names or assignments follow
         
@@ -971,7 +971,7 @@ collapse_spec:
 collapse_list:
       collapse_spec
     {
-        ExprNode *node = new ExprNode("rstata_expression_list");
+        ExprNode *node = new ExprNode("ado_expression_list");
         node->appendChild($1);
         $$ = node;
     }
@@ -987,19 +987,19 @@ recode_rule:
       IDENT
     | "(" IDENT "=" NUMBER ")" 
     {
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
+        ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", *(new std::string("()")));
         
         // the "left" child
-        ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
+        ExprNode *left = new ExprNode({"ado_literal", "ado_ident"});
         left->addData("value", *(new std::string("recode_rule_ident")));
         node->appendChild("left", left);
         
         // the "right" child
-        ExprNode *explist = new ExprNode("rstata_expression_list");
+        ExprNode *explist = new ExprNode("ado_expression_list");
         explist->appendChild($4); // destination value goes first
         explist->appendChild($2);
-        ExprNode *arglist = new ExprNode("rstata_argument_expression_list");
+        ExprNode *arglist = new ExprNode("ado_argument_expression_list");
         arglist->appendChild(explist);
         
         node->appendChild("right", arglist);
@@ -1009,20 +1009,20 @@ recode_rule:
     {
         $3; // shut up, bison...
 
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
+        ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", *(new std::string("()")));
         
         // the "left" child
-        ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
+        ExprNode *left = new ExprNode({"ado_literal", "ado_ident"});
         left->addData("value", *(new std::string("recode_rule_range")));
         node->appendChild("left", left);
         
         // the "right" child
-        ExprNode *explist = new ExprNode("rstata_expression_list");
+        ExprNode *explist = new ExprNode("ado_expression_list");
         explist->appendChild($6); // destination value goes first
         explist->appendChild($4); // then the upper range limit
         explist->appendChild($2); // then the lower range limit
-        ExprNode *arglist = new ExprNode("rstata_argument_expression_list");
+        ExprNode *arglist = new ExprNode("ado_argument_expression_list");
         arglist->appendChild(explist);
         
         node->appendChild("right", arglist);
@@ -1030,18 +1030,18 @@ recode_rule:
     }
     | "(" numlist "=" NUMBER ")" 
     {
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
+        ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", *(new std::string("()")));
         
         // the "left" child
-        ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
+        ExprNode *left = new ExprNode({"ado_literal", "ado_ident"});
         left->addData("value", *(new std::string("recode_rule_numlist")));
         node->appendChild("left", left);
         
         // the "right" child
-        ExprNode *explist = new ExprNode("rstata_expression_list");
+        ExprNode *explist = new ExprNode("ado_expression_list");
         explist->appendChild($4); // destination value goes first
-        ExprNode *arglist = new ExprNode("rstata_argument_expression_list");
+        ExprNode *arglist = new ExprNode("ado_argument_expression_list");
         arglist->appendChild(explist);
         arglist->appendChild($2); // this is flattened in the code generator
         
@@ -1053,7 +1053,7 @@ recode_rule:
 recode_rule_list:
       recode_rule
     {
-        ExprNode *node = new ExprNode("rstata_expression_list");
+        ExprNode *node = new ExprNode("ado_expression_list");
         node->appendChild($1);
         $$ = node;
     }
@@ -1068,11 +1068,11 @@ recode_rule_list:
 gsort_var:
       IDENT
     {
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
+        ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", *(new std::string("()")));
         node->appendChild("right", $1);
         
-        ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
+        ExprNode *left = new ExprNode({"ado_literal", "ado_ident"});
         left->addData("value", *(new std::string("asc")));
         node->appendChild("left", left);
         
@@ -1082,11 +1082,11 @@ gsort_var:
     {
         $1; // shut up, bison...
         
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
+        ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", *(new std::string("()")));
         node->appendChild("right", $2);
         
-        ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
+        ExprNode *left = new ExprNode({"ado_literal", "ado_ident"});
         left->addData("value", *(new std::string("asc")));
         node->appendChild("left", left);
 
@@ -1096,11 +1096,11 @@ gsort_var:
     {
         $1; // shut up, bison...
         
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
+        ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", *(new std::string("()")));
         node->appendChild("right", $2);
         
-        ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
+        ExprNode *left = new ExprNode({"ado_literal", "ado_ident"});
         left->addData("value", *(new std::string("desc")));
         node->appendChild("left", left);
 
@@ -1111,7 +1111,7 @@ gsort_var:
 gsort_varlist:
       gsort_var
     {
-        ExprNode *node = new ExprNode("rstata_expression_list");
+        ExprNode *node = new ExprNode("ado_expression_list");
         node->appendChild($1);
         $$ = node;
     }
@@ -1128,14 +1128,14 @@ modelspec:
     | "."
     | "(" varlist ")"
     {
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
+        ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", *(new std::string("()")));
 
-        ExprNode *left = new ExprNode({"rstata_literal", "rstata_ident"});
+        ExprNode *left = new ExprNode({"ado_literal", "ado_ident"});
         left->addData("value", *(new std::string("lrtest_term_list")));
         node->appendChild("left", left);
 
-        ExprNode *arglist = new ExprNode("rstata_argument_expression_list");
+        ExprNode *arglist = new ExprNode("ado_argument_expression_list");
         arglist->appendChild($2);
         node->appendChild("right", arglist);
         
@@ -1146,7 +1146,7 @@ modelspec:
 modelspec_list:
       modelspec
     {
-        ExprNode *node = new ExprNode("rstata_expression_list");
+        ExprNode *node = new ExprNode("ado_expression_list");
         node->appendChild($1);
         $$ = node;
     }
@@ -1164,7 +1164,7 @@ anova_nest_expression:
     {
         $2; // shut up, bison...
         
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_anova_nest_expression"});
+        ExprNode *node = new ExprNode({"ado_expression", "ado_anova_nest_expression"});
         node->addData("verb", *(new std::string("%anova_nest%")));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -1179,7 +1179,7 @@ anova_error_expression:
     {
         $2; // shut up, bison...
         
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_anova_error_expression"});
+        ExprNode *node = new ExprNode({"ado_expression", "ado_anova_error_expression"});
         node->addData("verb", *(new std::string("%anova_error%")));
         node->appendChild("left", $1);
         
@@ -1190,7 +1190,7 @@ anova_error_expression:
 anova_term_list:
       anova_error_expression
     {
-        ExprNode *node = new ExprNode("rstata_expression_list");
+        ExprNode *node = new ExprNode("ado_expression_list");
         node->appendChild($1);
         $$ = node;
     }
@@ -1298,7 +1298,7 @@ primary_expression:
     }
     | type_operator "(" expression_list ")"
     {
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_type_expression"});
+        ExprNode *node = new ExprNode({"ado_expression", "ado_type_expression"});
         node->addData("verb", *($1));
         node->appendChild("left", $3);
 
@@ -1306,10 +1306,10 @@ primary_expression:
     }
     | type_operator IDENT
     {
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_type_expression"});
+        ExprNode *node = new ExprNode({"ado_expression", "ado_type_expression"});
         node->addData("verb", *($1));
 
-        ExprNode *lst = new ExprNode("rstata_expression_list");
+        ExprNode *lst = new ExprNode("ado_expression_list");
         lst->appendChild($2);
         node->appendChild("left", lst);
 
@@ -1331,7 +1331,7 @@ cross_expression:
       unary_factor_expression
     | cross_expression cross_operator unary_factor_expression
     {
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_cross_expression"});
+        ExprNode *node = new ExprNode({"ado_expression", "ado_cross_expression"});
         node->addData("verb", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -1343,7 +1343,7 @@ postfix_expression:
       cross_expression
     | postfix_expression "[" additive_expression "]"
     {
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
+        ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", std::string("[]"));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -1352,7 +1352,7 @@ postfix_expression:
     }
     | postfix_expression "(" ")" %prec "("
     {
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
+        ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", std::string("()"));
         node->appendChild("left", $1);
 
@@ -1360,7 +1360,7 @@ postfix_expression:
     }
     | postfix_expression "(" argument_expression_list ")"
     {
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_postfix_expression"});
+        ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", std::string("()"));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -1373,7 +1373,7 @@ power_expression:
       postfix_expression %prec EXPONENT
     | power_expression power_operator postfix_expression %prec EXPONENT
     {
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_arithmetic_expression", "rstata_power_expression"});
+        ExprNode *node = new ExprNode({"ado_expression", "ado_arithmetic_expression", "ado_power_expression"});
         node->addData("verb", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -1385,7 +1385,7 @@ unary_expression:
       power_expression
     | unary_operator power_expression
     {
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_arithmetic_expression", "rstata_unary_expression"});
+        ExprNode *node = new ExprNode({"ado_expression", "ado_arithmetic_expression", "ado_unary_expression"});
         node->addData("verb", *($1));
         node->appendChild("right", $2);
         $$ = node;
@@ -1396,7 +1396,7 @@ multiplication_expression:
       unary_expression
     | multiplication_expression multiplication_operator unary_expression
     {
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_arithmetic_expression", "rstata_multiplication_expression"});
+        ExprNode *node = new ExprNode({"ado_expression", "ado_arithmetic_expression", "ado_multiplication_expression"});
         node->addData("verb", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -1408,7 +1408,7 @@ additive_expression:
       multiplication_expression %prec "+"
     | additive_expression additive_operator multiplication_expression %prec "+"
     {
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_arithmetic_expression", "rstata_additive_expression"});
+        ExprNode *node = new ExprNode({"ado_expression", "ado_arithmetic_expression", "ado_additive_expression"});
         node->addData("verb", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -1420,7 +1420,7 @@ relational_expression:
       additive_expression %prec RELATIONAL
     | relational_expression relational_operator additive_expression %prec RELATIONAL
     {
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_relational_expression"});
+        ExprNode *node = new ExprNode({"ado_expression", "ado_relational_expression"});
         node->addData("verb", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -1432,7 +1432,7 @@ equality_expression:
       relational_expression
     | equality_expression equality_operator relational_expression
     {
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_equality_expression"});
+        ExprNode *node = new ExprNode({"ado_expression", "ado_equality_expression"});
         node->addData("verb", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -1444,7 +1444,7 @@ logical_expression:
       equality_expression
     | logical_expression logical_operator equality_expression
     {
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_logical_expression"});
+        ExprNode *node = new ExprNode({"ado_expression", "ado_logical_expression"});
         node->addData("verb", *($2));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -1456,7 +1456,7 @@ expression:
       logical_expression
     | logical_expression assignment_operator logical_expression
     {
-        ExprNode *node = new ExprNode({"rstata_expression", "rstata_assignment_expression"});
+        ExprNode *node = new ExprNode({"ado_expression", "ado_assignment_expression"});
         node->addData("verb", "=");
         node->appendChild("left", $1);
         node->appendChild("right", $3);
@@ -1467,7 +1467,7 @@ expression:
 expression_list:
       expression
     {
-        ExprNode *node = new ExprNode("rstata_expression_list");
+        ExprNode *node = new ExprNode("ado_expression_list");
         node->appendChild($1);
         $$ = node;
     }
@@ -1481,7 +1481,7 @@ expression_list:
 argument_expression_list:
       expression_list
     {
-        ExprNode *node = new ExprNode("rstata_argument_expression_list");
+        ExprNode *node = new ExprNode("ado_argument_expression_list");
         node->appendChild($1);
         $$ = node;
     }
@@ -1502,7 +1502,7 @@ argument_expression_list:
 option_list:
       %empty
     {
-        $$ = new ExprNode("rstata_option_list");
+        $$ = new ExprNode("ado_option_list");
     }
     | "," options
     {
@@ -1513,7 +1513,7 @@ option_list:
 options:
       option
     {
-        ExprNode *node = new ExprNode("rstata_option_list");
+        ExprNode *node = new ExprNode("ado_option_list");
         node->appendChild($1);
         $$ = node;
     }
@@ -1527,14 +1527,14 @@ options:
 option:
       option_ident
     {
-        ExprNode *node = new ExprNode("rstata_option");
+        ExprNode *node = new ExprNode("ado_option");
         node->appendChild("name", $1);
 
         $$ = node;
     }
     | option_ident "(" argument_expression_list ")"
     {
-        ExprNode *node = new ExprNode("rstata_option");
+        ExprNode *node = new ExprNode("ado_option");
         node->appendChild("name", $1);
         node->appendChild("args", $3);
 
@@ -1570,7 +1570,7 @@ option_ident:
 weight_clause:
       %empty
     {
-        $$ = new ExprNode("rstata_weight_clause");
+        $$ = new ExprNode("ado_weight_clause");
     }
     | WEIGHT_SPEC literal_expression "]"
     {
@@ -1588,11 +1588,11 @@ weight_clause:
 if_clause:
       %empty
     {
-        $$ = new ExprNode("rstata_if_clause");
+        $$ = new ExprNode("ado_if_clause");
     }
     | IF expression
     {
-        ExprNode *node = new ExprNode("rstata_if_clause");
+        ExprNode *node = new ExprNode("ado_if_clause");
         node->appendChild("if_expression", $2);
 
         $$ = node;
@@ -1608,13 +1608,13 @@ if_clause:
 in_clause:
       %empty
     {
-        $$ = new ExprNode("rstata_in_clause");
+        $$ = new ExprNode("ado_in_clause");
     }
     | IN unary_expression "/" unary_expression
     {
         $3; // suppressing a stupid bison warning
 
-        ExprNode *node = new ExprNode("rstata_in_clause");
+        ExprNode *node = new ExprNode("ado_in_clause");
         node->appendChild("lower", $2);
         node->appendChild("upper", $4);
 
@@ -1622,7 +1622,7 @@ in_clause:
     }
     | IN unary_expression
     {
-        ExprNode *node = new ExprNode("rstata_in_clause");
+        ExprNode *node = new ExprNode("ado_in_clause");
         node->appendChild("upper", $2);
 
         $$ = node;
@@ -1638,18 +1638,18 @@ in_clause:
 using_clause:
       %empty
     {
-        $$ = new ExprNode("rstata_using_clause");
+        $$ = new ExprNode("ado_using_clause");
     }
     | USING STRING_LITERAL
     {
-        ExprNode *node = new ExprNode("rstata_using_clause");
+        ExprNode *node = new ExprNode("ado_using_clause");
         node->appendChild("filename", $2);
 
         $$ = node;
     }
     | USING IDENT
     {
-        ExprNode *node = new ExprNode("rstata_using_clause");
+        ExprNode *node = new ExprNode("ado_using_clause");
         node->appendChild("filename", $2);
 
         $$ = node;

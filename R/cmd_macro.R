@@ -1,12 +1,12 @@
 ## Macro management commands
 
-rstata_cmd_local <-
+ado_cmd_local <-
 function(expression_list, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
 
-    env <- get("rstata_macro_env", envir=rstata_env)
+    env <- get("ado_macro_env", envir=ado_env)
     exprs <- expression_list
 
     #Either an assignment or an attempt to clear this macro
@@ -57,13 +57,13 @@ function(expression_list, return.match.call=NULL)
     invisible(TRUE)
 }
 
-rstata_cmd_global <-
+ado_cmd_global <-
 function(expression_list, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
 
-    env <- get("rstata_macro_env", envir=rstata_env)
+    env <- get("ado_macro_env", envir=ado_env)
     exprs <- expression_list
 
     if(length(exprs) == 1) #an assignment
@@ -109,13 +109,13 @@ function(expression_list, return.match.call=NULL)
     invisible(TRUE)
 }
 
-rstata_cmd_tempfile <-
+ado_cmd_tempfile <-
 function(expression_list, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
 
-    env <- get("rstata_macro_env", envir=rstata_env)
+    env <- get("ado_macro_env", envir=ado_env)
     exprs <- expression_list
 
     raiseifnot(length(exprs) >= 1, cls="EvalErrorException",
@@ -136,13 +136,13 @@ function(expression_list, return.match.call=NULL)
     invisible(TRUE)
 }
 
-rstata_cmd_macro <-
+ado_cmd_macro <-
 function(expression_list, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
 
-    env <- get("rstata_macro_env", envir=rstata_env)
+    env <- get("ado_macro_env", envir=ado_env)
     exprs <- expression_list
 
     raiseifnot(length(exprs) >= 1, cls="EvalErrorException",
@@ -153,13 +153,13 @@ function(expression_list, return.match.call=NULL)
 
     if(what == "local")
     {
-        return(rstata_cmd_local(exprs[-1]))
+        return(ado_cmd_local(exprs[-1]))
     } else if(what == "global")
     {
-        return(rstata_cmd_global(exprs[-1]))
+        return(ado_cmd_global(exprs[-1]))
     } else if(what == "tempfile")
     {
-        return(rstata_cmd_tempfile(exprs[-1]))
+        return(ado_cmd_tempfile(exprs[-1]))
     } else if(what == "drop")
     {
         raiseifnot(length(exprs) == 2, cls="EvalErrorException",

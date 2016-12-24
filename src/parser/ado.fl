@@ -18,12 +18,12 @@
 
 #include <Rcpp.h>
 
-#include "RStata.hpp"
+#include "Ado.hpp"
 #include "ado.tab.hpp"
-#include "RStataDriver.hpp"
+#include "AdoDriver.hpp"
 
 #ifndef YYSTYPE
-#define YYSTYPE yy::RStataParser::semantic_type
+#define YYSTYPE yy::AdoParser::semantic_type
 #endif
 
 // We really, really can't have the scanner calling exit() and
@@ -34,7 +34,7 @@
 #undef YY_FATAL_ERROR
 #endif
 
-#define YY_FATAL_ERROR(msg) rstata_yy_fatal_error(msg)
+#define YY_FATAL_ERROR(msg) ado_yy_fatal_error(msg)
 
 // Make yytext big enough to hold a macro replacement text as large as
 // the ones Stata allows
@@ -45,10 +45,10 @@
 #define YYLMAX 65536
 
 // our error handling routine for fatal errors, defined below
-void rstata_yy_fatal_error(std::string& msg);
-void rstata_yy_fatal_error(const char *msg);
+void ado_yy_fatal_error(std::string& msg);
+void ado_yy_fatal_error(const char *msg);
 
-// the rstata_yy_fatal_error function uses this function to stop execution
+// the ado_yy_fatal_error function uses this function to stop execution
 void raise_condition(const std::string& msg, const std::string& type);
 
 // String utility functions used and defined below
@@ -56,7 +56,7 @@ std::vector<std::string> split(const std::string &s, char delim);
 std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems);
 std::string trim(const std::string& str, const std::string& what = " ");
 
-typedef yy::RStataParser::token token;
+typedef yy::AdoParser::token token;
 
 // Should we echo the matched text to Rcpp::Rcout? It's
 // necessary for logging and for printing commands run in do-files.
@@ -145,7 +145,7 @@ size_t macro_length = 0;
                                         
                                         yy_pop_state(yyscanner);
 
-                                        ExprNode *node = new ExprNode("rstata_embedded_code");
+                                        ExprNode *node = new ExprNode("ado_embedded_code");
                                         node->addData("value", std::string(embed_buf));
                                         node->addData("lang", "R");
 
@@ -607,7 +607,7 @@ size_t macro_length = 0;
                                         loop_buf.clear();
                                         yy_push_state(FOREACH, yyscanner);
 
-                                        yylval->node = new ExprNode({"rstata_loop", "rstata_foreach"});
+                                        yylval->node = new ExprNode({"ado_loop", "ado_foreach"});
                                         return token::TOK_FOREACH;
                                     }
 <INITIAL>^{B}*forvalues             {
@@ -616,7 +616,7 @@ size_t macro_length = 0;
                                         loop_buf.clear();
                                         yy_push_state(FORVALUES, yyscanner);
 
-                                        yylval->node = new ExprNode({"rstata_loop", "rstata_forvalues"});
+                                        yylval->node = new ExprNode({"ado_loop", "ado_forvalues"});
                                         return token::TOK_FORVALUES;
                                     }
 <INITIAL>^{B}*forvalue              {
@@ -625,7 +625,7 @@ size_t macro_length = 0;
                                         loop_buf.clear();
                                         yy_push_state(FORVALUES, yyscanner);
 
-                                        yylval->node = new ExprNode({"rstata_loop", "rstata_forvalues"});
+                                        yylval->node = new ExprNode({"ado_loop", "ado_forvalues"});
                                         return token::TOK_FORVALUES;
                                     }
 <INITIAL>^{B}*forvalu               {
@@ -634,7 +634,7 @@ size_t macro_length = 0;
                                         loop_buf.clear();
                                         yy_push_state(FORVALUES, yyscanner);
 
-                                        yylval->node = new ExprNode({"rstata_loop", "rstata_forvalues"});
+                                        yylval->node = new ExprNode({"ado_loop", "ado_forvalues"});
                                         return token::TOK_FORVALUES;
                                     }
 <INITIAL>^{B}*forval                {
@@ -643,7 +643,7 @@ size_t macro_length = 0;
                                         loop_buf.clear();
                                         yy_push_state(FORVALUES, yyscanner);
 
-                                        yylval->node = new ExprNode({"rstata_loop", "rstata_forvalues"});
+                                        yylval->node = new ExprNode({"ado_loop", "ado_forvalues"});
                                         return token::TOK_FORVALUES;
                                     }
 <INITIAL>^{B}*forva                 {
@@ -652,7 +652,7 @@ size_t macro_length = 0;
                                         loop_buf.clear();
                                         yy_push_state(FORVALUES, yyscanner);
 
-                                        yylval->node = new ExprNode({"rstata_loop", "rstata_forvalues"});
+                                        yylval->node = new ExprNode({"ado_loop", "ado_forvalues"});
                                         return token::TOK_FORVALUES;
                                     }
 <INITIAL>^{B}*forv                  {
@@ -661,7 +661,7 @@ size_t macro_length = 0;
                                         loop_buf.clear();
                                         yy_push_state(FORVALUES, yyscanner);
 
-                                        yylval->node = new ExprNode({"rstata_loop", "rstata_forvalues"});
+                                        yylval->node = new ExprNode({"ado_loop", "ado_forvalues"});
                                         return token::TOK_FORVALUES;
                                     }
 
@@ -809,7 +809,7 @@ size_t macro_length = 0;
 
                                             // construct a string literal token from loop_buf and return it
                                             std::string *s = new std::string(loop_buf);
-                                            yylval->node = new ExprNode({"rstata_literal", "rstata_string_literal"});
+                                            yylval->node = new ExprNode({"ado_literal", "ado_string_literal"});
                                             yylval->node->addData("value", *s);
 
                                             return token::TOK_STRING_LITERAL;
@@ -1041,7 +1041,7 @@ size_t macro_length = 0;
                                         std::string *s = new std::string(yytext);
                                         std::string n = s->substr(1, s->size());
 
-                                        yylval->node = new ExprNode("rstata_embedded_code");
+                                        yylval->node = new ExprNode("ado_embedded_code");
                                         yylval->node->addData("value", n);
                                         yylval->node->addData("lang", "shell");
                                         return token::TOK_EMBEDDED_CODE;
@@ -1052,7 +1052,7 @@ size_t macro_length = 0;
                                         std::string *s = new std::string(yytext);
                                         std::string n = s->substr(5, s->size());
 
-                                        yylval->node = new ExprNode("rstata_embedded_code");
+                                        yylval->node = new ExprNode("ado_embedded_code");
                                         yylval->node->addData("value", n);
                                         yylval->node->addData("type", "shell");
                                         return token::TOK_EMBEDDED_CODE;
@@ -1124,7 +1124,7 @@ size_t macro_length = 0;
                                         R_ECHO(yytext);
                                         
                                         std::string *s = new std::string(cdquote_buf);
-                                        yylval->node = new ExprNode({"rstata_literal", "rstata_string_literal"});
+                                        yylval->node = new ExprNode({"ado_literal", "ado_string_literal"});
                                         yylval->node->addData("value", *s);
 
                                         yy_pop_state(yyscanner);
@@ -1251,7 +1251,7 @@ size_t macro_length = 0;
                                         R_ECHO(yytext);
                                         
                                         std::string *s = new std::string(string_buf);
-                                        yylval->node = new ExprNode({"rstata_literal", "rstata_string_literal"});
+                                        yylval->node = new ExprNode({"ado_literal", "ado_string_literal"});
                                         yylval->node->addData("value", *s);
 
                                         yy_pop_state(yyscanner);
@@ -1342,7 +1342,7 @@ size_t macro_length = 0;
 {D}{D}{M}{D}+                      {
                                        R_ECHO(yytext);
                                    
-                                       yylval->node = new ExprNode({"rstata_literal", "rstata_datetime"});
+                                       yylval->node = new ExprNode({"ado_literal", "ado_datetime"});
 
                                        std::string *s = new std::string(yytext);
                                        s->append(" 00:00:00");
@@ -1353,7 +1353,7 @@ size_t macro_length = 0;
 {D}{D}{M}{D}+[ \t]+{D}{D}:{D}{D}(:{D}{D}(\.{D}+)?)?     {
                                                             R_ECHO(yytext);
                                         
-                                                            yylval->node = new ExprNode({"rstata_literal", "rstata_datetime"});
+                                                            yylval->node = new ExprNode({"ado_literal", "ado_datetime"});
 
                                                             std::string *s = new std::string(yytext);
                                                             yylval->node->addData("value", *s);
@@ -1366,7 +1366,7 @@ size_t macro_length = 0;
 %-?{D}+\.{D}+(g|f|e|gc|fc)          {
                                         // numeric formats
                                         R_ECHO(yytext);
-                                        yylval->node = new ExprNode({"rstata_literal", "rstata_format_spec"});
+                                        yylval->node = new ExprNode({"ado_literal", "ado_format_spec"});
 
                                         std::string *s = new std::string(yytext);
                                         yylval->node->addData("value", *s);
@@ -1375,7 +1375,7 @@ size_t macro_length = 0;
                                     }
 %21x|%16H|%16L|%8H|%8L              {
                                         R_ECHO(yytext);
-                                        yylval->node = new ExprNode({"rstata_literal", "rstata_format_spec"});
+                                        yylval->node = new ExprNode({"ado_literal", "ado_format_spec"});
 
                                         std::string *s = new std::string(yytext);
                                         yylval->node->addData("value", *s);
@@ -1386,7 +1386,7 @@ size_t macro_length = 0;
                                         // string formats
                                         R_ECHO(yytext);
                                         
-                                        yylval->node = new ExprNode({"rstata_literal", "rstata_format_spec"});
+                                        yylval->node = new ExprNode({"ado_literal", "ado_format_spec"});
 
                                         std::string *s = new std::string(yytext);
                                         yylval->node->addData("value", *s);
@@ -1395,7 +1395,7 @@ size_t macro_length = 0;
 %t[Ccdwmqh]{T}*                     {
                                         // datetime formats
                                         R_ECHO(yytext);
-                                        yylval->node = new ExprNode({"rstata_literal", "rstata_format_spec"});
+                                        yylval->node = new ExprNode({"ado_literal", "ado_format_spec"});
 
                                         std::string *s = new std::string(yytext);
                                         yylval->node->addData("value", *s);
@@ -1464,7 +1464,7 @@ strL                                {
 2sls                                {
                                         R_ECHO(yytext);
                                         
-                                        yylval->node = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        yylval->node = new ExprNode({"ado_literal", "ado_ident"});
 
                                         yylval->node->addData("value", *(new std::string("tsls")));
                                         return token::TOK_TSLS;
@@ -1475,7 +1475,7 @@ strL                                {
 \.                                  {
                                         R_ECHO(yytext);
                                         
-                                        yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
+                                        yylval->node = new ExprNode({"ado_literal", "ado_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_PERIOD;
@@ -1483,7 +1483,7 @@ strL                                {
 0[xX]{H}+                           { /* hex */
                                         R_ECHO(yytext);
                                         
-                                        yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
+                                        yylval->node = new ExprNode({"ado_literal", "ado_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_NUMBER;
@@ -1491,7 +1491,7 @@ strL                                {
 0{D}+                               { /* octal */
                                         R_ECHO(yytext);
                                         
-                                        yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
+                                        yylval->node = new ExprNode({"ado_literal", "ado_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_NUMBER;
@@ -1499,7 +1499,7 @@ strL                                {
 {D}+                                { /* decimal integer */
                                         R_ECHO(yytext);
                                         
-                                        yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
+                                        yylval->node = new ExprNode({"ado_literal", "ado_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_NUMBER;
@@ -1507,7 +1507,7 @@ strL                                {
 {D}+\.({D}+)?/[^_A-Za-z_]           { /* decimal float */
                                         R_ECHO(yytext);
                                         
-                                        yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
+                                        yylval->node = new ExprNode({"ado_literal", "ado_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_NUMBER;
@@ -1515,7 +1515,7 @@ strL                                {
 {D}+{E}                             { /* scientific notation */
                                         R_ECHO(yytext);
                                         
-                                        yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
+                                        yylval->node = new ExprNode({"ado_literal", "ado_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_NUMBER;
@@ -1523,7 +1523,7 @@ strL                                {
 {D}*"."{D}+({E})?                   { /* scientific notation with fractions, or numbers like ".0239" */
                                         R_ECHO(yytext);
                                         
-                                        yylval->node = new ExprNode({"rstata_literal", "rstata_number"});
+                                        yylval->node = new ExprNode({"ado_literal", "ado_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_NUMBER;
@@ -1553,7 +1553,7 @@ in                                  {
 (1\:1|1\:m|m\:1|m\:m)               {
                                         R_ECHO(yytext);
                                         
-                                        yylval->node = new ExprNode({"rstata_literal", "rstata_string_literal"});
+                                        yylval->node = new ExprNode({"ado_literal", "ado_string_literal"});
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_MERGE_SPEC;
                                         }
@@ -1564,8 +1564,8 @@ in                                  {
 "["{B}*(a|p|i|f)weight{B}*"="       {
                                         R_ECHO(yytext);
                                         
-                                        ExprNode *clause = new ExprNode("rstata_weight_clause");
-                                        ExprNode *kind = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        ExprNode *clause = new ExprNode("ado_weight_clause");
+                                        ExprNode *kind = new ExprNode({"ado_literal", "ado_ident"});
                                         std::string *s = new std::string(yytext);
 
                                         // remove the first and last characters of the string
@@ -1738,7 +1738,7 @@ in                                  {
 "c."                                {
                                         R_ECHO(yytext);
                                         
-                                        yylval->node = new ExprNode({"rstata_expression", "rstata_factor_expression", "rstata_continuous_expression"});
+                                        yylval->node = new ExprNode({"ado_expression", "ado_factor_expression", "ado_continuous_expression"});
                                         yylval->node->addData("verb", "c.");
 
                                         return token::TOK_CONT_OPERATOR;
@@ -1746,7 +1746,7 @@ in                                  {
 "i."                                {
                                         R_ECHO(yytext);
                                         
-                                        yylval->node = new ExprNode({"rstata_expression", "rstata_factor_expression", "rstata_indicator_expression"});
+                                        yylval->node = new ExprNode({"ado_expression", "ado_factor_expression", "ado_indicator_expression"});
                                         yylval->node->addData("verb", "i.");
 
                                         return token::TOK_IND_OPERATOR;
@@ -1755,7 +1755,7 @@ in                                  {
 i?"bn."                             {
                                         R_ECHO(yytext);
                                         
-                                        yylval->node = new ExprNode({"rstata_expression", "rstata_factor_expression", "rstata_baseline_expression"});
+                                        yylval->node = new ExprNode({"ado_expression", "ado_factor_expression", "ado_baseline_expression"});
                                         yylval->node->addData("verb", "ib.");
                                         yylval->node->addData("level", "n");
 
@@ -1764,7 +1764,7 @@ i?"bn."                             {
 i?"b(freq)."                        {
                                         R_ECHO(yytext);
                                         
-                                        yylval->node = new ExprNode({"rstata_expression", "rstata_factor_expression", "rstata_baseline_expression"});
+                                        yylval->node = new ExprNode({"ado_expression", "ado_factor_expression", "ado_baseline_expression"});
                                         yylval->node->addData("verb", "ib.");
                                         yylval->node->addData("level", "freq");
 
@@ -1773,7 +1773,7 @@ i?"b(freq)."                        {
 i?"b(last)."                        {
                                         R_ECHO(yytext);
                                         
-                                        yylval->node = new ExprNode({"rstata_expression", "rstata_factor_expression", "rstata_baseline_expression"});
+                                        yylval->node = new ExprNode({"ado_expression", "ado_factor_expression", "ado_baseline_expression"});
                                         yylval->node->addData("verb", "ib.");
                                         yylval->node->addData("level", "last");
 
@@ -1782,7 +1782,7 @@ i?"b(last)."                        {
 i?"b(first)."                       {
                                         R_ECHO(yytext);
                                         
-                                        yylval->node = new ExprNode({"rstata_expression", "rstata_factor_expression", "rstata_baseline_expression"});
+                                        yylval->node = new ExprNode({"ado_expression", "ado_factor_expression", "ado_baseline_expression"});
                                         yylval->node->addData("verb", "ib.");
                                         yylval->node->addData("level", "first");
 
@@ -1793,7 +1793,7 @@ i?"b"{D}+"."                        {
                                         
                                         std::string *s = new std::string(yytext);
 
-                                        yylval->node = new ExprNode({"rstata_expression", "rstata_factor_expression", "rstata_baseline_expression"});
+                                        yylval->node = new ExprNode({"ado_expression", "ado_factor_expression", "ado_baseline_expression"});
                                         yylval->node->addData("verb", "ib.");
 
                                         if(s->at(0) == 'i')
@@ -1808,7 +1808,7 @@ i?"b(#"{D}+")."                     {
                                         
                                         std::string *s = new std::string(yytext);
 
-                                        yylval->node = new ExprNode({"rstata_expression", "rstata_factor_expression", "rstata_baseline_expression"});
+                                        yylval->node = new ExprNode({"ado_expression", "ado_factor_expression", "ado_baseline_expression"});
                                         yylval->node->addData("verb", "ib.");
 
                                         if(s->at(0) == 'i')
@@ -1824,7 +1824,7 @@ i?{D}+"."                          {
                                         
                                         std::string *s = new std::string(yytext);
 
-                                        yylval->node = new ExprNode({"rstata_expression", "rstata_factor_expression", "rstata_indicator_expression"});
+                                        yylval->node = new ExprNode({"ado_expression", "ado_factor_expression", "ado_indicator_expression"});
                                         yylval->node->addData("verb", "i.");
                                         yylval->node->addData("level", s->substr(1, s->length() - 1));
 
@@ -1836,7 +1836,7 @@ i?{D}+"."                          {
                                         std::string *s = new std::string(yytext);
                                         std::vector<std::string> x = split(s->substr(2, s->length() - 2), ' ');
 
-                                        yylval->node = new ExprNode({"rstata_expression", "rstata_factor_expression", "rstata_indicator_expression"});
+                                        yylval->node = new ExprNode({"ado_expression", "ado_factor_expression", "ado_indicator_expression"});
                                         yylval->node->addData("verb", "i.");
 
                                         for(auto elem : x)
@@ -1852,7 +1852,7 @@ i?{D}+"."                          {
                                         
                                         std::string *s = new std::string(yytext);
                                         std::vector<std::string> x = split(s->substr(2, s->length() -2), ' ');
-                                        yylval->node = new ExprNode({"rstata_expression", "rstata_factor_expression", "rstata_indicator_expression"});
+                                        yylval->node = new ExprNode({"ado_expression", "ado_factor_expression", "ado_indicator_expression"});
                                         yylval->node->addData("verb", "i.");
 
                                         yylval->node->addData("levelstart", trim(x[0]));
@@ -1866,7 +1866,7 @@ i?"o"{D}+"."                        {
                                         
                                         std::string *s = new std::string(yytext);
 
-                                        yylval->node = new ExprNode({"rstata_expression", "rstata_factor_expression", "rstata_omit_expression"});
+                                        yylval->node = new ExprNode({"ado_expression", "ado_factor_expression", "ado_omit_expression"});
                                         yylval->node->addData("verb", "o.");
 
                                         if(s->at(0) == 'i')
@@ -1882,7 +1882,7 @@ i?"o("{D}+(\ +{D}+)*")."            {
                                         std::string *s = new std::string(yytext);
                                         std::vector<std::string> x;
 
-                                        yylval->node = new ExprNode({"rstata_expression", "rstata_factor_expression", "rstata_omit_expression"});
+                                        yylval->node = new ExprNode({"ado_expression", "ado_factor_expression", "ado_omit_expression"});
                                         yylval->node->addData("verb", "o.");
 
                                         if(s->at(0) == 'i')
@@ -1904,7 +1904,7 @@ i?"o("\ *{D}+\ *\/{D}+\ *")."       {
                                         std::string *s = new std::string(yytext);
                                         std::vector<std::string> x;
 
-                                        yylval->node = new ExprNode({"rstata_expression", "rstata_factor_expression", "rstata_omit_expression"});
+                                        yylval->node = new ExprNode({"ado_expression", "ado_factor_expression", "ado_omit_expression"});
                                         yylval->node->addData("verb", "o.");
 
                                         if(s->at(0) == 'i')
@@ -1937,7 +1937,7 @@ i?"o("\ *{D}+\ *\/{D}+\ *")."       {
 capture                             {
                                         R_ECHO(yytext);
                                         
-                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        ExprNode *verb = new ExprNode({"ado_literal", "ado_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
                                         yylval->node = verb;
@@ -1946,7 +1946,7 @@ capture                             {
 cap                                 {
                                         R_ECHO(yytext);
                                         
-                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        ExprNode *verb = new ExprNode({"ado_literal", "ado_ident"});
                                         verb->addData("value", "capture");
 
                                         yylval->node = verb;
@@ -1955,7 +1955,7 @@ cap                                 {
 quietly                             {
                                         R_ECHO(yytext);
                                         
-                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        ExprNode *verb = new ExprNode({"ado_literal", "ado_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
                                         yylval->node = verb;
@@ -1964,7 +1964,7 @@ quietly                             {
 qui                                 {
                                         R_ECHO(yytext);
                                         
-                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        ExprNode *verb = new ExprNode({"ado_literal", "ado_ident"});
                                         verb->addData("value", "quietly");
 
                                         yylval->node = verb;
@@ -1973,7 +1973,7 @@ qui                                 {
 noisily                             {
                                         R_ECHO(yytext);
                                         
-                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        ExprNode *verb = new ExprNode({"ado_literal", "ado_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
                                         yylval->node = verb;
@@ -1984,7 +1984,7 @@ noisily                             {
 by                                  {
                                         R_ECHO(yytext);
                                         
-                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        ExprNode *verb = new ExprNode({"ado_literal", "ado_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
                                         yylval->node = verb;
@@ -1993,7 +1993,7 @@ by                                  {
 bysort                              {
                                         R_ECHO(yytext);
                                         
-                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        ExprNode *verb = new ExprNode({"ado_literal", "ado_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
                                         yylval->node = verb;
@@ -2002,7 +2002,7 @@ bysort                              {
 xi                                  {
                                         R_ECHO(yytext);
                                         
-                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        ExprNode *verb = new ExprNode({"ado_literal", "ado_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
                                         yylval->node = verb;
@@ -2014,7 +2014,7 @@ xi                                  {
 merge                               {
                                         R_ECHO(yytext);
                                         
-                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        ExprNode *verb = new ExprNode({"ado_literal", "ado_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
                                         yylval->node = verb;
@@ -2023,7 +2023,7 @@ merge                               {
 collapse                            {
                                         R_ECHO(yytext);
                                         
-                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        ExprNode *verb = new ExprNode({"ado_literal", "ado_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
                                         yylval->node = verb;
@@ -2032,7 +2032,7 @@ collapse                            {
 recode                              {
                                         R_ECHO(yytext);
                                         
-                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        ExprNode *verb = new ExprNode({"ado_literal", "ado_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
                                         yylval->node = verb;
@@ -2041,7 +2041,7 @@ recode                              {
 ivregress                           {
                                         R_ECHO(yytext);
                                         
-                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        ExprNode *verb = new ExprNode({"ado_literal", "ado_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
                                         yylval->node = verb;
@@ -2050,7 +2050,7 @@ ivregress                           {
 gsort                               {
                                         R_ECHO(yytext);
                                         
-                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        ExprNode *verb = new ExprNode({"ado_literal", "ado_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
                                         yylval->node = verb;
@@ -2059,7 +2059,7 @@ gsort                               {
 lrtest                              {
                                         R_ECHO(yytext);
                                         
-                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        ExprNode *verb = new ExprNode({"ado_literal", "ado_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
                                         yylval->node = verb;
@@ -2068,7 +2068,7 @@ lrtest                              {
 anova                               {
                                         R_ECHO(yytext);
                                         
-                                        ExprNode *verb = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        ExprNode *verb = new ExprNode({"ado_literal", "ado_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
                                         yylval->node = verb;
@@ -2081,7 +2081,7 @@ anova                               {
 [_A-Za-z][A-Za-z0-9_]*              {
                                         R_ECHO(yytext);
                                         
-                                        yylval->node = new ExprNode({"rstata_literal", "rstata_ident"});
+                                        yylval->node = new ExprNode({"ado_literal", "ado_ident"});
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_IDENT;
                                     }
@@ -2128,13 +2128,13 @@ trim(const std::string& str, const std::string& what)
 }
 
 void
-rstata_yy_fatal_error(std::string& msg)
+ado_yy_fatal_error(std::string& msg)
 {
     raise_condition(msg, "error");
 }
 
 void
-rstata_yy_fatal_error(const char *msg)
+ado_yy_fatal_error(const char *msg)
 {
     raise_condition(std::string(msg), "error");
 }

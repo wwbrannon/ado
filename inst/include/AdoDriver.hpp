@@ -1,10 +1,10 @@
-#ifndef RSTATA_DRIVER_H
-#define RSTATA_DRIVER_H
+#ifndef ADO_DRIVER_H
+#define ADO_DRIVER_H
 
 #include <cstdio>
 #include <string>
 #include <Rcpp.h>
-#include "RStata.hpp"
+#include "Ado.hpp"
 
 // flags you can bitwise OR to enable debugging features
 #define DEBUG_PARSE_TRACE       4
@@ -12,17 +12,17 @@
 #define DEBUG_VERBOSE_ERROR     16
 #define DEBUG_NO_PARSE_ERROR    32
 
-class RStataDriver
+class AdoDriver
 {
     public:
         // ctor for do_parse and parse_accept
-        RStataDriver(std::string text, int debug_level);
+        AdoDriver(std::string text, int debug_level);
         
         // ctor for do_parse_with_callbacks
-        RStataDriver(int callback, Rcpp::Function cmd_action,
+        AdoDriver(int callback, Rcpp::Function cmd_action,
                      Rcpp::Function macro_value_accessor,
                      std::string text, int debug_level, int echo);
-        ~RStataDriver();
+        ~AdoDriver();
         
         ExprNode *ast;
 
@@ -45,8 +45,8 @@ class RStataDriver
         int echo;
         
     private:
-        RStataDriver(const RStataDriver& that); // no copy ctor
-        RStataDriver& operator=(RStataDriver const&); // no assignment
+        AdoDriver(const AdoDriver& that); // no copy ctor
+        AdoDriver& operator=(AdoDriver const&); // no assignment
         
         std::string text;
         
@@ -54,5 +54,5 @@ class RStataDriver
         FILE *tmp;
 };
 
-#endif /* RSTATA_DRIVER_H */
+#endif /* ADO_DRIVER_H */
 

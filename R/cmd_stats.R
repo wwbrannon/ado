@@ -1,5 +1,5 @@
 # =============================================================================
-rstata_cmd_regress <-
+ado_cmd_regress <-
 function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
          option_list=NULL, return.match.call=NULL)
 {
@@ -7,7 +7,7 @@ function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
         return(match.call())
 }
 
-rstata_cmd_glm <-
+ado_cmd_glm <-
 function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
          option_list=NULL, return.match.call=NULL)
 {
@@ -15,7 +15,7 @@ function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
         return(match.call())
 }
 
-rstata_cmd_binreg <-
+ado_cmd_binreg <-
 function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
          option_list=NULL, return.match.call=NULL)
 {
@@ -23,7 +23,7 @@ function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
         return(match.call())
 }
 
-rstata_cmd_nbreg <-
+ado_cmd_nbreg <-
 function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
          option_list=NULL, return.match.call=NULL)
 {
@@ -31,7 +31,7 @@ function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
         return(match.call())
 }
 
-rstata_cmd_gnbreg <-
+ado_cmd_gnbreg <-
 function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
          option_list=NULL, return.match.call=NULL)
 {
@@ -39,7 +39,7 @@ function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
         return(match.call())
 }
 
-rstata_cmd_logistic <-
+ado_cmd_logistic <-
 function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
          option_list=NULL, return.match.call=NULL)
 {
@@ -47,7 +47,7 @@ function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
         return(match.call())
 }
 
-rstata_cmd_logit <-
+ado_cmd_logit <-
 function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
          option_list=NULL, return.match.call=NULL)
 {
@@ -55,7 +55,7 @@ function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
         return(match.call())
 }
 
-rstata_cmd_poisson <-
+ado_cmd_poisson <-
 function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
          option_list=NULL, return.match.call=NULL)
 {
@@ -63,7 +63,7 @@ function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
         return(match.call())
 }
 
-rstata_cmd_probit <-
+ado_cmd_probit <-
 function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
          option_list=NULL, return.match.call=NULL)
 {
@@ -73,7 +73,7 @@ function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
 
 # =============================================================================
 
-rstata_cmd_ameans <-
+ado_cmd_ameans <-
 function(varlist=NULL, if_clause=NULL, in_clause=NULL,
          weight_clause=NULL, option_list=NULL, return.match.call=NULL)
 {
@@ -81,7 +81,7 @@ function(varlist=NULL, if_clause=NULL, in_clause=NULL,
     return(match.call())
 }
 
-rstata_cmd_anova <-
+ado_cmd_anova <-
 function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
          option_list=NULL, return.match.call=NULL)
 {
@@ -89,7 +89,7 @@ function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
     return(match.call())
 }
 
-rstata_cmd_areg <-
+ado_cmd_areg <-
 function(varlist, option_list, if_clause=NULL, in_clause=NULL,
          weight_clause=NULL, return.match.call=NULL)
 {
@@ -97,7 +97,7 @@ function(varlist, option_list, if_clause=NULL, in_clause=NULL,
     return(match.call())
 }
 
-rstata_cmd_bitest <-
+ado_cmd_bitest <-
 function(expression, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
          option_list=NULL, return.match.call=NULL)
 {
@@ -105,7 +105,7 @@ function(expression, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
     return(match.call())
 }
 
-rstata_cmd_ci <-
+ado_cmd_ci <-
 function(varlist=NULL, if_clause=NULL, in_clause=NULL,
          weight_clause=NULL, option_list=NULL, 
          return.match.call=NULL)
@@ -114,7 +114,7 @@ function(varlist=NULL, if_clause=NULL, in_clause=NULL,
     return(match.call())
 }
 
-rstata_cmd_correlate <-
+ado_cmd_correlate <-
 function(varlist=NULL, if_clause=NULL, in_clause=NULL,
          weight_clause=NULL, option_list=NULL, 
          return.match.call=NULL)
@@ -123,7 +123,7 @@ function(varlist=NULL, if_clause=NULL, in_clause=NULL,
     return(match.call())
 }
 
-rstata_cmd_estimates <-
+ado_cmd_estimates <-
 function(expression_list, using_clause=NULL, return.match.call=NULL)
 {
   if(!is.null(return.match.call) && return.match.call)
@@ -131,14 +131,14 @@ function(expression_list, using_clause=NULL, return.match.call=NULL)
 }
 
 #not interpretable as a formula, but still syntactically a varlist
-rstata_cmd_fvset <-
+ado_cmd_fvset <-
 function(varlist, option_list=NULL, return.match.call=NULL)
 {
   if(!is.null(return.match.call) && return.match.call)
     return(match.call())
 }
 
-rstata_cmd_icc <-
+ado_cmd_icc <-
 function(varlist, if_clause=NULL, in_clause=NULL, option_list=NULL,
          return.match.call=NULL)
 {
@@ -146,7 +146,7 @@ function(varlist, if_clause=NULL, in_clause=NULL, option_list=NULL,
     return(match.call())
 }
 
-rstata_cmd_ivregress <-
+ado_cmd_ivregress <-
 function(varlist, option_list, if_clause=NULL, in_clause=NULL,
          weight_clause=NULL, return.match.call=NULL)
 {
@@ -154,7 +154,7 @@ function(varlist, option_list, if_clause=NULL, in_clause=NULL,
     return(match.call())
 }
 
-rstata_cmd_ksmirnov <-
+ado_cmd_ksmirnov <-
 function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
          return.match.call=NULL)
 {
@@ -162,7 +162,7 @@ function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
     return(match.call())
 }
 
-rstata_cmd_kwallis <-
+ado_cmd_kwallis <-
 function(expression, option_list, if_clause=NULL, in_clause=NULL,
          return.match.call=NULL)
 {
@@ -170,14 +170,14 @@ function(expression, option_list, if_clause=NULL, in_clause=NULL,
     return(match.call())
 }
 
-rstata_cmd_lrtest <-
+ado_cmd_lrtest <-
 function(expression_list, option_list=NULL, return.match.call=NULL)
 {
   if(!is.null(return.match.call) && return.match.call)
     return(match.call())
 }
 
-rstata_cmd_margins <-
+ado_cmd_margins <-
 function(varlist=NULL, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
          option_list=NULL, return.match.call=NULL)
 {
@@ -185,7 +185,7 @@ function(varlist=NULL, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
     return(match.call())
 }
 
-rstata_cmd_mean <-
+ado_cmd_mean <-
 function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
          option_list=NULL, return.match.call=NULL)
 {
@@ -193,7 +193,7 @@ function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
     return(match.call())
 }
 
-rstata_cmd_ologit <-
+ado_cmd_ologit <-
 function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
          option_list=NULL, return.match.call=NULL)
 {
@@ -201,7 +201,7 @@ function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
     return(match.call())
 }
 
-rstata_cmd_pctile <-
+ado_cmd_pctile <-
 function(expression, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
          option_list=NULL, return.match.call=NULL)
 {
@@ -209,7 +209,7 @@ function(expression, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
       return(match.call())
 }
 
-rstata_cmd_predict <-
+ado_cmd_predict <-
 function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
          return.match.call=NULL)
 {
@@ -217,7 +217,7 @@ function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
     return(match.call())
 }
 
-rstata_cmd_prtest <-
+ado_cmd_prtest <-
 function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
          return.match.call=NULL)
 {
@@ -225,7 +225,7 @@ function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
     return(match.call())
 }
 
-rstata_cmd_pwcorr <-
+ado_cmd_pwcorr <-
 function(varlist=NULL, if_clause=NULL, in_clause=NULL,
          weight_clause=NULL, option_list=NULL, 
          return.match.call=NULL)
@@ -234,7 +234,7 @@ function(varlist=NULL, if_clause=NULL, in_clause=NULL,
     return(match.call())
 }
 
-rstata_cmd_ranksum <-
+ado_cmd_ranksum <-
 function(expression, option_list, if_clause=NULL, in_clause=NULL,
          weight_clause=NULL, return.match.call=NULL)
 {
@@ -242,7 +242,7 @@ function(expression, option_list, if_clause=NULL, in_clause=NULL,
     return(match.call())
 }
 
-rstata_cmd_sktest <-
+ado_cmd_sktest <-
 function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
          option_list=NULL, return.match.call=NULL)
 {
@@ -250,7 +250,7 @@ function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
     return(match.call())
 }
 
-rstata_cmd_summarize <-
+ado_cmd_summarize <-
 function(varlist=NULL, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
          option_list=NULL, return.match.call=NULL)
 {
@@ -258,7 +258,7 @@ function(varlist=NULL, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
     return(match.call())
 }
 
-rstata_cmd_tab1 <-
+ado_cmd_tab1 <-
 function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
          option_list=NULL, return.match.call=NULL)
 {
@@ -266,7 +266,7 @@ function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
       return(match.call())
 }
 
-rstata_cmd_tab2 <-
+ado_cmd_tab2 <-
 function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
          option_list=NULL, return.match.call=NULL)
 {
@@ -274,7 +274,7 @@ function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
       return(match.call())
 }
 
-rstata_cmd_table <-
+ado_cmd_table <-
 function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
          option_list=NULL, return.match.call=NULL)
 {
@@ -282,7 +282,7 @@ function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
     return(match.call())
 }
 
-rstata_cmd_tabstat <-
+ado_cmd_tabstat <-
 function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
          option_list=NULL, return.match.call=NULL)
 {
@@ -290,7 +290,7 @@ function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
     return(match.call())
 }
 
-rstata_cmd_tabulate <-
+ado_cmd_tabulate <-
 function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
          option_list=NULL, return.match.call=NULL)
 {
@@ -298,14 +298,14 @@ function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
       return(match.call())
 }
 
-rstata_cmd_test <-
+ado_cmd_test <-
 function(expression_list, return.match.call=NULL)
 {
   if(!is.null(return.match.call) && return.match.call)
     return(match.call())
 }
 
-rstata_cmd_ttest <-
+ado_cmd_ttest <-
 function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
          return.match.call=NULL)
 {
@@ -313,7 +313,7 @@ function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
     return(match.call())
 }
 
-rstata_cmd_xtile <-
+ado_cmd_xtile <-
 function(expression, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
          option_list=NULL, return.match.call=NULL)
 {
@@ -322,11 +322,11 @@ function(expression, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
 }
 
 #FIXME
-rstata_cmd_power <-
+ado_cmd_power <-
 function(..., return.match.call=NULL)
 {
   if(!is.null(return.match.call) && return.match.call)
     return(match.call())
 }
 
-rstata_cmd_tab <- rstata_cmd_tabulate
+ado_cmd_tab <- ado_cmd_tabulate

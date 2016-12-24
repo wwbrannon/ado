@@ -6,7 +6,7 @@ check <-
 function(node, debug_level=0)
 {
     #General checks all AST nodes should pass
-    raiseifnot(node %is% "rstata_ast_node",
+    raiseifnot(node %is% "ado_ast_node",
                msg=if(debug_level) NULL else "Missing or malformed command object")
     raiseifnot(every(c("data", "children") %in% names(node)),
                msg=if(debug_level) NULL else "Malformed command object")
@@ -33,7 +33,7 @@ function(node, debug_level=0)
 ##############################################################################
 ## Literals
 #' @export
-verifynode.rstata_literal <-
+verifynode.ado_literal <-
 function(node, debug_level=0)
 {
     #Children - length, names, types
@@ -50,7 +50,7 @@ function(node, debug_level=0)
 }
 
 #' @export
-verifynode.rstata_ident <-
+verifynode.ado_ident <-
 function(node, debug_level=0)
 {
     raiseifnot(length(grep("^[_A-Za-z][A-Za-z0-9_]*$", node$data["value"])) > 0,
@@ -62,7 +62,7 @@ function(node, debug_level=0)
 }
 
 #' @export
-verifynode.rstata_number <-
+verifynode.ado_number <-
 function(node, debug_level=0)
 {
     if(node$data["value"] == ".")
@@ -79,7 +79,7 @@ function(node, debug_level=0)
 }
 
 #' @export
-verifynode.rstata_string_literal <-
+verifynode.ado_string_literal <-
 function(node, debug_level=0)
 {
     val <- as.character(node$data["value"])
@@ -90,7 +90,7 @@ function(node, debug_level=0)
 }
 
 #' @export
-verifynode.rstata_datetime <-
+verifynode.ado_datetime <-
 function(node, debug_level=0)
 {
     val <- as.POSIXct(strptime(node$data["value"], format="%d%b%Y %H:%M:%S"))
@@ -101,7 +101,7 @@ function(node, debug_level=0)
 }
 
 #' @export
-verifynode.rstata_format_spec <-
+verifynode.ado_format_spec <-
 function(node, debug_level=0)
 {
     raiseifnot(valid_format_spec(node$data["value"]),
@@ -113,7 +113,7 @@ function(node, debug_level=0)
 ##############################################################################
 ## Loops
 #' @export
-verifynode.rstata_loop <-
+verifynode.ado_loop <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -125,16 +125,16 @@ function(node, debug_level=0)
                msg=if(debug_level) NULL else "Malformed loop statement")
     raiseifnot(every(c("macro_name", "text") %in% names(node$children)),
                msg=if(debug_level) NULL else "Malformed loop statement")
-    raiseifnot(node$children$macro_name %is% "rstata_ident",
+    raiseifnot(node$children$macro_name %is% "ado_ident",
                msg=if(debug_level) NULL else "Malformed loop statement")
-    raiseifnot(node$children$text %is% "rstata_string_literal",
+    raiseifnot(node$children$text %is% "ado_string_literal",
                msg=if(debug_level) NULL else "Malformed loop statement")
 
     NextMethod()
 }
 
 #' @export
-verifynode.rstata_foreach <-
+verifynode.ado_foreach <-
 function(node, debug_level=0)
 {
     raiseifnot(length(node$children) == 3,
@@ -147,25 +147,25 @@ function(node, debug_level=0)
 
     if("numlist" %in% names(node$children))
     {
-        raiseifnot(node$children$numlist %is% "rstata_expression_list",
+        raiseifnot(node$children$numlist %is% "ado_expression_list",
                    msg=if(debug_level) NULL else "Invalid numlist given to foreach statement")
 
-        raiseifnot(every(vapply(node$children$numlist$children, function(v) v %is% "rstata_number", logical(1))),
+        raiseifnot(every(vapply(node$children$numlist$children, function(v) v %is% "ado_number", logical(1))),
                    msg=if(debug_level) NULL else "Invalid numlist given to foreach statement")
     } else if("varlist" %in% names(node$children))
     {
-        raiseifnot(node$children$varlist %is% "rstata_expression_list",
+        raiseifnot(node$children$varlist %is% "ado_expression_list",
                    msg=if(debug_level) NULL else "")
 
-        raiseifnot(every(vapply(node$children$varlist, function(v) v %is% "rstata_ident", logical(1))),
+        raiseifnot(every(vapply(node$children$varlist, function(v) v %is% "ado_ident", logical(1))),
                    msg=if(debug_level) NULL else "Invalid varlist given to foreach statement")
     } else if("local_macro_source" %in% names(node$children))
     {
-        raiseifnot(node$children$local_macro_source %is% "rstata_ident",
+        raiseifnot(node$children$local_macro_source %is% "ado_ident",
                    msg=if(debug_level) NULL else "Invalid source macro name in foreach statement")
     } else if("global_macro_source" %in% names(node$children))
     {
-        raiseifnot(node$children$global_macro_source %is% "rstata_ident",
+        raiseifnot(node$children$global_macro_source %is% "ado_ident",
                    msg=if(debug_level) NULL else "Invalid source macro name in foreach statement")
     }
 
@@ -173,7 +173,7 @@ function(node, debug_level=0)
 }
 
 #' @export
-verifynode.rstata_forvalues <-
+verifynode.ado_forvalues <-
 function(node, debug_level=0)
 {
     raiseifnot(length(node$children) %in% c(4,5),
@@ -181,9 +181,9 @@ function(node, debug_level=0)
     raiseifnot(every(c("upper", "lower") %in% names(node$children)),
                msg=if(debug_level) NULL else "Malformed forvalues statement")
 
-    raiseifnot(node$children$upper %is% "rstata_number",
+    raiseifnot(node$children$upper %is% "ado_number",
                msg=if(debug_level) NULL else "Invalid upper bound for forvalues statement")
-    raiseifnot(node$children$lower %is% "rstata_number",
+    raiseifnot(node$children$lower %is% "ado_number",
                msg=if(debug_level) NULL else "Invalid lower bound for forvalues statement")
 
     if(length(node$children) == 5)
@@ -193,10 +193,10 @@ function(node, debug_level=0)
                    msg=if(debug_level) NULL else "Malformed forvalues statement")
 
         if("increment" %in% names(node$children))
-            raiseifnot(node$children$increment %is% "rstata_number",
+            raiseifnot(node$children$increment %is% "ado_number",
                        msg=if(debug_level) NULL else "Invalid increment for forvalues statement")
         if("increment_t" %in% names(node$children))
-            raiseifnot(node$children$increment_t %is% "rstata_number",
+            raiseifnot(node$children$increment_t %is% "ado_number",
                        msg=if(debug_level) NULL else "Invalid increment for forvalues statement")
     }
 
@@ -206,7 +206,7 @@ function(node, debug_level=0)
 ##############################################################################
 ## Command parts
 #' @export
-verifynode.rstata_if_clause <-
+verifynode.ado_if_clause <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -221,8 +221,8 @@ function(node, debug_level=0)
     {
         raiseifnot("if_expression" %in% names(node$children),
                    msg=if(debug_level) NULL else "Missing expression for if clause")
-        raiseifnot(node$children[[1]] %is% "rstata_expression" ||
-                       node$children[[1]] %is% "rstata_literal",
+        raiseifnot(node$children[[1]] %is% "ado_expression" ||
+                       node$children[[1]] %is% "ado_literal",
                    msg=if(debug_level) NULL else "Bad expression for if clause")
     }
 
@@ -230,7 +230,7 @@ function(node, debug_level=0)
 }
 
 #' @export
-verifynode.rstata_in_clause <-
+verifynode.ado_in_clause <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -245,13 +245,13 @@ function(node, debug_level=0)
     raiseifnot("upper" %in% names(node$children),
                msg=if(debug_level) NULL else "Missing limits for in clause")
 
-    raiseifnot(node$children$upper %is% "rstata_number" ||
+    raiseifnot(node$children$upper %is% "ado_number" ||
                    (
-                       node$children$upper %is% "rstata_unary_expression" &&
-                           node$children$upper$children[[1]] %is% "rstata_number"
+                       node$children$upper %is% "ado_unary_expression" &&
+                           node$children$upper$children[[1]] %is% "ado_number"
                    ) ||
                    (
-                       node$children$upper %is% "rstata_ident" &&
+                       node$children$upper %is% "ado_ident" &&
                            node$children$upper$data["value"] %in% c("f", "F", "l", "L")
                    ),
                msg=if(debug_level) NULL else "Bad limit value for in clause")
@@ -262,13 +262,13 @@ function(node, debug_level=0)
         raiseifnot("lower" %in% names(node$children),
                    msg=if(debug_level) NULL else "Missing limits for in clause")
 
-        raiseifnot(node$children$lower %is% "rstata_number" ||
+        raiseifnot(node$children$lower %is% "ado_number" ||
                        (
-                           node$children$lower %is% "rstata_unary_expression" &&
-                               node$children$lower$children[[1]] %is% "rstata_number"
+                           node$children$lower %is% "ado_unary_expression" &&
+                               node$children$lower$children[[1]] %is% "ado_number"
                        ) ||
                        (
-                           node$children$lower %is% "rstata_ident" &&
+                           node$children$lower %is% "ado_ident" &&
                                node$children$lower$data["value"] %in% c("f", "F", "l", "L")
                        ),
                    msg=if(debug_level) NULL else "Bad limit value for in clause")
@@ -278,7 +278,7 @@ function(node, debug_level=0)
 }
 
 #' @export
-verifynode.rstata_using_clause <-
+verifynode.ado_using_clause <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -294,8 +294,8 @@ function(node, debug_level=0)
         raiseifnot("filename" %in% names(node$children),
                    msg=if(debug_level) NULL else "Missing filename for using clause")
 
-        raiseifnot(node$children[[1]] %is% "rstata_string_literal" ||
-                       node$children[[1]] %is% "rstata_ident",
+        raiseifnot(node$children[[1]] %is% "ado_string_literal" ||
+                       node$children[[1]] %is% "ado_ident",
                    msg=if(debug_level) NULL else "Bad filename type for using clause")
     }
 
@@ -303,7 +303,7 @@ function(node, debug_level=0)
 }
 
 #' @export
-verifynode.rstata_weight_clause <-
+verifynode.ado_weight_clause <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -319,13 +319,13 @@ function(node, debug_level=0)
         raiseifnot(c("left", "right") %in% names(node$children),
                    msg=if(debug_level) NULL else "Missing type or variable for weight clause")
 
-        raiseifnot(node$children$left %is% "rstata_ident",
+        raiseifnot(node$children$left %is% "ado_ident",
                    msg=if(debug_level) NULL else "Bad weight type for weight clause")
         raiseifnot(node$children$left$data["value"] %in% c("aweight", "iweight", "pweight", "fweight"),
                    msg=if(debug_level) NULL else "Bad weight type for weight clause")
 
-        raiseifnot(node$children$right %is% "rstata_expression" ||
-                       node$children$right %is% "rstata_literal",
+        raiseifnot(node$children$right %is% "ado_expression" ||
+                       node$children$right %is% "ado_literal",
                    msg=if(debug_level) NULL else "Bad variable for weight clause")
     }
 
@@ -333,7 +333,7 @@ function(node, debug_level=0)
 }
 
 #' @export
-verifynode.rstata_option_list <-
+verifynode.ado_option_list <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -343,14 +343,14 @@ function(node, debug_level=0)
     #Children - length, names, types
     #Length at least 0, checked above
     #No name requirements for children
-    raiseifnot(every(vapply(node$children, function(x) x %is% "rstata_option", TRUE)),
+    raiseifnot(every(vapply(node$children, function(x) x %is% "ado_option", TRUE)),
                msg=if(debug_level) NULL else "Non-option in option list")
 
     invisible(TRUE)
 }
 
 #' @export
-verifynode.rstata_option <-
+verifynode.ado_option <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -367,7 +367,7 @@ function(node, debug_level=0)
     {
         raiseifnot("args" %in% names(node$children),
                    msg=if(debug_level) NULL else "Bad arguments to option")
-        raiseifnot(node$children[[2]] %is% "rstata_argument_expression_list",
+        raiseifnot(node$children[[2]] %is% "ado_argument_expression_list",
                    msg=if(debug_level) NULL else "Bad arguments to option")
     }
 
@@ -377,7 +377,7 @@ function(node, debug_level=0)
 ##############################################################################
 ## Compound and atomic commands
 #' @export
-verifynode.rstata_compound_cmd <-
+verifynode.ado_compound_cmd <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -389,19 +389,19 @@ function(node, debug_level=0)
     raiseifnot(length(node$children) > 0,
                msg=if(debug_level) NULL else "Empty compound/block command")
     raiseifnot(every(vapply(node$children,
-                            function(x) x %is% "rstata_compound_cmd" ||     #they can be nested
-                                x %is% "rstata_embedded_code" ||    #embedded R or sh code
-                                x %is% "rstata_cmd" ||              #a usual Stata cmd
-                                x %is% "rstata_if_cmd" ||           #an if expr { } block
-                                x %is% "rstata_loop" ||             #a foreach or forvalues loop
-                                x %is% "rstata_modifier_cmd_list",  #a Stata cmd with modifiers
+                            function(x) x %is% "ado_compound_cmd" ||     #they can be nested
+                                x %is% "ado_embedded_code" ||    #embedded R or sh code
+                                x %is% "ado_cmd" ||              #a usual Stata cmd
+                                x %is% "ado_if_cmd" ||           #an if expr { } block
+                                x %is% "ado_loop" ||             #a foreach or forvalues loop
+                                x %is% "ado_modifier_cmd_list",  #a Stata cmd with modifiers
                             TRUE)), msg=if(debug_level) NULL else "Non-command in compound/block command")
 
     invisible(TRUE)
 }
 
 #' @export
-verifynode.rstata_if_cmd <-
+verifynode.ado_if_cmd <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -414,17 +414,17 @@ function(node, debug_level=0)
     raiseifnot(every(c("expression", "compound_cmd") %in% names(node$children)),
                msg=if(debug_level) NULL else "Malformed if command")
 
-    raiseifnot(node$children$expression %is% "rstata_expression" ||
-                   node$children$expression %is% "rstata_literal",
+    raiseifnot(node$children$expression %is% "ado_expression" ||
+                   node$children$expression %is% "ado_literal",
                msg=if(debug_level) NULL else "Bad expression for if command")
-    raiseifnot(node$children$compound_cmd %is% "rstata_compound_cmd",
+    raiseifnot(node$children$compound_cmd %is% "ado_compound_cmd",
                msg=if(debug_level) NULL else "Bad compound/block command for if command")
 
     invisible(TRUE)
 }
 
 #' @export
-verifynode.rstata_modifier_cmd_list <-
+verifynode.ado_modifier_cmd_list <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -435,11 +435,11 @@ function(node, debug_level=0)
     raiseifnot(length(node$children) > 0,
                msg=if(debug_level) NULL else "Empty prefix command list")
     raiseifnot(every(vapply(node$children,
-                            function(x) x %is% "rstata_modifier_cmd_list" ||
-                                x %is% "rstata_modifier_cmd" ||
-                                x %is% "rstata_general_cmd" ||
-                                x %is% "rstata_special_cmd" ||
-                                x %is% "rstata_compound_cmd",
+                            function(x) x %is% "ado_modifier_cmd_list" ||
+                                x %is% "ado_modifier_cmd" ||
+                                x %is% "ado_general_cmd" ||
+                                x %is% "ado_special_cmd" ||
+                                x %is% "ado_compound_cmd",
                             TRUE)),
                msg=if(debug_level) NULL else "Non-command or bad command in prefix command list")
 
@@ -461,7 +461,7 @@ function(node, debug_level=0)
 }
 
 #' @export
-verifynode.rstata_embedded_code <-
+verifynode.ado_embedded_code <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -486,7 +486,7 @@ function(node, debug_level=0)
 }
 
 #' @export
-verifynode.rstata_cmd <-
+verifynode.ado_cmd <-
 function(node, debug_level=0)
 {
     #Children - length, names, types
@@ -494,7 +494,7 @@ function(node, debug_level=0)
                msg=if(debug_level) NULL else "Empty command given")
     raiseifnot("verb" %in% names(node$children),
                msg=if(debug_level) NULL else "Malformed command object: no command name")
-    raiseifnot(node$children$verb %is% "rstata_ident",
+    raiseifnot(node$children$verb %is% "ado_ident",
                msg=if(debug_level) NULL else "Malformed command object: bad command name")
 
     raiseifnot(every(valid_cmd_part(names(node$children))),
@@ -507,7 +507,7 @@ function(node, debug_level=0)
 }
 
 #' @export
-verifynode.rstata_modifier_cmd <-
+verifynode.ado_modifier_cmd <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -519,10 +519,10 @@ function(node, debug_level=0)
                msg=if(debug_level) NULL else "Malformed prefix command object")
     raiseifnot(names(node$children) == c("verb"),
                msg=if(debug_level) NULL else "Malformed prefix command object")
-    raiseifnot(node$children$verb %is% "rstata_ident",
+    raiseifnot(node$children$verb %is% "ado_ident",
                msg=if(debug_level) NULL else "Malformed prefix command object")
 
-    func <- paste0("rstata_cmd_", node$children$verb$data["value"])
+    func <- paste0("ado_cmd_", node$children$verb$data["value"])
     func <- unabbreviateCommand(func, cls="BadCommandException",
                                 msg=if(debug_level) NULL else "Cannot unabbreviate prefix command")
 
@@ -532,7 +532,7 @@ function(node, debug_level=0)
 }
 
 #' @export
-verifynode.rstata_general_cmd <-
+verifynode.ado_general_cmd <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -540,7 +540,7 @@ function(node, debug_level=0)
                msg=if(debug_level) NULL else "Malformed command object")
 
     #Children - length, names, types
-    func <- paste0("rstata_cmd_", node$children$verb$data["value"])
+    func <- paste0("ado_cmd_", node$children$verb$data["value"])
     func <- unabbreviateCommand(func, cls="BadCommandException",
                                 msg=if(debug_level) NULL else "Cannot unabbreviate command")
     raiseifnot(exists(func), msg=if(debug_level) NULL else "Command not found")
@@ -586,7 +586,7 @@ function(node, debug_level=0)
 ##############################################################################
 ## Lists of expressions
 #' @export
-verifynode.rstata_expression_list <-
+verifynode.ado_expression_list <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -597,15 +597,15 @@ function(node, debug_level=0)
     raiseifnot(length(node$children) > 0,
                msg=if(debug_level) NULL else "Empty expression or variable list")
 
-    raiseifnot(every(vapply(node$children, function(x) x %is% "rstata_expression" ||
-                                x %is% "rstata_literal", TRUE)),
+    raiseifnot(every(vapply(node$children, function(x) x %is% "ado_expression" ||
+                                x %is% "ado_literal", TRUE)),
                msg=if(debug_level) NULL else "Non-expression in expression or variable list")
 
     invisible(TRUE)
 }
 
 #' @export
-verifynode.rstata_argument_expression_list <-
+verifynode.ado_argument_expression_list <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -616,15 +616,15 @@ function(node, debug_level=0)
     raiseifnot(length(node$children) > 0,
                msg=if(debug_level) NULL else "Empty function or option argument list")
 
-    raiseifnot(every(vapply(node$children, function(x) x %is% "rstata_expression_list", TRUE)),
+    raiseifnot(every(vapply(node$children, function(x) x %is% "ado_expression_list", TRUE)),
                msg=if(debug_level) NULL else "Invalid argument to function or option")
 
     for(n in node$children)
     {
         raiseifnot(every(vapply(n$children,
-                                function(x) !(x %is% "rstata_assignment_expression") &&
-                                    !(x %is% "rstata_factor_expression") &&
-                                    !(x %is% "rstata_cross_expression"),
+                                function(x) !(x %is% "ado_assignment_expression") &&
+                                    !(x %is% "ado_factor_expression") &&
+                                    !(x %is% "ado_cross_expression"),
                                 TRUE)),
                    msg=if(debug_level) NULL else "Incorrect type of expression in argument expression list")
     }
@@ -635,7 +635,7 @@ function(node, debug_level=0)
 ##############################################################################
 ## Expression branch nodes - literals are above
 #' @export
-verifynode.rstata_expression <-
+verifynode.ado_expression <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -648,7 +648,7 @@ function(node, debug_level=0)
 }
 
 #' @export
-verifynode.rstata_type_expression <-
+verifynode.ado_type_expression <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -664,9 +664,9 @@ function(node, debug_level=0)
                msg=if(debug_level) NULL else "Malformed type specifier expression")
     raiseifnot(names(node$children) == c("left"),
                msg=if(debug_level) NULL else "Malformed type specifier expression")
-    raiseifnot(node$children$left %is% "rstata_expression_list",
+    raiseifnot(node$children$left %is% "ado_expression_list",
                msg=if(debug_level) NULL else "Malformed type specifier expression")
-    raiseifnot(every(vapply(node$children$left$children, function(x) x %is% "rstata_ident", TRUE)),
+    raiseifnot(every(vapply(node$children$left$children, function(x) x %is% "ado_ident", TRUE)),
                msg=if(debug_level) NULL else "Non-variable given as argument to type specifier expression")
 
     invisible(TRUE)
@@ -674,7 +674,7 @@ function(node, debug_level=0)
 
 ## Tightly binding factor operators
 #' @export
-verifynode.rstata_factor_expression <-
+verifynode.ado_factor_expression <-
 function(node, debug_level=0)
 {
     #Children - length, names, types
@@ -683,14 +683,14 @@ function(node, debug_level=0)
     raiseifnot("left" %in% names(node$children),
                msg=if(debug_level) NULL else "Malformed factor operator expression")
 
-    raiseifnot(node$children$left %is% "rstata_ident",
+    raiseifnot(node$children$left %is% "ado_ident",
                msg=if(debug_level) NULL else "Non-variable given as argument to factor operator")
 
     NextMethod()
 }
 
 #' @export
-verifynode.rstata_continuous_expression <-
+verifynode.ado_continuous_expression <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -701,7 +701,7 @@ function(node, debug_level=0)
 }
 
 #' @export
-verifynode.rstata_indicator_expression <-
+verifynode.ado_indicator_expression <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -729,7 +729,7 @@ function(node, debug_level=0)
 }
 
 #' @export
-verifynode.rstata_omit_expression <-
+verifynode.ado_omit_expression <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -757,7 +757,7 @@ function(node, debug_level=0)
 }
 
 #' @export
-verifynode.rstata_baseline_expression <-
+verifynode.ado_baseline_expression <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -777,7 +777,7 @@ function(node, debug_level=0)
 }
 
 #' @export
-verifynode.rstata_cross_expression <-
+verifynode.ado_cross_expression <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -792,12 +792,12 @@ function(node, debug_level=0)
     raiseifnot(every(c("left", "right") %in% names(node$children)),
                msg=if(debug_level) NULL else "Malformed cross or factorial cross expression")
 
-    raiseifnot(node$children$left %is% "rstata_ident" ||
-                   node$children$left %is% "rstata_factor_expression",
+    raiseifnot(node$children$left %is% "ado_ident" ||
+                   node$children$left %is% "ado_factor_expression",
                msg=if(debug_level) NULL else "Non-variable in cross or factorial cross expression")
 
-    raiseifnot(node$children$right %is% "rstata_ident" ||
-                   node$children$right %is% "rstata_factor_expression",
+    raiseifnot(node$children$right %is% "ado_ident" ||
+                   node$children$right %is% "ado_factor_expression",
                msg=if(debug_level) NULL else "Non-variable in cross or factorial cross expression")
 
     invisible(TRUE)
@@ -805,7 +805,7 @@ function(node, debug_level=0)
 
 ## Arithmetic expressions
 #' @export
-verifynode.rstata_power_expression <-
+verifynode.ado_power_expression <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -820,21 +820,21 @@ function(node, debug_level=0)
     raiseifnot(every(c("left", "right") %in% names(node$children)),
                msg=if(debug_level) NULL else "Malformed exponentiation expression")
 
-    raiseifnot(node$children$left %is% "rstata_ident" ||
-                   node$children$left %is% "rstata_number" ||
-                   node$children$left %is% "rstata_arithmetic_expression",
+    raiseifnot(node$children$left %is% "ado_ident" ||
+                   node$children$left %is% "ado_number" ||
+                   node$children$left %is% "ado_arithmetic_expression",
                msg=if(debug_level) NULL else "Incorrect argument to exponentiation operator")
 
-    raiseifnot(node$children$right %is% "rstata_ident" ||
-                   node$children$right %is% "rstata_number" ||
-                   node$children$right %is% "rstata_arithmetic_expression",
+    raiseifnot(node$children$right %is% "ado_ident" ||
+                   node$children$right %is% "ado_number" ||
+                   node$children$right %is% "ado_arithmetic_expression",
                msg=if(debug_level) NULL else "Incorrect argument to exponentiation operator")
 
     invisible(TRUE)
 }
 
 #' @export
-verifynode.rstata_unary_expression <-
+verifynode.ado_unary_expression <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -849,16 +849,16 @@ function(node, debug_level=0)
     raiseifnot("right" %in% names(node$children),
                msg=if(debug_level) NULL else "Malformed unary operator expression")
 
-    raiseifnot(node$children$right %is% "rstata_ident" ||
-                   node$children$right %is% "rstata_number" ||
-                   node$children$right %is% "rstata_arithmetic_expression",
+    raiseifnot(node$children$right %is% "ado_ident" ||
+                   node$children$right %is% "ado_number" ||
+                   node$children$right %is% "ado_arithmetic_expression",
                msg=if(debug_level) NULL else "Incorrect argument to unary operator")
 
     invisible(TRUE)
 }
 
 #' @export
-verifynode.rstata_multiplication_expression <-
+verifynode.ado_multiplication_expression <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -873,21 +873,21 @@ function(node, debug_level=0)
     raiseifnot(every(c("left", "right") %in% names(node$children)),
                msg=if(debug_level) NULL else "Malformed multiplication/division expression")
 
-    raiseifnot(node$children$left %is% "rstata_ident" ||
-                   node$children$left %is% "rstata_number" ||
-                   node$children$left %is% "rstata_arithmetic_expression",
+    raiseifnot(node$children$left %is% "ado_ident" ||
+                   node$children$left %is% "ado_number" ||
+                   node$children$left %is% "ado_arithmetic_expression",
                msg=if(debug_level) NULL else "Incorrect argument to multiplication/division operator")
 
-    raiseifnot(node$children$right %is% "rstata_ident" ||
-                   node$children$right %is% "rstata_number" ||
-                   node$children$right %is% "rstata_arithmetic_expression",
+    raiseifnot(node$children$right %is% "ado_ident" ||
+                   node$children$right %is% "ado_number" ||
+                   node$children$right %is% "ado_arithmetic_expression",
                msg=if(debug_level) NULL else "Incorrect argument to multiplication/division operator")
 
     invisible(TRUE)
 }
 
 #' @export
-verifynode.rstata_additive_expression <-
+verifynode.ado_additive_expression <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -902,14 +902,14 @@ function(node, debug_level=0)
     raiseifnot(every(c("left", "right") %in% names(node$children)),
                msg=if(debug_level) NULL else "Malformed addition/subtraction expression")
 
-    raiseifnot(node$children$left %is% "rstata_ident" ||
-                   node$children$left %is% "rstata_number" ||
-                   node$children$left %is% "rstata_arithmetic_expression",
+    raiseifnot(node$children$left %is% "ado_ident" ||
+                   node$children$left %is% "ado_number" ||
+                   node$children$left %is% "ado_arithmetic_expression",
                msg=if(debug_level) NULL else "Incorrect argument to addition/subtraction operator")
 
-    raiseifnot(node$children$right %is% "rstata_ident" ||
-                   node$children$right %is% "rstata_number" ||
-                   node$children$right %is% "rstata_arithmetic_expression",
+    raiseifnot(node$children$right %is% "ado_ident" ||
+                   node$children$right %is% "ado_number" ||
+                   node$children$right %is% "ado_arithmetic_expression",
                msg=if(debug_level) NULL else "Incorrect argument to addition/subtraction operator")
 
     invisible(TRUE)
@@ -917,7 +917,7 @@ function(node, debug_level=0)
 
 ## Logical, relational and other expressions
 #' @export
-verifynode.rstata_equality_expression <-
+verifynode.ado_equality_expression <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -934,31 +934,31 @@ function(node, debug_level=0)
 
     raiseifnot(
         !(
-            node$children$left %is% "rstata_factor_expression" ||
-                node$children$left %is% "rstata_type_expression" ||
-                node$children$left %is% "rstata_cross_expression"
+            node$children$left %is% "ado_factor_expression" ||
+                node$children$left %is% "ado_type_expression" ||
+                node$children$left %is% "ado_cross_expression"
         )
 
         &&
 
             (
-                node$children$left %is% "rstata_expression" ||
-                    node$children$left %is% "rstata_literal"
+                node$children$left %is% "ado_expression" ||
+                    node$children$left %is% "ado_literal"
             ),
         msg=if(debug_level) NULL else "Incorrect argument to equality expression")
 
     raiseifnot(
         !(
-            node$children$right %is% "rstata_factor_expression" ||
-                node$children$right %is% "rstata_type_expression" ||
-                node$children$right %is% "rstata_cross_expression"
+            node$children$right %is% "ado_factor_expression" ||
+                node$children$right %is% "ado_type_expression" ||
+                node$children$right %is% "ado_cross_expression"
         )
 
         &&
 
             (
-                node$children$right %is% "rstata_expression" ||
-                    node$children$right %is% "rstata_literal"
+                node$children$right %is% "ado_expression" ||
+                    node$children$right %is% "ado_literal"
             ),
         msg=if(debug_level) NULL else "Incorrect argument to equality expression")
 
@@ -966,7 +966,7 @@ function(node, debug_level=0)
 }
 
 #' @export
-verifynode.rstata_logical_expression <-
+verifynode.ado_logical_expression <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -983,31 +983,31 @@ function(node, debug_level=0)
 
     raiseifnot(
         !(
-            node$children$left %is% "rstata_factor_expression" ||
-                node$children$left %is% "rstata_type_expression" ||
-                node$children$left %is% "rstata_cross_expression"
+            node$children$left %is% "ado_factor_expression" ||
+                node$children$left %is% "ado_type_expression" ||
+                node$children$left %is% "ado_cross_expression"
         )
 
         &&
 
             (
-                node$children$left %is% "rstata_expression" ||
-                    node$children$left %is% "rstata_literal"
+                node$children$left %is% "ado_expression" ||
+                    node$children$left %is% "ado_literal"
             ),
         msg=if(debug_level) NULL else "Incorrect argument to logical expression")
 
     raiseifnot(
         !(
-            node$children$right %is% "rstata_factor_expression" ||
-                node$children$right %is% "rstata_type_expression" ||
-                node$children$right %is% "rstata_cross_expression"
+            node$children$right %is% "ado_factor_expression" ||
+                node$children$right %is% "ado_type_expression" ||
+                node$children$right %is% "ado_cross_expression"
         )
 
         &&
 
             (
-                node$children$right %is% "rstata_expression" ||
-                    node$children$right %is% "rstata_literal"
+                node$children$right %is% "ado_expression" ||
+                    node$children$right %is% "ado_literal"
             ),
         msg=if(debug_level) NULL else "Incorrect argument to logical expression")
 
@@ -1015,7 +1015,7 @@ function(node, debug_level=0)
 }
 
 #' @export
-verifynode.rstata_relational_expression <-
+verifynode.ado_relational_expression <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -1032,31 +1032,31 @@ function(node, debug_level=0)
 
     raiseifnot(
         !(
-            node$children$left %is% "rstata_factor_expression" ||
-                node$children$left %is% "rstata_type_expression" ||
-                node$children$left %is% "rstata_cross_expression"
+            node$children$left %is% "ado_factor_expression" ||
+                node$children$left %is% "ado_type_expression" ||
+                node$children$left %is% "ado_cross_expression"
         )
 
         &&
 
             (
-                node$children$left %is% "rstata_expression" ||
-                    node$children$left %is% "rstata_literal"
+                node$children$left %is% "ado_expression" ||
+                    node$children$left %is% "ado_literal"
             ),
         msg=if(debug_level) NULL else "Incorrect argument to relational expression")
 
     raiseifnot(
         !(
-            node$children$right %is% "rstata_factor_expression" ||
-                node$children$right %is% "rstata_type_expression" ||
-                node$children$right %is% "rstata_cross_expression"
+            node$children$right %is% "ado_factor_expression" ||
+                node$children$right %is% "ado_type_expression" ||
+                node$children$right %is% "ado_cross_expression"
         )
 
         &&
 
             (
-                node$children$right %is% "rstata_expression" ||
-                    node$children$right %is% "rstata_literal"
+                node$children$right %is% "ado_expression" ||
+                    node$children$right %is% "ado_literal"
             ),
         msg=if(debug_level) NULL else "Incorrect argument to relational expression")
 
@@ -1064,7 +1064,7 @@ function(node, debug_level=0)
 }
 
 #' @export
-verifynode.rstata_postfix_expression <-
+verifynode.ado_postfix_expression <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -1079,7 +1079,7 @@ function(node, debug_level=0)
 
     raiseifnot("left" %in% names(node$children),
                msg=if(debug_level) NULL else "Malformed function call or subscript expression")
-    raiseifnot(node$children$left %is% "rstata_ident",
+    raiseifnot(node$children$left %is% "ado_ident",
                msg=if(debug_level) NULL else "Attempt to call non-function or subscript non-variable")
 
     if(length(node$children) == 2)
@@ -1088,13 +1088,13 @@ function(node, debug_level=0)
                    msg=if(debug_level) NULL else "Malformed function call or subscript expression")
         raiseifnot(
             (
-                node$children$right %is% "rstata_expression" ||
-                    node$children$right %is% "rstata_literal" ||
-                    node$children$right %is% "rstata_argument_expression_list"
+                node$children$right %is% "ado_expression" ||
+                    node$children$right %is% "ado_literal" ||
+                    node$children$right %is% "ado_argument_expression_list"
             )
-            && !(node$children$right %is% "rstata_factor_expression")
-            && !(node$children$right %is% "rstata_cross_expression")
-            && !(node$children$right %is% "rstata_type_expression"),
+            && !(node$children$right %is% "ado_factor_expression")
+            && !(node$children$right %is% "ado_cross_expression")
+            && !(node$children$right %is% "ado_type_expression"),
             msg=if(debug_level) NULL else "Incorrect function argument or subscript expression")
     }
 
@@ -1102,7 +1102,7 @@ function(node, debug_level=0)
 }
 
 #' @export
-verifynode.rstata_assignment_expression <-
+verifynode.ado_assignment_expression <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -1117,22 +1117,22 @@ function(node, debug_level=0)
     raiseifnot(every(c("left", "right") %in% names(node$children)),
                msg=if(debug_level) NULL else "Malformed assignment expression")
 
-    raiseifnot(node$children$left %is% "rstata_ident" ||
-                   node$children$left %is% "rstata_type_expression",
+    raiseifnot(node$children$left %is% "ado_ident" ||
+                   node$children$left %is% "ado_type_expression",
                msg=if(debug_level) NULL else "Invalid left-hand side in assignment")
 
     raiseifnot(
         !(
-            node$children$right %is% "rstata_factor_expression" ||
-                node$children$right %is% "rstata_type_expression" ||
-                node$children$right %is% "rstata_cross_expression"
+            node$children$right %is% "ado_factor_expression" ||
+                node$children$right %is% "ado_type_expression" ||
+                node$children$right %is% "ado_cross_expression"
         )
 
         &&
 
             (
-                node$children$right %is% "rstata_expression" ||
-                    node$children$right %is% "rstata_literal"
+                node$children$right %is% "ado_expression" ||
+                    node$children$right %is% "ado_literal"
             ),
         msg=if(debug_level) NULL else "Invalid right-hand side in assignment")
 
@@ -1143,7 +1143,7 @@ function(node, debug_level=0)
 ##We're not going to verify that this is an anova command, but the only way
 ##the parser will generate these classes is if it's seen an ANOVA token.
 #' @export
-verifynode.rstata_anova_nest_expression <-
+verifynode.ado_anova_nest_expression <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -1158,15 +1158,15 @@ function(node, debug_level=0)
     raiseifnot(every(c("left", "right") %in% names(node$children)),
                msg=if(debug_level) NULL else "Malformed anova expression")
 
-    raiseifnot(node$children$left %is% "rstata_ident" ||
-                   node$children$left %is% "rstata_factor_expression" ||
-                   node$children$left %is% "rstata_cross_expression" ||
-                   node$children$left %is% "rstata_anova_nest_expression",
+    raiseifnot(node$children$left %is% "ado_ident" ||
+                   node$children$left %is% "ado_factor_expression" ||
+                   node$children$left %is% "ado_cross_expression" ||
+                   node$children$left %is% "ado_anova_nest_expression",
                msg=if(debug_level) NULL else "Incorrect varlist specification in anova command")
 }
 
 #' @export
-verifynode.rstata_anova_error_expression <-
+verifynode.ado_anova_error_expression <-
 function(node, debug_level=0)
 {
     #Data members - length, names, values
@@ -1181,10 +1181,10 @@ function(node, debug_level=0)
     raiseifnot(every(names(node$children) %in% c("left", "right")),
                msg=if(debug_level) NULL else "Malformed anova expression")
 
-    raiseifnot(node$children$left %is% "rstata_ident" ||
-                   node$children$left %is% "rstata_factor_expression" ||
-                   node$children$left %is% "rstata_cross_expression" ||
-                   node$children$left %is% "rstata_anova_nest_expression",
+    raiseifnot(node$children$left %is% "ado_ident" ||
+                   node$children$left %is% "ado_factor_expression" ||
+                   node$children$left %is% "ado_cross_expression" ||
+                   node$children$left %is% "ado_anova_nest_expression",
                msg=if(debug_level) NULL else "Incorrect varlist specification in anova command")
 }
 

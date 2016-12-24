@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // do_parse_with_callbacks
 SEXP do_parse_with_callbacks(std::string text, Rcpp::Function cmd_action, Rcpp::Function macro_value_accessor, int debug_level, int echo);
-RcppExport SEXP rstata_do_parse_with_callbacks(SEXP textSEXP, SEXP cmd_actionSEXP, SEXP macro_value_accessorSEXP, SEXP debug_levelSEXP, SEXP echoSEXP) {
+RcppExport SEXP ado_do_parse_with_callbacks(SEXP textSEXP, SEXP cmd_actionSEXP, SEXP macro_value_accessorSEXP, SEXP debug_levelSEXP, SEXP echoSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -22,7 +22,7 @@ END_RCPP
 }
 // do_parse
 Rcpp::List do_parse(std::string text, int debug_level);
-RcppExport SEXP rstata_do_parse(SEXP textSEXP, SEXP debug_levelSEXP) {
+RcppExport SEXP ado_do_parse(SEXP textSEXP, SEXP debug_levelSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -34,7 +34,7 @@ END_RCPP
 }
 // parse_accept
 int parse_accept(std::string text);
-RcppExport SEXP rstata_parse_accept(SEXP textSEXP) {
+RcppExport SEXP ado_parse_accept(SEXP textSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;

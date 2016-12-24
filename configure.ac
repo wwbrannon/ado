@@ -1,6 +1,6 @@
 AC_PREREQ(2.50)
 
-AC_INIT(RStata, 0.1.0.9000)
+AC_INIT(ado, 0.1.0.9000)
 
 AC_LANG(C++)
 AC_REQUIRE_CPP
@@ -11,7 +11,7 @@ if test "${GXX}" = yes; then
                sed -e 's/^.*g.. version *//'`
     case ${gxx_version} in
     1.*|2.*|3.0)
-         AC_MSG_WARN([Only g++ >= 4.0 is usable with RStata.])
+         AC_MSG_WARN([Only g++ >= 4.0 is usable with ado.])
          AC_MSG_ERROR([Please use a newer compiler.])   
     ;;
     esac

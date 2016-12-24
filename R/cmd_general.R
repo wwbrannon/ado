@@ -1,15 +1,15 @@
 #====================================================================
 ## First, things that are more nearly flow-control constructs than
 ## "commands" in the usual sense
-rstata_cmd_quit <-
+ado_cmd_quit <-
 function(return.match.call=NULL)
 {
     #Don't do anything with return.match.call because otherwise we can't get
-    #out of rstata() when testing with return.match.call
+    #out of ado() when testing with return.match.call
     raiseCondition("Exit requested", "ExitRequestedException")
 }
 
-rstata_cmd_continue <-
+ado_cmd_continue <-
 function(option_list=NULL, return.match.call=NULL)
 {
     #Similarly, we shouldn't return match.call here because
@@ -25,7 +25,7 @@ function(option_list=NULL, return.match.call=NULL)
         raiseCondition("Continue", "ContinueException")
 }
 
-rstata_cmd_do <-
+ado_cmd_do <-
 function(expression_list, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -48,7 +48,7 @@ function(expression_list, return.match.call=NULL)
             mname <- as.symbol(as.character(ind))
             val <- as.character(vals[ind])
 
-            rstata_cmd_local(expression_list=list(mname, val))
+            ado_cmd_local(expression_list=list(mname, val))
         }
     }
 
@@ -64,7 +64,7 @@ function(expression_list, return.match.call=NULL)
         for(ind in inds)
         {
             mname <- as.symbol(as.character(ind))
-            rstata_cmd_local(expression_list=list(mname))
+            ado_cmd_local(expression_list=list(mname))
         }
     }
 
@@ -72,19 +72,19 @@ function(expression_list, return.match.call=NULL)
 }
 
 #The if expr { } construct
-rstata_cmd_if <-
+ado_cmd_if <-
 function(expression, compound_cmd, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
 }
 
-rstata_cmd_exit <- rstata_cmd_quit
-rstata_cmd_run <- rstata_cmd_do
+ado_cmd_exit <- ado_cmd_quit
+ado_cmd_run <- ado_cmd_do
 
 #====================================================================
 ## Now, more normal commands
-rstata_cmd_about <-
+ado_cmd_about <-
 function(return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -93,10 +93,10 @@ function(return.match.call=NULL)
     fields <- c("Package", "Authors@R", "Version", "Title", "License", "URL", "BugReports")
     desc <- utils::packageDescription(utils::packageName(), fields=fields)
 
-    return(structure(desc, class=c("rstata_cmd_about", class(desc))))
+    return(structure(desc, class=c("ado_cmd_about", class(desc))))
 }
 
-rstata_cmd_sleep <-
+ado_cmd_sleep <-
 function(expression, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -107,17 +107,17 @@ function(expression, return.match.call=NULL)
     return(invisible(NULL))
 }
 
-rstata_cmd_display <-
+ado_cmd_display <-
 function(expression, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
 
     ret <- eval(expression[[1]])
-    return(structure(ret, class=c("rstata_cmd_display", class(ret))))
+    return(structure(ret, class=c("ado_cmd_display", class(ret))))
 }
 
-rstata_cmd_preserve <-
+ado_cmd_preserve <-
 function(option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -128,13 +128,13 @@ function(option_list=NULL, return.match.call=NULL)
 
     mem <- hasOption(option_list, "memory")
 
-    dt <- get("rstata_dta", envir=rstata_env)
+    dt <- get("ado_dta", envir=ado_env)
     dt$preserve(memory=mem)
 
     return(invisible(NULL))
 }
 
-rstata_cmd_restore <-
+ado_cmd_restore <-
 function(option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -145,13 +145,13 @@ function(option_list=NULL, return.match.call=NULL)
 
     cancel <- hasOption(option_list, "not")
 
-    dt <- get("rstata_dta", envir=rstata_env)
+    dt <- get("ado_dta", envir=ado_env)
     dt$restore(cancel=cancel)
 
     return(invisible(NULL))
 }
 
-rstata_cmd_query <-
+ado_cmd_query <-
 function(varlist=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -167,10 +167,10 @@ function(varlist=NULL, return.match.call=NULL)
     vals <- lapply(nm, getSettingValue)
     names(vals) <- nm
 
-    return(structure(vals, class="rstata_cmd_query"))
+    return(structure(vals, class="ado_cmd_query"))
 }
 
-rstata_cmd_set <-
+ado_cmd_set <-
 function(expression_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -178,7 +178,7 @@ function(expression_list=NULL, return.match.call=NULL)
 
     if(is.null(expression_list))
     {
-        return(rstata_cmd_query())
+        return(ado_cmd_query())
     }
 
     raiseifnot(length(expression_list) == 2,
@@ -236,18 +236,18 @@ function(expression_list=NULL, return.match.call=NULL)
             raiseCondition("Bad # of obs to set")
         }
 
-        dt <- get("rstata_dta", envir=rstata_env)
+        dt <- get("ado_dta", envir=ado_env)
         dt$set_obs(value)
     } else
     {
-        env <- get("rstata_settings_env", envir=rstata_env)
+        env <- get("ado_settings_env", envir=ado_env)
         assign(setting, value, envir=env)
     }
 
     return(invisible(NULL))
 }
 
-rstata_cmd_creturn <-
+ado_cmd_creturn <-
 function(expression, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -262,14 +262,14 @@ function(expression, return.match.call=NULL)
     #Get the values and put them into a list with their names as
     #the list names. This format is easier for the print method
     #to work with.
-    nm <- rstata_func_c(enum=TRUE)
-    vals <- lapply(nm, rstata_func_c)
+    nm <- ado_func_c(enum=TRUE)
+    vals <- lapply(nm, ado_func_c)
     names(vals) <- nm
 
-    return(structure(vals, class="rstata_cmd_creturn"))
+    return(structure(vals, class="ado_cmd_creturn"))
 }
 
-rstata_cmd_return <-
+ado_cmd_return <-
 function(expression, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -281,14 +281,14 @@ function(expression, return.match.call=NULL)
         raiseCondition("Unrecognized subcommand")
     }
 
-    nm <- rstata_func_r(enum=TRUE)
-    vals <- lapply(nm, rstata_func_r)
+    nm <- ado_func_r(enum=TRUE)
+    vals <- lapply(nm, ado_func_r)
     names(vals) <- nm
 
-    return(structure(vals, class="rstata_cmd_return"))
+    return(structure(vals, class="ado_cmd_return"))
 }
 
-rstata_cmd_ereturn <-
+ado_cmd_ereturn <-
 function(expression, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -300,14 +300,14 @@ function(expression, return.match.call=NULL)
         raiseCondition("Unrecognized subcommand")
     }
 
-    nm <- rstata_func_e(enum=TRUE)
-    vals <- lapply(nm, rstata_func_e)
+    nm <- ado_func_e(enum=TRUE)
+    vals <- lapply(nm, ado_func_e)
     names(vals) <- nm
 
-    return(structure(vals, class="rstata_cmd_ereturn"))
+    return(structure(vals, class="ado_cmd_ereturn"))
 }
 
-rstata_cmd_help <-
+ado_cmd_help <-
 function(expression_list, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -319,7 +319,7 @@ function(expression_list, return.match.call=NULL)
 
 }
 
-rstata_cmd_log <-
+ado_cmd_log <-
 function(expression_list=NULL, using_clause=NULL, option_list=NULL,
          return.match.call=NULL)
 {
@@ -327,4 +327,4 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
         return(match.call())
 }
 
-rstata_cmd_di <- rstata_cmd_display
+ado_cmd_di <- ado_cmd_display

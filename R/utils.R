@@ -249,44 +249,44 @@ function(children)
   {
     if(n == "if_clause")
     {
-      if(!children[[n]] %is% "rstata_if_clause")
+      if(!children[[n]] %is% "ado_if_clause")
         return(FALSE)
     }
 
     if(n == "in_clause")
     {
-      if(!children[[n]] %is% "rstata_in_clause")
+      if(!children[[n]] %is% "ado_in_clause")
         return(FALSE)
     }
 
     if(n == "weight_clause")
     {
-      if(!children[[n]] %is% "rstata_weight_clause")
+      if(!children[[n]] %is% "ado_weight_clause")
         return(FALSE)
     }
 
     if(n == "using_clause")
     {
-      if(!children[[n]] %is% "rstata_using_clause")
+      if(!children[[n]] %is% "ado_using_clause")
         return(FALSE)
     }
 
     if(n == "option_list")
     {
-      if(!children[[n]] %is% "rstata_option_list")
+      if(!children[[n]] %is% "ado_option_list")
         return(FALSE)
     }
 
     if(n == "varlist")
     {
-      if(!(children[[n]] %is% "rstata_expression_list"))
+      if(!(children[[n]] %is% "ado_expression_list"))
           return(FALSE)
 
-      if(children[[n]]$children[[1]] %is% "rstata_type_expression")
+      if(children[[n]]$children[[1]] %is% "ado_type_expression")
       {
           type_exp <- children[[n]]$children[[1]]
           types <- vapply(type_exp$children[[1]]$children,
-                          function(x) x %is% "rstata_ident",
+                          function(x) x %is% "ado_ident",
                           TRUE)
 
           if(length(which(types)) != length(types))
@@ -296,9 +296,9 @@ function(children)
       } else
       {
           types <- vapply(children[[n]]$children,
-                          function(x) x %is% "rstata_ident" ||
-                              x %is% "rstata_factor_expression" ||
-                              x %is% "rstata_cross_expression",
+                          function(x) x %is% "ado_ident" ||
+                              x %is% "ado_factor_expression" ||
+                              x %is% "ado_cross_expression",
                           TRUE)
 
           if(length(which(types)) != length(types))
@@ -310,12 +310,12 @@ function(children)
 
     if(n == "expression_list")
     {
-        if(!children[[n]] %is% "rstata_expression_list")
+        if(!children[[n]] %is% "ado_expression_list")
             return(FALSE)
 
         types <- vapply(children[[n]]$children,
-                        function(x) x %is% "rstata_expression" ||
-                                    x %is% "rstata_literal",
+                        function(x) x %is% "ado_expression" ||
+                                    x %is% "ado_literal",
                         TRUE)
 
         if(length(which(types)) != length(types))
@@ -323,12 +323,12 @@ function(children)
     }
     if(n == "expression")
     {
-        if(!children[[n]] %is% "rstata_expression_list")
+        if(!children[[n]] %is% "ado_expression_list")
             return(FALSE)
 
         types <- vapply(children[[n]]$children,
-                        function(x) x %is% "rstata_expression" ||
-                            x %is% "rstata_literal",
+                        function(x) x %is% "ado_expression" ||
+                            x %is% "ado_literal",
                         TRUE)
 
         if(length(which(types)) != length(types))
@@ -438,11 +438,11 @@ function(name)
   {
       if(substr(name, 1, 3) == "str")
       {
-          return(as.symbol('rstata_type_str'))
+          return(as.symbol('ado_type_str'))
       }
       else
       {
-          return(as.symbol('rstata_type_' %p% name))
+          return(as.symbol('ado_type_' %p% name))
       }
   }
 
@@ -462,12 +462,12 @@ function(name, choices, cls="EvalErrorException", msg=NULL)
 }
 
 #For unabbreviating command names against the list of all the
-#rstata_* command-implementing functions.
+#ado_* command-implementing functions.
 unabbreviateCommand <-
 function(name, cls="error", msg=NULL)
 {
   funcs <- ls(envir=parent.env(environment()))
-  funcs <- funcs[grep("^rstata_cmd_", funcs)]
+  funcs <- funcs[grep("^ado_cmd_", funcs)]
 
   unabbreviateName(name, funcs, cls=cls, msg=msg)
 }

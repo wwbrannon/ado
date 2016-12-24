@@ -1,5 +1,5 @@
 #Functions that implement the two types of loops we support
-rstata_foreach <-
+ado_foreach <-
 function(macro_name, text, varlist=NULL, numlist=NULL,
          local_macro_source=NULL, global_macro_source=NULL)
 {
@@ -21,13 +21,13 @@ function(macro_name, text, varlist=NULL, numlist=NULL,
         vals <- numlist 
     if(!is.null(global_macro_source))
     {
-        src <- get(global_macro_source, envir=get("rstata_macro_env", envir=rstata_env))
+        src <- get(global_macro_source, envir=get("ado_macro_env", envir=ado_env))
         vals <- strsplit(src, " |\t")
     }
     if(!is.null(local_macro_source))
     {
         nm <- paste0("_", local_macro_source)
-        src <- get(nm, envir=get("rstata_macro_env", envir=rstata_env))
+        src <- get(nm, envir=get("ado_macro_env", envir=ado_env))
         vals <- strsplit(src, " |\t")
     }
     
@@ -35,7 +35,7 @@ function(macro_name, text, varlist=NULL, numlist=NULL,
     for(val in vals)
     {
         #Set the macro value
-        rstata_cmd_local(list(substitute(macro_name), as.character(val)))
+        ado_cmd_local(list(substitute(macro_name), as.character(val)))
         
         #And re-parse the text block
         ret <-
@@ -65,7 +65,7 @@ function(macro_name, text, varlist=NULL, numlist=NULL,
     }
 }
 
-rstata_forvalues <-
+ado_forvalues <-
 function(macro_name, text, upper, lower,
          increment=NULL, increment_t=NULL)
 {
@@ -115,7 +115,7 @@ function(macro_name, text, upper, lower,
     for(val in vals)
     {
         #Set the macro value
-        rstata_cmd_local(list(substitute(macro_name), as.character(val)))
+        ado_cmd_local(list(substitute(macro_name), as.character(val)))
 
         #And re-parse the text block
         ret <-

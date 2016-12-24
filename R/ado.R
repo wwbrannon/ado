@@ -1,4 +1,4 @@
-### The REPL, batch-processing and environment-handling logic for rstata
+### The REPL, batch-processing and environment-handling logic for ado
 #TODO: this should really be factored into a more OO design; use R6?
 
 #Flags you can bitwise OR to enable debugging features.
@@ -33,7 +33,7 @@ DEBUG_NO_PARSE_ERROR <- 32
 #' @return Invisible NULL.
 #'
 #' @export
-#' @useDynLib rstata
+#' @useDynLib ado
 #' @import Rcpp
 ado <-
 function(dta = NULL, filename=NULL, string=NULL, assign.back=FALSE,
@@ -42,7 +42,7 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=FALSE,
     #We have a package-wide environment because of scoping issues,
     #but the data in it shouldn't persist across calls to this function
     initialize()
-    dt <- get("rstata_dta", envir=rstata_env)
+    dt <- get("ado_dta", envir=ado_env)
 
     #If we got a data.frame to use, set up the dataset object to use it
     if(is.null(dta))
@@ -208,7 +208,7 @@ function(ast, debug_level=0)
     ret_p2 <-
     tryCatch(
     {
-        deep_eval(ret_p1, envir=parent.env(environment()), enclos=rstata_env)
+        deep_eval(ret_p1, envir=parent.env(environment()), enclos=ado_env)
     },
     error=function(c) c,
     EvalErrorException=function(c) c,
@@ -245,7 +245,7 @@ function(ast, debug_level=0)
 macro_value_accessor <-
 function(name)
 {
-    env <- get("rstata_macro_env", envir=rstata_env)
+    env <- get("ado_macro_env", envir=ado_env)
 
     #Implement the e() and r() stored results objects, and the c() system
     #values object. All of the regexes here are a little screwy: when the e(),
@@ -264,7 +264,7 @@ function(name)
     if(start != -1)
     {
         txt <- substr(name, start, start + len - 1)
-        val <- as.character(rstata_func_e(txt))
+        val <- as.character(ado_func_e(txt))
 
         return(val)
     }
@@ -276,7 +276,7 @@ function(name)
     if(start != -1)
     {
         txt <- substr(name, start, start + len - 1)
-        val <- as.character(rstata_func_r(txt))
+        val <- as.character(ado_func_r(txt))
 
         return(val)
     }
@@ -288,7 +288,7 @@ function(name)
     if(start != -1)
     {
         txt <- substr(name, start, start + len - 1)
-        val <- as.character(rstata_func_c(txt))
+        val <- as.character(ado_func_c(txt))
 
         return(val)
     }

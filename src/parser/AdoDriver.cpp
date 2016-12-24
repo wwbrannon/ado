@@ -1,25 +1,25 @@
 #include <cstdio>
 #include <string>
 #include <Rcpp.h>
-#include "RStata.hpp"
+#include "Ado.hpp"
 
 // A lot of messy forward declarations of type names to make flex and
 // bison play nicely together, and with this driver class
-class RStataDriver;
+class AdoDriver;
 typedef void* yyscan_t;
 
 #include "ado.tab.hpp"
-typedef yy::RStataParser::semantic_type YYSTYPE;
+typedef yy::AdoParser::semantic_type YYSTYPE;
 
 #include "lex.yy.hpp"
 
-#include "RStataDriver.hpp"
-#include "RStataExceptions.hpp"
+#include "AdoDriver.hpp"
+#include "AdoExceptions.hpp"
 
 // ctors
-RStataDriver::RStataDriver(std::string _text, int _debug_level)
-            : cmd_action(Rcpp::Function("identity")),
-              macro_value_accessor(Rcpp::Function("identity"))
+AdoDriver::AdoDriver(std::string _text, int _debug_level)
+         : cmd_action(Rcpp::Function("identity")),
+           macro_value_accessor(Rcpp::Function("identity"))
 {
     text = _text;
 
@@ -30,11 +30,11 @@ RStataDriver::RStataDriver(std::string _text, int _debug_level)
     echo = 0;
 }
 
-RStataDriver::RStataDriver(int _callbacks, Rcpp::Function _cmd_action,
-                           Rcpp::Function _macro_value_accessor,
-                           std::string _text, int _debug_level, int _echo)
-            : cmd_action(Rcpp::Function("identity")),
-              macro_value_accessor(Rcpp::Function("identity"))
+AdoDriver::AdoDriver(int _callbacks, Rcpp::Function _cmd_action,
+                        Rcpp::Function _macro_value_accessor,
+                        std::string _text, int _debug_level, int _echo)
+         : cmd_action(Rcpp::Function("identity")),
+           macro_value_accessor(Rcpp::Function("identity"))
 {
     text = _text;
     
@@ -48,13 +48,13 @@ RStataDriver::RStataDriver(int _callbacks, Rcpp::Function _cmd_action,
 }
 
 // dtor
-RStataDriver::~RStataDriver()
+AdoDriver::~AdoDriver()
 {
     delete ast; // all the other members still get their destructors called
 }
 
 int
-RStataDriver::parse()
+AdoDriver::parse()
 {
     // Initialize the reentrant scanner
     yyscan_t yyscanner;
@@ -82,7 +82,7 @@ RStataDriver::parse()
 
     int res;
 
-    yy::RStataParser parser(*this, yyscanner);
+    yy::AdoParser parser(*this, yyscanner);
     
     if( (this->debug_level & DEBUG_PARSE_TRACE) != 0 )
         parser.set_debug_level(1);
@@ -99,7 +99,7 @@ RStataDriver::parse()
 }
 
 void
-RStataDriver::wrap_cmd_action(Rcpp::List ast)
+AdoDriver::wrap_cmd_action(Rcpp::List ast)
 {
   Rcpp::List ret = cmd_action(ast, this->debug_level);
   
@@ -129,7 +129,7 @@ RStataDriver::wrap_cmd_action(Rcpp::List ast)
 }
 
 std::string
-RStataDriver::get_macro_value(std::string name)
+AdoDriver::get_macro_value(std::string name)
 {
     std::string str = Rcpp::as<std::string>(macro_value_accessor(name));
 
@@ -137,14 +137,14 @@ RStataDriver::get_macro_value(std::string name)
 }
 
 std::string
-RStataDriver::get_macro_value(const char *name)
+AdoDriver::get_macro_value(const char *name)
 {
     std::string s = std::string(name);
     return Rcpp::as<std::string>(macro_value_accessor(s));
 }
 
 void
-RStataDriver::error(const yy::location& l, const std::string& m)
+AdoDriver::error(const yy::location& l, const std::string& m)
 {
     if( (this->debug_level & DEBUG_NO_PARSE_ERROR) == 0 )
     {
@@ -158,7 +158,7 @@ RStataDriver::error(const yy::location& l, const std::string& m)
 }
 
 void
-RStataDriver::error(const std::string& m)
+AdoDriver::error(const std::string& m)
 {
     if( (this->debug_level & DEBUG_NO_PARSE_ERROR) == 0 )
     {
