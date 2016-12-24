@@ -1,41 +1,50 @@
 ## C files
-/src/parser/ado.tab.cpp
 /src/parser/ado.output
-/src/parser/lex.yy.c
 
 # Object files
 *.o
 *.ko
+
 # Libraries
 *.lib
 *.a
+
 # Shared objects (inc. Windows DLLs)
 *.dll
 *.so
 *.so.*
 *.dylib
+
 # Executables
 *.exe
 *.out
 *.app
+
 ## R files
 # History files
 .Rhistory
+
 # Example code in package build process
 *-Ex.R
+
 # R data files from past sessions
 .Rdata
+
 ## misc
 build/
+
 # vim files
 .*.swp
 .swp
+
 # RStudio files
 .Rproj.user
 /*.Rproj
 packrat/lib*/
 packrat/src/
+
 # autoconf detritus
 config.status
 autom4te.cache
 config.log
+
