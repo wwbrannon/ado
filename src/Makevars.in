@@ -1,6 +1,6 @@
 PKG_CXXFLAGS = @CXXFLAGS@ -c -g -O3 -Wall -fPIC -pedantic -pipe -Wno-unused -std=c++11
 PKG_CPPFLAGS = @CXXFLAGS@ "-I../inst/include" "-I./parser/build"
-PKG_LIBS = @LDFLAGS@ $(SHLIB)
+PKG_LIBS = @LDFLAGS@ "parser/ado.a"
 
 all: parser $(SHLIB)
 
