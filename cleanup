@@ -9,5 +9,6 @@ find src -name "*.a" | xargs rm -f
 find src -name "*.so" | xargs rm -f
 
 # remove files built by autoconf
-rm -rf src/Makevars config.status autom4te.cache config.log
+rm -f src/Makevars src/parser/Makefile
+rm -rf config.status autom4te.cache config.log
 

@@ -32,6 +32,9 @@ CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXXFLAGS`
 AC_SUBST(CPPFLAGS)
 AC_SUBST(CXXFLAGS)
 AC_SUBST(LDFLAGS)
+
 AC_OUTPUT(src/Makevars)
+AC_OUTPUT(src/parser/Makefile)
+
 echo "Completed configuration and ready to build."
 
