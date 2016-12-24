@@ -1,7 +1,9 @@
-CXFLAGS = -c -fPIC -pedantic -std=c++11
-CPFLAGS = "-I/usr/share/R/include" \
-		  "-I/usr/local/lib/R/site-library/Rcpp/include" \
-		  "-I../../inst/include/" "-I./build" "-I./include"
+R_INCLUDE = '/usr/share/R/include'
+RCPP_INCLUDE = '/usr/local/lib/R/site-library/Rcpp/include'
+
+CXFLAGS = @CXXFLAGS@ -c -fPIC -pedantic -std=c++11
+CPFLAGS = @CPPFLAGS@ -I../../inst/include/ -I./build -I./include \
+    -I$(R_INCLUDE) -I$(RCPP_INCLUDE)
 
 all: infra lex.o parse.o
 	ar -rcs parser.a build/parse.o build/lex.o \
