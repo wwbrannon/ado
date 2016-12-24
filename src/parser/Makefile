@@ -33,5 +33,5 @@ clean:
 	rm -rf build
 	rm -f parser.a
 
-.PHONY: all
+.PHONY: all infra dir regenerate clean
 
