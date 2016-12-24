@@ -27,11 +27,15 @@
 .Rdata
 ## misc
 build/
-#vim files
+# vim files
 .*.swp
 .swp
-#RStudio files
+# RStudio files
 .Rproj.user
 /*.Rproj
 packrat/lib*/
 packrat/src/
+# autoconf detritus
+config.status
+autom4te.cache
+config.log

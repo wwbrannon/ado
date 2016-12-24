@@ -1,6 +1,6 @@
 Package: rstata
 Authors@R: c(person("William", "Brannon", email="wwbrannon@email.wm.edu", role=c("aut", "cre")))
-Version: 0.1.0
+Version: 0.1.0.9000
 Title: An implementation of Stata's ado language for R
 Description: An interpreter for Stata's ado language built on top of R.
     Loops, macros, data manipulation commands and statistics commands are all
