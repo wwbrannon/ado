@@ -59,7 +59,7 @@ function(option_list, opt)
 allSettings <-
 function()
 {
-    env <- get("rstata_settings_env", envir=rstata_env)
+    env <- get("ado_settings_env", envir=ado_env)
 
     ls(envir=env)
 }
@@ -67,14 +67,14 @@ function()
 assignSetting <-
 function(name, value)
 {
-    env <- get("rstata_settings_env", envir=rstata_env)
+    env <- get("ado_settings_env", envir=ado_env)
     assign(name, value, envir=env)
 }
 
 getSettingValue <-
 function(name)
 {
-    env <- get("rstata_settings_env", envir=rstata_env)
+    env <- get("ado_settings_env", envir=ado_env)
     get(name, envir=env)
 }
 
@@ -94,7 +94,7 @@ function(name)
 setCClassValue <-
 function(name, value)
 {
-    env <- get("rstata_cclass_env", envir=rstata_env)
+    env <- get("ado_cclass_env", envir=ado_env)
     assign(name, value, envir=env)
 
     return(invisible(NULL))
@@ -103,7 +103,7 @@ function(name, value)
 setEClassValue <-
 function(name, value)
 {
-    env <- get("rstata_eclass_env", envir=rstata_env)
+    env <- get("ado_eclass_env", envir=ado_env)
     assign(name, value, envir=env)
 
     return(invisible(NULL))
@@ -112,13 +112,13 @@ function(name, value)
 setRClassValue <-
 function(name, value)
 {
-    env <- get("rstata_rclass_env", envir=rstata_env)
+    env <- get("ado_rclass_env", envir=ado_env)
     assign(name, value, envir=env)
 
     return(invisible(NULL))
 }
 
-#The rstata_func_{e,r,c} functions are the getters for
+#The ado_func_{e,r,c} functions are the getters for
 #(e,r,c)-class values; the name format is so that the
 #code generator can generate calls to them the same way
 #it generates calls to every other function. The setters
@@ -128,15 +128,15 @@ function(name, value)
 #except through programming functionality that's not supported
 #here, and we're not going to come up with another way to do so.
 
-rstata_func_e <-
+ado_func_e <-
 function(val=NULL, enum=FALSE)
 {
     if(is.null(val) && !enum)
     {
-        raiseCondition("Must provide argument to rstata_func_e")
+        raiseCondition("Must provide argument to ado_func_e")
     }
 
-    env <- get("rstata_eclass_env", envir=rstata_env, inherits=FALSE)
+    env <- get("ado_eclass_env", envir=ado_env, inherits=FALSE)
 
     if(enum)
     {
@@ -147,15 +147,15 @@ function(val=NULL, enum=FALSE)
     }
 }
 
-rstata_func_r <-
+ado_func_r <-
 function(val=NULL, enum=FALSE)
 {
     if(is.null(val) && !enum)
     {
-        raiseCondition("Must provide argument to rstata_func_r")
+        raiseCondition("Must provide argument to ado_func_r")
     }
 
-    env <- get("rstata_rclass_env", envir=rstata_env, inherits=FALSE)
+    env <- get("adoa_rclass_env", envir=ado_env, inherits=FALSE)
 
     if(enum)
     {
@@ -166,15 +166,15 @@ function(val=NULL, enum=FALSE)
     }
 }
 
-rstata_func_c <-
+ado_func_c <-
 function(val=NULL, enum=FALSE)
 {
     if(is.null(val) && !enum)
     {
-        raiseCondition("Must provide argument to rstata_func_c")
+        raiseCondition("Must provide argument to ado_func_c")
     }
 
-    env <- get("rstata_cclass_env", envir=rstata_env, inherits=FALSE)
+    env <- get("ado_cclass_env", envir=ado_env, inherits=FALSE)
 
     #If explictly requested, return a list of all the c-class values known.
     #The calls to this function built by codegen() will never have enum=TRUE.
@@ -183,7 +183,7 @@ function(val=NULL, enum=FALSE)
         ret <- ls(envir=env)
 
         #These are the ones implemented below
-        ret <- c(ret, 'current_date', 'current_time', 'rstata_version', 'bit',
+        ret <- c(ret, 'current_date', 'current_time', 'ado_version', 'bit',
                  'processors', 'processors_mach', 'processors_max', 'mode',
                  'console', 'os', 'osdtl', 'rversion', 'hostname', 'machine_type',
                  'byteorder', 'username', 'tmpdir', 'pwd', 'dirsep', 'max_N_theory',
@@ -203,7 +203,7 @@ function(val=NULL, enum=FALSE)
     } else if(val == 'current_time')
     {
         return(Sys.time())
-    } else if(val == 'rstata_version')
+    } else if(val == 'ado_version')
     {
         return(utils::packageVersion(utils::packageName()))
     } else if(val == 'bit')
@@ -356,27 +356,27 @@ function(val=NULL, enum=FALSE)
         return(2^31 - 1)
     } else if(val == 'N')
     {
-        dt <- get("rstata_dta", envir=rstata_env)
+        dt <- get("ado_dta", envir=ado_env)
         return(dt$dim[1])
     } else if(val == 'k')
     {
-        dt <- get("rstata_dta", envir=rstata_env)
+        dt <- get("ado_dta", envir=ado_env)
         return(dt$dim[2])
     } else if(val == 'width')
     {
-        dt <- get("rstata_dta", envir=rstata_env)
+        dt <- get("ado_dta", envir=ado_env)
         return(utils::object.size(dt))
     } else if(val == 'changed')
     {
-        dt <- get("rstata_dta", envir=rstata_env)
+        dt <- get("ado_dta", envir=ado_env)
         return(dt$changed)
     } else if(val == 'filename')
     {
-        dt <- get("rstata_dta", envir=rstata_env)
+        dt <- get("ado_dta", envir=ado_env)
         return(dt$filename)
     } else if(val == 'filedate')
     {
-        dt <- get("rstata_dta", envir=rstata_env)
+        dt <- get("ado_dta", envir=ado_env)
         return(dt$filedate)
     } else if(val == 'memory')
     {

@@ -2,8 +2,8 @@
 #include <Rcpp.h>
 #include "ado.tab.hpp"
 
-#include "RStataDriver.hpp"
-#include "RStataExceptions.hpp"
+#include "AdoDriver.hpp"
+#include "AdoExceptions.hpp"
 
 // for C++11 features
 // [[Rcpp::plugins("cpp11")]]
@@ -17,7 +17,7 @@ do_parse_with_callbacks(std::string text, Rcpp::Function cmd_action,
   try
   {
     
-    RStataDriver *driver = new RStataDriver(1, cmd_action, macro_value_accessor,
+    AdoDriver *driver = new AdoDriver(1, cmd_action, macro_value_accessor,
                                             text, debug_level, echo);
 
     driver->parse();
@@ -39,7 +39,7 @@ do_parse(std::string text, int debug_level=0)
   try
   {
     Rcpp::List res;
-    RStataDriver *driver = new RStataDriver(text, debug_level);
+    AdoDriver *driver = new AdoDriver(text, debug_level);
 
     // parse the input
     if( driver->parse() != 0 || driver->error_seen != 0)
@@ -68,7 +68,7 @@ parse_accept(std::string text)
   
   try
   {
-    RStataDriver *driver = new RStataDriver(text, DEBUG_NO_PARSE_ERROR);
+    AdoDriver *driver = new AdoDriver(text, DEBUG_NO_PARSE_ERROR);
     
     if(driver->parse() == 0 && driver->error_seen == 0)
         ret = 1;

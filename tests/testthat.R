@@ -1,4 +1,4 @@
 library(testthat)
-library(rstata)
+library(ado)
 
-test_check("rstata")
+test_check("ado")

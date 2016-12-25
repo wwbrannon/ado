@@ -3,11 +3,11 @@
 .onLoad <-
 function(libname, pkgname)
 {
-    #This environment has to exist at package scope before rstata() runs
+    #This environment has to exist at package scope before ado() runs
     pkg_env <- parent.env(environment())
-    if("rstata_env" %not_in% ls(envir=pkg_env))
+    if("ado_env" %not_in% ls(envir=pkg_env))
     {
-        assign("rstata_env", new.env(parent=baseenv()), envir=pkg_env)
+        assign("ado_env", new.env(parent=baseenv()), envir=pkg_env)
     }
 }
 
@@ -21,8 +21,8 @@ function(libpath)
 .onUnload <- .onDetach
 
 #More pkg-wide initialization stuff. This function's principal job is to set
-#up the rstata_env package-wide holding environment. It's called on package
-#load and again each time rstata() runs. The rstata_env environment holds
+#up the ado_env package-wide holding environment. It's called on package
+#load and again each time ado() runs. The ado_env environment holds
 #several things: the dataset, the macro substitution symbol tables, a lookup
 #table (as an environment) for settings, and the (e,r,c)-class value tables
 #(which are also environments).
@@ -34,13 +34,13 @@ function()
     
     #===================================================
     #Set up the dataset object
-    assign("rstata_dta", Dataset$new(), envir=rstata_env)
+    assign("ado_dta", Dataset$new(), envir=ado_env)
     
     #===================================================
     #Create environments to represent Stata's "e-class" and "r-class" objects
     #for stored results
-    assign("rstata_rclass_env", new.env(parent=emptyenv()), envir=rstata_env)
-    assign("rstata_eclass_env", new.env(parent=emptyenv()), envir=rstata_env)
+    assign("ado_rclass_env", new.env(parent=emptyenv()), envir=ado_env)
+    assign("ado_eclass_env", new.env(parent=emptyenv()), envir=ado_env)
     
     #===================================================
     #Another env for c-class objects that's not the only place c-class values
@@ -74,20 +74,20 @@ function()
     #URLs for webuse
     assign('default_webuse_url', 'http://www.stata-press.com/data/r13/', envir=cc_env)
     
-    assign("rstata_cclass_env", cc_env, envir=rstata_env)
+    assign("ado_cclass_env", cc_env, envir=ado_env)
     
     #===================================================
     #Create the settings cache and macro symbol table
-    assign("rstata_macro_env", new.env(parent=emptyenv()), envir=rstata_env)
+    assign("ado_macro_env", new.env(parent=emptyenv()), envir=ado_env)
     
     s_env <- new.env(parent=emptyenv())
     assign("webuse_url", 'http://www.stata-press.com/data/r13/', envir=s_env)
-    assign("rstata_settings_env", s_env, envir=rstata_env)
+    assign("ado_settings_env", s_env, envir=ado_env)
     
     return(invisible(NULL))
 }
 
-#If initialize is the ctor for rstata_env, this is the dtor. The main
+#If initialize is the ctor for ado_env, this is the dtor. The main
 #reason it's important to tear this stuff down is so that the dataset
 #object doesn't sit around consuming huge amounts of memory. It's an
 #error to call this function without having first called initialize().
@@ -95,13 +95,13 @@ finalize <-
 function()
 {
     #Make extra sure this possibly huge object gets garbage-collected
-    if("rstata_dta" %in% ls(envir=rstata_env))
+    if("ado_dta" %in% ls(envir=ado_env))
     {
-        dt <- get("rstata_dta", envir=rstata_env)
+        dt <- get("ado_dta", envir=ado_env)
         dt$clear()
     }
     
-    rm(list=ls(envir=rstata_env), envir=rstata_env)
+    rm(list=ls(envir=ado_env), envir=ado_env)
     
     return(invisible(NULL))
 }

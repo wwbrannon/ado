@@ -1,4 +1,4 @@
-rstata_cmd_clear <-
+ado_cmd_clear <-
 function(expression=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -23,20 +23,20 @@ function(expression=NULL, return.match.call=NULL)
 
     if(drop_data)
     {
-        dt <- get("rstata_dta", envir=rstata_env)
+        dt <- get("ado_dta", envir=ado_env)
         dt$clear()
     }
 
     if(drop_results)
     {
-        rstata_cmd_return(expression=as.call(list(as.symbol("clear"))))
-        rstata_cmd_ereturn(expression=as.call(list(as.symbol("clear"))))
+        ado_cmd_return(expression=as.call(list(as.symbol("clear"))))
+        ado_cmd_ereturn(expression=as.call(list(as.symbol("clear"))))
     }
 
     return(invisible(NULL))
 }
 
-rstata_cmd_head <-
+ado_cmd_head <-
 function(option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -51,17 +51,17 @@ function(option_list=NULL, return.match.call=NULL)
         n <- optionArgs(option_list, "n")
     }
 
-    dt <- get("rstata_dta", envir=rstata_env)
+    dt <- get("ado_dta", envir=ado_env)
     if(dt$dim[1] == 0)
     {
         return(invisible(NULL))
     } else
     {
-        return(rstata_cmd_list(in_clause=list(upper=n, lower=1)))
+        return(ado_cmd_list(in_clause=list(upper=n, lower=1)))
     }
 }
 
-rstata_cmd_list <-
+ado_cmd_list <-
 function(varlist=NULL, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -70,7 +70,7 @@ function(varlist=NULL, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
     raiseif(!is.null(if_clause) && !is.null(in_clause),
             msg="Cannot specify both in clause and if clause at once")
 
-    dt <- get("rstata_dta", envir=rstata_env)
+    dt <- get("ado_dta", envir=ado_env)
 
     cols <- varlist
     if(is.null(cols))
@@ -99,7 +99,7 @@ function(varlist=NULL, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
     }
 }
 
-rstata_cmd_drop <-
+ado_cmd_drop <-
 function(varlist=NULL, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -113,7 +113,7 @@ function(varlist=NULL, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
     raiseif(!is.null(if_clause) && !is.null(in_clause),
             msg="Cannot specify both an in clause and an if clause at once")
 
-    dt <- get("rstata_dta", envir=rstata_env)
+    dt <- get("ado_dta", envir=ado_env)
     varlist <- lapply(varlist, as.character)
 
     #One Stata syntax: we're dropping columns
@@ -138,7 +138,7 @@ function(varlist=NULL, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
     return(invisible(NULL))
 }
 
-rstata_cmd_keep <-
+ado_cmd_keep <-
 function(varlist=NULL, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -152,7 +152,7 @@ function(varlist=NULL, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
     raiseif(!is.null(if_clause) && !is.null(in_clause),
             msg="Cannot specify both an in clause and an if clause at once")
 
-    dt <- get("rstata_dta", envir=rstata_env)
+    dt <- get("ado_dta", envir=ado_env)
     varlist <- lapply(varlist, as.character)
 
     #One Stata syntax: we're dropping columns
@@ -184,7 +184,7 @@ function(varlist=NULL, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
     return(invisible(NULL))
 }
 
-rstata_cmd_count <-
+ado_cmd_count <-
 function(if_clause=NULL, in_clause=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -193,7 +193,7 @@ function(if_clause=NULL, in_clause=NULL, return.match.call=NULL)
     raiseif(!is.null(if_clause) && !is.null(in_clause),
             msg="Cannot give both an if clause and an in clause at once")
 
-    dt <- get("rstata_dta", envir=rstata_env)
+    dt <- get("ado_dta", envir=ado_env)
 
     #We don't need to do any expensive copying here, fortunately
     if(!is.null(if_clause))
@@ -210,7 +210,7 @@ function(if_clause=NULL, in_clause=NULL, return.match.call=NULL)
     }
 }
 
-rstata_cmd_gsort <-
+ado_cmd_gsort <-
 function(expression_list, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -227,9 +227,9 @@ function(expression_list, option_list=NULL, return.match.call=NULL)
         rn <- optionArgs(option_list, "generate")
     }
 
-    dt <- get("rstata_dta", envir=rstata_env)
+    dt <- get("ado_dta", envir=ado_env)
 
-    #These are unevaluated calls to rstata_func_ functions, so they
+    #These are unevaluated calls to ado_func_ functions, so they
     #need to be evaluated before being used.
     proc <- lapply(expression_list, eval)
     cols <- lapply(proc, function(x) x$col)
@@ -240,7 +240,7 @@ function(expression_list, option_list=NULL, return.match.call=NULL)
     return(invisible(TRUE))
 }
 
-rstata_cmd_sort <-
+ado_cmd_sort <-
 function(varlist, in_clause=NULL, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -250,7 +250,7 @@ function(varlist, in_clause=NULL, option_list=NULL, return.match.call=NULL)
     option_list <- validateOpts(option_list, valid_opts)
     stable <- hasOption(option_list, "stable")
 
-    dt <- get("rstata_dta", envir=rstata_env)
+    dt <- get("ado_dta", envir=ado_env)
 
     rows <- NULL
     if(!is.null(in_clause))
@@ -264,13 +264,13 @@ function(varlist, in_clause=NULL, option_list=NULL, return.match.call=NULL)
     return(invisible(TRUE))
 }
 
-rstata_cmd_lookfor <-
+ado_cmd_lookfor <-
 function(expression_list, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
 
-    dt <- get("rstata_dta", envir=rstata_env)
+    dt <- get("ado_dta", envir=ado_env)
 
     ind <- numeric(0)
     for(expr in expression_list)
@@ -286,7 +286,7 @@ function(expression_list, return.match.call=NULL)
     return(df)
 }
 
-rstata_cmd_rename <-
+ado_cmd_rename <-
 function(expression_list, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -295,7 +295,7 @@ function(expression_list, return.match.call=NULL)
     raiseifnot(length(expression_list) == 2,
                msg="Incorrect number of arguments")
 
-    dt <- get("rstata_dta", envir=rstata_env)
+    dt <- get("ado_dta", envir=ado_env)
     expression_list <- lapply(expression_list, as.character)
 
     nm <- dt$names
@@ -307,7 +307,7 @@ function(expression_list, return.match.call=NULL)
     return(invisible(TRUE))
 }
 
-rstata_cmd_isid <-
+ado_cmd_isid <-
 function(varlist, using_clause=NULL, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -333,7 +333,7 @@ function(varlist, using_clause=NULL, option_list=NULL, return.match.call=NULL)
         dt$use(using_clause)
     } else
     {
-        dt <- get("rstata_dta", envir=rstata_env)
+        dt <- get("ado_dta", envir=ado_env)
     }
 
     if(!missok)
@@ -357,7 +357,7 @@ function(varlist, using_clause=NULL, option_list=NULL, return.match.call=NULL)
     return(invisible(TRUE))
 }
 
-rstata_cmd_sample <-
+ado_cmd_sample <-
 function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
          return.match.call=NULL)
 {
@@ -379,7 +379,7 @@ function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
         byvars <- NULL
     }
 
-    dt <- get("rstata_dta", envir=rstata_env)
+    dt <- get("ado_dta", envir=ado_env)
     if(!is.null(in_clause))
     {
         rn <- dt$in_clause_to_row_numbers(in_clause)
@@ -416,10 +416,10 @@ function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
 
     to_drop <- setdiff(rows, samp)
     dt$drop_rows(to_drop)
-    return(structure(length(to_drop), class="rstata_cmd_sample"))
+    return(structure(length(to_drop), class="ado_cmd_sample"))
 }
 
-rstata_cmd_order <-
+ado_cmd_order <-
 function(varlist, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -463,7 +463,7 @@ function(varlist, option_list=NULL, return.match.call=NULL)
     }
 
     varlist <- vapply(varlist, as.character, character(1))
-    dt <- get("rstata_dta", envir=rstata_env)
+    dt <- get("ado_dta", envir=ado_env)
     nm <- dt$names
 
     raiseifnot(every(varlist %in% nm),
@@ -542,7 +542,7 @@ function(varlist, option_list=NULL, return.match.call=NULL)
 
 # =============================================================================
 
-rstata_cmd_compare <-
+ado_cmd_compare <-
 function(varlist, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -554,7 +554,7 @@ function(varlist, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
     raiseif(!is.null(if_clause) && !is.null(in_clause),
             msg="Cannot specify both if and in clause at once")
 
-    dt <- get("rstata_dta", envir=rstata_env)
+    dt <- get("ado_dta", envir=ado_env)
 
     if(!is.null(in_clause))
     {
@@ -578,7 +578,7 @@ function(varlist, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
     #If both are n
 }
 
-rstata_cmd_duplicates <-
+ado_cmd_duplicates <-
 function(varlist, if_clause=NULL, in_clause=NULL, option_list=NULL,
          return.match.call=NULL)
 {
@@ -596,7 +596,7 @@ function(varlist, if_clause=NULL, in_clause=NULL, option_list=NULL,
     gen <- hasOption(option_list, "generate")
     fr <- hasOption(option_list, "force")
 
-    dt <- get("rstata_dta", envir=rstata_env)
+    dt <- get("ado_dta", envir=ado_env)
 
     if(length(varlist) == 1)
     {
@@ -646,7 +646,7 @@ function(varlist, if_clause=NULL, in_clause=NULL, option_list=NULL,
     }
 }
 
-rstata_cmd_append <-
+ado_cmd_append <-
 function(expression_list=NULL, using_clause=NULL, option_list=NULL,
          return.match.call=NULL)
 {
@@ -654,14 +654,14 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
         return(match.call())
 }
 
-rstata_cmd_merge <-
+ado_cmd_merge <-
 function(varlist, using_clause, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
 }
 
-rstata_cmd_split <-
+ado_cmd_split <-
 function(varlist, if_clause=NULL, in_clause=NULL, option_list=NULL,
          return.match.call=NULL)
 {
@@ -674,7 +674,7 @@ function(varlist, if_clause=NULL, in_clause=NULL, option_list=NULL,
 
 }
 
-rstata_cmd_codebook <-
+ado_cmd_codebook <-
 function(expression_list=NULL, if_clause=NULL, in_clause=NULL,
          option_list=NULL, return.match.call=NULL)
 {
@@ -682,7 +682,7 @@ function(expression_list=NULL, if_clause=NULL, in_clause=NULL,
         return(match.call())
 }
 
-rstata_cmd_collapse <-
+ado_cmd_collapse <-
 function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
          option_list=NULL, return.match.call=NULL)
 {
@@ -690,7 +690,7 @@ function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
         return(match.call())
 }
 
-rstata_cmd_describe <-
+ado_cmd_describe <-
 function(expression_list=NULL, using_clause=NULL, option_list=NULL,
          return.match.call=NULL)
 {
@@ -698,7 +698,7 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
         return(match.call())
 }
 
-rstata_cmd_expand <-
+ado_cmd_expand <-
 function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
          return.match.call=NULL)
 {
@@ -706,7 +706,7 @@ function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
         return(match.call())
 }
 
-rstata_cmd_recode <-
+ado_cmd_recode <-
 function(expression_list, if_clause=NULL, in_clause=NULL, option_list=NULL,
          return.match.call=NULL)
 {
@@ -714,14 +714,14 @@ function(expression_list, if_clause=NULL, in_clause=NULL, option_list=NULL,
         return(match.call())
 }
 
-rstata_cmd_reshape <-
+ado_cmd_reshape <-
 function(expression_list=NULL, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
 }
 
-rstata_cmd_separate <-
+ado_cmd_separate <-
 function(expression, option_list, if_clause=NULL, in_clause=NULL,
          return.match.call=NULL)
 {
@@ -731,28 +731,28 @@ function(expression, option_list, if_clause=NULL, in_clause=NULL,
 
 # =============================================================================
 
-rstata_cmd_recast <-
+ado_cmd_recast <-
 function(expression, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
 }
 
-rstata_cmd_tostring <-
+ado_cmd_tostring <-
 function(varlist, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
 }
 
-rstata_cmd_destring <-
+ado_cmd_destring <-
 function(varlist=NULL, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
 }
 
-rstata_cmd_decode <-
+ado_cmd_decode <-
 function(expression, if_clause=NULL, in_clause=NULL, option_list,
          return.match.call=NULL)
 {
@@ -760,7 +760,7 @@ function(expression, if_clause=NULL, in_clause=NULL, option_list,
         return(match.call())
 }
 
-rstata_cmd_egen <-
+ado_cmd_egen <-
 function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
          return.match.call=NULL)
 {
@@ -768,7 +768,7 @@ function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
         return(match.call())
 }
 
-rstata_cmd_encode <-
+ado_cmd_encode <-
 function(expression, if_clause=NULL, in_clause=NULL, option_list,
          return.match.call=NULL)
 {
@@ -776,21 +776,21 @@ function(expression, if_clause=NULL, in_clause=NULL, option_list,
         return(match.call())
 }
 
-rstata_cmd_format <-
+ado_cmd_format <-
 function(expression_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
 }
 
-rstata_cmd_replace <-
+ado_cmd_replace <-
 function(expression, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
 }
 
-rstata_cmd_generate <-
+ado_cmd_generate <-
 function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
          return.match.call=NULL)
 {
@@ -798,7 +798,7 @@ function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
         return(match.call())
 }
 
-rstata_cmd_label <-
+ado_cmd_label <-
 function(expression_list, using_clause=NULL, option_list=NULL,
          return.match.call=NULL)
 {
@@ -806,4 +806,4 @@ function(expression_list, using_clause=NULL, option_list=NULL,
         return(match.call())
 }
 
-rstata_cmd_flist <- rstata_cmd_list
+ado_cmd_flist <- ado_cmd_list

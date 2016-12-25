@@ -1,9 +1,9 @@
-#' rstata: An implementation of Stata's ado language in R.
+#' ado: An implementation of Stata's ado language in R.
 #'
-#' The rstata package provides an R-based interpreter for a dialect of Stata's
+#' The ado package provides an R-based interpreter for a dialect of Stata's
 #' ado language. Loops, macros, data manipulation commands and statistics commands
 #' are all supported, as are multiple ways to embed R code and use R for writing
-#' ado- language commands.
+#' ado-language commands.
 #'
 #' See the package vignettes for an introduction to the provided
 #' ado-language functionality.
@@ -19,5 +19,6 @@
 #' This package is not in any way affiliated with or endorsed by StataCorp.
 #'
 #' @docType package
-#' @name rstata
+#' @name ado
 NULL
+

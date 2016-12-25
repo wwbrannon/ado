@@ -1,7 +1,7 @@
-Package: rstata
+Package: ado
 Authors@R: c(person("William", "Brannon", email="wwbrannon@email.wm.edu", role=c("aut", "cre")))
-Version: 0.1.0
-Title: An implementation of Stata's ado language for R
+Version: 0.1.0.9000
+Title: An Implementation of Stata's Ado Language for R
 Description: An interpreter for Stata's ado language built on top of R.
     Loops, macros, data manipulation commands and statistics commands are all
     supported, as are multiple ways to embed R code and use R for writing ado-
@@ -9,8 +9,8 @@ Description: An interpreter for Stata's ado language built on top of R.
     relationship to Stata that various dialects of SQL have to each other.)
     This package is not in any way affiliated with or endorsed by StataCorp.
 License: MIT + file LICENSE
-URL: https://github.com/wwbrannon/rstata
-BugReports: https://github.com/wwbrannon/rstata/issues
+URL: https://github.com/wwbrannon/ado
+BugReports: https://github.com/wwbrannon/ado/issues
 LazyData: true
 Depends:
     R (>= 3.2.0)
@@ -25,3 +25,4 @@ SystemRequirements: C++11
 Suggests:
     testthat
 RoxygenNote: 5.0.1
+

@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# remove backup files
+find . -name "*~" | xargs rm -f
+
+# remove object files
+find src -name "*.o" | xargs rm -f
+find src -name "*.a" | xargs rm -f
+find src -name "*.so" | xargs rm -f
+
+# remove files built by autoconf
+rm -f src/Makevars src/parser/Makefile
+rm -rf config.status autom4te.cache config.log
+

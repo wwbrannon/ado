@@ -1,34 +1,34 @@
-print.rstata_cmd_insheet <-
+print.ado_cmd_insheet <-
 function(x)
 {
     cat(paste0("(", x[2], " vars, ", x[1], " obs)"), "\n")
 }
 
-print.rstata_cmd_save <-
+print.ado_cmd_save <-
 function(x)
 {
     cat(paste0("file ", x, " saved"), "\n")
 }
 
-print.rstata_cmd_use <-
+print.ado_cmd_use <-
 function(x)
 {
     cat(paste0("(", x, ")"), "\n")
 }
 
-print.rstata_cmd_sysuse <-
+print.ado_cmd_sysuse <-
 function(x)
 {
     NextMethod()
 }
 
-print.rstata_cmd_about <-
+print.ado_cmd_about <-
 function(x)
 {
     NextMethod()
 }
 
-print.rstata_cmd_display <-
+print.ado_cmd_display <-
 function(x)
 {
     if(length(x) == 0)
@@ -43,7 +43,7 @@ function(x)
     }
 }
 
-print.rstata_cmd_creturn <-
+print.ado_cmd_creturn <-
 function(x)
 {
     cat("System Values: \n\n")
@@ -54,7 +54,7 @@ function(x)
     }
 }
 
-print.rstata_cmd_return <-
+print.ado_cmd_return <-
 function(x)
 {
     cat("r()-class values: \n\n")
@@ -65,7 +65,7 @@ function(x)
     }
 }
 
-print.rstata_cmd_ereturn <-
+print.ado_cmd_ereturn <-
 function(x)
 {
     cat("e()-class values: \n\n")
@@ -76,13 +76,13 @@ function(x)
     }
 }
 
-print.rstata_cmd_sample <-
+print.ado_cmd_sample <-
 function(x)
 {
     cat("(" %p% as.character(x) %p% " observations deleted)")
 }
 
-print.rstata_cmd_query <-
+print.ado_cmd_query <-
 function(x)
 {
     cat("Setting Values: \n\n")

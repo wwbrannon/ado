@@ -4,56 +4,56 @@
 ### makes things clearer.
 
 #Helper functions for gsort - ascending sort
-rstata_func_asc <-
+ado_func_asc <-
 function(col)
 {
     return(list(asc=TRUE, col=as.character(col)))
 }
 
 #Helper functions for gsort - descending sort
-rstata_func_desc <-
+ado_func_desc <-
 function(col)
 {
     return(list(asc=FALSE, col=as.character(col)))
 }
 
-rstata_func_recode_rule_ident <-
+ado_func_recode_rule_ident <-
 function(args)
 {
     #FIXME
 }
 
-rstata_func_recode_rule_range <-
+ado_func_recode_rule_range <-
 function(args)
 {
     #FIXME
 }
 
-rstata_func_recode_rule_numlist <-
+ado_func_recode_rule_numlist <-
 function(args)
 {
     #FIXME
 }
 
-rstata_func_collapse_stata <-
+ado_func_collapse_stata <-
 function(args)
 {
     #FIXME
 }
 
-rstata_func_collapse_reassign <-
+ado_func_collapse_reassign <-
 function(args)
 {
     #FIXME
 }
 
-rstata_func_collapse_newvar <-
+ado_func_collapse_newvar <-
 function(args)
 {
     #FIXME
 }
 
-rstata_func_lrtest_termlist <-
+ado_func_lrtest_termlist <-
 function(args)
 {
     #FIXME
@@ -123,20 +123,20 @@ function(left, right)
 }
 
 #type constructor operators
-rstata_type_double <-
+ado_type_double <-
 function(vars)
 {
     #FIXME
 }
 
-rstata_type_str <-
+ado_type_str <-
 function(vars)
 {
     #FIXME
 }
 
-rstata_type_byte <- rstata_type_double
-rstata_type_int <- rstata_type_double
-rstata_type_long <- rstata_type_double
-rstata_type_float <- rstata_type_double
-rstata_type_double <- rstata_type_double
+ado_type_byte <- ado_type_double
+ado_type_int <- ado_type_double
+ado_type_long <- ado_type_double
+ado_type_float <- ado_type_double
+ado_type_double <- ado_type_double

@@ -10,20 +10,20 @@ function(node, debug_level=0)
 ##############################################################################
 ## Loops
 #' @export
-codegen.rstata_loop <-
+codegen.ado_loop <-
 function(node, debug_level=0)
 {
     NextMethod()
 }
 
 #' @export
-codegen.rstata_foreach <-
+codegen.ado_foreach <-
 function(node, debug_level=0)
 {
     what <- setdiff(names(node$children), c("macro_name", "text"))
     val <- codegen(node$children[[what]], debug_level)
 
-    ret <- list(as.symbol("rstata_foreach"),
+    ret <- list(as.symbol("ado_foreach"),
                 macro_name=codegen(node$children$macro_name, debug_level),
                 text=codegen(node$children$text, debug_level))
     ret[[what]] <- val
@@ -32,7 +32,7 @@ function(node, debug_level=0)
 }
 
 #' @export
-codegen.rstata_forvalues <-
+codegen.ado_forvalues <-
 function(node, debug_level=0)
 {
     macro_name <- codegen(node$children$macro_name, debug_level)
@@ -41,7 +41,7 @@ function(node, debug_level=0)
     upper <- codegen(node$children$upper, debug_level)
     lower <- codegen(node$children$lower, debug_level)
 
-    ret <- list(as.symbol("rstata_forvalues"),
+    ret <- list(as.symbol("ado_forvalues"),
                 macro_name=macro_name,
                 text=text,
                 upper=upper,
@@ -61,7 +61,7 @@ function(node, debug_level=0)
 ##############################################################################
 ## Compound and atomic commands
 #' @export
-codegen.rstata_compound_cmd <-
+codegen.ado_compound_cmd <-
 function(node, debug_level=0)
 {
     lst <- list()
@@ -74,23 +74,23 @@ function(node, debug_level=0)
 }
 
 #' @export
-codegen.rstata_if_cmd <-
+codegen.ado_if_cmd <-
 function(node, debug_level=0)
 {
     exp <- codegen(node$children$expression, debug_level)
     cmp <- codegen(node$children$compound_cmd, debug_level)
 
     if(debug_level)
-        ret <- c(as.symbol("rstata_cmd_if"), list(expression=exp, compound_cmd=cmp),
+        ret <- c(as.symbol("ado_cmd_if"), list(expression=exp, compound_cmd=cmp),
                  return.match.call=TRUE)
     else
-        ret <- c(as.symbol("rstata_cmd_if"), list(expression=exp, compound_cmd=cmp))
+        ret <- c(as.symbol("ado_cmd_if"), list(expression=exp, compound_cmd=cmp))
 
     as.call(ret)
 }
 
 #' @export
-codegen.rstata_embedded_code <-
+codegen.ado_embedded_code <-
 function(node, debug_level=0)
 {
     if(node$data["lang"] == "R")
@@ -101,18 +101,18 @@ function(node, debug_level=0)
 }
 
 #' @export
-codegen.rstata_cmd <-
+codegen.ado_cmd <-
 function(node, debug_level=0)
 {
     NextMethod()
 }
 
 #' @export
-codegen.rstata_general_cmd <-
+codegen.ado_general_cmd <-
 function(node, debug_level=0)
 {
     name <- as.character(codegen(node$children$verb, debug_level))
-    name <- unabbreviateCommand(paste0("rstata_cmd_", name))
+    name <- unabbreviateCommand(paste0("ado_cmd_", name))
     verb <- get(name, mode="function")
 
     args <- node$children
@@ -144,11 +144,11 @@ function(node, debug_level=0)
 }
 
 #' @export
-codegen.rstata_modifier_cmd <-
+codegen.ado_modifier_cmd <-
 function(node, debug_level=0)
 {
     name <- as.character(codegen(node$children$verb, debug_level))
-    name <- unabbreviateCommand(paste0("rstata_cmd_", name))
+    name <- unabbreviateCommand(paste0("ado_cmd_", name))
     verb <- get(name, mode="function")
 
     if(debug_level)
@@ -160,7 +160,7 @@ function(node, debug_level=0)
 }
 
 #' @export
-codegen.rstata_modifier_cmd_list <-
+codegen.ado_modifier_cmd_list <-
 function(node, debug_level=0)
 {
     lst <- unlist(lapply(node$children, function(x) codegen(x, debug_level)))
@@ -180,14 +180,14 @@ function(node, debug_level=0)
 ##############################################################################
 ## Command parts
 #' @export
-codegen.rstata_if_clause <-
+codegen.ado_if_clause <-
 function(node, debug_level=0)
 {
     codegen(node$children$if_expression, debug_level)
 }
 
 #' @export
-codegen.rstata_in_clause <-
+codegen.ado_in_clause <-
 function(node, debug_level=0)
 {
     upper <- codegen(node$children$upper, debug_level)
@@ -202,14 +202,14 @@ function(node, debug_level=0)
 }
 
 #' @export
-codegen.rstata_using_clause <-
+codegen.ado_using_clause <-
 function(node, debug_level=0)
 {
     as.character(codegen(node$children$filename, debug_level))
 }
 
 #' @export
-codegen.rstata_weight_clause <-
+codegen.ado_weight_clause <-
 function(node, debug_level=0)
 {
     list(kind=codegen(node$children$left, debug_level),
@@ -217,7 +217,7 @@ function(node, debug_level=0)
 }
 
 #' @export
-codegen.rstata_option <-
+codegen.ado_option <-
 function(node, debug_level=0)
 {
     if("args" %in% names(node$children))
@@ -228,7 +228,7 @@ function(node, debug_level=0)
 }
 
 #' @export
-codegen.rstata_option_list <-
+codegen.ado_option_list <-
 function(node, debug_level=0)
 {
     nm <- names(node$children)
@@ -241,14 +241,14 @@ function(node, debug_level=0)
 ##############################################################################
 ## Lists of expressions
 #' @export
-codegen.rstata_expression_list <-
+codegen.ado_expression_list <-
 function(node, debug_level=0)
 {
     lapply(node$children, function(x) codegen(x, debug_level))
 }
 
 #' @export
-codegen.rstata_argument_expression_list <-
+codegen.ado_argument_expression_list <-
 function(node, debug_level=0)
 {
     flatten(lapply(node$children, function(x) codegen(x, debug_level)))
@@ -257,7 +257,7 @@ function(node, debug_level=0)
 ##############################################################################
 ## Expression branch nodes
 #' @export
-codegen.rstata_expression <-
+codegen.ado_expression <-
 function(node, debug_level=0)
 {
     #Get the function to call and its arguments in lists
@@ -269,7 +269,7 @@ function(node, debug_level=0)
     #This is kind of a hack, but it works...
     if(op == "()")
     {
-        args$left$data["value"] <- paste0("rstata_func_", args$left$data["value"])
+        args$left$data["value"] <- paste0("ado_func_", args$left$data["value"])
     }
 
     op <- function_for_ado_operator(op)
@@ -282,21 +282,21 @@ function(node, debug_level=0)
 ##############################################################################
 ## Literal expressions
 #' @export
-codegen.rstata_literal <-
+codegen.ado_literal <-
 function(node, debug_level=0)
 {
     NextMethod()
 }
 
 #' @export
-codegen.rstata_ident <-
+codegen.ado_ident <-
 function(node, debug_level=0)
 {
     as.symbol(node$data["value"])
 }
 
 #' @export
-codegen.rstata_number <-
+codegen.ado_number <-
 function(node, debug_level=0)
 {
     if(node$data["value"] == ".")
@@ -306,7 +306,7 @@ function(node, debug_level=0)
 }
 
 #' @export
-codegen.rstata_string_literal <-
+codegen.ado_string_literal <-
 function(node, debug_level=0)
 {
     val <- as.character(node$data["value"])
@@ -318,14 +318,14 @@ function(node, debug_level=0)
 }
 
 #' @export
-codegen.rstata_datetime <-
+codegen.ado_datetime <-
 function(node, debug_level=0)
 {
     as.POSIXct(node$data["value"])
 }
 
 #' @export
-codegen.rstata_format_spec <-
+codegen.ado_format_spec <-
 function(node, debug_level=0)
 {
     val <- as.character(node$data["value"])

@@ -1,4 +1,4 @@
-rstata_cmd_insheet <-
+ado_cmd_insheet <-
 function(using_clause, varlist=NULL, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -9,7 +9,7 @@ function(using_clause, varlist=NULL, option_list=NULL, return.match.call=NULL)
     valid_opts <- c("tab", "comma", "delimiter", "clear", "case", "names", "nonames")
     option_list <- validateOpts(option_list, valid_opts)
     
-    dt <- get("rstata_dta", envir=rstata_env)
+    dt <- get("ado_dta", envir=ado_env)
     raiseifnot(hasOption(option_list, "clear") || dt$dim[1] == 0,
                msg="No; data in memory would be lost")
     
@@ -48,10 +48,10 @@ function(using_clause, varlist=NULL, option_list=NULL, return.match.call=NULL)
     
     #As is common in return values from these command functions,
     #this is an S3 class so it can pretty-print
-    return(structure(dt$dim, class="rstata_cmd_insheet"))
+    return(structure(dt$dim, class="ado_cmd_insheet"))
 }
 
-rstata_cmd_save <-
+ado_cmd_save <-
 function(expression=NULL, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -66,7 +66,7 @@ function(expression=NULL, option_list=NULL, return.match.call=NULL)
     #Handle the path we got or perhaps didn't get
     if(is.null(expression))
     {
-        pth <- rstata_func_c("filename")
+        pth <- ado_func_c("filename")
     } else
     {
         raiseifnot(length(expression) == 1, msg="Too many filenames given to save")
@@ -78,13 +78,13 @@ function(expression=NULL, option_list=NULL, return.match.call=NULL)
             pth <- pth %p% ".dta"
     }
     
-    dt <- get("rstata_dta", envir=rstata_env)
+    dt <- get("ado_dta", envir=ado_env)
     dt$save(pth, replace=repl, emptyok=emptyok)
     
-    return(structure(pth, class="rstata_cmd_save"))
+    return(structure(pth, class="ado_cmd_save"))
 }
 
-rstata_cmd_saveold <-
+ado_cmd_saveold <-
 function(expression=NULL, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -97,7 +97,7 @@ function(expression=NULL, option_list=NULL, return.match.call=NULL)
     
     #Handle the path we got or perhaps didn't get
     if(is.null(expression))
-        pth <- rstata_func_c("filename")
+        pth <- ado_func_c("filename")
     else
     {
         raiseifnot(length(expression) == 1, msg="Too many filenames given to save")
@@ -109,13 +109,13 @@ function(expression=NULL, option_list=NULL, return.match.call=NULL)
             pth <- pth %p% ".dta"
     }
     
-    dt <- get("rstata_dta", envir=rstata_env)
+    dt <- get("ado_dta", envir=ado_env)
     dt$saveold(pth, replace=repl)
     
-    return(structure(pth, class="rstata_cmd_save"))
+    return(structure(pth, class="ado_cmd_save"))
 }
 
-rstata_cmd_use <-
+ado_cmd_use <-
 function(expression, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -124,7 +124,7 @@ function(expression, option_list=NULL, return.match.call=NULL)
     valid_opts <- c("clear")
     option_list <- validateOpts(option_list, valid_opts)
     
-    dt <- get("rstata_dta", envir=rstata_env)
+    dt <- get("ado_dta", envir=ado_env)
     raiseifnot(hasOption(option_list, "clear") || dt$dim[1] == 0,
                msg="No; data in memory would be lost")
     
@@ -142,9 +142,9 @@ function(expression, option_list=NULL, return.match.call=NULL)
     dt$use(pth)
     
     if(length(dt$data_label) == 0 || dt$data_label == "")
-        return(structure("Data loaded", class="rstata_cmd_use"))
+        return(structure("Data loaded", class="ado_cmd_use"))
     else
-        return(structure(dt$data_label, class="rstata_cmd_use"))
+        return(structure(dt$data_label, class="ado_cmd_use"))
 }
 
 #This is a bit different from the Stata version of sysuse:
@@ -152,7 +152,7 @@ function(expression, option_list=NULL, return.match.call=NULL)
 #    o) The argument isn't a filename, it's a string coercible to a symbol name
 #       exported from the datasets pacakge
 #    o) correspondingly there is no logic about a ".dta" extension
-rstata_cmd_sysuse <-
+ado_cmd_sysuse <-
 function(expression, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -167,11 +167,11 @@ function(expression, option_list=NULL, return.match.call=NULL)
                    msg="Unrecognized subcommand to sysuse")
         
         datasets <- ls(as.environment("package:datasets"))
-        return(structure(datasets, class="rstata_cmd_sysuse"))
+        return(structure(datasets, class="ado_cmd_sysuse"))
     }
     else
     {
-        dt <- get("rstata_dta", envir=rstata_env)
+        dt <- get("ado_dta", envir=ado_env)
         raiseifnot(hasOption(option_list, "clear") || dt$dim[1] == 0,
                    msg="No; data in memory would be lost")
         
@@ -179,13 +179,13 @@ function(expression, option_list=NULL, return.match.call=NULL)
         dt$use_dataframe(df)
         
         if(length(dt$data_label) == 0 || dt$data_label == "")
-            return(structure("Data loaded", class="rstata_cmd_use"))
+            return(structure("Data loaded", class="ado_cmd_use"))
         else
-            return(structure(dt$data_label, class="rstata_cmd_use"))
+            return(structure(dt$data_label, class="ado_cmd_use"))
     }
 }
 
-rstata_cmd_webuse <-
+ado_cmd_webuse <-
 function(expression_list, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
@@ -194,10 +194,10 @@ function(expression_list, option_list=NULL, return.match.call=NULL)
     valid_opts <- c("clear")
     option_list <- validateOpts(option_list, valid_opts)
 
-    default_url <- rstata_func_c("default_webuse_url")
+    default_url <- ado_func_c("default_webuse_url")
     webuse_url <- getSettingValue("webuse_url")
     
-    dt <- get("rstata_dta", envir=rstata_env)
+    dt <- get("ado_dta", envir=ado_env)
     raiseifnot(hasOption(option_list, "clear") || dt$dim[1] == 0,
                msg="No; data in memory would be lost")
     
@@ -238,8 +238,8 @@ function(expression_list, option_list=NULL, return.match.call=NULL)
         dt$use_url(url)
         
         if(length(dt$data_label) == 0 || dt$data_label == "")
-            return(structure("Data loaded", class="rstata_cmd_use"))
+            return(structure("Data loaded", class="ado_cmd_use"))
         else
-            return(structure(dt$data_label, class="rstata_cmd_use"))
+            return(structure(dt$data_label, class="ado_cmd_use"))
     }
 }

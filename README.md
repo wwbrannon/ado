@@ -1,10 +1,10 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-[![Build Status](https://img.shields.io/travis/wwbrannon/rstata.svg?style=flat)](https://travis-ci.org/wwbrannon/rstata) <!-- [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/sqlscore)](https://cran.r-project.org/package=sqlscore) [![Downloads](https://cranlogs.r-pkg.org/badges/sqlscore)](https://cran.r-project.org/package=sqlscore)
+[![Build Status](https://img.shields.io/travis/wwbrannon/ado.svg?style=flat)](https://travis-ci.org/wwbrannon/ado) <!-- [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/ado)](https://cran.r-project.org/package=ado) [![Downloads](https://cranlogs.r-pkg.org/badges/ado)](https://cran.r-project.org/package=ado)
 --> [![License](https://img.shields.io/:license-mit-blue.svg?style=flat)](https://badges.mit-license.org)
 
-rstata
-======
+ado
+===
 
 An R-based interpreter for Stata's ado language, currently under development.
 
@@ -18,4 +18,4 @@ Installation:
 There's no CRAN version yet, so install the dev version from github:
 
     install.packages("devtools")
-    devtools::install_github("wwbrannon/sqlscore")
+    devtools::install_github("wwbrannon/ado")
