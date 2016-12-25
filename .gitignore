@@ -1,6 +1,5 @@
 ## C files
 /src/Makevars
-
 /src/parser/Makefile
 /src/parser/ado.output
 # Object files
