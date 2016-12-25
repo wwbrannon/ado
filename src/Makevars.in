@@ -1,11 +1,11 @@
-PKG_CXXFLAGS = @CXXFLAGS@ -c -fPIC -pedantic -std=c++11
+PKG_CXXFLAGS = @CXX1XFLAGS@ @CXX1XSTD@ @CXX1XPICFLAGS@ -c -pedantic
 PKG_CPPFLAGS = @CPPFLAGS@ "-I../inst/include" "-I./parser/build"
 PKG_LIBS = @LDFLAGS@ "parser/parser.a"
 
 all: parser $(SHLIB)
 
 parser:
-	(cd parser; make -d -f Makefile DEBUG=T KEEP_PKG_SOURCE=yes)
+	(cd parser; @MAKE@ -d -f Makefile DEBUG=T KEEP_PKG_SOURCE=yes)
 
 .PHONY: all parser
 
