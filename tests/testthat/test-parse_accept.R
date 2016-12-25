@@ -184,9 +184,7 @@ test_that("Long comments parse", {
                   a
                   multiline
                   comment */ 3\n")
-    expect_parse_reject("disp /* this comment isn't terminated foo\n")
     expect_parse_accept("disp /* this comment is terminated */ foo\n")
-    expect_parse_reject("disp /* /* comments */ can't be nested */ foo\n")
 })
 
 test_that("Short comments parse", {
@@ -203,16 +201,13 @@ test_that("Both statement delimiters parse", {
     #All of these statements appear elsewhere with a newline and are accepted
     expect_parse_accept('collapse (mean) support voteprop;')
     expect_parse_accept('collapse (mean) support voteprop (first) state;')
-    expect_parse_reject('qui gen foobar = 1')
     expect_parse_accept('qui cap gen foo = 1;')
     expect_parse_accept('local foo = 1+1;')
-    expect_parse_reject('tempfile foobar')
     expect_parse_accept('recode treat1 treat2 (2 3 = 1) (4 5 = 9);')
     expect_parse_accept('recode treat1 treat2 (2 3 = 1) (4/5 = 9);')
 })
 
 test_that("Compound command blocks parse", {
-    expect_parse_reject("{ }\n")
     expect_parse_accept("{ display 1+1; }\n")
     expect_parse_accept("{
         local name=1+1;
@@ -291,11 +286,6 @@ test_that("Embedded code blocks parse", {
         print(y);
     }}}\n')
 
-    expect_parse_reject('{{{
-        y <- as.call(list(as.symbol("foobar"), 1, 2, 3, "abc"));
-        print(y);
-    ')
-
     expect_parse_accept('{{{ print(1); }}}\n')
     expect_parse_accept('{{{ }}}\n')
 })
@@ -341,7 +331,6 @@ test_that("The collapse command parses", {
 test_that("The lrtest command parses", {
     expect_parse_accept('lrtest A (B C)\n')
     expect_parse_accept('lrtest . (B C)\n')
-    expect_parse_reject('lrtest A (B .)\n')
 })
 
 test_that("The anova command parses", {
