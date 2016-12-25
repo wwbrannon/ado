@@ -5,9 +5,9 @@ dist: trusty
 sudo: required
 
 r:
-#    - oldrel
+    - oldrel
     - release
-#    - devel
+    - devel
 
 os:
     - linux
