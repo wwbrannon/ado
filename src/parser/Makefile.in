@@ -1,5 +1,5 @@
 CXX1X = @CXX1X@
-CXFLAGS = @CXX1XFLAGS@ @CXX1XSTD@ @CXX1XPICFLAGS@ -c -pedantic
+CXFLAGS = @CXX1XFLAGS@ @CXX1XSTD@ @CXX1XPICFLAGS@ -c
 CPFLAGS = @CPPFLAGS@ -I../../inst/include/ -I./build -I./include
 
 all: infra lex.o parse.o

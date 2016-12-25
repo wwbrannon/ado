@@ -1,4 +1,4 @@
-PKG_CXXFLAGS = @CXX1XFLAGS@ @CXX1XSTD@ @CXX1XPICFLAGS@ -c -pedantic
+PKG_CXXFLAGS = @CXX1XFLAGS@ @CXX1XSTD@ @CXX1XPICFLAGS@ -c
 PKG_CPPFLAGS = @CPPFLAGS@ -I../inst/include -I./parser/include -I./parser/build
 PKG_LIBS = @LDFLAGS@ parser/parser.a
 
