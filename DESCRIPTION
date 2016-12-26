@@ -20,7 +20,7 @@ Imports:
     readstata13 (>= 0.8.2),
     R6 (>= 2.1.1),
     gtools (>= 3.5.0)
-LinkingTo: Rcpp
+LinkingTo: Rcpp, testthat
 SystemRequirements: C++11
 Suggests:
     testthat
