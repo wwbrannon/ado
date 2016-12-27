@@ -83,6 +83,8 @@ test_that("Format specifiers parse", {
 })
 
 test_that("Arithmetic expressions parse", {
+    expect_parse_accept("disp 45++1\n")
+    expect_parse_accept("disp 97--23\n")
     expect_parse_accept("disp 45+1\n")
     expect_parse_accept("disp 97-23\n")
     expect_parse_accept("disp 3.4 / 10\n")

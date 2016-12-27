@@ -14,83 +14,60 @@ test_that("Statements without terminators fail to parse", {
     expect_parse_reject('collapse (mean) support voteprop (first) state, by(track)')
 })
 
-# test_that("Invalid numeric literals fail to parse", {
-#     expect_parse_reject("disp .\n")
-#     expect_parse_reject("disp 0\n")
-#     expect_parse_reject("disp -10\n")
-#     expect_parse_reject("disp -10.0978\n")
-#     expect_parse_reject("disp 0.0234\n")
-#     expect_parse_reject("disp .0234\n")
-#     expect_parse_reject("disp 10.0978\n")
-#     expect_parse_reject("disp 0x0\n")
-#     expect_parse_reject("disp 0xadf\n")
-#     expect_parse_reject("disp 0x1482\n")
-#     expect_parse_reject("disp 0xdeadbeef\n")
-#     expect_parse_reject("disp 02453\n")
-#     expect_parse_reject("disp 00124\n")
-#     expect_parse_reject("disp 03.24E3\n")
-#     expect_parse_reject("disp 033E31\n")
-# })
-#
-# test_that("Invalid datetime literals fail to parse", {
-#     expect_parse_reject("disp 07jan2006\n")
-#     expect_parse_reject("disp 08jan1995\n")
-#     expect_parse_reject("disp 14jul209\n")
-#     expect_parse_reject("disp 07jan2006 12:45:12.09\n")
-#     expect_parse_reject("disp 08jan1995 03:12:34\n")
-#     expect_parse_reject("disp 14jul209 21:45:02\n")
-# })
-#
-# test_that("Invalid string expressions, with double and compound double quotes, fail to parse", {
-#     expect_parse_reject('disp "this is a string"\n')
-#     expect_parse_reject('disp "this is a \\nstring \\\" with escapes"\n')
-#     expect_parse_reject('disp `"this is a \\nstring \\\" with escapes"\'\n')
-#     expect_parse_reject('disp `"this is a "nested" string"\'\n')
-# })
-#
-# test_that("Invalid postfix expressions fail to parse", {
-#     expect_parse_reject("disp seq()\n")
-#     expect_parse_reject("disp seq(1,2,3)\n")
-#     expect_parse_reject("disp seq(1, 2, 3)\n")
-#     expect_parse_reject("disp var(1 2 3)\n")
-#     expect_parse_reject("disp seq(foo bar baz)\n")
-#     expect_parse_reject("disp func(foo, bar, baz)\n")
-#     expect_parse_reject("disp seq(foo(), bar, baz)\n")
-#     expect_parse_reject("disp val(foo() bar baz)\n")
-#     expect_parse_reject("disp var[36]\n")
-#     expect_parse_reject("disp var[-1]\n")
-#     expect_parse_reject("disp var[3+4 - 8*5]\n")
-# })
-#
-# test_that("Invalid format specifiers fail to parse", {
-#     expect_parse_reject("disp %10.0f\n")
-#     expect_parse_reject("disp %-14s\n")
-#     expect_parse_reject("disp %05.0f\n")
-#     expect_parse_reject("disp %tcDDmonCCYY_HH:MM:SS.ss\n")
-#     expect_parse_reject("disp %9.2fc\n")
-#     expect_parse_reject("disp %21x\n")
-#     expect_parse_reject("disp %-12.2f\n")
-#     expect_parse_reject("disp %10.0g\n")
-#     expect_parse_reject("disp %9s\n")
-#     expect_parse_reject("disp %8s\n")
-#     expect_parse_reject("disp %10.7e\n")
-#     expect_parse_reject("disp %16L\n")
-#     expect_parse_reject("disp %9.2fc\n")
-#     expect_parse_reject("disp %-9.0gc\n")
-# })
-#
-# test_that("Invalid arithmetic expressions fail to parse", {
-#     expect_parse_reject("disp 45+1\n")
-#     expect_parse_reject("disp 97-23\n")
-#     expect_parse_reject("disp 3.4 / 10\n")
-#     expect_parse_reject("disp 43 * 78.5\n")
-#     expect_parse_reject("disp 43 ^ 2.0\n")
-#     expect_parse_reject("disp 43 ^ 3\n")
-#     expect_parse_reject("disp (123 + 987) / 4^2\n")
-#     expect_parse_reject("disp (1343 - 966.01 + 67) ^ 2 - 2 / 3\n")
-#     expect_parse_reject("disp (12 + 87 * (76 - 4)) ^ 2 - (34 / (43 + 98)) ^ 0.5\n")
-# })
-#
+test_that("Invalid numeric literals fail to parse", {
+    expect_parse_reject("disp 0.02.34\n")
+    expect_parse_reject("disp 033-E31\n")
+})
+
+test_that("Invalid datetime literals fail to parse", {
+    expect_parse_reject("disp jan072006\n")
+    expect_parse_reject("disp jan199508\n")
+    expect_parse_reject("disp 12:45:12.09 07jan2006 12:45:12.09\n")
+    expect_parse_reject("disp 03:12:34 08jan1995\n")
+})
+
+test_that("Invalid string expressions, with double and compound double quotes, fail to parse", {
+    expect_parse_reject('disp this is a string"\n')
+    expect_parse_reject('disp "this is a string\n')
+    expect_parse_reject('disp "this is a \\nstring \\\\\" with escapes"\n')
+})
+
+test_that("Invalid postfix expressions fail to parse", {
+    expect_parse_reject("disp seq(\n")
+    expect_parse_reject("disp seq1,2,3)\n")
+    expect_parse_reject("disp seq(1,2,3\n")
+    expect_parse_reject("disp seq)1, 2, 3(\n")
+    expect_parse_reject("disp var(1 2 3\n")
+    expect_parse_reject("disp seq(foo(), bar, baz\n")
+    expect_parse_reject("disp seq(foo()\n")
+    expect_parse_reject("disp var[36\n")
+    expect_parse_reject("disp var36]\n")
+    expect_parse_reject("disp var-1]\n")
+    expect_parse_reject("disp var[-1\n")
+    expect_parse_reject("disp var3+4 - 8*5]\n")
+    expect_parse_reject("disp var[3+4 - 8*5\n")
+})
+
+test_that("Invalid format specifiers fail to parse", {
+    expect_parse_reject("disp 1%0.0f\n")
+    expect_parse_reject("disp tcDDm%onCCYY_HH:MM:SS.ss\n")
+    expect_parse_reject("disp %9.2f%c\n")
+    expect_parse_reject("disp %21%%x\n")
+    expect_parse_reject("disp %10.%0g\n")
+    expect_parse_reject("disp -9%.0gc\n")
+})
+
+test_that("Invalid arithmetic expressions fail to parse", {
+    expect_parse_reject("disp 23 97 - \n")
+    expect_parse_reject("disp / 3.4 / 10\n")
+    expect_parse_reject("disp * 43 * 78.5\n")
+    expect_parse_reject("disp 43 ^^ 2.0\n")
+    expect_parse_reject("disp ((123 + 987) / 4^2\n")
+    expect_parse_reject("disp (123 + 987) / 4^2)\n")
+    expect_parse_reject("disp (1343 - 966.01 + 67 ^) 2 - 2 / 3\n")
+    expect_parse_reject("disp (12 + 87 * (76 - 4)) (^) 2 - (34 / (43 + 98)) ^ 0.5\n")
+})
+
 # test_that("Invalid type constructors fail to parse", {
 #     expect_parse_reject("gen byte foo = 1\n")
 #     expect_parse_reject("gen byte foo\n")
