@@ -42,6 +42,10 @@
 // //                    "%code requires" blocks.
 #line 14 "ado.ypp" // lalr1.cc:372
 
+#if __cplusplus > 199711L
+#define register      // Deprecated in C++11.
+#endif  // #if __cplusplus > 199711L
+
 #include <memory>
 #include "Ado.hpp"
 class AdoDriver;
@@ -58,7 +62,7 @@ typedef void* yyscan_t;
     }
 
 
-#line 62 "ado.tab.hpp" // lalr1.cc:372
+#line 66 "ado.tab.hpp" // lalr1.cc:372
 
 
 # include <vector>
@@ -129,7 +133,7 @@ typedef void* yyscan_t;
 
 
 namespace yy {
-#line 133 "ado.tab.hpp" // lalr1.cc:372
+#line 137 "ado.tab.hpp" // lalr1.cc:372
 
 
 
@@ -143,12 +147,12 @@ namespace yy {
     /// Symbol semantic values.
     union semantic_type
     {
-    #line 37 "ado.ypp" // lalr1.cc:372
+    #line 41 "ado.ypp" // lalr1.cc:372
 
     std::string   *str;
     ExprNode      *node;
 
-#line 152 "ado.tab.hpp" // lalr1.cc:372
+#line 156 "ado.tab.hpp" // lalr1.cc:372
     };
 #else
     typedef YYSTYPE semantic_type;
@@ -554,7 +558,7 @@ namespace yy {
 
 
 } // yy
-#line 558 "ado.tab.hpp" // lalr1.cc:372
+#line 562 "ado.tab.hpp" // lalr1.cc:372
 
 
 

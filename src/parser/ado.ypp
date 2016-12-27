@@ -12,6 +12,10 @@
 
 %code requires
 {
+#if __cplusplus > 199711L
+#define register      // Deprecated in C++11.
+#endif  // #if __cplusplus > 199711L
+
 #include <memory>
 #include "Ado.hpp"
 class AdoDriver;
@@ -183,14 +187,7 @@ yy::AdoParser::error(const location_type& l, const std::string& m)
  */
 
 translation_unit:
-      error
-    {
-        $1; // shut up, bison...
-        
-        ExprNode *node = new ExprNode("ado_compound_cmd");
-        $$ = node;
-    }
-    | external_statement
+      external_statement
     {
         ExprNode *node = new ExprNode("ado_compound_cmd");
         node->appendChild($1);
@@ -210,6 +207,7 @@ translation_unit:
             ExprNode *node = new ExprNode("ado_compound_cmd");
             node->appendChild($2);
 
+            // FIXME? is this a memory leak?
             driver.ast = node;
             R_ACTION(node);
         } else
@@ -223,7 +221,19 @@ translation_unit:
     {
         $2; // shut up, bison...
 
+        // we shouldn't need to assign the driver's ast attribute here, because
+        // the earlier production that created the translation_unit will have
+        // done so already (unlike the one-statement error production below)
         $$ = $1;
+    }
+    | error
+    {
+        $1; // shut up, bison...
+        
+        ExprNode *node = new ExprNode("ado_compound_cmd");
+        
+        driver.ast = node;
+        $$ = node;
     }
     ;
 
