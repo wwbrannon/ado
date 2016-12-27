@@ -1,4 +1,21 @@
-context("The parser accepts all and only valid input")
+context("The parser accepts valid input")
+
+# NB: newlines or semicolons at the end of test cases are there
+# because the grammar requires a statement terminator for commands
+# other than those to the macro processor (foreach, forvalues, if)
+
+test_that("Macro processor commands don't require terminators", {
+    expect_parse_accept("foreach i of bar baz foo quux {
+        disp `i'
+    }")
+    expect_parse_accept('if 1 {
+        di "foo"
+    }')
+    expect_parse_accept('{{{
+        y <- as.call(list(as.symbol("foobar"), 1, 2, 3, "abc"));
+        print(y);
+    }}}')
+})
 
 test_that("Numeric literals parse", {
     expect_parse_accept("disp .\n")
