@@ -116,6 +116,8 @@ test_that("Factor expressions and factorial operators parse", {
     expect_parse_accept("logit y i3.treat\n")
     expect_parse_accept("logit y i(3).var\n")
     expect_parse_accept("logit y i(3 8).var\n")
+    expect_parse_accept("logit y i(3 8 5 7).var\n")
+    expect_parse_accept("logit y i(3    8     5    7).var\n")
     expect_parse_accept("logit y i(0 1).var\n")
     expect_parse_accept("logit y i(4 / 3).var2\n")
     expect_parse_accept("logit y i(4/2).var\n")
