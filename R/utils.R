@@ -1,9 +1,15 @@
 temporary_name <-
 function(lst=NULL, len=10)
 {
-    chars <- c(letters, LETTERS, vapply(0:9, as.character, character(1)))
+    raiseifnot(len >= 1, msg="temporary name length must be positive")
 
-    nm <- paste0(sample(chars, len), collapse="")
+    flchars <- c(letters, LETTERS)
+    fl <- sample(flchars, 1)
+
+    chars <- c(letters, LETTERS, vapply(0:9, as.character, character(1)))
+    oc <- sample(chars, len - 1)
+
+    nm <- paste0(c(fl, oc), collapse="")
 
     if(!is.null(lst))
     {
