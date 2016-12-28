@@ -29,6 +29,8 @@ DEBUG_NO_PARSE_ERROR <- 32
 #' @param debug_level How verbose debug messages should be.
 #' @param echo Whether to echo command input. Values 0, 1, and NULL are accepted;
 #'             if NULL, echo only when running non-interactively.
+#' @param print.results Whether to print command results. Values 0 or 1. The value
+#'                      passed here becomes the ado setting "print_results".
 #'
 #' @return Invisible NULL.
 #'
