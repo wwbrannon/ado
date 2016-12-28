@@ -43,3 +43,14 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// unlockEnvironment
+bool unlockEnvironment(Environment env);
+RcppExport SEXP ado_unlockEnvironment(SEXP envSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Environment >::type env(envSEXP);
+    __result = Rcpp::wrap(unlockEnvironment(env));
+    return __result;
+END_RCPP
+}

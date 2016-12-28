@@ -13,3 +13,7 @@ parse_accept <- function(text) {
     .Call('ado_parse_accept', PACKAGE = 'ado', text)
 }
 
+unlockEnvironment <- function(env) {
+    .Call('ado_unlockEnvironment', PACKAGE = 'ado', env)
+}
+
