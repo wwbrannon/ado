@@ -64,14 +64,11 @@ function(expression, option_list=NULL, return.match.call=NULL)
         nm <- as.character(expression)
     }
 
-    #In any case, we need to add this prefix to fit with what the code generator
-    #expects ado commands will look like
-    nm <- paste0('ado_cmd_', nm)
-
-    # FIXME? should we allow overriding objects that ship with ado?
+    # possible FIXME? should we allow overriding objects that ship with ado?
 
     #Get the function from the environment
-    fn <- tryCatch(get(nm, envir=env, mode="function", inherits=FALSE),
+    src <- as.character(expression)
+    fn <- tryCatch(get(src, envir=env, mode="function", inherits=FALSE),
                    error=function(e) e)
     raiseif(inherits(fn, "error"), msg="No such function")
 
@@ -83,8 +80,9 @@ function(expression, option_list=NULL, return.match.call=NULL)
     }
 
     environment(fn) <- pkenv
-    assign(nm, fn, pkenv)
+    assign(paste0('ado_cmd_', nm), fn, pkenv) #need this prefix for codegen
     lockEnvironment(pkenv)
 
     return(invisible(NULL))
 }
+
