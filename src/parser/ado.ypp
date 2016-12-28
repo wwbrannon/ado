@@ -25,11 +25,6 @@ typedef void* yyscan_t;
     if(driver.callbacks == 1 && !(driver.error_seen)) \
     { \
         driver.wrap_cmd_action(node->as_R_object()); \
-    } \
-    \
-    if(driver.echo) \
-    { \
-        Rcpp::Rcout << ". "; \
     }
 
 }

@@ -55,15 +55,10 @@ typedef void* yyscan_t;
     if(driver.callbacks == 1 && !(driver.error_seen)) \
     { \
         driver.wrap_cmd_action(node->as_R_object()); \
-    } \
-    \
-    if(driver.echo) \
-    { \
-        Rcpp::Rcout << ". "; \
     }
 
 
-#line 67 "ado.tab.hpp" // lalr1.cc:372
+#line 62 "ado.tab.hpp" // lalr1.cc:372
 
 
 # include <vector>
@@ -134,7 +129,7 @@ typedef void* yyscan_t;
 
 
 namespace yy {
-#line 138 "ado.tab.hpp" // lalr1.cc:372
+#line 133 "ado.tab.hpp" // lalr1.cc:372
 
 
 
@@ -148,12 +143,12 @@ namespace yy {
     /// Symbol semantic values.
     union semantic_type
     {
-    #line 42 "ado.ypp" // lalr1.cc:372
+    #line 37 "ado.ypp" // lalr1.cc:372
 
     std::string   *str;
     ExprNode      *node;
 
-#line 157 "ado.tab.hpp" // lalr1.cc:372
+#line 152 "ado.tab.hpp" // lalr1.cc:372
     };
 #else
     typedef YYSTYPE semantic_type;
@@ -559,7 +554,7 @@ namespace yy {
 
 
 } // yy
-#line 563 "ado.tab.hpp" // lalr1.cc:372
+#line 558 "ado.tab.hpp" // lalr1.cc:372
 
 
 

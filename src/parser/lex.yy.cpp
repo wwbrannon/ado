@@ -1174,7 +1174,7 @@ typedef yy::AdoParser::token token;
                         { \
                             tmp = tmp.erase(0, macro_length); \
                             macro_length = 0; \
-                            Rcpp::Rcout << tmp; \
+                            driver.push_echo_text(tmp); \
                         } else \
                         { \
                             macro_length -= tmp.length(); \
