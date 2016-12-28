@@ -2,6 +2,7 @@
 #include <string>
 #include <Rcpp.h>
 #include "Ado.hpp"
+#include "utils.hpp"
 
 // A lot of messy forward declarations of type names to make flex and
 // bison play nicely together, and with this driver class
@@ -161,7 +162,10 @@ AdoDriver::write_echo_text()
 {
     if(this->echo)
     {
-        Rcpp::Rcout << ". " + this->echo_text_buffer;
+        std::string txt = trim(this->echo_text_buffer, std::string("\n"));
+        txt = ". " + txt + std::string("\n");
+
+        Rcpp::Rcout << txt;
         this->echo_text_buffer.clear();
     }
 
