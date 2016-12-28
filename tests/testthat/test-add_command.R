@@ -19,7 +19,7 @@ test_that("Adding user commands works", {
 
             #Actually load the thing - this is what we're testing here
             st <- 'addCommand ' %p% tn %p% ', newname(testprint)'
-            ado(string=st)
+            ado(string=st, echo=0)
         }, finally=
         {
             #Tear down - remove this function from the globalenv
