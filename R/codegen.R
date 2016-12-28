@@ -97,7 +97,10 @@ function(node, debug_level=0)
         return(parse(text=node$data["value"]))
 
     if(node$data["lang"] == "shell")
-        return(as.call(list(as.symbol("system"), command=node$data["value"])))
+    {
+        cmd <- list(as.symbol("system"), command=node$data["value"], intern=TRUE)
+        return(as.call(cmd))
+    }
 }
 
 #' @export
