@@ -194,7 +194,9 @@ translation_unit:
         driver.ast = node;
 
         if( !($1->isDummy()) )
+        {
             R_ACTION(node);
+        }
 
         $$ = node;
     }

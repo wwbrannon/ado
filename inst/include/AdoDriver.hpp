@@ -40,15 +40,19 @@ class AdoDriver
         int error_seen;
         void error(const yy::location& l, const std::string& m);
         void error(const std::string& m);
-
         int debug_level;
-        int echo;
         
+        // state and functions for echoing read text
+        int echo;
+        void push_echo_text(std::string echo_text);
+        void write_echo_text();
+
     private:
         AdoDriver(const AdoDriver& that); // no copy ctor
         AdoDriver& operator=(AdoDriver const&); // no assignment
         
         std::string text;
+        std::string echo_text_buffer;
         
         // See the comments in ado.fl for an explanation of this awful hack
         FILE *tmp;

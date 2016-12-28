@@ -3,8 +3,8 @@ CXFLAGS = @CXX1XFLAGS@ @CXX1XSTD@ @CXX1XPICFLAGS@ -c
 CPFLAGS = @CPPFLAGS@ -I../../inst/include/ -I./build -I./include
 
 all: infra lex.o parse.o
-	ar -rcs parser.a build/parse.o build/lex.o \
-			build/AdoDriver.o build/ExprNode.o
+	ar -rcs parser.a build/parse.o build/lex.o build/AdoDriver.o build/utils.o\
+			build/ExprNode.o
 
 parse.o: dir ado.tab.cpp
 	$(CXX1X) $(CPFLAGS) $(CXFLAGS) ado.tab.cpp -o build/parse.o
@@ -15,6 +15,7 @@ lex.o: dir lex.yy.cpp
 infra: dir
 	$(CXX1X) $(CPFLAGS) $(CXFLAGS) ExprNode.cpp -o build/ExprNode.o
 	$(CXX1X) $(CPFLAGS) $(CXFLAGS) AdoDriver.cpp -o build/AdoDriver.o
+	$(CXX1X) $(CPFLAGS) $(CXFLAGS) utils.cpp -o build/utils.o
 
 dir:
 	mkdir -p build

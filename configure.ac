@@ -39,15 +39,29 @@ CXX1XFLAGS=`"${R_HOME}/bin/R" CMD config CXX1XFLAGS`
 CPPFLAGS=`"${R_HOME}/bin/R" CMD config CPPFLAGS`
 MAKE=`"${R_HOME}/bin/R" CMD config MAKE`
 
+## Make sure we have Rcpp before calling it below
+AC_MSG_CHECKING(for Rcpp)
+has_rcpp=`${R_HOME}/bin/Rscript -e "cat(as.numeric('Rcpp' %in% rownames(installed.packages())))"`
+
+if test x"${has_rcpp}" == x"1" ; then
+    AC_MSG_RESULT(yes)
+else
+    AC_MSG_RESULT(no)
+    echo "
+  Your installation does not have Rcpp installed; aborting
+"
+    exit 1
+fi
+
 ## Append the R and Rcpp include directories
 AC_DEFUN(AC_PROG_RSCRIPT, [AC_CHECK_PROG(RSCRIPT,Rscript,yes)])
 AC_PROG_RSCRIPT
 if test x"${RSCRIPT}" == x"yes" ; then
-     r_include=`${R_HOME}/bin/Rscript -e 'cat(Sys.getenv("R_INCLUDE_DIR"))'`
-     AC_SUBST([CPPFLAGS],["${CPPFLAGS} -I$r_include"])
+    r_include=`${R_HOME}/bin/Rscript -e 'cat(Sys.getenv("R_INCLUDE_DIR"))'`
+    AC_SUBST([CPPFLAGS],["${CPPFLAGS} -I$r_include"])
      
-     rcpp_cxxflags=`${R_HOME}/bin/Rscript -e 'Rcpp:::CxxFlags()'`
-     AC_SUBST([CXX1XFLAGS],["${CXX1XFLAGS} $rcpp_cxxflags"])
+    rcpp_cxxflags=`${R_HOME}/bin/Rscript -e 'Rcpp:::CxxFlags()'`
+    AC_SUBST([CXX1XFLAGS],["${CXX1XFLAGS} $rcpp_cxxflags"])
 else
     echo "
   Your installation does not appear to have Rscript installed.

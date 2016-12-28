@@ -31,7 +31,6 @@ build/
 .swp
 # RStudio files
 .Rproj.user
-/*.Rproj
 packrat/lib*/
 packrat/src/
 # autoconf detritus

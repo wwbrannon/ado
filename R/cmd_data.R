@@ -48,7 +48,11 @@ function(option_list=NULL, return.match.call=NULL)
     n <- 5
     if(hasOption(option_list, "n"))
     {
-        n <- optionArgs(option_list, "n")
+        pn <- optionArgs(option_list, "n")
+        raiseif(length(pn) < 1, msg="Must provide a number of lines")
+        raiseif(length(pn) > 1, msg="Too many values to option n")
+
+        n <- pn[[1]]
     }
 
     dt <- get("ado_dta", envir=ado_env)
