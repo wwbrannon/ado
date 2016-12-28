@@ -71,9 +71,9 @@ function(expression=NULL, option_list=NULL, return.match.call=NULL)
         fspec <- expression[[1]]
 
     if(hasOption(option_list, "wide"))
-        return(system("ls -F -C " %p% fspec))
+        return(system("ls -F -C " %p% fspec, intern=TRUE))
     else
-        return(system("ls -F -l " %p% fspec))
+        return(system("ls -F -l " %p% fspec, intern=TRUE))
 }
 
 ado_cmd_cp <-
