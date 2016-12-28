@@ -307,24 +307,105 @@ function(expression, return.match.call=NULL)
     return(structure(vals, class="ado_cmd_ereturn"))
 }
 
-ado_cmd_help <-
-function(expression_list, return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-
-    raiseifnot(length(expression_list) == 1,
-               msg="Wrong number of arguments")
-
-
-}
-
 ado_cmd_log <-
 function(expression_list=NULL, using_clause=NULL, option_list=NULL,
          return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
+
+    valid_opts <- c("append", "replace", "text", "smcl", "name")
+    option_list <- validateOpts(option_list, valid_opts)
+
+    raiseif(!is.null(using_clause) && !is.null(expression_list),
+            msg="Cannot specify using clause and a subcommand")
+
+    if(is.null(using_clause) && is.null(expression_list))
+    {
+        raiseifnot(is.null(option_list), msg="Cannot specify options here")
+
+        #report on status of logging sinks
+    } else if(!is.null(using_clause))
+    {
+        raiseif(hasOption(option_list, "smcl"), msg="SMCL is not supported")
+        #open a new log
+    } else #we have a subcommand
+    {
+        raiseifnot(is.null(option_list), msg="Cannot specify options here")
+
+        cmd <- as.character(expression_list[[1]])
+        raiseifnot(cmd %in% c("query", "close", "off", "on"))
+
+        if(cmd == "query")
+        {
+            #report on status of logging sinks
+        } else if(cmd == "close")
+        {
+            #close a given log or all of them
+        } else if(cmd == "on")
+        {
+            #resume logging, or no-op
+        } else if(cmd == "off")
+        {
+            #pause logging, or no-op
+        }
+    }
+
+    return(invisible(NULL))
+}
+
+ado_cmd_cmdlog <-
+function(expression_list=NULL, using_clause=NULL, option_list=NULL,
+         return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+
+    valid_opts <- c("append", "replace", "permanently")
+    option_list <- validateOpts(option_list, valid_opts)
+
+    raiseif(!is.null(using_clause) && !is.null(expression_list),
+            msg="Cannot specify using clause and a subcommand")
+
+    if(is.null(using_clause) && is.null(expression_list))
+    {
+        raiseifnot(is.null(option_list), msg="Cannot specify options here")
+
+        #report on status of command logging sinks
+    } else if(!is.null(using_clause))
+    {
+        raiseif(hasOption(option_list, "permanently"),
+                msg="Permanent option setting is not supported")
+
+        #open a new command log
+    } else #we have a subcommand
+    {
+        raiseifnot(is.null(option_list), msg="Cannot specify options here")
+
+        cmd <- as.character(expression_list[[1]])
+        raiseifnot(cmd %in% c("close", "off", "on"))
+
+        if(cmd == "close")
+        {
+            #close a given log or all of them
+        } else if(cmd == "on")
+        {
+            #resume logging, or no-op
+        } else if(cmd == "off")
+        {
+            #pause logging, or no-op
+        }
+    }
+
+    return(invisible(NULL))
+}
+
+ado_cmd_help <-
+function(expression, return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
 }
 
 ado_cmd_di <- ado_cmd_display
+
