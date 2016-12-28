@@ -78,6 +78,13 @@ function(name)
     get(name, envir=env)
 }
 
+settingIsSet <-
+function(name)
+{
+    env <- get("ado_settings_env", envir=ado_env)
+    return(name %in% ls(envir=env))
+}
+
 #=============================================================================
 ### Setters for (e,r,c)-class values
 

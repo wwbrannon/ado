@@ -37,7 +37,7 @@ DEBUG_NO_PARSE_ERROR <- 32
 #' @import Rcpp
 ado <-
 function(dta = NULL, filename=NULL, string=NULL, assign.back=FALSE,
-         debug_level=0, echo=NULL)
+         debug_level=0, print.results=1, echo=NULL)
 {
     #We have a package-wide environment because of scoping issues,
     #but the data in it shouldn't persist across calls to this function
@@ -115,8 +115,9 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=FALSE,
             echo <- 1
     }
 
-    #Make the echo level into a setting as well
+    #Make the echo level and the results-printing level into settings as well
     assignSetting("echo", echo)
+    assignSetting("print_results", print.results)
 
     #=========================================================================
     #The actual work of parsing and executing commands is here: time for an REPL,

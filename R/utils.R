@@ -86,7 +86,10 @@ function(expr, envir=parent.frame(),
                     parent.frame()
                 else
                     baseenv(),
-         print.results=TRUE)
+         print.results=if(settingIsSet("print_results"))
+                            getSettingValue("print_results")
+                       else
+                            1)
 {
     ret <- list()
     for(chld in expr)
@@ -98,7 +101,7 @@ function(expr, envir=parent.frame(),
             tmp <- suppressWarnings(withVisible(eval(chld, envir=envir, enclos=enclos)))
             ret[[length(ret)+1]] <- tmp$value
 
-            if(print.results && tmp$visible)
+            if(print.results == 1 && tmp$visible)
             {
                 print(tmp$value)
                 cat("\n")
