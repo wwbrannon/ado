@@ -1,6 +1,6 @@
 ## Add user-defined commands provided at runtime, rather than defined in this
 ## package's source. Even by R standards, this is arcane: it relies on a poorly
-## documented but very stable set of C macros in the R source code to unlock
+## documented (but very stable) set of C macros in the R source code to unlock
 ## the package environment and inject the user's function. See our C++ function
 ## that wraps around those macros in src/unlockEnvironment.cpp.
 
@@ -64,7 +64,11 @@ function(expression, option_list=NULL)
         nm <- as.character(expression)
     }
 
-    ## FIXME? should we allow overriding objects that ship with ado?
+    #In any case, we need to add this prefix to fit with what the code generator
+    #expects ado commands will look like
+    nm <- paste0('ado_cmd_', nm)
+
+    # FIXME? should we allow overriding objects that ship with ado?
 
     #Get the function from the environment
     fn <- tryCatch(get(nm, envir=env, mode="function", inherits=FALSE),
