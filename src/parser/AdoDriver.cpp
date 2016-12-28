@@ -2,6 +2,7 @@
 #include <string>
 #include <Rcpp.h>
 #include "Ado.hpp"
+#include "utils.hpp"
 
 // A lot of messy forward declarations of type names to make flex and
 // bison play nicely together, and with this driver class
@@ -101,6 +102,8 @@ AdoDriver::parse()
 void
 AdoDriver::wrap_cmd_action(Rcpp::List ast)
 {
+  this->write_echo_text();
+
   Rcpp::List ret = cmd_action(ast, this->debug_level);
   
   int status = Rcpp::as<int>(ret[0]);
@@ -141,6 +144,32 @@ AdoDriver::get_macro_value(const char *name)
 {
     std::string s = std::string(name);
     return Rcpp::as<std::string>(macro_value_accessor(s));
+}
+
+void
+AdoDriver::push_echo_text(std::string echo_text)
+{
+    if(this->echo)
+    {
+       this->echo_text_buffer += echo_text;
+    }
+
+    return;
+}
+
+void
+AdoDriver::write_echo_text()
+{
+    if(this->echo)
+    {
+        std::string txt = trim(this->echo_text_buffer, std::string("\n"));
+        txt = ". " + txt + std::string("\n");
+
+        Rcpp::Rcout << txt;
+        this->echo_text_buffer.clear();
+    }
+
+    return;
 }
 
 void

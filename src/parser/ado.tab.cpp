@@ -1465,15 +1465,17 @@ namespace yy {
         driver.ast = node;
 
         if( !((yystack_[0].value.node)->isDummy()) )
+        {
             R_ACTION(node);
+        }
 
         (yylhs.value.node) = node;
     }
-#line 1473 "ado.tab.cpp" // lalr1.cc:847
+#line 1475 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 4:
-#line 205 "ado.ypp" // lalr1.cc:847
+#line 207 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[1].value.node)->appendChild((yystack_[0].value.node));
 
@@ -1491,21 +1493,21 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 1495 "ado.tab.cpp" // lalr1.cc:847
+#line 1497 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 5:
-#line 223 "ado.ypp" // lalr1.cc:847
+#line 225 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[0].value.node); // shut up, bison...
 
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 1505 "ado.tab.cpp" // lalr1.cc:847
+#line 1507 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 11:
-#line 250 "ado.ypp" // lalr1.cc:847
+#line 252 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[6].value.node)->appendChild("macro_name", (yystack_[5].value.node));
         (yystack_[6].value.node)->appendChild("text", (yystack_[1].value.node));
@@ -1513,11 +1515,11 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[6].value.node);
     }
-#line 1517 "ado.tab.cpp" // lalr1.cc:847
+#line 1519 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 12:
-#line 258 "ado.ypp" // lalr1.cc:847
+#line 260 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[6].value.node)->appendChild("macro_name", (yystack_[5].value.node));
         (yystack_[6].value.node)->appendChild("text", (yystack_[1].value.node));
@@ -1525,11 +1527,11 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[6].value.node);
     }
-#line 1529 "ado.tab.cpp" // lalr1.cc:847
+#line 1531 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 13:
-#line 266 "ado.ypp" // lalr1.cc:847
+#line 268 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[7].value.node)->appendChild("macro_name", (yystack_[6].value.node));
         (yystack_[7].value.node)->appendChild("text", (yystack_[1].value.node));
@@ -1537,11 +1539,11 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[7].value.node);
     }
-#line 1541 "ado.tab.cpp" // lalr1.cc:847
+#line 1543 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 14:
-#line 274 "ado.ypp" // lalr1.cc:847
+#line 276 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[7].value.node)->appendChild("macro_name", (yystack_[6].value.node));
         (yystack_[7].value.node)->appendChild("text", (yystack_[1].value.node));
@@ -1549,11 +1551,11 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[7].value.node);
     }
-#line 1553 "ado.tab.cpp" // lalr1.cc:847
+#line 1555 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 15:
-#line 282 "ado.ypp" // lalr1.cc:847
+#line 284 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[7].value.node)->appendChild("macro_name", (yystack_[6].value.node));
         (yystack_[7].value.node)->appendChild("text", (yystack_[1].value.node));
@@ -1561,11 +1563,11 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[7].value.node);
     }
-#line 1565 "ado.tab.cpp" // lalr1.cc:847
+#line 1567 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 16:
-#line 290 "ado.ypp" // lalr1.cc:847
+#line 292 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[7].value.node)->appendChild("macro_name", (yystack_[6].value.node));
         (yystack_[7].value.node)->appendChild("text", (yystack_[1].value.node));
@@ -1573,11 +1575,11 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[7].value.node);
     }
-#line 1577 "ado.tab.cpp" // lalr1.cc:847
+#line 1579 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 17:
-#line 298 "ado.ypp" // lalr1.cc:847
+#line 300 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[7].value.node)->appendChild("macro_name", (yystack_[6].value.node));
         (yystack_[7].value.node)->appendChild("text", (yystack_[1].value.node));
@@ -1585,11 +1587,11 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[7].value.node);
     }
-#line 1589 "ado.tab.cpp" // lalr1.cc:847
+#line 1591 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 18:
-#line 309 "ado.ypp" // lalr1.cc:847
+#line 311 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[10].value.node)->appendChild("macro_name", (yystack_[9].value.node));
         (yystack_[10].value.node)->appendChild("text", (yystack_[1].value.node));
@@ -1600,11 +1602,11 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[10].value.node);
     }
-#line 1604 "ado.tab.cpp" // lalr1.cc:847
+#line 1606 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 19:
-#line 320 "ado.ypp" // lalr1.cc:847
+#line 322 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[4].value.str); // shut up, bison...
         
@@ -1617,11 +1619,11 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[8].value.node);
     }
-#line 1621 "ado.tab.cpp" // lalr1.cc:847
+#line 1623 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 20:
-#line 333 "ado.ypp" // lalr1.cc:847
+#line 335 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[9].value.node)->appendChild("macro_name", (yystack_[8].value.node));
         (yystack_[9].value.node)->appendChild("text", (yystack_[1].value.node));
@@ -1632,11 +1634,11 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[9].value.node);
     }
-#line 1636 "ado.tab.cpp" // lalr1.cc:847
+#line 1638 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 21:
-#line 344 "ado.ypp" // lalr1.cc:847
+#line 346 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[9].value.node)->appendChild("macro_name", (yystack_[8].value.node));
         (yystack_[9].value.node)->appendChild("text", (yystack_[1].value.node));
@@ -1647,11 +1649,11 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[9].value.node);
     }
-#line 1651 "ado.tab.cpp" // lalr1.cc:847
+#line 1653 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 24:
-#line 363 "ado.ypp" // lalr1.cc:847
+#line 365 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode("ado_if_cmd");
         node->appendChild("expression", (yystack_[1].value.node));
@@ -1659,19 +1661,19 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 1663 "ado.tab.cpp" // lalr1.cc:847
+#line 1665 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 25:
-#line 374 "ado.ypp" // lalr1.cc:847
+#line 376 "ado.ypp" // lalr1.cc:847
     {
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 1671 "ado.tab.cpp" // lalr1.cc:847
+#line 1673 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 26:
-#line 381 "ado.ypp" // lalr1.cc:847
+#line 383 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode("ado_compound_cmd");
 
@@ -1679,49 +1681,49 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 1683 "ado.tab.cpp" // lalr1.cc:847
+#line 1685 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 27:
-#line 389 "ado.ypp" // lalr1.cc:847
+#line 391 "ado.ypp" // lalr1.cc:847
     {
         (yylhs.value.node) = (yystack_[0].value.node);
     }
-#line 1691 "ado.tab.cpp" // lalr1.cc:847
+#line 1693 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 28:
-#line 393 "ado.ypp" // lalr1.cc:847
+#line 395 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[1].value.node)->appendChild((yystack_[0].value.node));
 
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 1701 "ado.tab.cpp" // lalr1.cc:847
+#line 1703 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 29:
-#line 399 "ado.ypp" // lalr1.cc:847
+#line 401 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[1].value.node)->appendChild((yystack_[0].value.node));
 
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 1711 "ado.tab.cpp" // lalr1.cc:847
+#line 1713 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 32:
-#line 411 "ado.ypp" // lalr1.cc:847
+#line 413 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[0].value.node); // suppressing a stupid bison warning
 
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 1721 "ado.tab.cpp" // lalr1.cc:847
+#line 1723 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 33:
-#line 417 "ado.ypp" // lalr1.cc:847
+#line 419 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[2].value.node)->prependChild((yystack_[4].value.node));
         (yystack_[2].value.node)->appendChild("main_cmd", (yystack_[1].value.node));
@@ -1730,11 +1732,11 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[2].value.node);
     }
-#line 1734 "ado.tab.cpp" // lalr1.cc:847
+#line 1736 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 34:
-#line 426 "ado.ypp" // lalr1.cc:847
+#line 428 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[2].value.node)->prependChild((yystack_[4].value.node));
         (yystack_[2].value.node)->appendChild("main_cmd", (yystack_[1].value.node));
@@ -1743,11 +1745,11 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[2].value.node);
     }
-#line 1747 "ado.tab.cpp" // lalr1.cc:847
+#line 1749 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 35:
-#line 435 "ado.ypp" // lalr1.cc:847
+#line 437 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode("ado_modifier_cmd_list");
 
@@ -1758,11 +1760,11 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 1762 "ado.tab.cpp" // lalr1.cc:847
+#line 1764 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 36:
-#line 446 "ado.ypp" // lalr1.cc:847
+#line 448 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[0].value.node); // suppressing a stupid bison warning
 
@@ -1770,11 +1772,11 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[2].value.node);
     }
-#line 1774 "ado.tab.cpp" // lalr1.cc:847
+#line 1776 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 37:
-#line 454 "ado.ypp" // lalr1.cc:847
+#line 456 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[0].value.node); // suppressing a stupid bison warning
 
@@ -1782,11 +1784,11 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[3].value.node);
     }
-#line 1786 "ado.tab.cpp" // lalr1.cc:847
+#line 1788 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 38:
-#line 462 "ado.ypp" // lalr1.cc:847
+#line 464 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[0].value.node); // suppressing a stupid bison warning
 
@@ -1794,11 +1796,11 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[2].value.node);
     }
-#line 1798 "ado.tab.cpp" // lalr1.cc:847
+#line 1800 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 39:
-#line 470 "ado.ypp" // lalr1.cc:847
+#line 472 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[0].value.node); // suppressing a stupid bison warning
 
@@ -1806,11 +1808,11 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[3].value.node);
     }
-#line 1810 "ado.tab.cpp" // lalr1.cc:847
+#line 1812 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 40:
-#line 478 "ado.ypp" // lalr1.cc:847
+#line 480 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[0].value.node); // suppressing a stupid bison warning
 
@@ -1819,11 +1821,11 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[4].value.node);
     }
-#line 1823 "ado.tab.cpp" // lalr1.cc:847
+#line 1825 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 41:
-#line 487 "ado.ypp" // lalr1.cc:847
+#line 489 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[0].value.node); // suppressing a stupid bison warning
 
@@ -1832,11 +1834,11 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[4].value.node);
     }
-#line 1836 "ado.tab.cpp" // lalr1.cc:847
+#line 1838 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 42:
-#line 496 "ado.ypp" // lalr1.cc:847
+#line 498 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[0].value.node); // suppressing a stupid bison warning
 
@@ -1846,11 +1848,11 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[5].value.node);
     }
-#line 1850 "ado.tab.cpp" // lalr1.cc:847
+#line 1852 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 43:
-#line 506 "ado.ypp" // lalr1.cc:847
+#line 508 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[0].value.node); // suppressing a stupid bison warning
 
@@ -1860,64 +1862,64 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[5].value.node);
     }
-#line 1864 "ado.tab.cpp" // lalr1.cc:847
+#line 1866 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 44:
-#line 519 "ado.ypp" // lalr1.cc:847
+#line 521 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[0].value.str); // suppressing a stupid bison warning
 
         (yylhs.value.node) = new ExprNode();
     }
-#line 1874 "ado.tab.cpp" // lalr1.cc:847
+#line 1876 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 45:
-#line 525 "ado.ypp" // lalr1.cc:847
+#line 527 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[0].value.str); // suppressing a stupid bison warning
 
         (yylhs.value.node) = new ExprNode();
     }
-#line 1884 "ado.tab.cpp" // lalr1.cc:847
+#line 1886 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 46:
-#line 534 "ado.ypp" // lalr1.cc:847
+#line 536 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_cmd", "ado_modifier_cmd"});
         node->appendChild("verb", (yystack_[0].value.node));
 
         (yylhs.value.node) = node;
     }
-#line 1895 "ado.tab.cpp" // lalr1.cc:847
+#line 1897 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 47:
-#line 541 "ado.ypp" // lalr1.cc:847
+#line 543 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_cmd", "ado_modifier_cmd"});
         node->appendChild("verb", (yystack_[0].value.node));
 
         (yylhs.value.node) = node;
     }
-#line 1906 "ado.tab.cpp" // lalr1.cc:847
+#line 1908 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 48:
-#line 548 "ado.ypp" // lalr1.cc:847
+#line 550 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_cmd", "ado_modifier_cmd"});
         node->appendChild("verb", (yystack_[0].value.node));
 
         (yylhs.value.node) = node;
     }
-#line 1917 "ado.tab.cpp" // lalr1.cc:847
+#line 1919 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 49:
-#line 558 "ado.ypp" // lalr1.cc:847
+#line 560 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_cmd", "ado_general_cmd"});
         node->appendChild("verb", (yystack_[2].value.node));
@@ -1929,11 +1931,11 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 1933 "ado.tab.cpp" // lalr1.cc:847
+#line 1935 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 50:
-#line 570 "ado.ypp" // lalr1.cc:847
+#line 572 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_cmd", "ado_general_cmd"});
         node->appendChild("verb", (yystack_[2].value.node));
@@ -1945,11 +1947,11 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 1949 "ado.tab.cpp" // lalr1.cc:847
+#line 1951 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 51:
-#line 582 "ado.ypp" // lalr1.cc:847
+#line 584 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_cmd", "ado_general_cmd"});
         node->appendChild("verb", (yystack_[1].value.node));
@@ -1959,30 +1961,30 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 1963 "ado.tab.cpp" // lalr1.cc:847
+#line 1965 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 52:
-#line 595 "ado.ypp" // lalr1.cc:847
+#line 597 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode("ado_modifier_cmd_list");
         node->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 1973 "ado.tab.cpp" // lalr1.cc:847
+#line 1975 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 53:
-#line 601 "ado.ypp" // lalr1.cc:847
+#line 603 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[1].value.node)->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 1982 "ado.tab.cpp" // lalr1.cc:847
+#line 1984 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 54:
-#line 609 "ado.ypp" // lalr1.cc:847
+#line 611 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_cmd", "ado_general_cmd"});
         node->appendChild("verb", (yystack_[6].value.node));
@@ -2005,11 +2007,11 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 2009 "ado.tab.cpp" // lalr1.cc:847
+#line 2011 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 55:
-#line 632 "ado.ypp" // lalr1.cc:847
+#line 634 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_cmd", "ado_general_cmd"});
         node->appendChild("verb", (yystack_[5].value.node));
@@ -2031,11 +2033,11 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 2035 "ado.tab.cpp" // lalr1.cc:847
+#line 2037 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 56:
-#line 659 "ado.ypp" // lalr1.cc:847
+#line 661 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_cmd", "ado_general_cmd"});
         node->appendChild("verb", (yystack_[4].value.node));
@@ -2063,11 +2065,11 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 2067 "ado.tab.cpp" // lalr1.cc:847
+#line 2069 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 57:
-#line 687 "ado.ypp" // lalr1.cc:847
+#line 689 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_cmd", "ado_general_cmd"});
         node->appendChild("verb", (yystack_[2].value.node));
@@ -2079,11 +2081,11 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 2083 "ado.tab.cpp" // lalr1.cc:847
+#line 2085 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 58:
-#line 699 "ado.ypp" // lalr1.cc:847
+#line 701 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_cmd", "ado_general_cmd"});
         node->appendChild("verb", (yystack_[11].value.node));
@@ -2125,11 +2127,11 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 2129 "ado.tab.cpp" // lalr1.cc:847
+#line 2131 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 59:
-#line 741 "ado.ypp" // lalr1.cc:847
+#line 743 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_cmd", "ado_general_cmd"});
         node->appendChild("verb", (yystack_[2].value.node));
@@ -2141,11 +2143,11 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 2145 "ado.tab.cpp" // lalr1.cc:847
+#line 2147 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 60:
-#line 753 "ado.ypp" // lalr1.cc:847
+#line 755 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *cmd = new ExprNode({"ado_cmd", "ado_general_cmd"});
         cmd->appendChild("verb", (yystack_[5].value.node));
@@ -2188,11 +2190,11 @@ namespace yy {
         
         (yylhs.value.node) = cmd;
     }
-#line 2192 "ado.tab.cpp" // lalr1.cc:847
+#line 2194 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 61:
-#line 796 "ado.ypp" // lalr1.cc:847
+#line 798 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_cmd", "ado_general_cmd"});
         node->appendChild("verb", (yystack_[5].value.node));
@@ -2213,11 +2215,11 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 2217 "ado.tab.cpp" // lalr1.cc:847
+#line 2219 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 62:
-#line 817 "ado.ypp" // lalr1.cc:847
+#line 819 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_cmd", "ado_general_cmd"});
         node->appendChild("verb", (yystack_[2].value.node));
@@ -2229,11 +2231,11 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 2233 "ado.tab.cpp" // lalr1.cc:847
+#line 2235 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 63:
-#line 829 "ado.ypp" // lalr1.cc:847
+#line 831 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_cmd", "ado_general_cmd"});
         node->appendChild("verb", (yystack_[6].value.node));
@@ -2255,11 +2257,11 @@ namespace yy {
         
         (yylhs.value.node) = node;
     }
-#line 2259 "ado.tab.cpp" // lalr1.cc:847
+#line 2261 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 64:
-#line 851 "ado.ypp" // lalr1.cc:847
+#line 853 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_cmd", "ado_general_cmd"});
         node->appendChild("verb", (yystack_[4].value.node));
@@ -2277,49 +2279,49 @@ namespace yy {
         
         (yylhs.value.node) = node;
     }
-#line 2281 "ado.tab.cpp" // lalr1.cc:847
+#line 2283 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 65:
-#line 873 "ado.ypp" // lalr1.cc:847
+#line 875 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode("ado_expression_list");
         node->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 2291 "ado.tab.cpp" // lalr1.cc:847
+#line 2293 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 66:
-#line 879 "ado.ypp" // lalr1.cc:847
+#line 881 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[1].value.node)->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 2300 "ado.tab.cpp" // lalr1.cc:847
+#line 2302 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 69:
-#line 892 "ado.ypp" // lalr1.cc:847
+#line 894 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode("ado_expression_list");
         node->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 2310 "ado.tab.cpp" // lalr1.cc:847
+#line 2312 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 70:
-#line 898 "ado.ypp" // lalr1.cc:847
+#line 900 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[1].value.node)->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 2319 "ado.tab.cpp" // lalr1.cc:847
+#line 2321 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 72:
-#line 908 "ado.ypp" // lalr1.cc:847
+#line 910 "ado.ypp" // lalr1.cc:847
     {
         // this would be an assignment expression as usual, except that
         // for every single other command than this one, assignment expressions
@@ -2344,30 +2346,30 @@ namespace yy {
         node->appendChild("right", arglist);
         (yylhs.value.node) = node;
     }
-#line 2348 "ado.tab.cpp" // lalr1.cc:847
+#line 2350 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 73:
-#line 936 "ado.ypp" // lalr1.cc:847
+#line 938 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode("ado_expression_list");
         node->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 2358 "ado.tab.cpp" // lalr1.cc:847
+#line 2360 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 74:
-#line 942 "ado.ypp" // lalr1.cc:847
+#line 944 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[1].value.node)->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 2367 "ado.tab.cpp" // lalr1.cc:847
+#line 2369 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 75:
-#line 950 "ado.ypp" // lalr1.cc:847
+#line 952 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", *(new std::string("()")));
@@ -2387,30 +2389,30 @@ namespace yy {
         node->appendChild("right", arglist);
         (yylhs.value.node) = node;
     }
-#line 2391 "ado.tab.cpp" // lalr1.cc:847
+#line 2393 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 76:
-#line 973 "ado.ypp" // lalr1.cc:847
+#line 975 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode("ado_expression_list");
         node->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 2401 "ado.tab.cpp" // lalr1.cc:847
+#line 2403 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 77:
-#line 979 "ado.ypp" // lalr1.cc:847
+#line 981 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[1].value.node)->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 2410 "ado.tab.cpp" // lalr1.cc:847
+#line 2412 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 79:
-#line 989 "ado.ypp" // lalr1.cc:847
+#line 991 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", *(new std::string("()")));
@@ -2430,11 +2432,11 @@ namespace yy {
         node->appendChild("right", arglist);
         (yylhs.value.node) = node;
     }
-#line 2434 "ado.tab.cpp" // lalr1.cc:847
+#line 2436 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 80:
-#line 1009 "ado.ypp" // lalr1.cc:847
+#line 1011 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[4].value.str); // shut up, bison...
 
@@ -2457,11 +2459,11 @@ namespace yy {
         node->appendChild("right", arglist);
         (yylhs.value.node) = node;
     }
-#line 2461 "ado.tab.cpp" // lalr1.cc:847
+#line 2463 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 81:
-#line 1032 "ado.ypp" // lalr1.cc:847
+#line 1034 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", *(new std::string("()")));
@@ -2481,30 +2483,30 @@ namespace yy {
         node->appendChild("right", arglist);
         (yylhs.value.node) = node;
     }
-#line 2485 "ado.tab.cpp" // lalr1.cc:847
+#line 2487 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 82:
-#line 1055 "ado.ypp" // lalr1.cc:847
+#line 1057 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode("ado_expression_list");
         node->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 2495 "ado.tab.cpp" // lalr1.cc:847
+#line 2497 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 83:
-#line 1061 "ado.ypp" // lalr1.cc:847
+#line 1063 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[1].value.node)->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 2504 "ado.tab.cpp" // lalr1.cc:847
+#line 2506 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 84:
-#line 1070 "ado.ypp" // lalr1.cc:847
+#line 1072 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", *(new std::string("()")));
@@ -2516,11 +2518,11 @@ namespace yy {
         
         (yylhs.value.node) = node;
     }
-#line 2520 "ado.tab.cpp" // lalr1.cc:847
+#line 2522 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 85:
-#line 1082 "ado.ypp" // lalr1.cc:847
+#line 1084 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[1].value.str); // shut up, bison...
         
@@ -2534,11 +2536,11 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 2538 "ado.tab.cpp" // lalr1.cc:847
+#line 2540 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 86:
-#line 1096 "ado.ypp" // lalr1.cc:847
+#line 1098 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[1].value.str); // shut up, bison...
         
@@ -2552,30 +2554,30 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 2556 "ado.tab.cpp" // lalr1.cc:847
+#line 2558 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 87:
-#line 1113 "ado.ypp" // lalr1.cc:847
+#line 1115 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode("ado_expression_list");
         node->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 2566 "ado.tab.cpp" // lalr1.cc:847
+#line 2568 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 88:
-#line 1119 "ado.ypp" // lalr1.cc:847
+#line 1121 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[1].value.node)->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 2575 "ado.tab.cpp" // lalr1.cc:847
+#line 2577 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 91:
-#line 1130 "ado.ypp" // lalr1.cc:847
+#line 1132 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", *(new std::string("()")));
@@ -2590,30 +2592,30 @@ namespace yy {
         
         (yylhs.value.node) = node;
     }
-#line 2594 "ado.tab.cpp" // lalr1.cc:847
+#line 2596 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 92:
-#line 1148 "ado.ypp" // lalr1.cc:847
+#line 1150 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode("ado_expression_list");
         node->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 2604 "ado.tab.cpp" // lalr1.cc:847
+#line 2606 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 93:
-#line 1154 "ado.ypp" // lalr1.cc:847
+#line 1156 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[1].value.node)->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 2613 "ado.tab.cpp" // lalr1.cc:847
+#line 2615 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 95:
-#line 1164 "ado.ypp" // lalr1.cc:847
+#line 1166 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[1].value.str); // shut up, bison...
         
@@ -2624,11 +2626,11 @@ namespace yy {
         
         (yylhs.value.node) = node;
     }
-#line 2628 "ado.tab.cpp" // lalr1.cc:847
+#line 2630 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 97:
-#line 1179 "ado.ypp" // lalr1.cc:847
+#line 1181 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[0].value.str); // shut up, bison...
         
@@ -2638,46 +2640,46 @@ namespace yy {
         
         (yylhs.value.node) = node;
     }
-#line 2642 "ado.tab.cpp" // lalr1.cc:847
+#line 2644 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 98:
-#line 1192 "ado.ypp" // lalr1.cc:847
+#line 1194 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode("ado_expression_list");
         node->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 2652 "ado.tab.cpp" // lalr1.cc:847
+#line 2654 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 99:
-#line 1198 "ado.ypp" // lalr1.cc:847
+#line 1200 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[1].value.node)->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 2661 "ado.tab.cpp" // lalr1.cc:847
+#line 2663 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 139:
-#line 1292 "ado.ypp" // lalr1.cc:847
+#line 1294 "ado.ypp" // lalr1.cc:847
     {
         (yylhs.value.node) = (yystack_[0].value.node);
     }
-#line 2669 "ado.tab.cpp" // lalr1.cc:847
+#line 2671 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 140:
-#line 1296 "ado.ypp" // lalr1.cc:847
+#line 1298 "ado.ypp" // lalr1.cc:847
     {
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 2677 "ado.tab.cpp" // lalr1.cc:847
+#line 2679 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 141:
-#line 1300 "ado.ypp" // lalr1.cc:847
+#line 1302 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_type_expression"});
         node->addData("verb", *((yystack_[3].value.str)));
@@ -2685,11 +2687,11 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 2689 "ado.tab.cpp" // lalr1.cc:847
+#line 2691 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 142:
-#line 1308 "ado.ypp" // lalr1.cc:847
+#line 1310 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_type_expression"});
         node->addData("verb", *((yystack_[1].value.str)));
@@ -2700,21 +2702,21 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 2704 "ado.tab.cpp" // lalr1.cc:847
+#line 2706 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 144:
-#line 1323 "ado.ypp" // lalr1.cc:847
+#line 1325 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[1].value.node)->appendChild("left", (yystack_[0].value.node));
 
         (yylhs.value.node) = (yystack_[1].value.node); // ExprNode constructed by the lexer, which is a bit of a hack
     }
-#line 2714 "ado.tab.cpp" // lalr1.cc:847
+#line 2716 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 146:
-#line 1333 "ado.ypp" // lalr1.cc:847
+#line 1335 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_cross_expression"});
         node->addData("verb", *((yystack_[1].value.str)));
@@ -2722,11 +2724,11 @@ namespace yy {
         node->appendChild("right", (yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 2726 "ado.tab.cpp" // lalr1.cc:847
+#line 2728 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 148:
-#line 1345 "ado.ypp" // lalr1.cc:847
+#line 1347 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", std::string("[]"));
@@ -2735,11 +2737,11 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 2739 "ado.tab.cpp" // lalr1.cc:847
+#line 2741 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 149:
-#line 1354 "ado.ypp" // lalr1.cc:847
+#line 1356 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", std::string("()"));
@@ -2747,11 +2749,11 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 2751 "ado.tab.cpp" // lalr1.cc:847
+#line 2753 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 150:
-#line 1362 "ado.ypp" // lalr1.cc:847
+#line 1364 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", std::string("()"));
@@ -2760,11 +2762,11 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 2764 "ado.tab.cpp" // lalr1.cc:847
+#line 2766 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 152:
-#line 1375 "ado.ypp" // lalr1.cc:847
+#line 1377 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_arithmetic_expression", "ado_power_expression"});
         node->addData("verb", *((yystack_[1].value.str)));
@@ -2772,22 +2774,22 @@ namespace yy {
         node->appendChild("right", (yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 2776 "ado.tab.cpp" // lalr1.cc:847
+#line 2778 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 154:
-#line 1387 "ado.ypp" // lalr1.cc:847
+#line 1389 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_arithmetic_expression", "ado_unary_expression"});
         node->addData("verb", *((yystack_[1].value.str)));
         node->appendChild("right", (yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 2787 "ado.tab.cpp" // lalr1.cc:847
+#line 2789 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 156:
-#line 1398 "ado.ypp" // lalr1.cc:847
+#line 1400 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_arithmetic_expression", "ado_multiplication_expression"});
         node->addData("verb", *((yystack_[1].value.str)));
@@ -2795,11 +2797,11 @@ namespace yy {
         node->appendChild("right", (yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 2799 "ado.tab.cpp" // lalr1.cc:847
+#line 2801 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 158:
-#line 1410 "ado.ypp" // lalr1.cc:847
+#line 1412 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_arithmetic_expression", "ado_additive_expression"});
         node->addData("verb", *((yystack_[1].value.str)));
@@ -2807,11 +2809,11 @@ namespace yy {
         node->appendChild("right", (yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 2811 "ado.tab.cpp" // lalr1.cc:847
+#line 2813 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 160:
-#line 1422 "ado.ypp" // lalr1.cc:847
+#line 1424 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_relational_expression"});
         node->addData("verb", *((yystack_[1].value.str)));
@@ -2819,11 +2821,11 @@ namespace yy {
         node->appendChild("right", (yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 2823 "ado.tab.cpp" // lalr1.cc:847
+#line 2825 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 162:
-#line 1434 "ado.ypp" // lalr1.cc:847
+#line 1436 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_equality_expression"});
         node->addData("verb", *((yystack_[1].value.str)));
@@ -2831,11 +2833,11 @@ namespace yy {
         node->appendChild("right", (yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 2835 "ado.tab.cpp" // lalr1.cc:847
+#line 2837 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 164:
-#line 1446 "ado.ypp" // lalr1.cc:847
+#line 1448 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_logical_expression"});
         node->addData("verb", *((yystack_[1].value.str)));
@@ -2843,11 +2845,11 @@ namespace yy {
         node->appendChild("right", (yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 2847 "ado.tab.cpp" // lalr1.cc:847
+#line 2849 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 166:
-#line 1458 "ado.ypp" // lalr1.cc:847
+#line 1460 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_assignment_expression"});
         node->addData("verb", "=");
@@ -2855,96 +2857,96 @@ namespace yy {
         node->appendChild("right", (yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 2859 "ado.tab.cpp" // lalr1.cc:847
+#line 2861 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 167:
-#line 1469 "ado.ypp" // lalr1.cc:847
+#line 1471 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode("ado_expression_list");
         node->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 2869 "ado.tab.cpp" // lalr1.cc:847
+#line 2871 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 168:
-#line 1475 "ado.ypp" // lalr1.cc:847
+#line 1477 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[1].value.node)->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 2878 "ado.tab.cpp" // lalr1.cc:847
+#line 2880 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 169:
-#line 1483 "ado.ypp" // lalr1.cc:847
+#line 1485 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode("ado_argument_expression_list");
         node->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 2888 "ado.tab.cpp" // lalr1.cc:847
+#line 2890 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 170:
-#line 1489 "ado.ypp" // lalr1.cc:847
+#line 1491 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[2].value.node)->appendChild((yystack_[0].value.node));
 
         (yylhs.value.node) = (yystack_[2].value.node);
     }
-#line 2898 "ado.tab.cpp" // lalr1.cc:847
+#line 2900 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 171:
-#line 1504 "ado.ypp" // lalr1.cc:847
+#line 1506 "ado.ypp" // lalr1.cc:847
     {
         (yylhs.value.node) = new ExprNode("ado_option_list");
     }
-#line 2906 "ado.tab.cpp" // lalr1.cc:847
+#line 2908 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 172:
-#line 1508 "ado.ypp" // lalr1.cc:847
+#line 1510 "ado.ypp" // lalr1.cc:847
     {
         (yylhs.value.node) = (yystack_[0].value.node);
     }
-#line 2914 "ado.tab.cpp" // lalr1.cc:847
+#line 2916 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 173:
-#line 1515 "ado.ypp" // lalr1.cc:847
+#line 1517 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode("ado_option_list");
         node->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 2924 "ado.tab.cpp" // lalr1.cc:847
+#line 2926 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 174:
-#line 1521 "ado.ypp" // lalr1.cc:847
+#line 1523 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[1].value.node)->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 2933 "ado.tab.cpp" // lalr1.cc:847
+#line 2935 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 175:
-#line 1529 "ado.ypp" // lalr1.cc:847
+#line 1531 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode("ado_option");
         node->appendChild("name", (yystack_[0].value.node));
 
         (yylhs.value.node) = node;
     }
-#line 2944 "ado.tab.cpp" // lalr1.cc:847
+#line 2946 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 176:
-#line 1536 "ado.ypp" // lalr1.cc:847
+#line 1538 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode("ado_option");
         node->appendChild("name", (yystack_[3].value.node));
@@ -2952,55 +2954,55 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 2956 "ado.tab.cpp" // lalr1.cc:847
+#line 2958 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 191:
-#line 1572 "ado.ypp" // lalr1.cc:847
+#line 1574 "ado.ypp" // lalr1.cc:847
     {
         (yylhs.value.node) = new ExprNode("ado_weight_clause");
     }
-#line 2964 "ado.tab.cpp" // lalr1.cc:847
+#line 2966 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 192:
-#line 1576 "ado.ypp" // lalr1.cc:847
+#line 1578 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[2].value.node)->appendChild("right", (yystack_[1].value.node));
         (yylhs.value.node) = (yystack_[2].value.node);
     }
-#line 2973 "ado.tab.cpp" // lalr1.cc:847
+#line 2975 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 193:
-#line 1590 "ado.ypp" // lalr1.cc:847
+#line 1592 "ado.ypp" // lalr1.cc:847
     {
         (yylhs.value.node) = new ExprNode("ado_if_clause");
     }
-#line 2981 "ado.tab.cpp" // lalr1.cc:847
+#line 2983 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 194:
-#line 1594 "ado.ypp" // lalr1.cc:847
+#line 1596 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode("ado_if_clause");
         node->appendChild("if_expression", (yystack_[0].value.node));
 
         (yylhs.value.node) = node;
     }
-#line 2992 "ado.tab.cpp" // lalr1.cc:847
+#line 2994 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 195:
-#line 1610 "ado.ypp" // lalr1.cc:847
+#line 1612 "ado.ypp" // lalr1.cc:847
     {
         (yylhs.value.node) = new ExprNode("ado_in_clause");
     }
-#line 3000 "ado.tab.cpp" // lalr1.cc:847
+#line 3002 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 196:
-#line 1614 "ado.ypp" // lalr1.cc:847
+#line 1616 "ado.ypp" // lalr1.cc:847
     {
         (yystack_[1].value.str); // suppressing a stupid bison warning
 
@@ -3010,52 +3012,52 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 3014 "ado.tab.cpp" // lalr1.cc:847
+#line 3016 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 197:
-#line 1624 "ado.ypp" // lalr1.cc:847
+#line 1626 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode("ado_in_clause");
         node->appendChild("upper", (yystack_[0].value.node));
 
         (yylhs.value.node) = node;
     }
-#line 3025 "ado.tab.cpp" // lalr1.cc:847
+#line 3027 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 198:
-#line 1640 "ado.ypp" // lalr1.cc:847
+#line 1642 "ado.ypp" // lalr1.cc:847
     {
         (yylhs.value.node) = new ExprNode("ado_using_clause");
     }
-#line 3033 "ado.tab.cpp" // lalr1.cc:847
+#line 3035 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 199:
-#line 1644 "ado.ypp" // lalr1.cc:847
+#line 1646 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode("ado_using_clause");
         node->appendChild("filename", (yystack_[0].value.node));
 
         (yylhs.value.node) = node;
     }
-#line 3044 "ado.tab.cpp" // lalr1.cc:847
+#line 3046 "ado.tab.cpp" // lalr1.cc:847
     break;
 
   case 200:
-#line 1651 "ado.ypp" // lalr1.cc:847
+#line 1653 "ado.ypp" // lalr1.cc:847
     {
         ExprNode *node = new ExprNode("ado_using_clause");
         node->appendChild("filename", (yystack_[0].value.node));
 
         (yylhs.value.node) = node;
     }
-#line 3055 "ado.tab.cpp" // lalr1.cc:847
+#line 3057 "ado.tab.cpp" // lalr1.cc:847
     break;
 
 
-#line 3059 "ado.tab.cpp" // lalr1.cc:847
+#line 3061 "ado.tab.cpp" // lalr1.cc:847
             default:
               break;
             }
@@ -3722,27 +3724,27 @@ namespace yy {
   const unsigned short int
    AdoParser ::yyrline_[] =
   {
-       0,   186,   186,   193,   204,   222,   231,   232,   233,   234,
-     235,   249,   257,   265,   273,   281,   289,   297,   308,   319,
-     332,   343,   357,   358,   362,   373,   380,   388,   392,   398,
-     407,   408,   410,   416,   425,   434,   445,   453,   461,   469,
-     477,   486,   495,   505,   518,   524,   533,   540,   547,   557,
-     569,   581,   594,   600,   608,   631,   658,   686,   698,   740,
-     752,   795,   816,   828,   850,   872,   878,   886,   887,   891,
-     897,   906,   907,   935,   941,   949,   972,   978,   987,   988,
-    1008,  1031,  1054,  1060,  1069,  1081,  1095,  1112,  1118,  1127,
-    1128,  1129,  1147,  1153,  1162,  1163,  1177,  1178,  1191,  1197,
-    1213,  1214,  1215,  1216,  1217,  1218,  1222,  1226,  1227,  1228,
-    1232,  1233,  1234,  1235,  1239,  1243,  1244,  1248,  1249,  1253,
-    1254,  1255,  1256,  1260,  1261,  1265,  1266,  1270,  1271,  1275,
-    1276,  1277,  1281,  1282,  1283,  1284,  1285,  1286,  1287,  1291,
-    1295,  1299,  1307,  1321,  1322,  1331,  1332,  1343,  1344,  1353,
-    1361,  1373,  1374,  1385,  1386,  1396,  1397,  1408,  1409,  1420,
-    1421,  1432,  1433,  1444,  1445,  1456,  1457,  1468,  1474,  1482,
-    1488,  1503,  1507,  1514,  1520,  1528,  1535,  1548,  1549,  1550,
-    1551,  1552,  1553,  1554,  1555,  1556,  1557,  1558,  1559,  1560,
-    1561,  1571,  1575,  1589,  1593,  1609,  1613,  1623,  1639,  1643,
-    1650
+       0,   186,   186,   193,   206,   224,   233,   234,   235,   236,
+     237,   251,   259,   267,   275,   283,   291,   299,   310,   321,
+     334,   345,   359,   360,   364,   375,   382,   390,   394,   400,
+     409,   410,   412,   418,   427,   436,   447,   455,   463,   471,
+     479,   488,   497,   507,   520,   526,   535,   542,   549,   559,
+     571,   583,   596,   602,   610,   633,   660,   688,   700,   742,
+     754,   797,   818,   830,   852,   874,   880,   888,   889,   893,
+     899,   908,   909,   937,   943,   951,   974,   980,   989,   990,
+    1010,  1033,  1056,  1062,  1071,  1083,  1097,  1114,  1120,  1129,
+    1130,  1131,  1149,  1155,  1164,  1165,  1179,  1180,  1193,  1199,
+    1215,  1216,  1217,  1218,  1219,  1220,  1224,  1228,  1229,  1230,
+    1234,  1235,  1236,  1237,  1241,  1245,  1246,  1250,  1251,  1255,
+    1256,  1257,  1258,  1262,  1263,  1267,  1268,  1272,  1273,  1277,
+    1278,  1279,  1283,  1284,  1285,  1286,  1287,  1288,  1289,  1293,
+    1297,  1301,  1309,  1323,  1324,  1333,  1334,  1345,  1346,  1355,
+    1363,  1375,  1376,  1387,  1388,  1398,  1399,  1410,  1411,  1422,
+    1423,  1434,  1435,  1446,  1447,  1458,  1459,  1470,  1476,  1484,
+    1490,  1505,  1509,  1516,  1522,  1530,  1537,  1550,  1551,  1552,
+    1553,  1554,  1555,  1556,  1557,  1558,  1559,  1560,  1561,  1562,
+    1563,  1573,  1577,  1591,  1595,  1611,  1615,  1625,  1641,  1645,
+    1652
   };
 
   // Print the state stack on the debug stream.
@@ -3831,7 +3833,7 @@ namespace yy {
 
 
 } // yy
-#line 3835 "ado.tab.cpp" // lalr1.cc:1155
-#line 1659 "ado.ypp" // lalr1.cc:1156
+#line 3837 "ado.tab.cpp" // lalr1.cc:1155
+#line 1661 "ado.ypp" // lalr1.cc:1156
 
 

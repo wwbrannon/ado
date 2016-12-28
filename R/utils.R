@@ -99,10 +99,16 @@ function(expr, envir=parent.frame(),
             ret[[length(ret)+1]] <- tmp$value
 
             if(print.results && tmp$visible)
+            {
                 print(tmp$value)
+                cat("\n")
+            }
         }
     }
 
+    # Return this so that higher layers can check whether it's a condition,
+    # but those layers don't print it. All printing of results happens
+    # above.
     ret
 }
 
