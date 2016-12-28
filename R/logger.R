@@ -138,7 +138,8 @@ R6::R6Class("Logger",
 
         log_command=function(msg)
         {
-            if(getSettingValue("echo"))
+            if(settingIsSet("echo") &&
+               getSettingValue("echo"))
             {
                 cat(msg, sep="")
             }
@@ -156,7 +157,8 @@ R6::R6Class("Logger",
 
         log_result=function(msg)
         {
-            if(getSettingValue("print_results"))
+            if(settingIsSet("print_results") &&
+               getSettingValue("print_results"))
             {
                 cat(msg, sep="")
             }
