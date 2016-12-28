@@ -138,6 +138,11 @@ function(con=NULL, debug_level=getSettingValue("debug_level"),
             tryCatch(
                 {
                     inpt <- read_input(con)
+                    if(echo == 1)
+                    {
+                        #it's kind of a hack to do this here, but we have to
+                        cat(". ")
+                    }
 
                     #We've hit EOF
                     if(length(inpt) == 0)
