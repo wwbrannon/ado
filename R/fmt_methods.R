@@ -72,6 +72,9 @@ function(x)
     } else if(is.na(x))
     {
         msg <- msg %p% "."
+    } else
+    {
+        msg <- msg %p% x
     }
     
     msg <- msg %p% '\n'
