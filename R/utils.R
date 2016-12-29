@@ -1,3 +1,10 @@
+test_parse <-
+function(text, debug_level=0)
+{
+    return(codegen(do_parse(text, log_command=log_command,
+                            debug_level=debug_level)))
+}
+
 log_result <-
 function(msg)
 {
