@@ -7,7 +7,7 @@ function(macro_name, text, varlist=NULL, numlist=NULL,
     cnt <- vapply(c(varlist, numlist, local_macro_source, global_macro_source),
                   function(x) !is.null(x), logical(1))
     raiseifnot(length(which(cnt)) == 1, msg="Bad body statement for foreach loop")
-    
+
     #Get the debug level from the global settings environment
     debug_level <- getSettingValue("debug_level")
 
@@ -18,7 +18,7 @@ function(macro_name, text, varlist=NULL, numlist=NULL,
     if(!is.null(varlist))
         vals <- varlist
     if(!is.null(numlist))
-        vals <- numlist 
+        vals <- numlist
     if(!is.null(global_macro_source))
     {
         src <- get(global_macro_source, envir=get("ado_macro_env", envir=ado_env))
@@ -30,13 +30,13 @@ function(macro_name, text, varlist=NULL, numlist=NULL,
         src <- get(nm, envir=get("ado_macro_env", envir=ado_env))
         vals <- strsplit(src, " |\t")
     }
-    
+
     #And now let's loop
     for(val in vals)
     {
         #Set the macro value
         ado_cmd_local(list(substitute(macro_name), as.character(val)))
-        
+
         #And re-parse the text block
         ret <-
         tryCatch(
@@ -44,6 +44,7 @@ function(macro_name, text, varlist=NULL, numlist=NULL,
             do_parse_with_callbacks(text=text,
                                     cmd_action=process_cmd,
                                     macro_value_accessor=macro_value_accessor,
+                                    log_command=log_command,
                                     debug_level=debug_level,
                                     echo=0)
         },
@@ -80,7 +81,7 @@ function(macro_name, text, upper, lower,
         raiseifnot(is.numeric(increment), msg="Bad range for forvalues command")
     if(!is.null(increment_t))
         raiseifnot(is.numeric(increment_t), msg="Bad range for forvalues command")
-    
+
     #Get the debug level from the global settings environment
     debug_level <- getSettingValue("debug_level")
 
@@ -98,19 +99,19 @@ function(macro_name, text, upper, lower,
     {
         inc <- increment_t - lower
     }
-    
+
     ret <-
     tryCatch(
     {
         vals <- seq.int(lower, upper, inc)
     },
     error=function(c) c)
-    
+
     if(inherits(ret, "error"))
     {
         raiseCondition("Bad values for foreach limits / increment")
     }
-    
+
     #And now let's loop
     for(val in vals)
     {
@@ -124,11 +125,12 @@ function(macro_name, text, upper, lower,
             do_parse_with_callbacks(text=text,
                                     cmd_action=process_cmd,
                                     macro_value_accessor=macro_value_accessor,
+                                    log_command=log_command,
                                     debug_level=debug_level,
                                     echo=0)
         },
         error=function(c) c)
-        
+
         if(inherits(ret, "error"))
         {
             if(inherits(ret, "BreakException"))

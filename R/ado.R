@@ -152,6 +152,7 @@ function(con=NULL, debug_level=getSettingValue("debug_level"),
                     #each command, invokes the process_cmd callback
                     do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
                                             macro_value_accessor=macro_value_accessor,
+                                            log_command=log_command,
                                             debug_level=debug_level, echo=echo)
                 },
                 error = function(c) c)
@@ -242,6 +243,39 @@ function(ast, debug_level=0)
     }
 
     return( list(0, "Success") );
+}
+
+#Recursive evaluation of the sort of expression object that the parser builds.
+#This function both evaluates the expressions and sends the results through
+#the logger.
+deep_eval <-
+function(expr, envir=parent.frame(),
+         enclos=if(is.list(envir) || is.pairlist(envir))
+             parent.frame()
+         else
+             baseenv())
+{
+    ret <- list()
+    for(chld in expr)
+    {
+        if(is.expression(chld))
+            ret[[length(ret)+1]] <- deep_eval(chld, envir=envir, enclos=enclos)
+        else
+        {
+            tmp <- suppressWarnings(withVisible(eval(chld, envir=envir, enclos=enclos)))
+            ret[[length(ret)+1]] <- tmp$value
+
+            if(tmp$visible)
+            {
+                log_result(fmt(tmp$value))
+            }
+        }
+    }
+
+    # Return this so that higher layers can check whether it's a condition,
+    # but those layers don't print it. All printing of results happens
+    # above.
+    ret
 }
 
 #Callbacks: a macro value accessor that allows the lexer to retrieve macro values.
