@@ -17,16 +17,16 @@ R6::R6Class("Logger",
 
             pth <- normalizePath(filename)
 
-            if(type == "log")
+            if(is.null(type))
             {
-                return(pth %in% names(private$.logs))
-            } else if(type == "cmdlog")
+                return(pth %in% names(private$.logs) ||
+                       pth %in% names(private$.cmdlogs))
+            } else if(type == "log")
             {
                 return(pth %in% names(private$.logs))
             } else
             {
-                return(pth %in% names(private$.logs) ||
-                           pth %in% names(private$.cmdlogs))
+                return(pth %in% names(private$.cmdlogs))
             }
         },
 
@@ -114,19 +114,7 @@ R6::R6Class("Logger",
             raiseifnot(is.null(type) || type %in% c("log", "cmdlog"),
                        msg="Invalid log type")
 
-            if(type == "log")
-            {
-                for(con in names(private$.logs))
-                {
-                    self$deregister_sink(con)
-                }
-            } else if(type == "cmdlog")
-            {
-                for(con in names(private$.cmdlogs))
-                {
-                    self$deregister_sink(con)
-                }
-            } else
+            if(is.null(type))
             {
                 for(con in names(private$.logs))
                 {
@@ -138,9 +126,22 @@ R6::R6Class("Logger",
                     self$deregister_sink(con)
                 }
             }
+            } else if(type == "log")
+            {
+                for(con in names(private$.logs))
+                {
+                    self$deregister_sink(con)
+                }
+            } else
+            {
+                for(con in names(private$.cmdlogs))
+                {
+                    self$deregister_sink(con)
+                }
+            }
 
             return(invisible(NULL))
-        }
+        },
 
         log_command=function(msg)
         {
