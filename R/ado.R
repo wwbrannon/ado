@@ -267,7 +267,7 @@ function(expr, envir=parent.frame(),
 
             if(tmp$visible)
             {
-                log_result(capture.output(print(tmp$value)))
+                log_result(fmt(tmp$value))
             }
         }
     }
