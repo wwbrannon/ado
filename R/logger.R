@@ -51,7 +51,7 @@ R6::R6Class("Logger",
             raiseif(type %not_in% c("log", "cmdlog"),
                     msg="Invalid logging type")
 
-            raiseif(self$has_log(filename),
+            raiseif(self$has_sink(filename),
                     msg="Log already exists")
 
             pth <- normalizePath(filename)
