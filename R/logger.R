@@ -150,13 +150,16 @@ R6::R6Class("Logger",
                 cat(msg, sep="")
             }
 
-            if(self$enabled)
+            if(self$log_enabled)
             {
                 for(con in private$.logs)
                 {
                     cat(msg, file=con, sep="", append=TRUE)
                 }
-
+            }
+            
+            if(self$cmdlog_enabled)
+            {
                 for(con in private$.cmdlogs)
                 {
                     cat(msg, file=con, sep="", append=TRUE)
@@ -175,7 +178,7 @@ R6::R6Class("Logger",
                 cat("\n")
             }
 
-            if(self$enabled)
+            if(self$log_enabled)
             {
                 for(con in private$.logs)
                 {
