@@ -4,8 +4,6 @@
 ## separately, and b) it can only have one sink at the top of the stack at any
 ## given time.
 
-#FIXME should normalize paths
-
 Logger <-
 R6::R6Class("Logger",
     public=list(
@@ -17,16 +15,18 @@ R6::R6Class("Logger",
             raiseifnot(is.null(type) || type %in% c("log", "cmdlog"),
                        msg="Invalid log type")
 
+            pth <- normalizePath(filename)
+
             if(type == "log")
             {
-                return(filename %in% names(private$.logs))
+                return(pth %in% names(private$.logs))
             } else if(type == "cmdlog")
             {
-                return(filename %in% names(private$.logs))
+                return(pth %in% names(private$.logs))
             } else
             {
-                return(filename %in% names(private$.logs) ||
-                           filename %in% names(private$.cmdlogs))
+                return(pth %in% names(private$.logs) ||
+                           pth %in% names(private$.cmdlogs))
             }
         },
 
@@ -35,7 +35,9 @@ R6::R6Class("Logger",
             raiseifnot(self$has_sink(filename),
                        msg="No such logging sink")
 
-            if(filename %in% names(private$.logs))
+            pth <- normalizePath(filename)
+
+            if(pth %in% names(private$.logs))
             {
                 return("log")
             } else
@@ -52,31 +54,33 @@ R6::R6Class("Logger",
             raiseif(self$has_log(filename),
                     msg="Log already exists")
 
+            pth <- normalizePath(filename)
+
             ret <-
             tryCatch(
                 {
-                    con <- file(filename, open="wb")
+                    con <- file(pth, open="wb")
                 },
 
                 error=function(e) e
             )
 
             raiseif(inherits(ret, "error"),
-                    msg="Could not open logging sink " %p% filename)
+                    msg="Could not open logging sink " %p% pth)
 
             if(type == "log")
             {
-                private$.logs[[filename]] = con
+                private$.logs[[pth]] = con
             } else
             {
-                private$.cmdlogs[[filename]] = con
+                private$.cmdlogs[[pth]] = con
             }
 
             if(header)
             {
                 msg <- paste0(rep('-', 80), collapse="") %p% '\n'
                 msg <- msg %p% ifelse(type == 'log', 'log: ', 'cmdlog: ')
-                msg <- msg %p% filename %p% '\n'
+                msg <- msg %p% pth %p% '\n'
                 msg <- msg %p% 'log type: text\n' #SMCL isn't supported
                 msg <- msg %p% 'opened on: ' %p% date() %p% '\n'
                 msg <- msg %p% '\n'
@@ -89,19 +93,17 @@ R6::R6Class("Logger",
 
         deregister_sink=function(filename)
         {
-            raiseifnot(self$has_sink(filename),
-                       msg="No such logging sink")
-
             type <- self$sink_type(filename)
+            pth <- normalizePath(filename)
 
             if(type == "log")
             {
-                close(private$.logs[[filename]])
-                private$.logs[[filename]] <- NULL
+                close(private$.logs[[pth]])
+                private$.logs[[pth]] <- NULL
             } else
             {
-                close(private$.cmdlogs[[filename]])
-                private$.cmdlogs[[filename]] <- NULL
+                close(private$.cmdlogs[[pth]])
+                private$.cmdlogs[[pth]] <- NULL
             }
 
             return(invisible(NULL))
