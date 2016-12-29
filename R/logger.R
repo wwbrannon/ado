@@ -4,6 +4,8 @@
 ## separately, and b) it can only have one sink at the top of the stack at any
 ## given time.
 
+#FIXME should normalize paths
+
 Logger <-
 R6::R6Class("Logger",
     public=list(
@@ -134,6 +136,8 @@ R6::R6Class("Logger",
                     self$deregister_sink(con)
                 }
             }
+
+            return(invisible(NULL))
         }
 
         log_command=function(msg)
@@ -144,15 +148,20 @@ R6::R6Class("Logger",
                 cat(msg, sep="")
             }
 
-            for(con in private$.logs)
+            if(self$enabled)
             {
-                cat(msg, file=con, sep="", append=TRUE)
+                for(con in private$.logs)
+                {
+                    cat(msg, file=con, sep="", append=TRUE)
+                }
+
+                for(con in private$.cmdlogs)
+                {
+                    cat(msg, file=con, sep="", append=TRUE)
+                }
             }
 
-            for(con in private$.cmdlogs)
-            {
-                cat(msg, file=con, sep="", append=TRUE)
-            }
+            return(invisible(NULL))
         },
 
         log_result=function(msg)
@@ -164,13 +173,17 @@ R6::R6Class("Logger",
                 cat("\n")
             }
 
-            for(con in private$.logs)
+            if(self$enabled)
             {
-                cat(msg, file=con, sep="", append=TRUE)
-                cat("\n")
+                for(con in private$.logs)
+                {
+                    cat(msg, file=con, sep="", append=TRUE)
+                    cat("\n")
+                }
             }
-        }
 
+            return(invisible(NULL))
+        }
     ),
 
     private = list(
@@ -179,11 +192,35 @@ R6::R6Class("Logger",
         #connection given its name, and b) loop over all currently
         #registered connections.
         .logs = list(),
-        .cmdlogs = list()
+        .cmdlogs = list(),
+        .use_log = TRUE,
+        .use_cmdlog = TRUE
     ),
 
     active = list(
         log_sinks = function() names(private$.logs),
-        cmdlog_sinks = function() names(private$.cmdlog_sinks)
+        cmdlog_sinks = function() names(private$.cmdlog_sinks),
+
+        log_enabled = function(value)
+        {
+            if(missing(value))
+            {
+                return(private$.use_log)
+            } else
+            {
+                private$.use_log <- as.logical(value)
+            }
+        },
+
+        cmdlog_enabled = function(value)
+        {
+            if(missing(value))
+            {
+                return(private$.use_cmdlog)
+            } else
+            {
+                private$.use_cmdlog <- as.logical(value)
+            }
+        }
     )
 )
