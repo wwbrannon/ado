@@ -13,7 +13,7 @@ function(x)
 fmt.default <-
 function(x)
 {
-    return(paste0(capture.output(print(x)), collapse='\n'))
+    return(paste0(utils::capture.output(print(x)), collapse='\n'))
 }
 
 #' @export
