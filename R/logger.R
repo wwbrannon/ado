@@ -125,7 +125,6 @@ R6::R6Class("Logger",
                 {
                     self$deregister_sink(con)
                 }
-            }
             } else if(type == "log")
             {
                 for(con in names(private$.logs))
