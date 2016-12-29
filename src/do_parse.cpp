@@ -12,13 +12,14 @@
 SEXP
 do_parse_with_callbacks(std::string text, Rcpp::Function cmd_action,
                         Rcpp::Function macro_value_accessor,
+                        Rcpp::Function log_command,
                         int debug_level=0, int echo=1)
 {
   try
   {
-    
+
     AdoDriver *driver = new AdoDriver(1, cmd_action, macro_value_accessor,
-                                            text, debug_level, echo);
+                                      log_command, text, debug_level, echo);
 
     driver->parse();
     delete driver;
@@ -29,18 +30,18 @@ do_parse_with_callbacks(std::string text, Rcpp::Function cmd_action,
   {
     ::Rf_error( "C++ exception (unknown reason)" );
   }
-  
+
   return R_NilValue;
 }
 
 // [[Rcpp::export]]
 Rcpp::List
-do_parse(std::string text, int debug_level=0)
+do_parse(std::string text, Rcpp::Function log_command, int debug_level=0)
 {
   try
   {
     Rcpp::List res;
-    AdoDriver *driver = new AdoDriver(text, debug_level);
+    AdoDriver *driver = new AdoDriver(text, log_command, debug_level);
 
     // parse the input
     if( driver->parse() != 0 || driver->error_seen != 0)
@@ -67,11 +68,11 @@ int
 parse_accept(std::string text)
 {
   int ret;
-  
+
   try
   {
     AdoDriver *driver = new AdoDriver(text, DEBUG_NO_PARSE_ERROR);
-    
+
     if(driver->parse() == 0 && driver->error_seen == 0)
         ret = 1;
     else
@@ -85,3 +86,4 @@ parse_accept(std::string text)
 
   return ret;
 }
+

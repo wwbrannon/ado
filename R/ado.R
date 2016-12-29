@@ -29,6 +29,8 @@ DEBUG_NO_PARSE_ERROR <- 32
 #' @param debug_level How verbose debug messages should be.
 #' @param echo Whether to echo command input. Values 0, 1, and NULL are accepted;
 #'             if NULL, echo only when running non-interactively.
+#' @param print.results Whether to print command results. Values 0 or 1. The value
+#'                      passed here becomes the ado setting "print_results".
 #'
 #' @return Invisible NULL.
 #'
@@ -37,7 +39,7 @@ DEBUG_NO_PARSE_ERROR <- 32
 #' @import Rcpp
 ado <-
 function(dta = NULL, filename=NULL, string=NULL, assign.back=FALSE,
-         debug_level=0, echo=NULL)
+         debug_level=0, print.results=1, echo=NULL)
 {
     #We have a package-wide environment because of scoping issues,
     #but the data in it shouldn't persist across calls to this function
@@ -115,8 +117,9 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=FALSE,
             echo <- 1
     }
 
-    #Make the echo level into a setting as well
+    #Make the echo level and the results-printing level into settings as well
     assignSetting("echo", echo)
+    assignSetting("print_results", print.results)
 
     #=========================================================================
     #The actual work of parsing and executing commands is here: time for an REPL,
@@ -149,6 +152,7 @@ function(con=NULL, debug_level=getSettingValue("debug_level"),
                     #each command, invokes the process_cmd callback
                     do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
                                             macro_value_accessor=macro_value_accessor,
+                                            log_command=log_command,
                                             debug_level=debug_level, echo=echo)
                 },
                 error = function(c) c)
@@ -239,6 +243,39 @@ function(ast, debug_level=0)
     }
 
     return( list(0, "Success") );
+}
+
+#Recursive evaluation of the sort of expression object that the parser builds.
+#This function both evaluates the expressions and sends the results through
+#the logger.
+deep_eval <-
+function(expr, envir=parent.frame(),
+         enclos=if(is.list(envir) || is.pairlist(envir))
+             parent.frame()
+         else
+             baseenv())
+{
+    ret <- list()
+    for(chld in expr)
+    {
+        if(is.expression(chld))
+            ret[[length(ret)+1]] <- deep_eval(chld, envir=envir, enclos=enclos)
+        else
+        {
+            tmp <- suppressWarnings(withVisible(eval(chld, envir=envir, enclos=enclos)))
+            ret[[length(ret)+1]] <- tmp$value
+
+            if(tmp$visible)
+            {
+                log_result(fmt(tmp$value))
+            }
+        }
+    }
+
+    # Return this so that higher layers can check whether it's a condition,
+    # but those layers don't print it. All printing of results happens
+    # above.
+    ret
 }
 
 #Callbacks: a macro value accessor that allows the lexer to retrieve macro values.

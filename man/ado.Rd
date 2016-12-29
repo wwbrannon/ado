@@ -7,7 +7,7 @@
 \title{ado: An implementation of Stata's ado language in R.}
 \usage{
 ado(dta = NULL, filename = NULL, string = NULL, assign.back = FALSE,
-  debug_level = 0, echo = NULL)
+  debug_level = 0, print.results = 1, echo = NULL)
 }
 \arguments{
 \item{dta}{If NULL, start with an empty dataset; if a data.frame, use a copy
@@ -27,6 +27,9 @@ is used. The effect is to modify the passed data.frame, though
 the old value will not necessarily be garbage-collected.}
 
 \item{debug_level}{How verbose debug messages should be.}
+
+\item{print.results}{Whether to print command results. Values 0 or 1. The value
+passed here becomes the ado setting "print_results".}
 
 \item{echo}{Whether to echo command input. Values 0, 1, and NULL are accepted;
 if NULL, echo only when running non-interactively.}
