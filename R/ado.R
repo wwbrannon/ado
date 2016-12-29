@@ -152,6 +152,7 @@ function(con=NULL, debug_level=getSettingValue("debug_level"),
                     #each command, invokes the process_cmd callback
                     do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
                                             macro_value_accessor=macro_value_accessor,
+                                            log_command=log_command,
                                             debug_level=debug_level, echo=echo)
                 },
                 error = function(c) c)
@@ -266,8 +267,7 @@ function(expr, envir=parent.frame(),
 
             if(tmp$visible)
             {
-                lg <- get("ado_logger", envir=ado_env)
-                lg$log_result(capture.output(print(tmp$value)))
+                log_result(capture.output(print(tmp$value)))
 
             }
         }

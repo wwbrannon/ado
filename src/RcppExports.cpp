@@ -6,29 +6,31 @@
 using namespace Rcpp;
 
 // do_parse_with_callbacks
-SEXP do_parse_with_callbacks(std::string text, Rcpp::Function cmd_action, Rcpp::Function macro_value_accessor, int debug_level, int echo);
-RcppExport SEXP ado_do_parse_with_callbacks(SEXP textSEXP, SEXP cmd_actionSEXP, SEXP macro_value_accessorSEXP, SEXP debug_levelSEXP, SEXP echoSEXP) {
+SEXP do_parse_with_callbacks(std::string text, Rcpp::Function cmd_action, Rcpp::Function macro_value_accessor, Rcpp::Function log_command, int debug_level, int echo);
+RcppExport SEXP ado_do_parse_with_callbacks(SEXP textSEXP, SEXP cmd_actionSEXP, SEXP macro_value_accessorSEXP, SEXP log_commandSEXP, SEXP debug_levelSEXP, SEXP echoSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< std::string >::type text(textSEXP);
     Rcpp::traits::input_parameter< Rcpp::Function >::type cmd_action(cmd_actionSEXP);
     Rcpp::traits::input_parameter< Rcpp::Function >::type macro_value_accessor(macro_value_accessorSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Function >::type log_command(log_commandSEXP);
     Rcpp::traits::input_parameter< int >::type debug_level(debug_levelSEXP);
     Rcpp::traits::input_parameter< int >::type echo(echoSEXP);
-    __result = Rcpp::wrap(do_parse_with_callbacks(text, cmd_action, macro_value_accessor, debug_level, echo));
+    __result = Rcpp::wrap(do_parse_with_callbacks(text, cmd_action, macro_value_accessor, log_command, debug_level, echo));
     return __result;
 END_RCPP
 }
 // do_parse
-Rcpp::List do_parse(std::string text, int debug_level);
-RcppExport SEXP ado_do_parse(SEXP textSEXP, SEXP debug_levelSEXP) {
+Rcpp::List do_parse(std::string text, Rcpp::Function log_command, int debug_level);
+RcppExport SEXP ado_do_parse(SEXP textSEXP, SEXP log_commandSEXP, SEXP debug_levelSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< std::string >::type text(textSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Function >::type log_command(log_commandSEXP);
     Rcpp::traits::input_parameter< int >::type debug_level(debug_levelSEXP);
-    __result = Rcpp::wrap(do_parse(text, debug_level));
+    __result = Rcpp::wrap(do_parse(text, log_command, debug_level));
     return __result;
 END_RCPP
 }

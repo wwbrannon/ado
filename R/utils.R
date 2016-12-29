@@ -1,3 +1,17 @@
+log_result <-
+function(msg)
+{
+    lg <- get("ado_logger", envir=ado_env)
+    lg$log_result(msg)
+}
+
+log_command <-
+function(msg)
+{
+    lg <- get("ado_logger", envir=ado_env)
+    lg$log_command(msg)
+}
+
 temporary_name <-
 function(lst=NULL, len=10)
 {
