@@ -320,15 +320,24 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
     raiseif(!is.null(using_clause) && !is.null(expression_list),
             msg="Cannot specify using clause and a subcommand")
 
+    lg <- get("ado_logger", envir=ado_env)
+
     if(is.null(using_clause) && is.null(expression_list))
     {
         raiseifnot(is.null(option_list), msg="Cannot specify options here")
 
-        #report on status of logging sinks
+        msg <- "Open logging sinks: \n\n"
+        for(con in lg$log_sinks)
+        {
+            msg <- msg %p% con
+        }
+
+        return(msg)
     } else if(!is.null(using_clause))
     {
         raiseif(hasOption(option_list, "smcl"), msg="SMCL is not supported")
-        #open a new log
+
+        lg$register_sink(using_clause, type="log")
     } else #we have a subcommand
     {
         raiseifnot(is.null(option_list), msg="Cannot specify options here")
@@ -338,16 +347,31 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
 
         if(cmd == "query")
         {
-            #report on status of logging sinks
+            msg <- "Open logging sinks: \n\n"
+            for(con in lg$log_sinks)
+            {
+                msg <- msg %p% con
+            }
+
+            return(msg)
         } else if(cmd == "close")
         {
-            #close a given log or all of them
+            raiseif(length(expression_list) %not_in% c(1,2),
+                    msg="Incorrect number of arguments to log close")
+
+            if(length(expression_list) == 1)
+            {
+                lg$deregister_all_sinks(type="log")
+            } else
+            {
+                lg$deregister_sink(as.character(expression_list[[2]]))
+            }
         } else if(cmd == "on")
         {
-            #resume logging, or no-op
+            lg$log_enabled <- TRUE
         } else if(cmd == "off")
         {
-            #pause logging, or no-op
+            lg$log_enabled <- FALSE
         }
     }
 
@@ -367,17 +391,25 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
     raiseif(!is.null(using_clause) && !is.null(expression_list),
             msg="Cannot specify using clause and a subcommand")
 
+    lg <- get("ado_logger", envir=ado_env)
+
     if(is.null(using_clause) && is.null(expression_list))
     {
         raiseifnot(is.null(option_list), msg="Cannot specify options here")
 
-        #report on status of command logging sinks
+        msg <- "Open command logging sinks: \n\n"
+        for(con in lg$cmdlog_sinks)
+        {
+            msg <- msg %p% con
+        }
+
+        return(msg)
     } else if(!is.null(using_clause))
     {
         raiseif(hasOption(option_list, "permanently"),
                 msg="Permanent option setting is not supported")
 
-        #open a new command log
+        lg$register_sink(using_clause, type="cmdlog")
     } else #we have a subcommand
     {
         raiseifnot(is.null(option_list), msg="Cannot specify options here")
@@ -387,13 +419,22 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
 
         if(cmd == "close")
         {
-            #close a given log or all of them
+            raiseif(length(expression_list) %not_in% c(1,2),
+                    msg="Incorrect number of arguments to cmdlog close")
+
+            if(length(expression_list) == 1)
+            {
+                lg$deregister_all_sinks(type="cmdlog")
+            } else
+            {
+                lg$deregister_sink(as.character(expression_list[[2]]))
+            }
         } else if(cmd == "on")
         {
-            #resume logging, or no-op
+            lg$cmdlog_enabled <- FALSE
         } else if(cmd == "off")
         {
-            #pause logging, or no-op
+            lg$cmdlog_enabled <- FALSE
         }
     }
 
