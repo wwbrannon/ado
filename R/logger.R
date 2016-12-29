@@ -161,11 +161,13 @@ R6::R6Class("Logger",
                getSettingValue("print_results"))
             {
                 cat(msg, sep="")
+                cat("\n")
             }
 
             for(con in private$.logs)
             {
                 cat(msg, file=con, sep="", append=TRUE)
+                cat("\n")
             }
         }
 

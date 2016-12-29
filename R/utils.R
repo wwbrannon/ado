@@ -78,43 +78,6 @@ function(vec)
 `%|%` <- function(x, y) bitwOr(x, y)
 `%&%` <- function(x, y) bitwAnd(x, y)
 
-#Recursive evaluation of the sort of expression object that the parser builds.
-#This function both evaluates the exps and prints the results.
-deep_eval <-
-function(expr, envir=parent.frame(),
-         enclos=if(is.list(envir) || is.pairlist(envir))
-                    parent.frame()
-                else
-                    baseenv(),
-         print.results=if(settingIsSet("print_results"))
-                            getSettingValue("print_results")
-                       else
-                            1)
-{
-    ret <- list()
-    for(chld in expr)
-    {
-        if(is.expression(chld))
-            ret[[length(ret)+1]] <- deep_eval(chld, envir=envir, enclos=enclos)
-        else
-        {
-            tmp <- suppressWarnings(withVisible(eval(chld, envir=envir, enclos=enclos)))
-            ret[[length(ret)+1]] <- tmp$value
-
-            if(print.results == 1 && tmp$visible)
-            {
-                print(tmp$value)
-                cat("\n")
-            }
-        }
-    }
-
-    # Return this so that higher layers can check whether it's a condition,
-    # but those layers don't print it. All printing of results happens
-    # above.
-    ret
-}
-
 #Reverse a vector of strings
 rev_string <-
 function(str)
