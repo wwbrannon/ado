@@ -1,3 +1,6 @@
+## Adapted from Dirk Eddelbuettel's configure.ac for RQuantLib
+## See https://github.com/eddelbuettel/rquantlib
+
 ## Preliminaries
 AC_PREREQ(2.50)
 

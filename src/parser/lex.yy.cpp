@@ -3948,7 +3948,7 @@ YY_RULE_SETUP
                                         R_ECHO(yytext);
                                         
                                         std::string *s = new std::string(yytext);
-                                        std::vector<std::string> x = split(s->substr(2, s->length() -2), ' ');
+                                        std::vector<std::string> x = split(s->substr(2, s->length() -2), '/');
                                         yylval->node = new ExprNode({"ado_expression", "ado_factor_expression", "ado_indicator_expression"});
                                         yylval->node->addData("verb", "i.");
 
@@ -4016,9 +4016,9 @@ YY_RULE_SETUP
                                         yylval->node->addData("verb", "o.");
 
                                         if(s->at(0) == 'i')
-                                            x = split(s->substr(3, s->length() -2), ' ');
+                                            x = split(s->substr(3, s->length() -2), '/');
                                         else
-                                            x = split(s->substr(2, s->length() -2), ' ');
+                                            x = split(s->substr(2, s->length() -2), '/');
 
                                         yylval->node->addData("levelstart", trim(x[0]));
                                         yylval->node->addData("levelend", trim(x[1]));

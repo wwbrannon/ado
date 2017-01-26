@@ -6,7 +6,6 @@
 ^src/parser/ado.a$
 ^.travis.yml$
 ^README.Rmd$
-^travis-install.sh$
 config.status
 autom4te.cache
 config.log

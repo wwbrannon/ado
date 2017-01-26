@@ -24,6 +24,7 @@ AdoDriver::AdoDriver(std::string _text, int _debug_level)
            log_command(Rcpp::Function("identity"))
 {
     text = _text;
+    ast = (ExprNode *) NULL;
 
     callbacks = 0;
 
@@ -57,7 +58,9 @@ AdoDriver::AdoDriver(int _callbacks, Rcpp::Function _cmd_action,
            log_command(Rcpp::Function("identity"))
 {
     text = _text;
-
+    
+    ast = (ExprNode *) NULL;
+    
     callbacks = _callbacks;
     cmd_action = _cmd_action;
     macro_value_accessor = _macro_value_accessor;
@@ -71,7 +74,8 @@ AdoDriver::AdoDriver(int _callbacks, Rcpp::Function _cmd_action,
 // dtor
 AdoDriver::~AdoDriver()
 {
-    delete ast; // all the other members still get their destructors called
+    if(ast != NULL)
+        delete ast; // all the other members still get their destructors called
 }
 
 int
