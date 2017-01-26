@@ -123,17 +123,8 @@ function(left, right)
 }
 
 #type constructor operators
-rstata_type_double <-
-function(vars)
-{
-    #FIXME
-}
-
-rstata_type_str <-
-function(vars)
-{
-    #FIXME
-}
+rstata_type_double <- force #dummy value
+rstata_type_str <- force #dummy value
 
 rstata_type_byte <- rstata_type_double
 rstata_type_int <- rstata_type_double

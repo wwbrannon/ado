@@ -714,6 +714,7 @@ function(expression_list, if_clause=NULL, in_clause=NULL, option_list=NULL,
         return(match.call())
 }
 
+#FIXME - need to revise grammar to allow e.g. "reshape long"
 rstata_cmd_reshape <-
 function(expression_list=NULL, option_list=NULL, return.match.call=NULL)
 {
@@ -736,7 +737,29 @@ function(expression, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
+    
+    valid_opts <- c("force")
+    option_list <- validateOpts(option_list, valid_opts)
+    
 }
+
+rstata_cmd_egen <-
+function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
+         return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+}
+
+rstata_cmd_generate <-
+function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
+         return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+}
+
+# =============================================================================
 
 rstata_cmd_tostring <-
 function(varlist, option_list=NULL, return.match.call=NULL)
@@ -760,14 +783,6 @@ function(expression, if_clause=NULL, in_clause=NULL, option_list,
         return(match.call())
 }
 
-rstata_cmd_egen <-
-function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
-         return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-}
-
 rstata_cmd_encode <-
 function(expression, if_clause=NULL, in_clause=NULL, option_list,
          return.match.call=NULL)
@@ -785,14 +800,6 @@ function(expression_list=NULL, return.match.call=NULL)
 
 rstata_cmd_replace <-
 function(expression, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
-{
-    if(!is.null(return.match.call) && return.match.call)
-        return(match.call())
-}
-
-rstata_cmd_generate <-
-function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
-         return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())

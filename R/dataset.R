@@ -343,11 +343,6 @@ R6::R6Class("Dataset",
             return(invisible(TRUE))
         },
         
-        rows_where = function(expr)
-        {
-            #FIXME
-        },
-        
         sort = function(cols, rows=NULL, asc=replicate(length(cols), TRUE),
                         row_number=NULL, na.last=TRUE, stable=FALSE)
         {
@@ -358,6 +353,11 @@ R6::R6Class("Dataset",
         },
         
         set_obs = function(nobs)
+        {
+            #FIXME
+        },
+        
+        rows_where = function(expr)
         {
             #FIXME
         }
