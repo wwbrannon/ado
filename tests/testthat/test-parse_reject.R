@@ -14,14 +14,14 @@ test_that("Statements without terminators fail to parse", {
     expect_parse_reject('collapse (mean) support voteprop (first) state, by(track)')
 })
 
-#test_that("Invalid numeric literals fail to parse", {
-#    expect_parse_reject("disp 0.02.34\n")
-#    expect_parse_reject("disp 033-E31\n")
-#})
+test_that("Invalid numeric literals fail to parse", {
+    expect_parse_reject("disp 0.02.34\n")
+    expect_parse_reject("disp 033-E31\n")
+})
 
 test_that("Invalid datetime literals fail to parse", {
-#    expect_parse_reject("disp jan072006\n")
-#    expect_parse_reject("disp jan199508\n")
+    expect_parse_reject("disp jan072006\n")
+    expect_parse_reject("disp jan199508\n")
     expect_parse_reject("disp 12:45:12.09 07jan2006 12:45:12.09\n")
     expect_parse_reject("disp 03:12:34 08jan1995\n")
 })
@@ -49,7 +49,7 @@ test_that("Invalid postfix expressions fail to parse", {
 })
 
 test_that("Invalid format specifiers fail to parse", {
-#    expect_parse_reject("disp 1%0.0f\n")
+    expect_parse_reject("disp 1%0.0f\n")
     expect_parse_reject("disp tcDDm%onCCYY_HH:MM:SS.ss\n")
     expect_parse_reject("disp %9.2f%c\n")
     expect_parse_reject("disp %21%%x\n")
@@ -71,46 +71,46 @@ test_that("Invalid arithmetic expressions fail to parse", {
 test_that("Invalid type constructors fail to parse", {
     expect_parse_reject("gen foo byte = 1\n")
     expect_parse_reject("gen foo byte\n")
-#    expect_parse_reject("gen byte(byte var2 var3) byte baz\n")
-#    expect_parse_reject("gen var1(byte var2 var3) byte baz\n")
+    expect_parse_reject("gen byte(byte var2 var3) byte baz\n")
+    expect_parse_reject("gen var1(byte var2 var3) byte baz\n")
     expect_parse_reject("gen foo = int 1\n")
     expect_parse_reject("gen foo int\n")
     expect_parse_reject("gen (int var1 var2 var3) byte baz\n")
     expect_parse_reject("gen (var1 var2 var3) long int baz\n")
-#    expect_parse_reject("gen doble foo = 1\n")
+    expect_parse_reject("gen doble foo = 1\n")
     expect_parse_reject("gen (var1 var2 var3 double) long baz\n")
     expect_parse_reject("gen foo = 1 strL\n")
     expect_parse_reject("gen foo strL\n")
-#    expect_parse_reject("gen strL(var1 strL var2 var3) int baz\n")
+    expect_parse_reject("gen strL(var1 strL var2 var3) int baz\n")
     expect_parse_reject("gen var1 strL var2 var3) int baz\n")
-#    expect_parse_reject("gen str(var1 strL var2 var3) int baz\n")
+    expect_parse_reject("gen str(var1 strL var2 var3) int baz\n")
     expect_parse_reject("gen var1 str var2 var3) int baz\n")
-#    expect_parse_reject("gen str987(var1 strL var2 var3) int baz\n")
+    expect_parse_reject("gen str987(var1 strL var2 var3) int baz\n")
     expect_parse_reject("gen var1 str987 var2 var3) int baz\n")
 })
 
 test_that("Invalid factor expressions and factorial operators fail to parse", {
-#    expect_parse_reject("logit y c..var1\n")
-#    expect_parse_reject("logit y i..var1\n")
+    expect_parse_reject("logit y c..var1\n")
+    expect_parse_reject("logit y i..var1\n")
     expect_parse_reject("logit y bn.bn.myvar\n")
-#    expect_parse_reject("logit y ib.(freq).zazz\n")
-#    expect_parse_reject("logit y b./(last).quux\n")
-#    expect_parse_reject("logit y ib(ib(first)).baz\n")
-#    expect_parse_reject("logit y b3...foo\n")
-#    expect_parse_reject("logit y ibib3.var\n")
+    expect_parse_reject("logit y ib.(freq).zazz\n")
+    expect_parse_reject("logit y b./(last).quux\n")
+    expect_parse_reject("logit y ib(ib(first)).baz\n")
+    expect_parse_reject("logit y b3...foo\n")
+    expect_parse_reject("logit y ibib3.var\n")
     expect_parse_reject("logit y b(###4).foo\n")
     expect_parse_reject("logit y ib(#5#ib.).var\n")
-#    expect_parse_reject("logit y #i3#.treat\n")
-#    expect_parse_reject("logit y i(3 ib.8 5 7).var\n")
-#    expect_parse_reject("logit y i(i.b.0 1).var\n")
-#    expect_parse_reject("logit y i(4.b/2).var\n")
+    expect_parse_reject("logit y #i3#.treat\n")
+    expect_parse_reject("logit y i(3 ib.8 5 7).var\n")
+    expect_parse_reject("logit y i(i.b.0 1).var\n")
+    expect_parse_reject("logit y i(4.b/2).var\n")
     expect_parse_reject("logit y io(#3).var\n")
-#    expect_parse_reject("logit y o(3 ## 8).var\n")
+    expect_parse_reject("logit y o(3 ## 8).var\n")
 })
 
 test_that("Invalid relational and equality expressions fail to parse", {
-#    expect_parse_reject("gen foo == var == var1\n")
-#    expect_parse_reject("gen foo != var = 4\n")
+    expect_parse_reject("gen foo == var == var1\n")
+    expect_parse_reject("gen foo != var = 4\n")
     expect_parse_reject("disp var1 == > var2\n")
     expect_parse_reject("disp var1 >== var2\n")
     expect_parse_reject("disp var1 -< var2\n")
@@ -125,7 +125,7 @@ test_that("Invalid logical expressions fail to parse", {
 })
 
 test_that("Invalid assignment expressions fail to parse", {
-#    expect_parse_reject("gen foo == var\n")
+    expect_parse_reject("gen foo == var\n")
     expect_parse_reject("gen foo = 1 = 3\n")
     expect_parse_reject("gen foo = 1 = var + 3.4\n")
     expect_parse_reject('gen = foo = "string"\n')
@@ -137,7 +137,7 @@ test_that("Invalid assignment expressions fail to parse", {
 test_that("Invalid long comments fail to parse", {
     expect_parse_reject("this is a long comment */ disp foo\n")
     expect_parse_reject("/* this is a long comment disp foo\n")
-#    expect_parse_reject("/* /* */ this is a long comment disp foo\n")
+    expect_parse_reject("/* /* */ this is a long comment disp foo\n")
     expect_parse_reject("/* /* */ this is a long comment */ disp foo\n")
     expect_parse_reject("disp foo /* not /* */displayed */\n")
 })
@@ -175,8 +175,8 @@ test_that("Invalid general commands with an expression list and an if clause fai
 
 test_that("Invalid general commands with an expression list and an in clause fail to parse", {
     expect_parse_reject("gen y = 1 in 34 / L / F / 34\n")
-#    expect_parse_reject("gen y = 1 in l34\n")
-#    expect_parse_reject("gen y = 1 in llllll\n")
+    expect_parse_reject("gen y = 1 in l34\n")
+    expect_parse_reject("gen y = 1 in llllll\n")
     expect_parse_reject("replace income = 0 in F / -24 / F\n")
 })
 
@@ -253,7 +253,7 @@ test_that("Invalid use of the anova command fails to parse", {
     expect_parse_reject('anova i.x\n')
     expect_parse_reject('anova\n')
     expect_parse_reject('anova y i.x||c.z\n')
-#    expect_parse_reject('anova y i.xc.z /\n')
+    expect_parse_reject('anova y i.xc.z /\n')
     expect_parse_reject('anova y i.x|c.z |/, option(val)\n')
 })
 
@@ -343,3 +343,4 @@ test_that("Invalid foreach loops fail to parse", {
         disp `i'
     }\n")
 })
+
