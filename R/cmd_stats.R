@@ -201,6 +201,8 @@ function(varlist, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
     return(match.call())
 }
 
+#NB: type names may be used; only a minor inconvenience because the vars
+#    this command generates have to be some kind of numeric type
 ado_cmd_pctile <-
 function(expression, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
          option_list=NULL, return.match.call=NULL)
@@ -209,6 +211,8 @@ function(expression, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
       return(match.call())
 }
 
+#NB: type names may be used; only a minor inconvenience because the vars
+#    this command generates have to be some kind of numeric type
 ado_cmd_predict <-
 function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
          return.match.call=NULL)

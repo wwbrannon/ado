@@ -50,6 +50,45 @@ function(to_call, return.match.call=NULL)
     }
 }
 
+rstata_cmd_xi <-
+function(expression_list=NULL, option_list=NULL, to_call=NULL,
+         return.match.call=NULL)
+{
+    if(!is.null(return.match.call) && return.match.call)
+        return(match.call())
+    
+    valid_opts <- c("prefix", "omit", "noomit")
+    option_list <- validateOpts(option_list, valid_opts)
+    
+    omit <- hasOption(option_list, "omit")
+    noomit <- hasOption(option_list, "noomit")
+    
+    if(omit && noomit)
+    {
+        raiseCondition("Cannot specify both omit and noomit at once")
+    }
+    
+    if(hasOption(option_list, "prefix"))
+    {
+        prefix <- optionArgs(option_list, "prefix")[[1]]
+    } else
+    {
+        prefix <- "_I"
+    }
+    
+    #expand the termlist we've gotten into indicator variables, which we'll
+    #need to do regardless of whether there's a to_call command to execute
+    #FIXME
+    
+    #to_call is actually optional here. If it's present, we're
+    #a modifier command and we need to eval it. If it's missing,
+    #we're a main command and we can just return, printing nothing.
+    if(!is.null(to_call))
+        return(eval(to_call, envir=parent.frame(), enclos=baseenv()))
+    else
+        return(invisible(NULL))
+}
+
 #The to_call argument defaults to NULL in by and bysort not because it's optional,
 #but because it's built and filled in later in the code generation process than
 #the point at which these arguments are checked. If it's not NULL, there's a spurious

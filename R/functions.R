@@ -140,3 +140,4 @@ ado_type_int <- ado_type_double
 ado_type_long <- ado_type_double
 ado_type_float <- ado_type_double
 ado_type_double <- ado_type_double
+
