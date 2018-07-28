@@ -1,8 +1,12 @@
-## C files
+## Build system
+config.status
+autom4te.cache
+config.log
 /src/Makevars
 /src/parser/Makefile
 /src/parser/ado.output
 
+## C files
 # Object files
 *.o
 *.ko
@@ -23,7 +27,6 @@
 *.app
 
 ## R files
-
 # History files
 .Rhistory
 
@@ -44,11 +47,8 @@ scratch/
 
 # RStudio files
 .Rproj.user
+
+# packrat
 packrat/lib*/
 packrat/src/
-
-# autoconf detritus
-config.status
-autom4te.cache
-config.log
 
