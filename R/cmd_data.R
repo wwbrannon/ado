@@ -480,7 +480,7 @@ function(varlist, option_list=NULL, return.match.call=NULL)
         varlist <- sort(varlist)
     } else if(sequential)
     {
-        varlist <- gtools::mixedsort(varlist)
+        varlist <- varlist #FIXME
     }
 
     if(first)
@@ -741,10 +741,10 @@ function(expression, option_list=NULL, return.match.call=NULL)
 {
     if(!is.null(return.match.call) && return.match.call)
         return(match.call())
-    
+
     valid_opts <- c("force")
     option_list <- validateOpts(option_list, valid_opts)
-    
+
 }
 
 rstata_cmd_egen <-
