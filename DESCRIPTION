@@ -13,13 +13,13 @@ URL: https://github.com/wwbrannon/ado
 BugReports: https://github.com/wwbrannon/ado/issues
 LazyData: true
 Depends:
-    R (>= 3.2.0)
+    R (>= 3.4.0)
 Imports:
-    Rcpp (>= 0.11.6),
-    data.table (>= 1.9.6),
-    readstata13 (>= 0.8.2),
-    R6 (>= 2.1.1),
-    gtools (>= 3.5.0)
+    Rcpp (>= 0.12.17),
+    R6 (>= 2.2.2),
+    data.table (>= 1.11.4),
+    readstata13 (>= ,
+    gtools (>= 3.8.1)
 LinkingTo: Rcpp, testthat
 SystemRequirements: C++11
 Suggests:
