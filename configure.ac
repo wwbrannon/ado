@@ -23,7 +23,7 @@ if test "${GXX}" = yes; then
 fi
 
 ## Make sure we have R and find R_HOME
-AC_DEFUN(AC_PROG_R, [AC_CHECK_PROG(R,R,yes)])
+AC_DEFUN([AC_PROG_R], [AC_CHECK_PROG(R,R,yes)])
 AC_PROG_R
 
 : ${R_HOME=`R RHOME`}
@@ -54,7 +54,7 @@ else
 fi
 
 ## Append the R and Rcpp include directories
-AC_DEFUN(AC_PROG_RSCRIPT, [AC_CHECK_PROG(RSCRIPT,Rscript,yes)])
+AC_DEFUN([AC_PROG_RSCRIPT], [AC_CHECK_PROG(RSCRIPT,Rscript,yes)])
 AC_PROG_RSCRIPT
 if test x"${RSCRIPT}" == x"yes" ; then
     r_include=`${R_HOME}/bin/Rscript -e 'cat(Sys.getenv("R_INCLUDE_DIR"))'`
