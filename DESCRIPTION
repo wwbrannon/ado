@@ -1,5 +1,5 @@
 Package: ado
-Authors@R: c(person("William", "Brannon", email="wwbrannon@email.wm.edu", role=c("aut", "cre")))
+Authors@R: c(person("William", "Brannon", email="wwbrannon@mit.edu", role=c("aut", "cre")))
 Version: 0.1.0.9000
 Title: An Implementation of Stata's Ado Language for R
 Description: An interpreter for Stata's ado language built on top of R.
@@ -18,11 +18,9 @@ Imports:
     Rcpp (>= 0.12.17),
     R6 (>= 2.2.2),
     data.table (>= 1.11.4),
-    readstata13 (>= ,
-    gtools (>= 3.8.1)
+    readstata13 (>= 0.9.2)
 LinkingTo: Rcpp, testthat
 SystemRequirements: C++11
 Suggests:
     testthat
-RoxygenNote: 5.0.1
-
+RoxygenNote: 6.1.0
