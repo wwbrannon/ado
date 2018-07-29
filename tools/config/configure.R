@@ -15,6 +15,11 @@ cppflags <- c(read_r_config("CPPFLAGS")$CPPFLAGS,
 define(CPPFLAGS = paste0(cppflags, collapse=' '))
 define(CXXFLAGS = paste0(cxxflags, collapse=' '))
 
-configure_file("src/Makevars.in", "src/Makevars")
-configure_file("src/Makevars.in", "src/Makevars.win")
+if(.Platform$OS.type == "unix")
+{
+    configure_file("src/Makevars.in", "src/Makevars")
+} else
+{
+    configure_file("src/Makevars.in", "src/Makevars.win")
+}
 

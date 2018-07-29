@@ -95,7 +95,6 @@ configure_file <- function(
     config = configure_database(),
     lhs = "@",
     rhs = "@",
-    sep = "\n",
     verbose = configure_verbose())
 {
     contents <- readLines(source, warn = FALSE)
@@ -106,7 +105,7 @@ configure_file <- function(
     })
 
     ensure_directory(dirname(target))
-    writeLines(contents, con = target, sep=sep)
+    writeLines(contents, con = target)
 
     info <- file.info(source)
     Sys.chmod(target, mode = info$mode)
