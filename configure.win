@@ -12,7 +12,8 @@
 ## M4sh Initialization. ##
 ## -------------------- ##
 
-echo $SHELL
+echo "$(ls /bin)"
+echo "$(ls /usr/bin)"
 
 # Be more Bourne compatible
 DUALCASE=1; export DUALCASE # for MKS sh
