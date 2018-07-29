@@ -25,14 +25,12 @@ parse.o: dir ado.tab.cpp
 ##
 
 regenerate:
-	mkdir -p include
-
-	flex -o lex.yy.cpp --header-file=include/lex.yy.hpp ado.fl
+	flex -o lex.yy.cpp --header-file=../../inst/include/lex.yy.hpp ado.fl
 
 	bison -d -Wall -b ado ado.ypp
-	mv location.hh position.hh stack.hh include
-	mv ado.tab.hpp include
+	mv location.hh position.hh stack.hh ../../inst/include
+	mv ado.tab.hpp ../../inst/include
 
 clean:
-	rm -rf build
 	rm -f parser.a
+	rm -rf build
