@@ -1,14 +1,12 @@
 if(!('Rcpp' %in% rownames(installed.packages())))
     stop("Your installation does not have Rcpp installed; aborting")
 
-# FIXME?
-Rcpp:::compilerCheck(minVersion="4.6.0")
+Rcpp:::compilerCheck(minVersion="4.6.0") # FIXME?
 
-define(STDVER = "c++11")
-
-define(CXX = read_r_config("CXX")$CXX)
+define(STDVER = "CXX11")
 
 cxxflags <- c(read_r_config("CXXFLAGS")$CXXFLAGS,
+              read_r_config("CXXPICFLAGS")$CXXPICFLAGS,
               capture.output(Rcpp:::CxxFlags()))
 
 cppflags <- c(read_r_config("CPPFLAGS")$CPPFLAGS,
@@ -16,7 +14,6 @@ cppflags <- c(read_r_config("CPPFLAGS")$CPPFLAGS,
 
 define(CPPFLAGS = paste0(cppflags, collapse=' '))
 define(CXXFLAGS = paste0(cxxflags, collapse=' '))
-define(CXXPICFLAGS = read_r_config("CXXPICFLAGS")$CXXPICFLAGS)
 
 configure_file("src/Makevars.in", "src/Makevars")
 configure_file("src/Makevars.in", "src/Makevars.win")

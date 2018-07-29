@@ -1,11 +1,13 @@
 CXX_STD = @STDVER@
 
-PKG_CPPFLAGS = -I../inst/include -I./parser/include
 PKG_LIBS = parser/parser.a
+PKG_CPPFLAGS = -I../inst/include -I./parser/include
 
 .PHONY: all parser
 all: $(SHLIB)
 $(SHLIB): parser
 
 parser:
-	(cd parser && $(MAKE))
+	(cd parser && $(MAKE) CXX="$(CXX)" AR="$(AR)" \
+	 					  CXXFLAGS="$(CXXFLAGS) @CXXFLAGS@ -c" \
+	 					  CPPFLAGS="$(CPPFLAGS) @CPPFLAGS@ -I../../inst/include/ -I./include")
