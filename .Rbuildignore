@@ -11,3 +11,5 @@ autom4te.cache
 config.log
 scratch/
 
+^appveyor\.yml$
+^codecov\.yml$
