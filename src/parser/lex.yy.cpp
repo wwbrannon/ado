@@ -8,10 +8,22 @@
 
 #define FLEX_SCANNER
 #define YY_FLEX_MAJOR_VERSION 2
-#define YY_FLEX_MINOR_VERSION 5
-#define YY_FLEX_SUBMINOR_VERSION 35
+#define YY_FLEX_MINOR_VERSION 6
+#define YY_FLEX_SUBMINOR_VERSION 4
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
+#endif
+
+#ifdef yyget_lval
+#define yyget_lval_ALREADY_DEFINED
+#else
+#define yyget_lval yyget_lval
+#endif
+
+#ifdef yyset_lval
+#define yyset_lval_ALREADY_DEFINED
+#else
+#define yyset_lval yyset_lval
 #endif
 
 /* First, we deal with  platform-specific or compiler-specific issues. */
@@ -84,40 +96,32 @@ typedef unsigned int flex_uint32_t;
 #define UINT32_MAX             (4294967295U)
 #endif
 
+#ifndef SIZE_MAX
+#define SIZE_MAX               (~(size_t)0)
+#endif
+
 #endif /* ! C99 */
 
 #endif /* ! FLEXINT_H */
 
-#ifdef __cplusplus
+/* begin standard C++ headers. */
 
-/* The "const" storage-class-modifier is valid. */
-#define YY_USE_CONST
-
-#else	/* ! __cplusplus */
-
-/* C99 requires __STDC__ to be defined as 1. */
-#if defined (__STDC__)
-
-#define YY_USE_CONST
-
-#endif	/* defined (__STDC__) */
-#endif	/* ! __cplusplus */
-
-#ifdef YY_USE_CONST
+/* TODO: this is always defined, so inline it */
 #define yyconst const
+
+#if defined(__GNUC__) && __GNUC__ >= 3
+#define yynoreturn __attribute__((__noreturn__))
 #else
-#define yyconst
+#define yynoreturn
 #endif
 
 /* Returned upon end-of-file. */
 #define YY_NULL 0
 
-/* Promotes a possibly negative, possibly signed char to an unsigned
- * integer for use as an array index.  If the signed char is negative,
- * we want to instead treat it as an 8-bit unsigned char, hence the
- * double cast.
+/* Promotes a possibly negative, possibly signed char to an
+ *   integer in range [0..255] for use as an array index.
  */
-#define YY_SC_TO_UI(c) ((unsigned int) (unsigned char) c)
+#define YY_SC_TO_UI(c) ((YY_CHAR) (c))
 
 /* An opaque pointer. */
 #ifndef YY_TYPEDEF_YY_SCANNER_T
@@ -141,20 +145,16 @@ typedef void* yyscan_t;
  * definition of BEGIN.
  */
 #define BEGIN yyg->yy_start = 1 + 2 *
-
 /* Translate the current start state into a value that can be later handed
  * to BEGIN to return to the state.  The YYSTATE alias is for lex
  * compatibility.
  */
 #define YY_START ((yyg->yy_start - 1) / 2)
 #define YYSTATE YY_START
-
 /* Action number for EOF rule of a given start state. */
 #define YY_STATE_EOF(state) (YY_END_OF_BUFFER + state + 1)
-
 /* Special action meaning "start processing a new file". */
-#define YY_NEW_FILE yyrestart(yyin ,yyscanner )
-
+#define YY_NEW_FILE yyrestart( yyin , yyscanner )
 #define YY_END_OF_BUFFER_CHAR 0
 
 /* Size of default input buffer. */
@@ -179,11 +179,17 @@ typedef void* yyscan_t;
 typedef struct yy_buffer_state *YY_BUFFER_STATE;
 #endif
 
+#ifndef YY_TYPEDEF_YY_SIZE_T
+#define YY_TYPEDEF_YY_SIZE_T
+typedef size_t yy_size_t;
+#endif
+
 #define EOB_ACT_CONTINUE_SCAN 0
 #define EOB_ACT_END_OF_FILE 1
 #define EOB_ACT_LAST_MATCH 2
-
+    
     #define YY_LESS_LINENO(n)
+    #define YY_LINENO_REWIND_TO(ptr)
     
 /* Return all but the first "n" matched characters back to the input stream. */
 #define yyless(n) \
@@ -198,13 +204,7 @@ typedef struct yy_buffer_state *YY_BUFFER_STATE;
 		YY_DO_BEFORE_ACTION; /* set up yytext again */ \
 		} \
 	while ( 0 )
-
 #define unput(c) yyunput( c, yyg->yytext_ptr , yyscanner )
-
-#ifndef YY_TYPEDEF_YY_SIZE_T
-#define YY_TYPEDEF_YY_SIZE_T
-typedef size_t yy_size_t;
-#endif
 
 #ifndef YY_STRUCT_YY_BUFFER_STATE
 #define YY_STRUCT_YY_BUFFER_STATE
@@ -218,7 +218,7 @@ struct yy_buffer_state
 	/* Size of input buffer in bytes, not including room for EOB
 	 * characters.
 	 */
-	yy_size_t yy_buf_size;
+	int yy_buf_size;
 
 	/* Number of characters read into yy_ch_buf, not including EOB
 	 * characters.
@@ -246,7 +246,7 @@ struct yy_buffer_state
 
     int yy_bs_lineno; /**< The line count. */
     int yy_bs_column; /**< The column count. */
-    
+
 	/* Whether to try to fill the input buffer when we reach the
 	 * end of it.
 	 */
@@ -280,85 +280,78 @@ struct yy_buffer_state
 #define YY_CURRENT_BUFFER ( yyg->yy_buffer_stack \
                           ? yyg->yy_buffer_stack[yyg->yy_buffer_stack_top] \
                           : NULL)
-
 /* Same as previous macro, but useful when we know that the buffer stack is not
  * NULL or when we need an lvalue. For internal use only.
  */
 #define YY_CURRENT_BUFFER_LVALUE yyg->yy_buffer_stack[yyg->yy_buffer_stack_top]
 
-void yyrestart (FILE *input_file ,yyscan_t yyscanner );
-void yy_switch_to_buffer (YY_BUFFER_STATE new_buffer ,yyscan_t yyscanner );
-YY_BUFFER_STATE yy_create_buffer (FILE *file,int size ,yyscan_t yyscanner );
-void yy_delete_buffer (YY_BUFFER_STATE b ,yyscan_t yyscanner );
-void yy_flush_buffer (YY_BUFFER_STATE b ,yyscan_t yyscanner );
-void yypush_buffer_state (YY_BUFFER_STATE new_buffer ,yyscan_t yyscanner );
-void yypop_buffer_state (yyscan_t yyscanner );
+void yyrestart ( FILE *input_file , yyscan_t yyscanner );
+void yy_switch_to_buffer ( YY_BUFFER_STATE new_buffer , yyscan_t yyscanner );
+YY_BUFFER_STATE yy_create_buffer ( FILE *file, int size , yyscan_t yyscanner );
+void yy_delete_buffer ( YY_BUFFER_STATE b , yyscan_t yyscanner );
+void yy_flush_buffer ( YY_BUFFER_STATE b , yyscan_t yyscanner );
+void yypush_buffer_state ( YY_BUFFER_STATE new_buffer , yyscan_t yyscanner );
+void yypop_buffer_state ( yyscan_t yyscanner );
 
-static void yyensure_buffer_stack (yyscan_t yyscanner );
-static void yy_load_buffer_state (yyscan_t yyscanner );
-static void yy_init_buffer (YY_BUFFER_STATE b,FILE *file ,yyscan_t yyscanner );
+static void yyensure_buffer_stack ( yyscan_t yyscanner );
+static void yy_load_buffer_state ( yyscan_t yyscanner );
+static void yy_init_buffer ( YY_BUFFER_STATE b, FILE *file , yyscan_t yyscanner );
+#define YY_FLUSH_BUFFER yy_flush_buffer( YY_CURRENT_BUFFER , yyscanner)
 
-#define YY_FLUSH_BUFFER yy_flush_buffer(YY_CURRENT_BUFFER ,yyscanner)
+YY_BUFFER_STATE yy_scan_buffer ( char *base, yy_size_t size , yyscan_t yyscanner );
+YY_BUFFER_STATE yy_scan_string ( const char *yy_str , yyscan_t yyscanner );
+YY_BUFFER_STATE yy_scan_bytes ( const char *bytes, int len , yyscan_t yyscanner );
 
-YY_BUFFER_STATE yy_scan_buffer (char *base,yy_size_t size ,yyscan_t yyscanner );
-YY_BUFFER_STATE yy_scan_string (yyconst char *yy_str ,yyscan_t yyscanner );
-YY_BUFFER_STATE yy_scan_bytes (yyconst char *bytes,int len ,yyscan_t yyscanner );
-
-void *yyalloc (yy_size_t ,yyscan_t yyscanner );
-void *yyrealloc (void *,yy_size_t ,yyscan_t yyscanner );
-void yyfree (void * ,yyscan_t yyscanner );
+void *yyalloc ( yy_size_t , yyscan_t yyscanner );
+void *yyrealloc ( void *, yy_size_t , yyscan_t yyscanner );
+void yyfree ( void * , yyscan_t yyscanner );
 
 #define yy_new_buffer yy_create_buffer
-
 #define yy_set_interactive(is_interactive) \
 	{ \
 	if ( ! YY_CURRENT_BUFFER ){ \
         yyensure_buffer_stack (yyscanner); \
 		YY_CURRENT_BUFFER_LVALUE =    \
-            yy_create_buffer(yyin,YY_BUF_SIZE ,yyscanner); \
+            yy_create_buffer( yyin, YY_BUF_SIZE , yyscanner); \
 	} \
 	YY_CURRENT_BUFFER_LVALUE->yy_is_interactive = is_interactive; \
 	}
-
 #define yy_set_bol(at_bol) \
 	{ \
 	if ( ! YY_CURRENT_BUFFER ){\
         yyensure_buffer_stack (yyscanner); \
 		YY_CURRENT_BUFFER_LVALUE =    \
-            yy_create_buffer(yyin,YY_BUF_SIZE ,yyscanner); \
+            yy_create_buffer( yyin, YY_BUF_SIZE , yyscanner); \
 	} \
 	YY_CURRENT_BUFFER_LVALUE->yy_at_bol = at_bol; \
 	}
-
 #define YY_AT_BOL() (YY_CURRENT_BUFFER_LVALUE->yy_at_bol)
 
 /* Begin user sect3 */
 
-#define yywrap(n) 1
+#define yywrap(yyscanner) (/*CONSTCOND*/1)
 #define YY_SKIP_YYWRAP
-
-typedef unsigned char YY_CHAR;
+typedef flex_uint8_t YY_CHAR;
 
 typedef int yy_state_type;
 
-static yy_state_type yy_get_previous_state (yyscan_t yyscanner );
-static yy_state_type yy_try_NUL_trans (yy_state_type current_state  ,yyscan_t yyscanner);
-static int yy_get_next_buffer (yyscan_t yyscanner );
-static void yy_fatal_error (yyconst char msg[] ,yyscan_t yyscanner );
+static yy_state_type yy_get_previous_state ( yyscan_t yyscanner );
+static yy_state_type yy_try_NUL_trans ( yy_state_type current_state  , yyscan_t yyscanner);
+static int yy_get_next_buffer ( yyscan_t yyscanner );
+static void yynoreturn yy_fatal_error ( const char* msg , yyscan_t yyscanner );
 
 /* Done after the current pattern has been matched and before the
  * corresponding action - sets up yytext.
  */
 #define YY_DO_BEFORE_ACTION \
 	yyg->yytext_ptr = yy_bp; \
-	yyleng = (size_t) (yy_cp - yy_bp); \
+	yyleng = (int) (yy_cp - yy_bp); \
 	yyg->yy_hold_char = *yy_cp; \
 	*yy_cp = '\0'; \
 	if ( yyleng >= YYLMAX ) \
 		YY_FATAL_ERROR( "token too large, exceeds YYLMAX" ); \
 	yy_flex_strncpy( yytext, yyg->yytext_ptr, yyleng + 1 , yyscanner); \
 	yyg->yy_c_buf_p = yy_cp;
-
 #define YY_NUM_RULES 198
 #define YY_END_OF_BUFFER 199
 /* This struct is not used in this scanner,
@@ -368,7 +361,7 @@ struct yy_trans_info
 	flex_int32_t yy_verify;
 	flex_int32_t yy_nxt;
 	};
-static yyconst flex_int16_t yy_accept[532] =
+static const flex_int16_t yy_accept[532] =
     {   0,
         0,    0,    0,    0,   72,   72,    0,    0,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
@@ -431,7 +424,7 @@ static yyconst flex_int16_t yy_accept[532] =
         0
     } ;
 
-static yyconst flex_int32_t yy_ec[256] =
+static const YY_CHAR yy_ec[256] =
     {   0,
         1,    1,    1,    1,    1,    1,    1,    1,    2,    3,
         4,    4,    4,    1,    1,    1,    1,    1,    1,    1,
@@ -463,7 +456,7 @@ static yyconst flex_int32_t yy_ec[256] =
         1,    1,    1,    1,    1
     } ;
 
-static yyconst flex_int32_t yy_meta[87] =
+static const YY_CHAR yy_meta[87] =
     {   0,
         1,    1,    2,    1,    1,    1,    3,    1,    4,    1,
         1,    5,    1,    1,    6,    7,    7,    7,    7,    7,
@@ -476,7 +469,7 @@ static yyconst flex_int32_t yy_meta[87] =
        11,   11,   14,    1,   15,    1
     } ;
 
-static yyconst flex_int16_t yy_base[592] =
+static const flex_int16_t yy_base[592] =
     {   0,
         0,   85,   89,   90, 1576, 1561,   85,   95,  180,    0,
       264,  265,   94,  263,  268,  278,  273,  279,   92,   99,
@@ -546,7 +539,7 @@ static yyconst flex_int16_t yy_base[592] =
 
     } ;
 
-static yyconst flex_int16_t yy_def[592] =
+static const flex_int16_t yy_def[592] =
     {   0,
       531,    1,  532,  532,  533,  533,  534,  534,  531,    9,
       535,  535,    1,    1,    1,    1,  536,  536,  537,  537,
@@ -616,7 +609,7 @@ static yyconst flex_int16_t yy_def[592] =
 
     } ;
 
-static yyconst flex_int16_t yy_nxt[2135] =
+static const flex_int16_t yy_nxt[2135] =
     {   0,
        30,   31,   32,   31,   31,   33,   34,   35,   36,   37,
        38,   30,   39,   40,   41,   42,   43,   44,   45,   46,
@@ -855,7 +848,7 @@ static yyconst flex_int16_t yy_nxt[2135] =
       531,  531,  531,  531
     } ;
 
-static yyconst flex_int16_t yy_chk[2135] =
+static const flex_int16_t yy_chk[2135] =
     {   0,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -1179,20 +1172,9 @@ typedef yy::AdoParser::token token;
 
 // Code run each time a pattern is matched
 #define YY_USER_ACTION  { llocp->columns(yyleng); }
+#line 1176 "lex.yy.cpp"
 
-
-
-
-
-
-
-
-
-
-
-
-
-#line 1196 "lex.yy.cpp"
+#line 1178 "lex.yy.cpp"
 
 #define INITIAL 0
 #define LONG_COMMENT 1
@@ -1258,7 +1240,7 @@ struct yyguts_t
 
     }; /* end struct yyguts_t */
 
-static int yy_init_globals (yyscan_t yyscanner );
+static int yy_init_globals ( yyscan_t yyscanner );
 
     /* This must go here because YYSTYPE and YYLTYPE are included
      * from bison output in section 1.*/
@@ -1266,40 +1248,44 @@ static int yy_init_globals (yyscan_t yyscanner );
     
 int yylex_init (yyscan_t* scanner);
 
-int yylex_init_extra (YY_EXTRA_TYPE user_defined,yyscan_t* scanner);
+int yylex_init_extra ( YY_EXTRA_TYPE user_defined, yyscan_t* scanner);
 
 /* Accessor methods to globals.
    These are made visible to non-reentrant scanners for convenience. */
 
-int yylex_destroy (yyscan_t yyscanner );
+int yylex_destroy ( yyscan_t yyscanner );
 
-int yyget_debug (yyscan_t yyscanner );
+int yyget_debug ( yyscan_t yyscanner );
 
-void yyset_debug (int debug_flag ,yyscan_t yyscanner );
+void yyset_debug ( int debug_flag , yyscan_t yyscanner );
 
-YY_EXTRA_TYPE yyget_extra (yyscan_t yyscanner );
+YY_EXTRA_TYPE yyget_extra ( yyscan_t yyscanner );
 
-void yyset_extra (YY_EXTRA_TYPE user_defined ,yyscan_t yyscanner );
+void yyset_extra ( YY_EXTRA_TYPE user_defined , yyscan_t yyscanner );
 
-FILE *yyget_in (yyscan_t yyscanner );
+FILE *yyget_in ( yyscan_t yyscanner );
 
-void yyset_in  (FILE * in_str ,yyscan_t yyscanner );
+void yyset_in  ( FILE * _in_str , yyscan_t yyscanner );
 
-FILE *yyget_out (yyscan_t yyscanner );
+FILE *yyget_out ( yyscan_t yyscanner );
 
-void yyset_out  (FILE * out_str ,yyscan_t yyscanner );
+void yyset_out  ( FILE * _out_str , yyscan_t yyscanner );
 
-int yyget_leng (yyscan_t yyscanner );
+			int yyget_leng ( yyscan_t yyscanner );
 
-char *yyget_text (yyscan_t yyscanner );
+char *yyget_text ( yyscan_t yyscanner );
 
-int yyget_lineno (yyscan_t yyscanner );
+int yyget_lineno ( yyscan_t yyscanner );
 
-void yyset_lineno (int line_number ,yyscan_t yyscanner );
+void yyset_lineno ( int _line_number , yyscan_t yyscanner );
 
-YYSTYPE * yyget_lval (yyscan_t yyscanner );
+int yyget_column  ( yyscan_t yyscanner );
 
-void yyset_lval (YYSTYPE * yylval_param ,yyscan_t yyscanner );
+void yyset_column ( int _column_no , yyscan_t yyscanner );
+
+YYSTYPE * yyget_lval ( yyscan_t yyscanner );
+
+void yyset_lval ( YYSTYPE * yylval_param , yyscan_t yyscanner );
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -1307,37 +1293,40 @@ void yyset_lval (YYSTYPE * yylval_param ,yyscan_t yyscanner );
 
 #ifndef YY_SKIP_YYWRAP
 #ifdef __cplusplus
-extern "C" int yywrap (yyscan_t yyscanner );
+extern "C" int yywrap ( yyscan_t yyscanner );
 #else
-extern int yywrap (yyscan_t yyscanner );
+extern int yywrap ( yyscan_t yyscanner );
 #endif
 #endif
 
-    static void yyunput (int c,char *buf_ptr  ,yyscan_t yyscanner);
+#ifndef YY_NO_UNPUT
     
+    static void yyunput ( int c, char *buf_ptr  , yyscan_t yyscanner);
+    
+#endif
+
 #ifndef yytext_ptr
-static void yy_flex_strncpy (char *,yyconst char *,int ,yyscan_t yyscanner);
+static void yy_flex_strncpy ( char *, const char *, int , yyscan_t yyscanner);
 #endif
 
 #ifdef YY_NEED_STRLEN
-static int yy_flex_strlen (yyconst char * ,yyscan_t yyscanner);
+static int yy_flex_strlen ( const char * , yyscan_t yyscanner);
 #endif
 
 #ifndef YY_NO_INPUT
-
 #ifdef __cplusplus
-static int yyinput (yyscan_t yyscanner );
+static int yyinput ( yyscan_t yyscanner );
 #else
-static int input (yyscan_t yyscanner );
+static int input ( yyscan_t yyscanner );
 #endif
 
 #endif
 
-    static void yy_push_state (int new_state ,yyscan_t yyscanner);
+    static void yy_push_state ( int _new_state , yyscan_t yyscanner);
     
-    static void yy_pop_state (yyscan_t yyscanner );
+    static void yy_pop_state ( yyscan_t yyscanner );
     
-    static int yy_top_state (yyscan_t yyscanner );
+    static int yy_top_state ( yyscan_t yyscanner );
     
 /* Amount of stuff to slurp up with each read. */
 #ifndef YY_READ_BUF_SIZE
@@ -1354,7 +1343,7 @@ static int input (yyscan_t yyscanner );
 /* This used to be an fputs(), but since the string might contain NUL's,
  * we now use fwrite().
  */
-#define ECHO do { if (fwrite( yytext, yyleng, 1, yyout )) {} } while (0)
+#define ECHO do { if (fwrite( yytext, (size_t) yyleng, 1, yyout )) {} } while (0)
 #endif
 
 /* Gets input and stuffs it into "buf".  number of characters read, or YY_NULL,
@@ -1365,7 +1354,7 @@ static int input (yyscan_t yyscanner );
 	if ( YY_CURRENT_BUFFER_LVALUE->yy_is_interactive ) \
 		{ \
 		int c = '*'; \
-		size_t n; \
+		int n; \
 		for ( n = 0; n < max_size && \
 			     (c = getc( yyin )) != EOF && c != '\n'; ++n ) \
 			buf[n] = (char) c; \
@@ -1378,7 +1367,7 @@ static int input (yyscan_t yyscanner );
 	else \
 		{ \
 		errno=0; \
-		while ( (result = fread(buf, 1, max_size, yyin))==0 && ferror(yyin)) \
+		while ( (result = (int) fread(buf, 1, (yy_size_t) max_size, yyin)) == 0 && ferror(yyin)) \
 			{ \
 			if( errno != EINTR) \
 				{ \
@@ -1420,7 +1409,7 @@ static int input (yyscan_t yyscanner );
 #define YY_DECL_IS_OURS 1
 
 extern int yylex \
-               (YYSTYPE * yylval_param ,yyscan_t yyscanner);
+               (YYSTYPE * yylval_param , yyscan_t yyscanner);
 
 #define YY_DECL int yylex \
                (YYSTYPE * yylval_param , yyscan_t yyscanner)
@@ -1435,7 +1424,7 @@ extern int yylex \
 
 /* Code executed at the end of each rule. */
 #ifndef YY_BREAK
-#define YY_BREAK break;
+#define YY_BREAK /*LINTED*/break;
 #endif
 
 #define YY_RULE_SETUP \
@@ -1448,36 +1437,10 @@ extern int yylex \
  */
 YY_DECL
 {
-	register yy_state_type yy_current_state;
-	register char *yy_cp, *yy_bp;
-	register int yy_act;
+	yy_state_type yy_current_state;
+	char *yy_cp, *yy_bp;
+	int yy_act;
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
-
-#line 113 "ado.fl"
-
-
-
-// Code run each time yylex is called
-llocp->step();
-
-// Buffers and stacks for state machines
-std::string embed_buf;
-std::string cdquote_buf;
-std::string string_buf;
-
-// Loop objects
-std::string loop_buf;
-int brace_count = 0;
-
-std::stack<std::vector<std::string>> macro_stack;
-
-// We don't want to echo text resulting from macro expansions, so
-// let's keep track of how much of it there is so the R_ECHO macro can
-// avoid outputting it.
-size_t macro_length = 0;
-
-                                    /* if you write {{{ ... }}}, the ... will be executed as R code */
-#line 1481 "lex.yy.cpp"
 
     yylval = yylval_param;
 
@@ -1501,13 +1464,41 @@ size_t macro_length = 0;
 		if ( ! YY_CURRENT_BUFFER ) {
 			yyensure_buffer_stack (yyscanner);
 			YY_CURRENT_BUFFER_LVALUE =
-				yy_create_buffer(yyin,YY_BUF_SIZE ,yyscanner);
+				yy_create_buffer( yyin, YY_BUF_SIZE , yyscanner);
 		}
 
-		yy_load_buffer_state(yyscanner );
+		yy_load_buffer_state( yyscanner );
 		}
 
-	while ( 1 )		/* loops until end-of-file is reached */
+	{
+#line 113 "ado.fl"
+
+
+
+#line 117 "ado.fl"
+// Code run each time yylex is called
+llocp->step();
+
+// Buffers and stacks for state machines
+std::string embed_buf;
+std::string cdquote_buf;
+std::string string_buf;
+
+// Loop objects
+std::string loop_buf;
+int brace_count = 0;
+
+std::stack<std::vector<std::string>> macro_stack;
+
+// We don't want to echo text resulting from macro expansions, so
+// let's keep track of how much of it there is so the R_ECHO macro can
+// avoid outputting it.
+size_t macro_length = 0;
+
+                                    /* if you write {{{ ... }}}, the ... will be executed as R code */
+#line 1500 "lex.yy.cpp"
+
+	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
 		yy_cp = yyg->yy_c_buf_p;
 
@@ -1524,7 +1515,7 @@ size_t macro_length = 0;
 yy_match:
 		do
 			{
-			register YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)];
+			YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)] ;
 			if ( yy_accept[yy_current_state] )
 				{
 				yyg->yy_last_accepting_state = yy_current_state;
@@ -1534,9 +1525,9 @@ yy_match:
 				{
 				yy_current_state = (int) yy_def[yy_current_state];
 				if ( yy_current_state >= 532 )
-					yy_c = yy_meta[(unsigned int) yy_c];
+					yy_c = yy_meta[yy_c];
 				}
-			yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
+			yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
 			++yy_cp;
 			}
 		while ( yy_current_state != 531 );
@@ -1561,7 +1552,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 136 "ado.fl"
+#line 137 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1572,7 +1563,7 @@ YY_RULE_SETUP
 
 case 2:
 YY_RULE_SETUP
-#line 143 "ado.fl"
+#line 144 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1589,7 +1580,7 @@ YY_RULE_SETUP
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 156 "ado.fl"
+#line 157 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1600,7 +1591,7 @@ YY_RULE_SETUP
 case 4:
 /* rule 4 can match eol */
 YY_RULE_SETUP
-#line 162 "ado.fl"
+#line 163 "ado.fl"
 { 
                                         R_ECHO(yytext);
                                         
@@ -1610,7 +1601,7 @@ YY_RULE_SETUP
 case 5:
 /* rule 5 can match eol */
 YY_RULE_SETUP
-#line 167 "ado.fl"
+#line 168 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1619,7 +1610,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 172 "ado.fl"
+#line 173 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1627,7 +1618,7 @@ YY_RULE_SETUP
                                     }
 	YY_BREAK
 case YY_STATE_EOF(EMBED):
-#line 178 "ado.fl"
+#line 179 "ado.fl"
 {
                                         embed_buf.clear();
                                         yy_pop_state(yyscanner);
@@ -1640,7 +1631,7 @@ case YY_STATE_EOF(EMBED):
 /* INITIAL rules to match macros, local and global */
 case 7:
 YY_RULE_SETUP
-#line 190 "ado.fl"
+#line 191 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1659,7 +1650,7 @@ case 8:
 yyg->yy_c_buf_p = yy_cp = yy_bp + 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 202 "ado.fl"
+#line 203 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1675,7 +1666,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 214 "ado.fl"
+#line 215 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1693,7 +1684,7 @@ YY_RULE_SETUP
 
 case 10:
 YY_RULE_SETUP
-#line 231 "ado.fl"
+#line 232 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1708,7 +1699,7 @@ YY_RULE_SETUP
 case 11:
 /* rule 11 can match eol */
 YY_RULE_SETUP
-#line 242 "ado.fl"
+#line 243 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1728,7 +1719,7 @@ YY_RULE_SETUP
 /* We've reached the matching close quote - let's expand the macro */
 case 12:
 YY_RULE_SETUP
-#line 259 "ado.fl"
+#line 260 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1765,7 +1756,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 293 "ado.fl"
+#line 294 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1779,7 +1770,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 303 "ado.fl"
+#line 304 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1793,7 +1784,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 313 "ado.fl"
+#line 314 "ado.fl"
 {
                                         // These macros can't contain braces because the braces might
                                         // not be balanced, which would greatly complicate parsing loops
@@ -1812,7 +1803,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 328 "ado.fl"
+#line 329 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1826,7 +1817,7 @@ YY_RULE_SETUP
 	YY_BREAK
 /* This is an error (failing to close the macro) */
 case YY_STATE_EOF(LOCAL_MACRO):
-#line 340 "ado.fl"
+#line 341 "ado.fl"
 {
                                         while(!macro_stack.empty())
                                             macro_stack.pop();
@@ -1849,7 +1840,7 @@ case YY_STATE_EOF(LOCAL_MACRO):
 /* A global macro name that doesn't need to be disambiguated with braces */
 case 17:
 YY_RULE_SETUP
-#line 360 "ado.fl"
+#line 361 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1865,7 +1856,7 @@ YY_RULE_SETUP
 case 18:
 /* rule 18 can match eol */
 YY_RULE_SETUP
-#line 372 "ado.fl"
+#line 373 "ado.fl"
 {
                                         // don't R_ECHO because we're unputting the matched text to process again
 
@@ -1906,7 +1897,7 @@ YY_RULE_SETUP
 	YY_BREAK
 /* EOF is also a delimiter, but flex won't allow it in a normal rule */
 case YY_STATE_EOF(GMACRO_ALPHA):
-#line 411 "ado.fl"
+#line 412 "ado.fl"
 {
                                         std::vector<std::string> frame = macro_stack.top();
                                         std::string combined, replacement;
@@ -1945,7 +1936,7 @@ case YY_STATE_EOF(GMACRO_ALPHA):
 /* Allow any type of macro to be nested here */
 case 19:
 YY_RULE_SETUP
-#line 449 "ado.fl"
+#line 450 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1961,7 +1952,7 @@ case 20:
 yyg->yy_c_buf_p = yy_cp = yy_bp + 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 458 "ado.fl"
+#line 459 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1974,7 +1965,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 467 "ado.fl"
+#line 468 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1987,7 +1978,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 476 "ado.fl"
+#line 477 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2001,7 +1992,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 486 "ado.fl"
+#line 487 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2015,7 +2006,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 497 "ado.fl"
+#line 498 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2030,7 +2021,7 @@ YY_RULE_SETUP
 /* Characters that should be part of the name */
 case 25:
 YY_RULE_SETUP
-#line 509 "ado.fl"
+#line 510 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2045,7 +2036,7 @@ YY_RULE_SETUP
 /* We've seen the closing brace - wrap up and expand this macro */
 case 26:
 YY_RULE_SETUP
-#line 521 "ado.fl"
+#line 522 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2083,7 +2074,7 @@ YY_RULE_SETUP
 case 27:
 /* rule 27 can match eol */
 YY_RULE_SETUP
-#line 555 "ado.fl"
+#line 556 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2102,7 +2093,7 @@ YY_RULE_SETUP
 	YY_BREAK
 /* EOF here is an error - the user forgot the closing "}" */
 case YY_STATE_EOF(GMACRO_BRACE):
-#line 572 "ado.fl"
+#line 573 "ado.fl"
 {
                                         while(!macro_stack.empty())
                                             macro_stack.pop();
@@ -2136,7 +2127,7 @@ case YY_STATE_EOF(GMACRO_BRACE):
                                      * reentrant, even though R isn't multithreaded.) */
 case 28:
 YY_RULE_SETUP
-#line 604 "ado.fl"
+#line 605 "ado.fl"
 {
                                         R_ECHO(yytext);
 
@@ -2149,7 +2140,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 613 "ado.fl"
+#line 614 "ado.fl"
 {
                                         R_ECHO(yytext);
 
@@ -2162,7 +2153,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 622 "ado.fl"
+#line 623 "ado.fl"
 {
                                         R_ECHO(yytext);
 
@@ -2175,7 +2166,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 631 "ado.fl"
+#line 632 "ado.fl"
 {
                                         R_ECHO(yytext);
 
@@ -2188,7 +2179,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 640 "ado.fl"
+#line 641 "ado.fl"
 {
                                         R_ECHO(yytext);
 
@@ -2201,7 +2192,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 649 "ado.fl"
+#line 650 "ado.fl"
 {
                                         R_ECHO(yytext);
 
@@ -2214,7 +2205,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 658 "ado.fl"
+#line 659 "ado.fl"
 {
                                         R_ECHO(yytext);
 
@@ -2228,7 +2219,7 @@ YY_RULE_SETUP
 
 case 35:
 YY_RULE_SETUP
-#line 671 "ado.fl"
+#line 672 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2241,7 +2232,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 680 "ado.fl"
+#line 681 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         return token::TOK_LOCAL;
@@ -2249,7 +2240,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 684 "ado.fl"
+#line 685 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         return token::TOK_GLOBAL;
@@ -2257,7 +2248,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 688 "ado.fl"
+#line 689 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         return token::TOK_VARLIST;
@@ -2265,7 +2256,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 692 "ado.fl"
+#line 693 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         return token::TOK_NEWLIST;
@@ -2273,7 +2264,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 696 "ado.fl"
+#line 697 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         return token::TOK_NUMLIST;
@@ -2281,14 +2272,14 @@ YY_RULE_SETUP
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 700 "ado.fl"
+#line 701 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         return token::TOK_OF;
                                     }
 	YY_BREAK
 case YY_STATE_EOF(FOREACH):
-#line 704 "ado.fl"
+#line 705 "ado.fl"
 {
                                         // getting to EOF in this state is an error
                                         do {
@@ -2303,7 +2294,7 @@ case YY_STATE_EOF(FOREACH):
 
 case 42:
 YY_RULE_SETUP
-#line 718 "ado.fl"
+#line 719 "ado.fl"
 {
                                         R_ECHO(yytext);
 
@@ -2316,14 +2307,14 @@ YY_RULE_SETUP
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 727 "ado.fl"
+#line 728 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         return token::TOK_TO;
                                     }
 	YY_BREAK
 case YY_STATE_EOF(FORVALUES):
-#line 731 "ado.fl"
+#line 732 "ado.fl"
 {
                                         // getting to EOF in this state is an error
                                         do {
@@ -2340,7 +2331,7 @@ case YY_STATE_EOF(FORVALUES):
                                      * so just eat them now, exactly as usual */
 case 44:
 YY_RULE_SETUP
-#line 747 "ado.fl"
+#line 748 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         yy_push_state(LONG_COMMENT, yyscanner);
@@ -2348,7 +2339,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 751 "ado.fl"
+#line 752 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         yy_push_state(SHORT_COMMENT, yyscanner);
@@ -2356,7 +2347,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 755 "ado.fl"
+#line 756 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         yy_push_state(SHORT_COMMENT, yyscanner);
@@ -2364,7 +2355,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 760 "ado.fl"
+#line 761 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2379,7 +2370,7 @@ YY_RULE_SETUP
                                      * we want to defer until the subsequent reinvocation of the frontend on this text block. */
 case 48:
 YY_RULE_SETUP
-#line 772 "ado.fl"
+#line 773 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2390,7 +2381,7 @@ YY_RULE_SETUP
 case 49:
 /* rule 49 can match eol */
 YY_RULE_SETUP
-#line 778 "ado.fl"
+#line 779 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2400,7 +2391,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 784 "ado.fl"
+#line 785 "ado.fl"
 {
                                         R_ECHO(yytext);
 
@@ -2410,7 +2401,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 790 "ado.fl"
+#line 791 "ado.fl"
 {
                                         // don't R_ECHO because we're going to unput the matched text to process again
 
@@ -2451,7 +2442,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 827 "ado.fl"
+#line 828 "ado.fl"
 {
                                         R_ECHO(yytext);
 
@@ -2459,7 +2450,7 @@ YY_RULE_SETUP
                                     }
 	YY_BREAK
 case YY_STATE_EOF(ACCUMULATE):
-#line 833 "ado.fl"
+#line 834 "ado.fl"
 {
                                         // getting to EOF in this state is an error
                                         do {
@@ -2475,7 +2466,7 @@ case YY_STATE_EOF(ACCUMULATE):
 /* Saw the matching close quote - all done */
 case 53:
 YY_RULE_SETUP
-#line 848 "ado.fl"
+#line 849 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         loop_buf += std::string(yytext);
@@ -2486,7 +2477,7 @@ YY_RULE_SETUP
 case 54:
 /* rule 54 can match eol */
 YY_RULE_SETUP
-#line 855 "ado.fl"
+#line 856 "ado.fl"
 {
                                         // getting to EOF in this state is an error
                                         R_ECHO(yytext);
@@ -2502,7 +2493,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 868 "ado.fl"
+#line 869 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         loop_buf += std::string(yytext);
@@ -2510,7 +2501,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 872 "ado.fl"
+#line 873 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         loop_buf += std::string(yytext);
@@ -2518,7 +2509,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 877 "ado.fl"
+#line 878 "ado.fl"
 {
                                         // this rule is the entire reason for this state - it matches
                                         // opening curly braces but doesn't increment brace_count
@@ -2527,7 +2518,7 @@ YY_RULE_SETUP
                                     }
 	YY_BREAK
 case YY_STATE_EOF(STRING_ACCUMULATE):
-#line 884 "ado.fl"
+#line 885 "ado.fl"
 {
                                         // getting to EOF in this state is an error
                                         do {
@@ -2543,7 +2534,7 @@ case YY_STATE_EOF(STRING_ACCUMULATE):
 /* Saw the matching close quote - all done */
 case 58:
 YY_RULE_SETUP
-#line 899 "ado.fl"
+#line 900 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         loop_buf += std::string(yytext);
@@ -2554,10 +2545,11 @@ YY_RULE_SETUP
 case 59:
 /* rule 59 can match eol */
 *yy_cp = yyg->yy_hold_char; /* undo effects of setting up yytext */
+YY_LINENO_REWIND_TO(yy_bp + 1);
 yyg->yy_c_buf_p = yy_cp = yy_bp + 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 906 "ado.fl"
+#line 907 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         loop_buf += std::string(yytext);
@@ -2566,7 +2558,7 @@ YY_RULE_SETUP
 case 60:
 /* rule 60 can match eol */
 YY_RULE_SETUP
-#line 911 "ado.fl"
+#line 912 "ado.fl"
 {
                                         // getting to EOF in this state is an error
                                         R_ECHO(yytext);
@@ -2582,7 +2574,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 924 "ado.fl"
+#line 925 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         loop_buf += std::string(yytext);
@@ -2590,7 +2582,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 928 "ado.fl"
+#line 929 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         loop_buf += std::string(yytext);
@@ -2598,7 +2590,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 933 "ado.fl"
+#line 934 "ado.fl"
 {
                                         // once again, the fact that this rule matches the "{" character
                                         // but doesn't increment brace_count is why we have this state
@@ -2607,7 +2599,7 @@ YY_RULE_SETUP
                                     }
 	YY_BREAK
 case YY_STATE_EOF(CDQUOTE_ACCUMULATE):
-#line 940 "ado.fl"
+#line 941 "ado.fl"
 {
                                         // getting to EOF in this state is an error
                                         do {
@@ -2622,7 +2614,7 @@ case YY_STATE_EOF(CDQUOTE_ACCUMULATE):
 /* Eat long comments */
 case 64:
 YY_RULE_SETUP
-#line 954 "ado.fl"
+#line 955 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2633,7 +2625,7 @@ YY_RULE_SETUP
 /* Got a close-comment marker, all done */
 case 65:
 YY_RULE_SETUP
-#line 961 "ado.fl"
+#line 962 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2642,7 +2634,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 967 "ado.fl"
+#line 968 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2651,7 +2643,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 972 "ado.fl"
+#line 973 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2661,7 +2653,7 @@ YY_RULE_SETUP
 case 68:
 /* rule 68 can match eol */
 YY_RULE_SETUP
-#line 977 "ado.fl"
+#line 978 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2669,7 +2661,7 @@ YY_RULE_SETUP
                                     }
 	YY_BREAK
 case YY_STATE_EOF(LONG_COMMENT):
-#line 983 "ado.fl"
+#line 984 "ado.fl"
 {
                                         yy_pop_state(yyscanner);
                                         driver.error(*llocp, "Unclosed comment");
@@ -2681,7 +2673,7 @@ case YY_STATE_EOF(LONG_COMMENT):
 case 69:
 /* rule 69 can match eol */
 YY_RULE_SETUP
-#line 993 "ado.fl"
+#line 994 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2691,7 +2683,7 @@ YY_RULE_SETUP
 /* Eat short comments */
 case 70:
 YY_RULE_SETUP
-#line 1002 "ado.fl"
+#line 1003 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2700,7 +2692,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 1007 "ado.fl"
+#line 1008 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2710,7 +2702,7 @@ YY_RULE_SETUP
 
 case 72:
 YY_RULE_SETUP
-#line 1013 "ado.fl"
+#line 1014 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2720,7 +2712,7 @@ YY_RULE_SETUP
 case 73:
 /* rule 73 can match eol */
 YY_RULE_SETUP
-#line 1018 "ado.fl"
+#line 1019 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2730,7 +2722,7 @@ YY_RULE_SETUP
                                     }
 	YY_BREAK
 case YY_STATE_EOF(SHORT_COMMENT):
-#line 1025 "ado.fl"
+#line 1026 "ado.fl"
 {
                                         // one-line comments can be the last thing in the file
                                         yy_pop_state(yyscanner);
@@ -2747,7 +2739,7 @@ case 74:
 yyg->yy_c_buf_p = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 1038 "ado.fl"
+#line 1039 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2765,7 +2757,7 @@ case 75:
 yyg->yy_c_buf_p = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 1049 "ado.fl"
+#line 1050 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2782,7 +2774,7 @@ YY_RULE_SETUP
 case 76:
 /* rule 76 can match eol */
 YY_RULE_SETUP
-#line 1064 "ado.fl"
+#line 1065 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2793,7 +2785,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 1071 "ado.fl"
+#line 1072 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2804,7 +2796,7 @@ YY_RULE_SETUP
 /* ignore whitespace but track column numbers */
 case 78:
 YY_RULE_SETUP
-#line 1079 "ado.fl"
+#line 1080 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2813,7 +2805,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 1086 "ado.fl"
+#line 1087 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2825,7 +2817,7 @@ YY_RULE_SETUP
 /* Allow any type of macro to be nested here */
 case 80:
 YY_RULE_SETUP
-#line 1094 "ado.fl"
+#line 1095 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2841,7 +2833,7 @@ case 81:
 yyg->yy_c_buf_p = yy_cp = yy_bp + 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 1103 "ado.fl"
+#line 1104 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2854,7 +2846,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 1112 "ado.fl"
+#line 1113 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2868,7 +2860,7 @@ YY_RULE_SETUP
 /* Saw the matching close quote - all done */
 case 83:
 YY_RULE_SETUP
-#line 1123 "ado.fl"
+#line 1124 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2883,10 +2875,11 @@ YY_RULE_SETUP
 case 84:
 /* rule 84 can match eol */
 *yy_cp = yyg->yy_hold_char; /* undo effects of setting up yytext */
+YY_LINENO_REWIND_TO(yy_bp + 1);
 yyg->yy_c_buf_p = yy_cp = yy_bp + 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 1134 "ado.fl"
+#line 1135 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2896,7 +2889,7 @@ YY_RULE_SETUP
 case 85:
 /* rule 85 can match eol */
 YY_RULE_SETUP
-#line 1140 "ado.fl"
+#line 1141 "ado.fl"
 {
                                         // this is an error
                                         R_ECHO(yytext);
@@ -2911,7 +2904,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 86:
 YY_RULE_SETUP
-#line 1152 "ado.fl"
+#line 1153 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2920,7 +2913,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
-#line 1157 "ado.fl"
+#line 1158 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2929,7 +2922,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
-#line 1162 "ado.fl"
+#line 1163 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2938,7 +2931,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 89:
 YY_RULE_SETUP
-#line 1167 "ado.fl"
+#line 1168 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2947,7 +2940,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
-#line 1172 "ado.fl"
+#line 1173 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2956,7 +2949,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 91:
 YY_RULE_SETUP
-#line 1177 "ado.fl"
+#line 1178 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2965,7 +2958,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
-#line 1182 "ado.fl"
+#line 1183 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2974,7 +2967,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 93:
 YY_RULE_SETUP
-#line 1187 "ado.fl"
+#line 1188 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2983,7 +2976,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 94:
 YY_RULE_SETUP
-#line 1192 "ado.fl"
+#line 1193 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2992,7 +2985,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 95:
 YY_RULE_SETUP
-#line 1198 "ado.fl"
+#line 1199 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3000,7 +2993,7 @@ YY_RULE_SETUP
                                     }
 	YY_BREAK
 case YY_STATE_EOF(CDQUOTE):
-#line 1204 "ado.fl"
+#line 1205 "ado.fl"
 {
                                         cdquote_buf.clear();
                                         yy_pop_state(yyscanner);
@@ -3012,7 +3005,7 @@ case YY_STATE_EOF(CDQUOTE):
 
 case 96:
 YY_RULE_SETUP
-#line 1213 "ado.fl"
+#line 1214 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3024,7 +3017,7 @@ YY_RULE_SETUP
 /* Allow any type of macro to be nested here */
 case 97:
 YY_RULE_SETUP
-#line 1221 "ado.fl"
+#line 1222 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3040,7 +3033,7 @@ case 98:
 yyg->yy_c_buf_p = yy_cp = yy_bp + 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 1230 "ado.fl"
+#line 1231 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3053,7 +3046,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 99:
 YY_RULE_SETUP
-#line 1239 "ado.fl"
+#line 1240 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3067,7 +3060,7 @@ YY_RULE_SETUP
 /* Saw the matching close quote - all done */
 case 100:
 YY_RULE_SETUP
-#line 1250 "ado.fl"
+#line 1251 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3082,7 +3075,7 @@ YY_RULE_SETUP
 case 101:
 /* rule 101 can match eol */
 YY_RULE_SETUP
-#line 1261 "ado.fl"
+#line 1262 "ado.fl"
 {
                                         // this is an error
                                         R_ECHO(yytext);
@@ -3097,7 +3090,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 102:
 YY_RULE_SETUP
-#line 1273 "ado.fl"
+#line 1274 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3106,7 +3099,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 103:
 YY_RULE_SETUP
-#line 1278 "ado.fl"
+#line 1279 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3115,7 +3108,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 104:
 YY_RULE_SETUP
-#line 1283 "ado.fl"
+#line 1284 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3124,7 +3117,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 105:
 YY_RULE_SETUP
-#line 1288 "ado.fl"
+#line 1289 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3133,7 +3126,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 106:
 YY_RULE_SETUP
-#line 1293 "ado.fl"
+#line 1294 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3142,7 +3135,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 107:
 YY_RULE_SETUP
-#line 1298 "ado.fl"
+#line 1299 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3151,7 +3144,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 108:
 YY_RULE_SETUP
-#line 1303 "ado.fl"
+#line 1304 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3160,7 +3153,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 109:
 YY_RULE_SETUP
-#line 1308 "ado.fl"
+#line 1309 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3169,7 +3162,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 110:
 YY_RULE_SETUP
-#line 1313 "ado.fl"
+#line 1314 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3178,7 +3171,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 111:
 YY_RULE_SETUP
-#line 1318 "ado.fl"
+#line 1319 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3187,7 +3180,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 112:
 YY_RULE_SETUP
-#line 1324 "ado.fl"
+#line 1325 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3195,7 +3188,7 @@ YY_RULE_SETUP
                                     }
 	YY_BREAK
 case YY_STATE_EOF(STRING):
-#line 1330 "ado.fl"
+#line 1331 "ado.fl"
 {
                                         string_buf.clear();
                                         yy_pop_state(yyscanner);
@@ -3208,7 +3201,7 @@ case YY_STATE_EOF(STRING):
 /* datetime literals */
 case 113:
 YY_RULE_SETUP
-#line 1342 "ado.fl"
+#line 1343 "ado.fl"
 {
                                        R_ECHO(yytext);
                                    
@@ -3223,7 +3216,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 114:
 YY_RULE_SETUP
-#line 1353 "ado.fl"
+#line 1354 "ado.fl"
 {
                                                             R_ECHO(yytext);
                                         
@@ -3237,7 +3230,7 @@ YY_RULE_SETUP
 /* format specifiers */
 case 115:
 YY_RULE_SETUP
-#line 1366 "ado.fl"
+#line 1367 "ado.fl"
 {
                                         // numeric formats
                                         R_ECHO(yytext);
@@ -3251,7 +3244,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 116:
 YY_RULE_SETUP
-#line 1376 "ado.fl"
+#line 1377 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         yylval->node = new ExprNode({"ado_literal", "ado_format_spec"});
@@ -3264,7 +3257,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 117:
 YY_RULE_SETUP
-#line 1385 "ado.fl"
+#line 1386 "ado.fl"
 {
                                         // string formats
                                         R_ECHO(yytext);
@@ -3278,7 +3271,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 118:
 YY_RULE_SETUP
-#line 1395 "ado.fl"
+#line 1396 "ado.fl"
 {
                                         // datetime formats
                                         R_ECHO(yytext);
@@ -3293,7 +3286,7 @@ YY_RULE_SETUP
 /* Numeric data types */
 case 119:
 YY_RULE_SETUP
-#line 1409 "ado.fl"
+#line 1410 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3303,7 +3296,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 120:
 YY_RULE_SETUP
-#line 1415 "ado.fl"
+#line 1416 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3313,7 +3306,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 121:
 YY_RULE_SETUP
-#line 1421 "ado.fl"
+#line 1422 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3323,7 +3316,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 122:
 YY_RULE_SETUP
-#line 1427 "ado.fl"
+#line 1428 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3333,7 +3326,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 123:
 YY_RULE_SETUP
-#line 1433 "ado.fl"
+#line 1434 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3344,7 +3337,7 @@ YY_RULE_SETUP
 /* String data types */
 case 124:
 YY_RULE_SETUP
-#line 1443 "ado.fl"
+#line 1444 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3354,7 +3347,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 125:
 YY_RULE_SETUP
-#line 1449 "ado.fl"
+#line 1450 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3364,7 +3357,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 126:
 YY_RULE_SETUP
-#line 1455 "ado.fl"
+#line 1456 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3376,7 +3369,7 @@ YY_RULE_SETUP
                                      * before we lex numbers */
 case 127:
 YY_RULE_SETUP
-#line 1464 "ado.fl"
+#line 1465 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3389,7 +3382,7 @@ YY_RULE_SETUP
 /* numeric literals in their various formats */
 case 128:
 YY_RULE_SETUP
-#line 1475 "ado.fl"
+#line 1476 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3401,7 +3394,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 129:
 YY_RULE_SETUP
-#line 1483 "ado.fl"
+#line 1484 "ado.fl"
 { /* hex */
                                         R_ECHO(yytext);
                                         
@@ -3413,7 +3406,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 130:
 YY_RULE_SETUP
-#line 1491 "ado.fl"
+#line 1492 "ado.fl"
 { /* octal */
                                         R_ECHO(yytext);
                                         
@@ -3425,7 +3418,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 131:
 YY_RULE_SETUP
-#line 1499 "ado.fl"
+#line 1500 "ado.fl"
 { /* decimal integer */
                                         R_ECHO(yytext);
                                         
@@ -3438,10 +3431,11 @@ YY_RULE_SETUP
 case 132:
 /* rule 132 can match eol */
 *yy_cp = yyg->yy_hold_char; /* undo effects of setting up yytext */
+YY_LINENO_REWIND_TO(yy_cp - 1);
 yyg->yy_c_buf_p = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 1507 "ado.fl"
+#line 1508 "ado.fl"
 { /* decimal float */
                                         R_ECHO(yytext);
                                         
@@ -3453,7 +3447,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 133:
 YY_RULE_SETUP
-#line 1515 "ado.fl"
+#line 1516 "ado.fl"
 { /* scientific notation */
                                         R_ECHO(yytext);
                                         
@@ -3465,7 +3459,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 134:
 YY_RULE_SETUP
-#line 1523 "ado.fl"
+#line 1524 "ado.fl"
 { /* scientific notation with fractions, or numbers like ".0239" */
                                         R_ECHO(yytext);
                                         
@@ -3478,7 +3472,7 @@ YY_RULE_SETUP
 /* Other keywords */
 case 135:
 YY_RULE_SETUP
-#line 1535 "ado.fl"
+#line 1536 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3488,7 +3482,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 136:
 YY_RULE_SETUP
-#line 1541 "ado.fl"
+#line 1542 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3498,7 +3492,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 137:
 YY_RULE_SETUP
-#line 1547 "ado.fl"
+#line 1548 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3508,7 +3502,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 138:
 YY_RULE_SETUP
-#line 1553 "ado.fl"
+#line 1554 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3520,7 +3514,7 @@ YY_RULE_SETUP
 /* Weight-clause specifiers (this is a hack) */
 case 139:
 YY_RULE_SETUP
-#line 1564 "ado.fl"
+#line 1565 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3542,7 +3536,7 @@ YY_RULE_SETUP
 /* infix operators and various single-character tokens */
 case 140:
 YY_RULE_SETUP
-#line 1585 "ado.fl"
+#line 1586 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3552,7 +3546,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 141:
 YY_RULE_SETUP
-#line 1591 "ado.fl"
+#line 1592 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3562,7 +3556,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 142:
 YY_RULE_SETUP
-#line 1597 "ado.fl"
+#line 1598 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3572,7 +3566,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 143:
 YY_RULE_SETUP
-#line 1603 "ado.fl"
+#line 1604 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3582,7 +3576,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 144:
 YY_RULE_SETUP
-#line 1609 "ado.fl"
+#line 1610 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3592,7 +3586,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 145:
 YY_RULE_SETUP
-#line 1615 "ado.fl"
+#line 1616 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3602,7 +3596,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 146:
 YY_RULE_SETUP
-#line 1621 "ado.fl"
+#line 1622 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3612,7 +3606,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 147:
 YY_RULE_SETUP
-#line 1627 "ado.fl"
+#line 1628 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3622,7 +3616,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 148:
 YY_RULE_SETUP
-#line 1633 "ado.fl"
+#line 1634 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3632,7 +3626,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 149:
 YY_RULE_SETUP
-#line 1639 "ado.fl"
+#line 1640 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3642,7 +3636,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 150:
 YY_RULE_SETUP
-#line 1645 "ado.fl"
+#line 1646 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3652,7 +3646,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 151:
 YY_RULE_SETUP
-#line 1652 "ado.fl"
+#line 1653 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3662,7 +3656,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 152:
 YY_RULE_SETUP
-#line 1658 "ado.fl"
+#line 1659 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3672,7 +3666,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 153:
 YY_RULE_SETUP
-#line 1664 "ado.fl"
+#line 1665 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3682,7 +3676,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 154:
 YY_RULE_SETUP
-#line 1670 "ado.fl"
+#line 1671 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3692,7 +3686,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 155:
 YY_RULE_SETUP
-#line 1676 "ado.fl"
+#line 1677 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3702,7 +3696,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 156:
 YY_RULE_SETUP
-#line 1682 "ado.fl"
+#line 1683 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3712,7 +3706,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 157:
 YY_RULE_SETUP
-#line 1688 "ado.fl"
+#line 1689 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3722,7 +3716,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 158:
 YY_RULE_SETUP
-#line 1694 "ado.fl"
+#line 1695 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3732,7 +3726,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 159:
 YY_RULE_SETUP
-#line 1700 "ado.fl"
+#line 1701 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3742,7 +3736,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 160:
 YY_RULE_SETUP
-#line 1706 "ado.fl"
+#line 1707 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3752,7 +3746,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 161:
 YY_RULE_SETUP
-#line 1712 "ado.fl"
+#line 1713 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3762,7 +3756,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 162:
 YY_RULE_SETUP
-#line 1718 "ado.fl"
+#line 1719 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3772,7 +3766,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 163:
 YY_RULE_SETUP
-#line 1724 "ado.fl"
+#line 1725 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3782,7 +3776,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 164:
 YY_RULE_SETUP
-#line 1730 "ado.fl"
+#line 1731 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3793,7 +3787,7 @@ YY_RULE_SETUP
 /* Factor variable operators and level-restricted virtual variables */
 case 165:
 YY_RULE_SETUP
-#line 1738 "ado.fl"
+#line 1739 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3805,7 +3799,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 166:
 YY_RULE_SETUP
-#line 1746 "ado.fl"
+#line 1747 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3817,7 +3811,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 167:
 YY_RULE_SETUP
-#line 1755 "ado.fl"
+#line 1756 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3830,7 +3824,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 168:
 YY_RULE_SETUP
-#line 1764 "ado.fl"
+#line 1765 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3843,7 +3837,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 169:
 YY_RULE_SETUP
-#line 1773 "ado.fl"
+#line 1774 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3856,7 +3850,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 170:
 YY_RULE_SETUP
-#line 1782 "ado.fl"
+#line 1783 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3869,7 +3863,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 171:
 YY_RULE_SETUP
-#line 1791 "ado.fl"
+#line 1792 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3888,7 +3882,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 172:
 YY_RULE_SETUP
-#line 1806 "ado.fl"
+#line 1807 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3907,7 +3901,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 173:
 YY_RULE_SETUP
-#line 1822 "ado.fl"
+#line 1823 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3922,7 +3916,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 174:
 YY_RULE_SETUP
-#line 1833 "ado.fl"
+#line 1834 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3943,7 +3937,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 175:
 YY_RULE_SETUP
-#line 1850 "ado.fl"
+#line 1851 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3960,7 +3954,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 176:
 YY_RULE_SETUP
-#line 1864 "ado.fl"
+#line 1865 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3979,7 +3973,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 177:
 YY_RULE_SETUP
-#line 1879 "ado.fl"
+#line 1880 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4005,7 +3999,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 178:
 YY_RULE_SETUP
-#line 1901 "ado.fl"
+#line 1902 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4028,7 +4022,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 179:
 YY_RULE_SETUP
-#line 1921 "ado.fl"
+#line 1922 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4038,7 +4032,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 180:
 YY_RULE_SETUP
-#line 1927 "ado.fl"
+#line 1928 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4049,7 +4043,7 @@ YY_RULE_SETUP
 /* command verbs that have to be hardcoded into the grammar */
 case 181:
 YY_RULE_SETUP
-#line 1937 "ado.fl"
+#line 1938 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4062,7 +4056,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 182:
 YY_RULE_SETUP
-#line 1946 "ado.fl"
+#line 1947 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4075,7 +4069,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 183:
 YY_RULE_SETUP
-#line 1955 "ado.fl"
+#line 1956 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4088,7 +4082,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 184:
 YY_RULE_SETUP
-#line 1964 "ado.fl"
+#line 1965 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4101,7 +4095,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 185:
 YY_RULE_SETUP
-#line 1973 "ado.fl"
+#line 1974 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4115,7 +4109,7 @@ YY_RULE_SETUP
 /* Non-prefix special commands */
 case 186:
 YY_RULE_SETUP
-#line 1984 "ado.fl"
+#line 1985 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4128,7 +4122,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 187:
 YY_RULE_SETUP
-#line 1993 "ado.fl"
+#line 1994 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4141,7 +4135,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 188:
 YY_RULE_SETUP
-#line 2002 "ado.fl"
+#line 2003 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4156,7 +4150,7 @@ YY_RULE_SETUP
                                      * have idiosyncratic syntax */
 case 189:
 YY_RULE_SETUP
-#line 2014 "ado.fl"
+#line 2015 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4169,7 +4163,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 190:
 YY_RULE_SETUP
-#line 2023 "ado.fl"
+#line 2024 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4182,7 +4176,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 191:
 YY_RULE_SETUP
-#line 2032 "ado.fl"
+#line 2033 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4195,7 +4189,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 192:
 YY_RULE_SETUP
-#line 2041 "ado.fl"
+#line 2042 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4208,7 +4202,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 193:
 YY_RULE_SETUP
-#line 2050 "ado.fl"
+#line 2051 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4221,7 +4215,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 194:
 YY_RULE_SETUP
-#line 2059 "ado.fl"
+#line 2060 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4234,7 +4228,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 195:
 YY_RULE_SETUP
-#line 2068 "ado.fl"
+#line 2069 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4248,7 +4242,7 @@ YY_RULE_SETUP
 /* all non-keyword identifiers */
 case 196:
 YY_RULE_SETUP
-#line 2081 "ado.fl"
+#line 2082 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4259,7 +4253,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 197:
 YY_RULE_SETUP
-#line 2089 "ado.fl"
+#line 2090 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4267,15 +4261,15 @@ YY_RULE_SETUP
                                     }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 2095 "ado.fl"
+#line 2096 "ado.fl"
 { return token::TOK_END; }
 	YY_BREAK
 case 198:
 YY_RULE_SETUP
-#line 2097 "ado.fl"
+#line 2098 "ado.fl"
 ECHO;
 	YY_BREAK
-#line 4279 "lex.yy.cpp"
+#line 4273 "lex.yy.cpp"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -4352,7 +4346,7 @@ ECHO;
 				{
 				yyg->yy_did_buffer_switch_on_eof = 0;
 
-				if ( yywrap(yyscanner ) )
+				if ( yywrap( yyscanner ) )
 					{
 					/* Note: because we've taken care in
 					 * yy_get_next_buffer() to have set up
@@ -4405,6 +4399,7 @@ ECHO;
 			"fatal flex scanner internal error--no action found" );
 	} /* end of action switch */
 		} /* end of scanning one token */
+	} /* end of user's declarations */
 } /* end of yylex */
 
 /* yy_get_next_buffer - try to read in a new buffer
@@ -4417,9 +4412,9 @@ ECHO;
 static int yy_get_next_buffer (yyscan_t yyscanner)
 {
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
-	register char *dest = YY_CURRENT_BUFFER_LVALUE->yy_ch_buf;
-	register char *source = yyg->yytext_ptr;
-	register int number_to_move, i;
+	char *dest = YY_CURRENT_BUFFER_LVALUE->yy_ch_buf;
+	char *source = yyg->yytext_ptr;
+	int number_to_move, i;
 	int ret_val;
 
 	if ( yyg->yy_c_buf_p > &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[yyg->yy_n_chars + 1] )
@@ -4448,7 +4443,7 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 	/* Try to read more data. */
 
 	/* First move last chars to start of buffer. */
-	number_to_move = (int) (yyg->yy_c_buf_p - yyg->yytext_ptr) - 1;
+	number_to_move = (int) (yyg->yy_c_buf_p - yyg->yytext_ptr - 1);
 
 	for ( i = 0; i < number_to_move; ++i )
 		*(dest++) = *(source++);
@@ -4468,7 +4463,7 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 			{ /* Not enough room in the buffer - grow it. */
 
 			/* just a shorter name for the current buffer */
-			YY_BUFFER_STATE b = YY_CURRENT_BUFFER;
+			YY_BUFFER_STATE b = YY_CURRENT_BUFFER_LVALUE;
 
 			int yy_c_buf_p_offset =
 				(int) (yyg->yy_c_buf_p - b->yy_ch_buf);
@@ -4484,11 +4479,12 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 
 				b->yy_ch_buf = (char *)
 					/* Include room in for 2 EOB chars. */
-					yyrealloc((void *) b->yy_ch_buf,b->yy_buf_size + 2 ,yyscanner );
+					yyrealloc( (void *) b->yy_ch_buf,
+							 (yy_size_t) (b->yy_buf_size + 2) , yyscanner );
 				}
 			else
 				/* Can't grow it, we don't own it. */
-				b->yy_ch_buf = 0;
+				b->yy_ch_buf = NULL;
 
 			if ( ! b->yy_ch_buf )
 				YY_FATAL_ERROR(
@@ -4506,7 +4502,7 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 
 		/* Read in more data. */
 		YY_INPUT( (&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move]),
-			yyg->yy_n_chars, (size_t) num_to_read );
+			yyg->yy_n_chars, num_to_read );
 
 		YY_CURRENT_BUFFER_LVALUE->yy_n_chars = yyg->yy_n_chars;
 		}
@@ -4516,7 +4512,7 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 		if ( number_to_move == YY_MORE_ADJ )
 			{
 			ret_val = EOB_ACT_END_OF_FILE;
-			yyrestart(yyin  ,yyscanner);
+			yyrestart( yyin  , yyscanner);
 			}
 
 		else
@@ -4530,12 +4526,15 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 	else
 		ret_val = EOB_ACT_CONTINUE_SCAN;
 
-	if ((yy_size_t) (yyg->yy_n_chars + number_to_move) > YY_CURRENT_BUFFER_LVALUE->yy_buf_size) {
+	if ((yyg->yy_n_chars + number_to_move) > YY_CURRENT_BUFFER_LVALUE->yy_buf_size) {
 		/* Extend the array by 50%, plus the number we really need. */
-		yy_size_t new_size = yyg->yy_n_chars + number_to_move + (yyg->yy_n_chars >> 1);
-		YY_CURRENT_BUFFER_LVALUE->yy_ch_buf = (char *) yyrealloc((void *) YY_CURRENT_BUFFER_LVALUE->yy_ch_buf,new_size ,yyscanner );
+		int new_size = yyg->yy_n_chars + number_to_move + (yyg->yy_n_chars >> 1);
+		YY_CURRENT_BUFFER_LVALUE->yy_ch_buf = (char *) yyrealloc(
+			(void *) YY_CURRENT_BUFFER_LVALUE->yy_ch_buf, (yy_size_t) new_size , yyscanner );
 		if ( ! YY_CURRENT_BUFFER_LVALUE->yy_ch_buf )
 			YY_FATAL_ERROR( "out of dynamic memory in yy_get_next_buffer()" );
+		/* "- 2" to take care of EOB's */
+		YY_CURRENT_BUFFER_LVALUE->yy_buf_size = (int) (new_size - 2);
 	}
 
 	yyg->yy_n_chars += number_to_move;
@@ -4551,8 +4550,8 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 
     static yy_state_type yy_get_previous_state (yyscan_t yyscanner)
 {
-	register yy_state_type yy_current_state;
-	register char *yy_cp;
+	yy_state_type yy_current_state;
+	char *yy_cp;
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
 
 	yy_current_state = yyg->yy_start;
@@ -4560,7 +4559,7 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 
 	for ( yy_cp = yyg->yytext_ptr + YY_MORE_ADJ; yy_cp < yyg->yy_c_buf_p; ++yy_cp )
 		{
-		register YY_CHAR yy_c = (*yy_cp ? yy_ec[YY_SC_TO_UI(*yy_cp)] : 1);
+		YY_CHAR yy_c = (*yy_cp ? yy_ec[YY_SC_TO_UI(*yy_cp)] : 1);
 		if ( yy_accept[yy_current_state] )
 			{
 			yyg->yy_last_accepting_state = yy_current_state;
@@ -4570,9 +4569,9 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 			{
 			yy_current_state = (int) yy_def[yy_current_state];
 			if ( yy_current_state >= 532 )
-				yy_c = yy_meta[(unsigned int) yy_c];
+				yy_c = yy_meta[yy_c];
 			}
-		yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
+		yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
 		}
 
 	return yy_current_state;
@@ -4585,11 +4584,11 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
  */
     static yy_state_type yy_try_NUL_trans  (yy_state_type yy_current_state , yyscan_t yyscanner)
 {
-	register int yy_is_jam;
+	int yy_is_jam;
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner; /* This var may be unused depending upon options. */
-	register char *yy_cp = yyg->yy_c_buf_p;
+	char *yy_cp = yyg->yy_c_buf_p;
 
-	register YY_CHAR yy_c = 1;
+	YY_CHAR yy_c = 1;
 	if ( yy_accept[yy_current_state] )
 		{
 		yyg->yy_last_accepting_state = yy_current_state;
@@ -4599,17 +4598,20 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 		{
 		yy_current_state = (int) yy_def[yy_current_state];
 		if ( yy_current_state >= 532 )
-			yy_c = yy_meta[(unsigned int) yy_c];
+			yy_c = yy_meta[yy_c];
 		}
-	yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
+	yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
 	yy_is_jam = (yy_current_state == 531);
 
+	(void)yyg;
 	return yy_is_jam ? 0 : yy_current_state;
 }
 
-    static void yyunput (int c, register char * yy_bp , yyscan_t yyscanner)
+#ifndef YY_NO_UNPUT
+
+    static void yyunput (int c, char * yy_bp , yyscan_t yyscanner)
 {
-	register char *yy_cp;
+	char *yy_cp;
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
 
     yy_cp = yyg->yy_c_buf_p;
@@ -4620,10 +4622,10 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 	if ( yy_cp < YY_CURRENT_BUFFER_LVALUE->yy_ch_buf + 2 )
 		{ /* need to shift things up to make room */
 		/* +2 for EOB chars. */
-		register int number_to_move = yyg->yy_n_chars + 2;
-		register char *dest = &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[
+		int number_to_move = yyg->yy_n_chars + 2;
+		char *dest = &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[
 					YY_CURRENT_BUFFER_LVALUE->yy_buf_size + 2];
-		register char *source =
+		char *source =
 				&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move];
 
 		while ( source > YY_CURRENT_BUFFER_LVALUE->yy_ch_buf )
@@ -4632,7 +4634,7 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 		yy_cp += (int) (dest - source);
 		yy_bp += (int) (dest - source);
 		YY_CURRENT_BUFFER_LVALUE->yy_n_chars =
-			yyg->yy_n_chars = YY_CURRENT_BUFFER_LVALUE->yy_buf_size;
+			yyg->yy_n_chars = (int) YY_CURRENT_BUFFER_LVALUE->yy_buf_size;
 
 		if ( yy_cp < YY_CURRENT_BUFFER_LVALUE->yy_ch_buf + 2 )
 			YY_FATAL_ERROR( "flex scanner push-back overflow" );
@@ -4644,6 +4646,8 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 	yyg->yy_hold_char = *yy_cp;
 	yyg->yy_c_buf_p = yy_cp;
 }
+
+#endif
 
 #ifndef YY_NO_INPUT
 #ifdef __cplusplus
@@ -4670,7 +4674,7 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 
 		else
 			{ /* need more input */
-			int offset = yyg->yy_c_buf_p - yyg->yytext_ptr;
+			int offset = (int) (yyg->yy_c_buf_p - yyg->yytext_ptr);
 			++yyg->yy_c_buf_p;
 
 			switch ( yy_get_next_buffer( yyscanner ) )
@@ -4687,14 +4691,14 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 					 */
 
 					/* Reset buffer status. */
-					yyrestart(yyin ,yyscanner);
+					yyrestart( yyin , yyscanner);
 
 					/*FALLTHROUGH*/
 
 				case EOB_ACT_END_OF_FILE:
 					{
-					if ( yywrap(yyscanner ) )
-						return EOF;
+					if ( yywrap( yyscanner ) )
+						return 0;
 
 					if ( ! yyg->yy_did_buffer_switch_on_eof )
 						YY_NEW_FILE;
@@ -4734,11 +4738,11 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 	if ( ! YY_CURRENT_BUFFER ){
         yyensure_buffer_stack (yyscanner);
 		YY_CURRENT_BUFFER_LVALUE =
-            yy_create_buffer(yyin,YY_BUF_SIZE ,yyscanner);
+            yy_create_buffer( yyin, YY_BUF_SIZE , yyscanner);
 	}
 
-	yy_init_buffer(YY_CURRENT_BUFFER,input_file ,yyscanner);
-	yy_load_buffer_state(yyscanner );
+	yy_init_buffer( YY_CURRENT_BUFFER, input_file , yyscanner);
+	yy_load_buffer_state( yyscanner );
 }
 
 /** Switch to a different input buffer.
@@ -4767,7 +4771,7 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 		}
 
 	YY_CURRENT_BUFFER_LVALUE = new_buffer;
-	yy_load_buffer_state(yyscanner );
+	yy_load_buffer_state( yyscanner );
 
 	/* We don't actually know whether we did this switch during
 	 * EOF (yywrap()) processing, but the only time this flag
@@ -4796,7 +4800,7 @@ static void yy_load_buffer_state  (yyscan_t yyscanner)
 {
 	YY_BUFFER_STATE b;
     
-	b = (YY_BUFFER_STATE) yyalloc(sizeof( struct yy_buffer_state ) ,yyscanner );
+	b = (YY_BUFFER_STATE) yyalloc( sizeof( struct yy_buffer_state ) , yyscanner );
 	if ( ! b )
 		YY_FATAL_ERROR( "out of dynamic memory in yy_create_buffer()" );
 
@@ -4805,13 +4809,13 @@ static void yy_load_buffer_state  (yyscan_t yyscanner)
 	/* yy_ch_buf has to be 2 characters longer than the size given because
 	 * we need to put in 2 end-of-buffer characters.
 	 */
-	b->yy_ch_buf = (char *) yyalloc(b->yy_buf_size + 2 ,yyscanner );
+	b->yy_ch_buf = (char *) yyalloc( (yy_size_t) (b->yy_buf_size + 2) , yyscanner );
 	if ( ! b->yy_ch_buf )
 		YY_FATAL_ERROR( "out of dynamic memory in yy_create_buffer()" );
 
 	b->yy_is_our_buffer = 1;
 
-	yy_init_buffer(b,file ,yyscanner);
+	yy_init_buffer( b, file , yyscanner);
 
 	return b;
 }
@@ -4831,9 +4835,9 @@ static void yy_load_buffer_state  (yyscan_t yyscanner)
 		YY_CURRENT_BUFFER_LVALUE = (YY_BUFFER_STATE) 0;
 
 	if ( b->yy_is_our_buffer )
-		yyfree((void *) b->yy_ch_buf ,yyscanner );
+		yyfree( (void *) b->yy_ch_buf , yyscanner );
 
-	yyfree((void *) b ,yyscanner );
+	yyfree( (void *) b , yyscanner );
 }
 
 /* Initializes or reinitializes a buffer.
@@ -4846,7 +4850,7 @@ static void yy_load_buffer_state  (yyscan_t yyscanner)
 	int oerrno = errno;
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
 
-	yy_flush_buffer(b ,yyscanner);
+	yy_flush_buffer( b , yyscanner);
 
 	b->yy_input_file = file;
 	b->yy_fill_buffer = 1;
@@ -4890,7 +4894,7 @@ static void yy_load_buffer_state  (yyscan_t yyscanner)
 	b->yy_buffer_status = YY_BUFFER_NEW;
 
 	if ( b == YY_CURRENT_BUFFER )
-		yy_load_buffer_state(yyscanner );
+		yy_load_buffer_state( yyscanner );
 }
 
 /** Pushes the new state onto the stack. The new state becomes
@@ -4922,7 +4926,7 @@ void yypush_buffer_state (YY_BUFFER_STATE new_buffer , yyscan_t yyscanner)
 	YY_CURRENT_BUFFER_LVALUE = new_buffer;
 
 	/* copied from yy_switch_to_buffer. */
-	yy_load_buffer_state(yyscanner );
+	yy_load_buffer_state( yyscanner );
 	yyg->yy_did_buffer_switch_on_eof = 1;
 }
 
@@ -4936,13 +4940,13 @@ void yypop_buffer_state (yyscan_t yyscanner)
 	if (!YY_CURRENT_BUFFER)
 		return;
 
-	yy_delete_buffer(YY_CURRENT_BUFFER ,yyscanner);
+	yy_delete_buffer(YY_CURRENT_BUFFER , yyscanner);
 	YY_CURRENT_BUFFER_LVALUE = NULL;
 	if (yyg->yy_buffer_stack_top > 0)
 		--yyg->yy_buffer_stack_top;
 
 	if (YY_CURRENT_BUFFER) {
-		yy_load_buffer_state(yyscanner );
+		yy_load_buffer_state( yyscanner );
 		yyg->yy_did_buffer_switch_on_eof = 1;
 	}
 }
@@ -4952,7 +4956,7 @@ void yypop_buffer_state (yyscan_t yyscanner)
  */
 static void yyensure_buffer_stack (yyscan_t yyscanner)
 {
-	int num_to_alloc;
+	yy_size_t num_to_alloc;
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
 
 	if (!yyg->yy_buffer_stack) {
@@ -4961,15 +4965,15 @@ static void yyensure_buffer_stack (yyscan_t yyscanner)
 		 * scanner will even need a stack. We use 2 instead of 1 to avoid an
 		 * immediate realloc on the next call.
          */
-		num_to_alloc = 1;
+      num_to_alloc = 1; /* After all that talk, this was set to 1 anyways... */
 		yyg->yy_buffer_stack = (struct yy_buffer_state**)yyalloc
 								(num_to_alloc * sizeof(struct yy_buffer_state*)
 								, yyscanner);
 		if ( ! yyg->yy_buffer_stack )
 			YY_FATAL_ERROR( "out of dynamic memory in yyensure_buffer_stack()" );
-								  
+
 		memset(yyg->yy_buffer_stack, 0, num_to_alloc * sizeof(struct yy_buffer_state*));
-				
+
 		yyg->yy_buffer_stack_max = num_to_alloc;
 		yyg->yy_buffer_stack_top = 0;
 		return;
@@ -4978,7 +4982,7 @@ static void yyensure_buffer_stack (yyscan_t yyscanner)
 	if (yyg->yy_buffer_stack_top >= (yyg->yy_buffer_stack_max) - 1){
 
 		/* Increase the buffer to prepare for a possible push. */
-		int grow_size = 8 /* arbitrary grow size */;
+		yy_size_t grow_size = 8 /* arbitrary grow size */;
 
 		num_to_alloc = yyg->yy_buffer_stack_max + grow_size;
 		yyg->yy_buffer_stack = (struct yy_buffer_state**)yyrealloc
@@ -4998,7 +5002,7 @@ static void yyensure_buffer_stack (yyscan_t yyscanner)
  * @param base the character buffer
  * @param size the size in bytes of the character buffer
  * @param yyscanner The scanner object.
- * @return the newly allocated buffer state object. 
+ * @return the newly allocated buffer state object.
  */
 YY_BUFFER_STATE yy_scan_buffer  (char * base, yy_size_t  size , yyscan_t yyscanner)
 {
@@ -5008,23 +5012,23 @@ YY_BUFFER_STATE yy_scan_buffer  (char * base, yy_size_t  size , yyscan_t yyscann
 	     base[size-2] != YY_END_OF_BUFFER_CHAR ||
 	     base[size-1] != YY_END_OF_BUFFER_CHAR )
 		/* They forgot to leave room for the EOB's. */
-		return 0;
+		return NULL;
 
-	b = (YY_BUFFER_STATE) yyalloc(sizeof( struct yy_buffer_state ) ,yyscanner );
+	b = (YY_BUFFER_STATE) yyalloc( sizeof( struct yy_buffer_state ) , yyscanner );
 	if ( ! b )
 		YY_FATAL_ERROR( "out of dynamic memory in yy_scan_buffer()" );
 
-	b->yy_buf_size = size - 2;	/* "- 2" to take care of EOB's */
+	b->yy_buf_size = (int) (size - 2);	/* "- 2" to take care of EOB's */
 	b->yy_buf_pos = b->yy_ch_buf = base;
 	b->yy_is_our_buffer = 0;
-	b->yy_input_file = 0;
+	b->yy_input_file = NULL;
 	b->yy_n_chars = b->yy_buf_size;
 	b->yy_is_interactive = 0;
 	b->yy_at_bol = 1;
 	b->yy_fill_buffer = 0;
 	b->yy_buffer_status = YY_BUFFER_NEW;
 
-	yy_switch_to_buffer(b ,yyscanner );
+	yy_switch_to_buffer( b , yyscanner );
 
 	return b;
 }
@@ -5037,10 +5041,10 @@ YY_BUFFER_STATE yy_scan_buffer  (char * base, yy_size_t  size , yyscan_t yyscann
  * @note If you want to scan bytes that may contain NUL values, then use
  *       yy_scan_bytes() instead.
  */
-YY_BUFFER_STATE yy_scan_string (yyconst char * yystr , yyscan_t yyscanner)
+YY_BUFFER_STATE yy_scan_string (const char * yystr , yyscan_t yyscanner)
 {
     
-	return yy_scan_bytes(yystr,strlen(yystr) ,yyscanner);
+	return yy_scan_bytes( yystr, (int) strlen(yystr) , yyscanner);
 }
 
 /** Setup the input buffer state to scan the given bytes. The next call to yylex() will
@@ -5050,7 +5054,7 @@ YY_BUFFER_STATE yy_scan_string (yyconst char * yystr , yyscan_t yyscanner)
  * @param yyscanner The scanner object.
  * @return the newly allocated buffer state object.
  */
-YY_BUFFER_STATE yy_scan_bytes  (yyconst char * yybytes, int  _yybytes_len , yyscan_t yyscanner)
+YY_BUFFER_STATE yy_scan_bytes  (const char * yybytes, int  _yybytes_len , yyscan_t yyscanner)
 {
 	YY_BUFFER_STATE b;
 	char *buf;
@@ -5058,8 +5062,8 @@ YY_BUFFER_STATE yy_scan_bytes  (yyconst char * yybytes, int  _yybytes_len , yysc
 	int i;
     
 	/* Get memory for full buffer, including space for trailing EOB's. */
-	n = _yybytes_len + 2;
-	buf = (char *) yyalloc(n ,yyscanner );
+	n = (yy_size_t) (_yybytes_len + 2);
+	buf = (char *) yyalloc( n , yyscanner );
 	if ( ! buf )
 		YY_FATAL_ERROR( "out of dynamic memory in yy_scan_bytes()" );
 
@@ -5068,7 +5072,7 @@ YY_BUFFER_STATE yy_scan_bytes  (yyconst char * yybytes, int  _yybytes_len , yysc
 
 	buf[_yybytes_len] = buf[_yybytes_len+1] = YY_END_OF_BUFFER_CHAR;
 
-	b = yy_scan_buffer(buf,n ,yyscanner);
+	b = yy_scan_buffer( buf, n , yyscanner);
 	if ( ! b )
 		YY_FATAL_ERROR( "bad buffer in yy_scan_bytes()" );
 
@@ -5080,7 +5084,7 @@ YY_BUFFER_STATE yy_scan_bytes  (yyconst char * yybytes, int  _yybytes_len , yysc
 	return b;
 }
 
-    static void yy_push_state (int  new_state , yyscan_t yyscanner)
+    static void yy_push_state (int  _new_state , yyscan_t yyscanner)
 {
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
 	if ( yyg->yy_start_stack_ptr >= yyg->yy_start_stack_depth )
@@ -5088,13 +5092,14 @@ YY_BUFFER_STATE yy_scan_bytes  (yyconst char * yybytes, int  _yybytes_len , yysc
 		yy_size_t new_size;
 
 		yyg->yy_start_stack_depth += YY_START_STACK_INCR;
-		new_size = yyg->yy_start_stack_depth * sizeof( int );
+		new_size = (yy_size_t) yyg->yy_start_stack_depth * sizeof( int );
 
 		if ( ! yyg->yy_start_stack )
-			yyg->yy_start_stack = (int *) yyalloc(new_size ,yyscanner );
+			yyg->yy_start_stack = (int *) yyalloc( new_size , yyscanner );
 
 		else
-			yyg->yy_start_stack = (int *) yyrealloc((void *) yyg->yy_start_stack,new_size ,yyscanner );
+			yyg->yy_start_stack = (int *) yyrealloc(
+					(void *) yyg->yy_start_stack, new_size , yyscanner );
 
 		if ( ! yyg->yy_start_stack )
 			YY_FATAL_ERROR( "out of memory expanding start-condition stack" );
@@ -5102,7 +5107,7 @@ YY_BUFFER_STATE yy_scan_bytes  (yyconst char * yybytes, int  _yybytes_len , yysc
 
 	yyg->yy_start_stack[yyg->yy_start_stack_ptr++] = YY_START;
 
-	BEGIN(new_state);
+	BEGIN(_new_state);
 }
 
     static void yy_pop_state  (yyscan_t yyscanner)
@@ -5124,9 +5129,11 @@ YY_BUFFER_STATE yy_scan_bytes  (yyconst char * yybytes, int  _yybytes_len , yysc
 #define YY_EXIT_FAILURE 2
 #endif
 
-static void yy_fatal_error (yyconst char* msg , yyscan_t yyscanner)
+static void yynoreturn yy_fatal_error (const char* msg , yyscan_t yyscanner)
 {
-    	(void) fprintf( stderr, "%s\n", msg );
+	struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
+	(void)yyg;
+	fprintf( stderr, "%s\n", msg );
 	exit( YY_EXIT_FAILURE );
 }
 
@@ -5164,7 +5171,7 @@ YY_EXTRA_TYPE yyget_extra  (yyscan_t yyscanner)
 int yyget_lineno  (yyscan_t yyscanner)
 {
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
-    
+
         if (! YY_CURRENT_BUFFER)
             return 0;
     
@@ -5177,7 +5184,7 @@ int yyget_lineno  (yyscan_t yyscanner)
 int yyget_column  (yyscan_t yyscanner)
 {
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
-    
+
         if (! YY_CURRENT_BUFFER)
             return 0;
     
@@ -5232,51 +5239,51 @@ void yyset_extra (YY_EXTRA_TYPE  user_defined , yyscan_t yyscanner)
 }
 
 /** Set the current line number.
- * @param line_number
+ * @param _line_number line number
  * @param yyscanner The scanner object.
  */
-void yyset_lineno (int  line_number , yyscan_t yyscanner)
+void yyset_lineno (int  _line_number , yyscan_t yyscanner)
 {
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
 
         /* lineno is only valid if an input buffer exists. */
         if (! YY_CURRENT_BUFFER )
-           yy_fatal_error( "yyset_lineno called with no buffer" , yyscanner); 
+           YY_FATAL_ERROR( "yyset_lineno called with no buffer" );
     
-    yylineno = line_number;
+    yylineno = _line_number;
 }
 
 /** Set the current column.
- * @param line_number
+ * @param _column_no column number
  * @param yyscanner The scanner object.
  */
-void yyset_column (int  column_no , yyscan_t yyscanner)
+void yyset_column (int  _column_no , yyscan_t yyscanner)
 {
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
 
         /* column is only valid if an input buffer exists. */
         if (! YY_CURRENT_BUFFER )
-           yy_fatal_error( "yyset_column called with no buffer" , yyscanner); 
+           YY_FATAL_ERROR( "yyset_column called with no buffer" );
     
-    yycolumn = column_no;
+    yycolumn = _column_no;
 }
 
 /** Set the input stream. This does not discard the current
  * input buffer.
- * @param in_str A readable stream.
+ * @param _in_str A readable stream.
  * @param yyscanner The scanner object.
  * @see yy_switch_to_buffer
  */
-void yyset_in (FILE *  in_str , yyscan_t yyscanner)
+void yyset_in (FILE *  _in_str , yyscan_t yyscanner)
 {
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
-    yyin = in_str ;
+    yyin = _in_str ;
 }
 
-void yyset_out (FILE *  out_str , yyscan_t yyscanner)
+void yyset_out (FILE *  _out_str , yyscan_t yyscanner)
 {
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
-    yyout = out_str ;
+    yyout = _out_str ;
 }
 
 int yyget_debug  (yyscan_t yyscanner)
@@ -5285,10 +5292,10 @@ int yyget_debug  (yyscan_t yyscanner)
     return yy_flex_debug;
 }
 
-void yyset_debug (int  bdebug , yyscan_t yyscanner)
+void yyset_debug (int  _bdebug , yyscan_t yyscanner)
 {
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
-    yy_flex_debug = bdebug ;
+    yy_flex_debug = _bdebug ;
 }
 
 /* Accessor methods for yylval and yylloc */
@@ -5311,9 +5318,7 @@ void yyset_lval (YYSTYPE *  yylval_param , yyscan_t yyscanner)
  * the ONLY reentrant function that doesn't take the scanner as the last argument.
  * That's why we explicitly handle the declaration, instead of using our macros.
  */
-
 int yylex_init(yyscan_t* ptr_yy_globals)
-
 {
     if (ptr_yy_globals == NULL){
         errno = EINVAL;
@@ -5340,9 +5345,7 @@ int yylex_init(yyscan_t* ptr_yy_globals)
  * The user defined value in the first argument will be available to yyalloc in
  * the yyextra field.
  */
-
-int yylex_init_extra(YY_EXTRA_TYPE yy_user_defined,yyscan_t* ptr_yy_globals )
-
+int yylex_init_extra( YY_EXTRA_TYPE yy_user_defined, yyscan_t* ptr_yy_globals )
 {
     struct yyguts_t dummy_yyguts;
 
@@ -5352,20 +5355,20 @@ int yylex_init_extra(YY_EXTRA_TYPE yy_user_defined,yyscan_t* ptr_yy_globals )
         errno = EINVAL;
         return 1;
     }
-	
+
     *ptr_yy_globals = (yyscan_t) yyalloc ( sizeof( struct yyguts_t ), &dummy_yyguts );
-	
+
     if (*ptr_yy_globals == NULL){
         errno = ENOMEM;
         return 1;
     }
-    
+
     /* By setting to 0xAA, we expose bugs in
     yy_init_globals. Leave at 0x00 for releases. */
     memset(*ptr_yy_globals,0x00,sizeof(struct yyguts_t));
-    
+
     yyset_extra (yy_user_defined, *ptr_yy_globals);
-    
+
     return yy_init_globals ( *ptr_yy_globals );
 }
 
@@ -5376,10 +5379,10 @@ static int yy_init_globals (yyscan_t yyscanner)
      * This function is called from yylex_destroy(), so don't allocate here.
      */
 
-    yyg->yy_buffer_stack = 0;
+    yyg->yy_buffer_stack = NULL;
     yyg->yy_buffer_stack_top = 0;
     yyg->yy_buffer_stack_max = 0;
-    yyg->yy_c_buf_p = (char *) 0;
+    yyg->yy_c_buf_p = NULL;
     yyg->yy_init = 0;
     yyg->yy_start = 0;
 
@@ -5396,8 +5399,8 @@ static int yy_init_globals (yyscan_t yyscanner)
     yyin = stdin;
     yyout = stdout;
 #else
-    yyin = (FILE *) 0;
-    yyout = (FILE *) 0;
+    yyin = NULL;
+    yyout = NULL;
 #endif
 
     /* For future reference: Set errno on error, since we are called by
@@ -5413,17 +5416,17 @@ int yylex_destroy  (yyscan_t yyscanner)
 
     /* Pop the buffer stack, destroying each element. */
 	while(YY_CURRENT_BUFFER){
-		yy_delete_buffer(YY_CURRENT_BUFFER ,yyscanner );
+		yy_delete_buffer( YY_CURRENT_BUFFER , yyscanner );
 		YY_CURRENT_BUFFER_LVALUE = NULL;
 		yypop_buffer_state(yyscanner);
 	}
 
 	/* Destroy the stack itself. */
-	yyfree(yyg->yy_buffer_stack ,yyscanner);
+	yyfree(yyg->yy_buffer_stack , yyscanner);
 	yyg->yy_buffer_stack = NULL;
 
     /* Destroy the start condition stack. */
-        yyfree(yyg->yy_start_stack ,yyscanner );
+        yyfree( yyg->yy_start_stack , yyscanner );
         yyg->yy_start_stack = NULL;
 
     /* Reset the globals. This is important in a non-reentrant scanner so the next time
@@ -5441,18 +5444,21 @@ int yylex_destroy  (yyscan_t yyscanner)
  */
 
 #ifndef yytext_ptr
-static void yy_flex_strncpy (char* s1, yyconst char * s2, int n , yyscan_t yyscanner)
+static void yy_flex_strncpy (char* s1, const char * s2, int n , yyscan_t yyscanner)
 {
-	register int i;
+	struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
+	(void)yyg;
+
+	int i;
 	for ( i = 0; i < n; ++i )
 		s1[i] = s2[i];
 }
 #endif
 
 #ifdef YY_NEED_STRLEN
-static int yy_flex_strlen (yyconst char * s , yyscan_t yyscanner)
+static int yy_flex_strlen (const char * s , yyscan_t yyscanner)
 {
-	register int n;
+	int n;
 	for ( n = 0; s[n]; ++n )
 		;
 
@@ -5462,11 +5468,16 @@ static int yy_flex_strlen (yyconst char * s , yyscan_t yyscanner)
 
 void *yyalloc (yy_size_t  size , yyscan_t yyscanner)
 {
-	return (void *) malloc( size );
+	struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
+	(void)yyg;
+	return malloc(size);
 }
 
 void *yyrealloc  (void * ptr, yy_size_t  size , yyscan_t yyscanner)
 {
+	struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
+	(void)yyg;
+
 	/* The cast to (char *) in the following accommodates both
 	 * implementations that use char* generic pointers, and those
 	 * that use void* generic pointers.  It works with the latter
@@ -5474,18 +5485,19 @@ void *yyrealloc  (void * ptr, yy_size_t  size , yyscan_t yyscanner)
 	 * any pointer type to void*, and deal with argument conversions
 	 * as though doing an assignment.
 	 */
-	return (void *) realloc( (char *) ptr, size );
+	return realloc(ptr, size);
 }
 
 void yyfree (void * ptr , yyscan_t yyscanner)
 {
+	struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
+	(void)yyg;
 	free( (char *) ptr );	/* see yyrealloc() for (char *) cast */
 }
 
 #define YYTABLES_NAME "yytables"
 
-#line 2097 "ado.fl"
-
+#line 2098 "ado.fl"
 
 
 void
