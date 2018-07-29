@@ -1,12 +1,12 @@
 if(!('Rcpp' %in% rownames(installed.packages())))
     stop("Your installation does not have Rcpp installed; aborting")
 
+# FIXME?
 Rcpp:::compilerCheck(minVersion="4.6.0")
 
 define(STDVER = "c++11")
 
 define(CXX = read_r_config("CXX")$CXX)
-define(MAKE = read_r_config("MAKE")$MAKE)
 
 cxxflags <- c(read_r_config("CXXFLAGS")$CXXFLAGS,
               capture.output(Rcpp:::CxxFlags()))

@@ -2,27 +2,32 @@ CXX_STD = @STDVER@
 
 CX      = @CXX@
 CXFLAGS = @CXXFLAGS@ @CXXPICFLAGS@ -c
-CPFLAGS = @CPPFLAGS@ -I../../inst/include/ -I./build -I./include
+CPFLAGS = @CPPFLAGS@ -I../../inst/include/ -I./include
+
+.PHONY: all infra dir regenerate clean
 
 all: infra lex.o parse.o
-	ar -rcs parser.a build/parse.o build/lex.o build/AdoDriver.o build/utils.o\
-			build/ExprNode.o
+	"$(AR)" -rcs parser.a build/parse.o build/lex.o build/AdoDriver.o build/utils.o\
+				 build/ExprNode.o
 
 parse.o: dir ado.tab.cpp
-	$(CX) $(CPFLAGS) $(CXFLAGS) ado.tab.cpp -o build/parse.o
+	"$(CX)" $(CPFLAGS) $(CXFLAGS) ado.tab.cpp -o build/parse.o
 
 lex.o: dir lex.yy.cpp
-	$(CX) $(CPFLAGS) $(CXFLAGS) lex.yy.cpp -o build/lex.o
+	"$(CX)" $(CPFLAGS) $(CXFLAGS) lex.yy.cpp -o build/lex.o
 
 infra: dir
-	$(CX) $(CPFLAGS) $(CXFLAGS) ExprNode.cpp -o build/ExprNode.o
-	$(CX) $(CPFLAGS) $(CXFLAGS) AdoDriver.cpp -o build/AdoDriver.o
-	$(CX) $(CPFLAGS) $(CXFLAGS) utils.cpp -o build/utils.o
+	"$(CX)" $(CPFLAGS) $(CXFLAGS) ExprNode.cpp -o build/ExprNode.o
+	"$(CX)" $(CPFLAGS) $(CXFLAGS) AdoDriver.cpp -o build/AdoDriver.o
+	"$(CX)" $(CPFLAGS) $(CXFLAGS) utils.cpp -o build/utils.o
 
 dir:
 	mkdir -p build
 
 regenerate:
+	# Neither this target nor clean is intended to be portable. They're
+	# run during development to regenerate the scanner and parser
+	# definitions and move headers into place, and to clean up test builds.
 	mkdir -p include
 
 	flex -o lex.yy.cpp --header-file=include/lex.yy.hpp ado.fl
@@ -34,5 +39,3 @@ regenerate:
 clean:
 	rm -rf build
 	rm -f parser.a
-
-.PHONY: all infra dir regenerate clean
