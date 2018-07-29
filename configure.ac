@@ -57,7 +57,7 @@ fi
 AC_DEFUN([AC_PROG_RSCRIPT], [AC_CHECK_PROG(RSCRIPT,Rscript,yes)])
 AC_PROG_RSCRIPT
 if test x"${RSCRIPT}" == x"yes" ; then
-    r_include=`${R_HOME}/bin/Rscript -e 'cat(Sys.getenv("R_INCLUDE_DIR"))'`
+    r_include=`${R_HOME}/bin/Rscript -e "cat(Sys.getenv('R_INCLUDE_DIR'))"`
     AC_SUBST([CPPFLAGS],["${CPPFLAGS} -I$r_include"])
      
     rcpp_cxxflags=`${R_HOME}/bin/Rscript -e 'Rcpp:::CxxFlags()'`

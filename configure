@@ -2815,7 +2815,7 @@ fi
 
 
 if test x"${RSCRIPT}" == x"yes" ; then
-    r_include=`${R_HOME}/bin/Rscript -e 'cat(Sys.getenv("R_INCLUDE_DIR"))'`
+    r_include=`${R_HOME}/bin/Rscript -e "cat(Sys.getenv('R_INCLUDE_DIR'))"`
     CPPFLAGS="${CPPFLAGS} -I$r_include"
 
 
