@@ -1,7 +1,7 @@
-CXX_STD = CXX11
+CXX_STD = @STDVER@
 
-CXX1X = @CXX1X@
-CXFLAGS = @CXX1XFLAGS@ @CXX1XSTD@ @CXX1XPICFLAGS@ -c
+CX      = @CXX@
+CXFLAGS = @CXXFLAGS@ @CXXPICFLAGS@ -c
 CPFLAGS = @CPPFLAGS@ -I../../inst/include/ -I./build -I./include
 
 all: infra lex.o parse.o
@@ -9,24 +9,24 @@ all: infra lex.o parse.o
 			build/ExprNode.o
 
 parse.o: dir ado.tab.cpp
-	$(CXX1X) $(CPFLAGS) $(CXFLAGS) ado.tab.cpp -o build/parse.o
+	$(CX) $(CPFLAGS) $(CXFLAGS) ado.tab.cpp -o build/parse.o
 
 lex.o: dir lex.yy.cpp
-	$(CXX1X) $(CPFLAGS) $(CXFLAGS) lex.yy.cpp -o build/lex.o
+	$(CX) $(CPFLAGS) $(CXFLAGS) lex.yy.cpp -o build/lex.o
 
 infra: dir
-	$(CXX1X) $(CPFLAGS) $(CXFLAGS) ExprNode.cpp -o build/ExprNode.o
-	$(CXX1X) $(CPFLAGS) $(CXFLAGS) AdoDriver.cpp -o build/AdoDriver.o
-	$(CXX1X) $(CPFLAGS) $(CXFLAGS) utils.cpp -o build/utils.o
+	$(CX) $(CPFLAGS) $(CXFLAGS) ExprNode.cpp -o build/ExprNode.o
+	$(CX) $(CPFLAGS) $(CXFLAGS) AdoDriver.cpp -o build/AdoDriver.o
+	$(CX) $(CPFLAGS) $(CXFLAGS) utils.cpp -o build/utils.o
 
 dir:
 	mkdir -p build
 
 regenerate:
 	mkdir -p include
-	
+
 	flex -o lex.yy.cpp --header-file=include/lex.yy.hpp ado.fl
-	
+
 	bison -d -Wall -b ado ado.ypp
 	mv location.hh position.hh stack.hh include
 	mv ado.tab.hpp include
@@ -36,4 +36,3 @@ clean:
 	rm -f parser.a
 
 .PHONY: all infra dir regenerate clean
-

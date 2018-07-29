@@ -1,8 +1,8 @@
-CXX_STD = CXX11
+CXX_STD = @STDVER@
 
-PKG_CXXFLAGS = @CXX1XFLAGS@ @CXX1XSTD@ @CXX1XPICFLAGS@ -c
-PKG_CPPFLAGS = @CPPFLAGS@ -I../inst/include -I./parser/include -I./parser/build
-PKG_LIBS = @LDFLAGS@ parser/parser.a
+PKG_CXXFLAGS = -c
+PKG_CPPFLAGS = -I../inst/include -I./parser/include -I./parser/build
+PKG_LIBS = parser/parser.a
 
 .PHONY: all parser
 all: $(SHLIB)
