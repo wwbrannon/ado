@@ -1,3 +1,5 @@
+CXX_STD = CXX11
+
 CXX1X = @CXX1X@
 CXFLAGS = @CXX1XFLAGS@ @CXX1XSTD@ @CXX1XPICFLAGS@ -c
 CPFLAGS = @CPPFLAGS@ -I../../inst/include/ -I./build -I./include
