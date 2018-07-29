@@ -1,17 +1,22 @@
 Package: ado
-Authors@R: c(person("William", "Brannon", email="wwbrannon@mit.edu", role=c("aut", "cre")))
+Type: Package
 Version: 0.1.0.9000
+Authors@R: c(
+    person("William", "Brannon", email = "wbrannon@mit.edu",
+           role = c("aut", "cre", "cph"),
+           comment = c(ORCID = "0000-0002-1435-8535"))
+    )
 Title: An Implementation of Stata's Ado Language for R
 Description: An interpreter for Stata's ado language built on top of R.
     Loops, macros, data manipulation commands and statistics commands are all
     supported, as are multiple ways to embed R code and use R for writing ado-
-    language commands. (The language this package implements has about the same
-    relationship to Stata that various dialects of SQL have to each other.)
-    This package is not in any way affiliated with or endorsed by StataCorp.
+    language commands.
 License: MIT + file LICENSE
 URL: https://github.com/wwbrannon/ado
 BugReports: https://github.com/wwbrannon/ado/issues
 LazyData: true
+ByteCompile: true
+NeedsCompilation: true
 Depends:
     R (>= 3.4.0)
 Imports:
@@ -22,5 +27,7 @@ Imports:
 LinkingTo: Rcpp, testthat
 SystemRequirements: C++11
 Suggests:
-    testthat
+    testthat,
+    covr
+Encoding: UTF-8
 RoxygenNote: 6.1.0
