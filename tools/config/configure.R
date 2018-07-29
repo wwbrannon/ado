@@ -17,4 +17,4 @@ define(CXXFLAGS = paste0(cxxflags, collapse=' '))
 
 configure_file("src/Makevars.in", "src/Makevars")
 configure_file("src/Makevars.in", "src/Makevars.win")
-configure_file("src/parser/Makefile.in", "src/parser/Makefile")
+

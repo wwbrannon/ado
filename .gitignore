@@ -1,9 +1,6 @@
 ## Build system
-config.status
-autom4te.cache
-config.log
 /src/Makevars
-/src/parser/Makefile
+/src/Makevars.win
 /src/parser/ado.output
 
 ## C files

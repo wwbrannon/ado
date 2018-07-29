@@ -2,7 +2,7 @@
 # Use 'remove_file()' to remove files generated during configuration.
 
 remove_file("src/Makevars")
-remove_file("src/parser/Makefile")
+remove_file("src/Makevars.win")
 remove_file("src/parser/build")
 
 sapply(list.files(path='src/', pattern='\\.o$', recursive=TRUE), remove_file)
