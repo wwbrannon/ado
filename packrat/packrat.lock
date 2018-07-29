@@ -66,6 +66,19 @@ Source: CRAN
 Version: 1.5
 Hash: 432a16a9967055dad6b39f1c14fd6b2c
 
+Package: configure
+Source: github
+Version: 0.1.0
+Hash: 788221d593f8e895e2bcfd8beaaac8d0
+GithubRepo: configure
+GithubUsername: kevinushey
+GithubRef: master
+GithubSha1: 91e65bec0b7ee1d4bf2dce8ee50a6ba948d608da
+RemoteHost: https://api.github.com
+RemoteRepo: configure
+RemoteUsername: kevinushey
+RemoteSha: 91e65bec0b7ee1d4bf2dce8ee50a6ba948d608da
+
 Package: covr
 Source: CRAN
 Version: 3.1.0
