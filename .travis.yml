@@ -2,7 +2,7 @@ language: r
 cache: packages
 
 dist: trusty
-sudo: required
+sudo: false
 
 r:
     - oldrel
