@@ -1,0 +1,10 @@
+year <- sub("-.*", "", meta$Date)
+note <- sprintf("R package version %s", meta$Version)
+
+bibentry(bibtype = "Manual",
+         title = "{ado}: An Implementation of Stata's Ado Language for R",
+         author = c(person("William", "Brannon")),
+         year = year,
+         note = note,
+         url = "https://github.com/wwbrannon/ado")
+
