@@ -1,4 +1,11 @@
 ## Functions for parsing tests
+test_parse <-
+function(text, context=NULL, debug_level=0)
+{
+    lc <- function(msg) context$logger$log_command(msg)
+    return(codegen(do_parse(text, log_command=lc, debug_level=debug_level)))
+}
+
 expect_parse_accept <- function(str) eval(bquote(expect_equal(parse_accept(.(str)), 1)))
 expect_parse_reject <- function(str) eval(bquote(expect_equal(parse_accept(.(str)), 0)))
 
@@ -10,16 +17,16 @@ function(str)
     tryCatch(
       {
         tr <- do_parse(str, DEBUG_NO_PARSE_ERROR)
-        
+
         #we have to list "error" here explicitly because in the lower-level code,
         #the "error" class is added automatically to a caught C++ exception
         if(identical(tr, list()))
           raiseCondition("Bad command", cls=c("error", "BadCommandException"))
-        
+
         check(tr)
       },
       error=identity)
-  
+
   if(inherits(val, "EvalErrorException") ||
      inherits(val, "BadCommandException"))
   {

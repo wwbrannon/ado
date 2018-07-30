@@ -13,6 +13,80 @@
 ###        generated with more or less debugging output depending on the value
 ###        of this argument.
 
+##
+## Utility functions used only under codegen()
+##
+
+#Take the name of an ado-language operator, whether unary or binary, and return
+#a symbol for the R function that implements that operator.
+function_for_ado_operator <-
+function(name)
+{
+    #Arithmetic expressions
+    if(name %in% c("^", "-", "+", "*", "/", "+", "-"))
+        return(as.symbol(name))
+
+    #Logical, relational and other expressions
+    if(name %in% c("&", "|", "!", ">", "<", ">=", "<="))
+        return(as.symbol(name))
+
+    if(name == "()")
+        return(as.symbol("do.call"))
+
+    if(name == "=")
+        return(as.symbol("<-"))
+
+    if(name == "[]")
+        return(as.symbol("["))
+
+    if(name == "==")
+        return(as.symbol("%==%"))
+
+    #Factor operators
+    if(name == "c.")
+        return(as.symbol("op_cont"))
+
+    if(name == "i.")
+        return(as.symbol("op_ind"))
+
+    if(name == "o.")
+        return(as.symbol("op_omit"))
+
+    if(name == "ib.")
+        return(as.symbol("op_base"))
+
+    if(name == "##")
+        return(as.symbol("%##%"))
+
+    if(name == "#")
+        return(as.symbol("%#%"))
+
+    if(name == "%anova_nest%")
+        return(as.symbol("%anova_nest%"))
+
+    if(name == "%anova_error%")
+        return(as.symbol("%anova_error%"))
+
+    #Type constructors
+    if(valid_data_type(name))
+    {
+        if(substr(name, 1, 3) == "str")
+        {
+            return(as.symbol('ado_type_str'))
+        }
+        else
+        {
+            return(as.symbol('ado_type_' %p% name))
+        }
+    }
+
+    raiseCondition("Bad operator or function", cls="BadCommandException")
+}
+
+##
+## The code generator
+##
+
 codegen <-
 function(node, context=NULL, debug_level=0)
     UseMethod("codegen")
@@ -96,7 +170,7 @@ function(node, context=NULL, debug_level=0)
         return.match.call <- TRUE
     else
         return.match.call <- FALSE
-    
+
     ret <- c(as.symbol("ado_cmd_if"), list(expression=exp, compound_cmd=cmp),
              context=context, return.match.call=return.match.call)
 
@@ -159,7 +233,7 @@ function(node, context=NULL, debug_level=0)
 
     ret <- c(as.symbol(name), args, context=context,
              return.match.call=return.match.call)
-    
+
     as.call(ret)
 }
 
@@ -178,7 +252,7 @@ function(node, context=NULL, debug_level=0)
 
     lst <- list(as.symbol(name), context=context,
                 return.match.call=return.match.call)
-    
+
     as.call(lst)
 }
 

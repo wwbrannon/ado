@@ -6,12 +6,11 @@
 \alias{ado-package}
 \title{ado: An implementation of Stata's ado language in R.}
 \usage{
-ado(dta = NULL, filename = NULL, string = NULL,
-  assign.back = FALSE, debug_level = 0, print_results = 1,
-  echo = NULL)
+ado(df = NULL, filename = NULL, string = NULL, assign.back = FALSE,
+  debug_level = 0, print_results = 1, echo = NULL)
 }
 \arguments{
-\item{dta}{If NULL, start with an empty dataset; if a data.frame, use a copy
+\item{df}{If NULL, start with an empty dataset; if a data.frame, use a copy
 of the data.frame to initialize the dataset.}
 
 \item{filename}{The path to an ado script to execute. At least one of filename
@@ -23,7 +22,7 @@ one of filename and string must be NULL.}
 \item{assign.back}{If TRUE, copy the final dataset state to a variable in the
 caller's environment on function exit. The variable name is
 the name (in the caller's environment) of the data.frame
-passed as the dta argument, or if dta was NULL, the name "dta"
+passed as the df argument, or if df was NULL, the name "df"
 is used. The effect is to modify the passed data.frame, though
 the old value will not necessarily be garbage-collected.}
 

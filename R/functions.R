@@ -151,47 +151,17 @@ ado_type_double <- ado_type_double
 ado_func_e <-
 function(val=NULL, enum=FALSE, context=NULL)
 {
-    raiseif(is.null(context), msg="Context must be non-NULL")
-    raiseif(is.null(val) && !enum,
-            msg="Must provide argument to ado_func_e")
-
-    if(enum)
-        return(context$eclass$all_symbols())
-    else
-        return(context$eclass$symbol_value(val))
+    return(context$eclass_query(val=val, enum=enum))
 }
 
 ado_func_r <-
 function(val=NULL, enum=FALSE, context=NULL)
 {
-    raiseif(is.null(context), msg="Context must be non-NULL")
-    raiseif(is.null(val) && !enum,
-            msg="Must provide argument to ado_func_r")
-
-    if(enum)
-        return(context$rclass$all_symbols())
-    else
-        return(context$rclass$symbol_value(val))
+    return(context$rclass_query(val=val, enum=enum))
 }
 
 ado_func_c <-
 function(val=NULL, enum=FALSE, context=NULL)
 {
-    raiseif(is.null(context), msg="Context must be non-NULL")
-    raiseif(is.null(val) && !enum,
-            msg="Must provide argument to ado_func_c")
-
-    #These are the ones implemented in get_varying_cclass_values
-    varying <- c('current_date', 'current_time', 'mode', 'console',
-                 'hostname', 'username', 'tmpdir', 'pwd', 'N', 'k',
-                 'width', 'changed', 'filename', 'filedate', 'memory',
-                 'niceness', 'rng', 'rc', 'rngstate')
-
-    if(enum)
-        return(c(context$cclass$all_symbols(), varying))
-    else if(val %in% varying)
-        return(get_varying_cclass_value(val, context=context))
-    else
-        return(context$cclass$symbol_value(val))
-
+    return(context$cclass_query(val=val, enum=enum))
 }

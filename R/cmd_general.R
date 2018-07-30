@@ -56,7 +56,7 @@ function(expression_list, context=NULL, return.match.call=FALSE)
     #even if we're interactive and that normally wouldn't be done.
     con <- file(filename, "rb")
     on.exit(close(con), add=TRUE)
-    repl(con, echo=1)
+    context$interpret(con, echo=1)
 
     #Finally, tear down the numbered macros
     if(length(expression_list) > 1)
@@ -161,7 +161,7 @@ function(varlist=NULL, context=NULL, return.match.call=FALSE)
     raiseifnot(is.null(varlist) || length(varlist) == 1,
                msg="Wrong number of arguments to query")
 
-    return(structure(context$settings$all_values(), class="ado_cmd_query"))
+    return(structure(context$settings_all(), class="ado_cmd_query"))
 }
 
 ado_cmd_set <-
@@ -233,7 +233,7 @@ function(expression_list=NULL, context=NULL, return.match.call=FALSE)
         context$dta$set_obs(value)
     } else
     {
-        context$settings$set_symbol(setting, value)
+        context$setting_set(setting, value)
     }
 
     return(invisible(NULL))
@@ -317,7 +317,7 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
         raiseifnot(is.null(option_list), msg="Cannot specify options here")
 
         msg <- "Open logging sinks: \n\n"
-        for(con in context$logger$log_sinks)
+        for(con in context$log_sinks())
         {
             msg <- msg %p% con
         }
@@ -327,7 +327,7 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
     {
         raiseif(hasOption(option_list, "smcl"), msg="SMCL is not supported")
 
-        context$logger$register_sink(using_clause, type="log")
+        context$log_register_sink(using_clause, type="log")
     } else #we have a subcommand
     {
         raiseifnot(is.null(option_list), msg="Cannot specify options here")
@@ -338,7 +338,7 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
         if(cmd == "query")
         {
             msg <- "Open logging sinks: \n\n"
-            for(con in context$logger$log_sinks)
+            for(con in context$log_sinks())
             {
                 msg <- msg %p% con
             }
@@ -351,17 +351,17 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
 
             if(length(expression_list) == 1)
             {
-                context$logger$deregister_all_sinks(type="log")
+                context$log_deregister_all_sinks(type="log")
             } else
             {
-                context$logger$deregister_sink(as.character(expression_list[[2]]))
+                context$log_deregister_sink(as.character(expression_list[[2]]))
             }
         } else if(cmd == "on")
         {
-            context$logger$log_enabled <- TRUE
+            context$log_set_enabled(TRUE)
         } else if(cmd == "off")
         {
-            context$logger$log_enabled <- FALSE
+            context$log_set_enabled(FALSE)
         }
     }
 
@@ -386,7 +386,7 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
         raiseifnot(is.null(option_list), msg="Cannot specify options here")
 
         msg <- "Open command logging sinks: \n\n"
-        for(con in context$logger$cmdlog_sinks)
+        for(con in context$log_cmdlog_sinks())
         {
             msg <- msg %p% con
         }
@@ -397,7 +397,7 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
         raiseif(hasOption(option_list, "permanently"),
                 msg="Permanent option setting is not supported")
 
-        context$logger$register_sink(using_clause, type="cmdlog")
+        context$log_register_sink(using_clause, type="cmdlog")
     } else #we have a subcommand
     {
         raiseifnot(is.null(option_list), msg="Cannot specify options here")
@@ -412,17 +412,17 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
 
             if(length(expression_list) == 1)
             {
-                context$logger$deregister_all_sinks(type="cmdlog")
+                context$log_deregister_all_sinks(type="cmdlog")
             } else
             {
-                context$logger$deregister_sink(as.character(expression_list[[2]]))
+                context$log_deregister_sink(as.character(expression_list[[2]]))
             }
         } else if(cmd == "on")
         {
-            context$logger$cmdlog_enabled <- FALSE
+            context$log_cmdlog_set_enabled(TRUE)
         } else if(cmd == "off")
         {
-            context$logger$cmdlog_enabled <- FALSE
+            context$log_cmdlog_set_enabled(FALSE)
         }
     }
 

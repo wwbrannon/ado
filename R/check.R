@@ -2,6 +2,152 @@
 ### AST, do some semantic checks on it, including things that Stata considers syntax,
 ### and raise error conditions if the checks fail.
 
+##
+## Utility functions used only under check()
+##
+
+#Is the command part that the semantic analyzer has seen actually a valid
+#part of a command object?
+valid_cmd_part <-
+function(name)
+{
+    name %in% c("verb", "varlist", "expression_list",
+                "if_clause", "in_clause", "weight_clause",
+                "using_clause", "option_list", "expression")
+}
+
+#Is this a valid format specifier?
+valid_format_spec <-
+function(fmt)
+{
+    #string formats
+    if(length(grep("%[-~]?[0-9]+s", fmt)) > 0)
+        return(TRUE)
+
+    #datetime formats
+    if(length(grep("%t[Ccdwmqh][A-Za-z\\.\\,\\:\\-\\_\\/\\\\\\+]*", fmt)) > 0)
+        return(TRUE)
+
+    #numeric formats
+    if(length(grep("%-?[0-9]+\\.[0-9]+(g|f|e|gc|fc)", fmt)) > 0)
+        return(TRUE)
+
+    #special numeric formats
+    if(length(grep("%21x|%16H|%16L|%8H|%8L", fmt)) > 0)
+        return(TRUE)
+
+    return(FALSE)
+}
+
+#Now that we know the command object has parts with the correct names,
+#are the things within it that have those names of the correct S3 types?
+#Are they well-formed?
+correct_arg_types_for_cmd <-
+function(children)
+{
+    ns <- setdiff(names(children), c("verb"))
+
+    for(n in ns)
+    {
+        if(n == "if_clause")
+        {
+            if(!children[[n]] %is% "ado_if_clause")
+                return(FALSE)
+        }
+
+        if(n == "in_clause")
+        {
+            if(!children[[n]] %is% "ado_in_clause")
+                return(FALSE)
+        }
+
+        if(n == "weight_clause")
+        {
+            if(!children[[n]] %is% "ado_weight_clause")
+                return(FALSE)
+        }
+
+        if(n == "using_clause")
+        {
+            if(!children[[n]] %is% "ado_using_clause")
+                return(FALSE)
+        }
+
+        if(n == "option_list")
+        {
+            if(!children[[n]] %is% "ado_option_list")
+                return(FALSE)
+        }
+
+        if(n == "varlist")
+        {
+            if(!(children[[n]] %is% "ado_expression_list"))
+                return(FALSE)
+
+            if(children[[n]]$children[[1]] %is% "ado_type_expression")
+            {
+                type_exp <- children[[n]]$children[[1]]
+                types <- vapply(type_exp$children[[1]]$children,
+                                function(x) x %is% "ado_ident",
+                                TRUE)
+
+                if(length(which(types)) != length(types))
+                    return(FALSE)
+                else
+                    return(TRUE)
+            } else
+            {
+                types <- vapply(children[[n]]$children,
+                                function(x) x %is% "ado_ident" ||
+                                    x %is% "ado_factor_expression" ||
+                                    x %is% "ado_cross_expression",
+                                TRUE)
+
+                if(length(which(types)) != length(types))
+                    return(FALSE)
+                else
+                    return(TRUE)
+            }
+        }
+
+        if(n == "expression_list")
+        {
+            if(!children[[n]] %is% "ado_expression_list")
+                return(FALSE)
+
+            types <- vapply(children[[n]]$children,
+                            function(x) x %is% "ado_expression" ||
+                                x %is% "ado_literal",
+                            TRUE)
+
+            if(length(which(types)) != length(types))
+                return(FALSE)
+        }
+        if(n == "expression")
+        {
+            if(!children[[n]] %is% "ado_expression_list")
+                return(FALSE)
+
+            types <- vapply(children[[n]]$children,
+                            function(x) x %is% "ado_expression" ||
+                                x %is% "ado_literal",
+                            TRUE)
+
+            if(length(which(types)) != length(types))
+                return(FALSE)
+
+            if(length(children[[n]]$children) != 1)
+                return(FALSE)
+        }
+    }
+
+    return(TRUE)
+}
+
+##
+## The semantic analyzer
+##
+
 check <-
 function(node, debug_level=0)
 {

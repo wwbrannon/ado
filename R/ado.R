@@ -1,11 +1,38 @@
-### The core interpreter class and a frontend function
-
+#FIXME c-class accessors broken / bad
 #FIXME should these context variables be nullable?
-#Remove obsolete 'Setting' functions
-#Remove last references to ado_env
+#FIXME error handling for symboltable?
+#FIXME remove direct reference to private vars in here where possible
+
+#' ado: An implementation of Stata's ado language in R.
+#'
+#' The ado package provides an R-based interpreter for a dialect of Stata's
+#' ado language. Loops, macros, data manipulation commands and statistics commands
+#' are all supported, as are multiple ways to embed R code and use R for writing
+#' ado-language commands.
+#'
+#' See the package vignettes for an introduction to the provided
+#' ado-language functionality.
+#'
+#' @section Interface:
+#' The only entry point from R is the ado() function, which interprets ado code.
+#' Command input can be read interactively (from the R prompt), from a file or
+#' from a string. The various types of global state that Stata maintains (settings,
+#' macros, the dataset, etc) are all kept in internal package data structures that
+#' do not persist across calls to the ado() function.
+#'
+#' @section Disclaimer:
+#' This package is not in any way affiliated with or endorsed by StataCorp.
+#'
+#' @docType package
+#' @name ado
+NULL
+
+##
+## A frontend function to the R6 interface
+##
 
 #Flags you can bitwise OR to enable debugging features.
-#It's important that these have the same numeric values as
+#It's necessary that these have the same numeric values as
 #the macros in the C++ header file.
 DEBUG_PARSE_TRACE <- 4
 DEBUG_MATCH_CALL <- 8
@@ -17,8 +44,8 @@ DEBUG_NO_PARSE_ERROR <- 32
 #' An interpreter for a dialect of Stata's ado language. The ado dialect is
 #' close to the one Stata provides; see the package vignettes for full details.
 #'
-#' @param dta If NULL, start with an empty dataset; if a data.frame, use a copy
-#'            of the data.frame to initialize the dataset.
+#' @param df If NULL, start with an empty dataset; if a data.frame, use a copy
+#'           of the data.frame to initialize the dataset.
 #' @param filename The path to an ado script to execute. At least one of filename
 #'                 and string must be NULL.
 #' @param string A length-1 character vector to read command input from. At least
@@ -26,7 +53,7 @@ DEBUG_NO_PARSE_ERROR <- 32
 #' @param assign.back If TRUE, copy the final dataset state to a variable in the
 #'                    caller's environment on function exit. The variable name is
 #'                    the name (in the caller's environment) of the data.frame
-#'                    passed as the dta argument, or if dta was NULL, the name "dta"
+#'                    passed as the df argument, or if df was NULL, the name "df"
 #'                    is used. The effect is to modify the passed data.frame, though
 #'                    the old value will not necessarily be garbage-collected.
 #' @param debug_level How verbose debug messages should be.
@@ -78,7 +105,7 @@ function(df = NULL, filename=NULL, string=NULL, assign.back=FALSE,
     }
 
     ##
-    ## Final setup
+    ## Final setup and run
     ##
 
     #Should we echo input? Don't echo when interactive and reading from
@@ -93,72 +120,75 @@ function(df = NULL, filename=NULL, string=NULL, assign.back=FALSE,
     else
         varname <- deparse(substitute(df))
 
-    on.exit(if(assign.back)
-    {
-        obj <- as.data.frame(dt$as_data_frame)
-        assign(varname, obj, pos=parent.frame())
-    })
-
-    ##
-    ## Run the interpreter
-    ##
-
     obj <- AdoInterpreter$new(df=df, print_results=print_results,
                               debug_level=debug_level, echo=echo)
+
+    on.exit(if(assign.back)
+    {
+        ret <- as.data.frame(obj$dta$as_data_frame)
+        assign(varname, ret, pos=parent.frame())
+    })
+
     obj$interpret(con)
 
     return(invisible((obj$dta$as_data_frame)))
 }
 
+##
+## The core interpreter class
+##
+
 AdoInterpreter <-
 R6::R6Class("AdoInterpreter",
     public = list(
-        # Several things here: the dataset, the macro substitution symbol
-        # tables, a lookup table (as an environment) for settings, and the
-        # (e,r,c)-class value symbol tables (which are also environments).
-
-        logger = NULL,
         dta = NULL,
-        rclass = NULL,
-        cclass = NULL,
-        eclass = NULL,
-        settings = NULL,
-        macro_syms = NULL,
+
+        ##
+        ## ctor and dtor
+        ##
 
         initialize = function(df = NULL, debug_level = 0, print_results = 1,
                               echo = NULL)
         {
-            self$logger <- Logger$new()
             self$dta <- Dataset$new()
 
-            self$rclass <- SymbolTable$new()
-            self$eclass <- SymbolTable$new()
-            self$macro_syms <- SymbolTable$new()
+            private$logger <- Logger$new()
 
-            self$cclass <- SymbolTable$new()
-            self$cclass$set_symbols_from_list(get_default_cclass_values())
+            private$rclass <- SymbolTable$new()
+            private$eclass <- SymbolTable$new()
+            private$macro_syms <- SymbolTable$new()
 
-            self$settings <- SymbolTable$new()
-            self$settings$set_symbols_from_list(get_default_setting_values())
+            private$cclass <- SymbolTable$new()
+            private$cclass$set_symbols_from_list(private$cclass_value_defaults())
 
-            self$settings$set_symbol("echo", echo)
-            self$settings$set_symbol("print_results", print_results)
-            self$settings$set_symbol("debug_level", debug_level)
+            private$settings <- SymbolTable$new()
+            private$settings$set_symbols_from_list(private$setting_value_defaults())
+
+            private$settings$set_symbol("echo", echo)
+            private$settings$set_symbol("print_results", print_results)
+            private$settings$set_symbol("debug_level", debug_level)
 
             if(!is.null(df))
                 self$dta$use_dataframe(df)
-        }
+        },
 
         finalize = function()
         {
             self$dta$clear()
-            self$logger$deregister_all_sinks()
+            self$log_deregister_all_sinks()
         },
 
-        interpret = function(con = NULL)
+        ##
+        ## The main entry point
+        ##
+
+        interpret = function(con = NULL, echo = NULL)
         {
-            debug_level <- self$settings$symbol_value("debug_level")
-            echo <- self$settings$symbol_value("echo")
+            debug_level <- private$settings$symbol_value("debug_level")
+
+            # Allow the echo setting to be overridden
+            if(is.null(echo))
+                echo <- private$settings$symbol_value("echo")
 
             while(TRUE)
             {
@@ -176,9 +206,9 @@ R6::R6Class("AdoInterpreter",
 
                             #Send the input to the bison parser, which, after reading
                             #each command, invokes the process_cmd callback
-                            lc <- function(msg) self$logger$log_command(msg)
-                            do_parse_with_callbacks(text=inpt, cmd_action=process_cmd,
-                                                    macro_value_accessor=macro_value_accessor,
+                            lc <- function(msg) self$log_command(msg)
+                            do_parse_with_callbacks(text=inpt, cmd_action=private$process_cmd,
+                                                    macro_value_accessor=private$macro_value_accessor,
                                                     log_command=lc, debug_level=debug_level,
                                                     echo=echo)
                         },
@@ -210,10 +240,526 @@ R6::R6Class("AdoInterpreter",
             }
 
             return(invisible(NULL))
+        },
+
+        ##
+        ## Logging methods
+        ##
+
+        log_has_sink = function(filename, type = NULL)
+        {
+            return(private$logger$has_sink(filename = filename, type = type))
+        },
+
+        log_sink_type = function(filename)
+        {
+            return(private$logger$sink_type(filename = filename))
+        }
+
+        log_register_sink = function(filename, type="log", header = TRUE)
+        {
+            return(private$logger$register_sink(filename = filename, type = type,
+                                                header = header))
+        },
+
+        log_deregister_sink = function(filename)
+        {
+            return(private$logger$deregister_sink(filename))
+        },
+
+        log_deregister_all_sinks = function(type = NULL)
+        {
+            return(private$logger$deregister_all_sinks(type = type))
+        },
+
+        log_command = function(msg, echo = NULL)
+        {
+            if(is.null(echo))
+            {
+                if(self$setting_defined("echo"))
+                    echo <- self$setting_value("echo")
+                else
+                    echo <- FALSE
+            }
+
+            return(private$logger$log_command(msg = msg, echo = echo))
+        },
+
+        log_results = function(msg, print_results = NULL)
+        {
+            if(is.null(print_results))
+            {
+                if(self$setting_defined("print_results"))
+                    print_results <- self$setting_value("print_results")
+                else
+                    print_results <- FALSE
+            }
+
+            return(private$logger$log_command(msg = msg, print_results = print_reslts))
+        },
+
+        log_sinks = function() private$logger$log_sinks,
+        log_cmdlog_sinks = function() private$logger$cmdlog_sinks,
+
+        log_is_enabled = function() private$logger$log_enabled,
+        log_set_enabled = function(value) private$logger$log_enabled(value),
+
+        log_cmdlog_is_enabled = function() private$logger$cmdlog_enabled,
+        log_cmdlog_set_enabled = function(value) private$logger$cmdlog_enabled(value),
+
+        ##
+        ## e-class accessors
+        ##
+
+        eclass_all = function()
+        {
+            return(private$eclass$all_values())
+        },
+
+        eclass_names = function()
+        {
+            return(private$eclass$all_symbols())
+        },
+
+        eclass_set = function(sym, val)
+        {
+            return(private$eclass$set_symbol(sym, val))
+        },
+
+        eclass_unset = function(sym)
+        {
+            return(private$eclass$unset_symbol(sym))
+        },
+
+        eclass_value = function(sym)
+        {
+            return(private$eclass$symbol_value(sym))
+        },
+
+        eclass_defined = function(sym)
+        {
+            return(private$eclass$symbol_defined(sym))
+        }
+
+        eclass_query = function(val=NULL, enum=NULL)
+        {
+            raiseif(is.null(val) && is.null(enum),
+                    msg="Must provide argument for e-class query")
+
+            if(enum)
+                return(self$eclass_names())
+            else
+                return(self$eclass_value(val))
+        },
+
+        ##
+        ## r-class accessors
+        ##
+
+        rclass_all = function()
+        {
+            return(private$rclass$all_values())
+        },
+
+        rclass_names = function()
+        {
+            return(private$rclass$all_symbols())
+        },
+
+        rclass_set = function(sym, val)
+        {
+            return(private$rclass$set_symbol(sym, val))
+        },
+
+        rclass_unset = function(sym)
+        {
+            return(private$rclass$unset_symbol(sym))
+        },
+
+        rclass_value = function(sym)
+        {
+            return(private$rclass$symbol_value(sym))
+        },
+
+        rclass_defined = function(sym)
+        {
+            return(private$rclass$symbol_defined(sym))
+        }
+
+        rclass_query = function(val=NULL, enum=NULL)
+        {
+            raiseif(is.null(val) && is.null(enum),
+                    msg="Must provide argument for r-class query")
+
+            if(enum)
+                return(self$rclass_names())
+            else
+                return(self$rclass_value(val))
+        },
+
+        ##
+        ## c-class accessors
+        ## FIXME
+        ##
+
+        cclass_all = function()
+        {
+            return(private$cclass$all_values())
+        },
+
+        cclass_names = function()
+        {
+            return(private$cclass$all_symbols())
+        },
+
+        cclass_set = function(sym, val)
+        {
+            return(private$cclass$set_symbol(sym, val))
+        },
+
+        cclass_unset = function(sym)
+        {
+            return(private$cclass$unset_symbol(sym))
+        },
+
+        cclass_value = function(sym)
+        {
+            return(private$cclass$symbol_value(sym))
+        },
+
+        cclass_defined = function(sym)
+        {
+            return(private$cclass$symbol_defined(sym))
+        }
+
+        cclass_query = function(val=NULL, enum=NULL)
+        {
+            raiseif(is.null(val) && is.null(enum),
+                    msg="Must provide argument for c-class query")
+
+            #These are the ones implemented in cclass_value_varying
+            varying <- c('current_date', 'current_time', 'mode', 'console',
+                         'hostname', 'username', 'tmpdir', 'pwd', 'N', 'k',
+                         'width', 'changed', 'filename', 'filedate', 'memory',
+                         'niceness', 'rng', 'rc', 'rngstate')
+
+            if(enum)
+                return(c(private$cclass$all_symbols(), varying))
+            else if(val %in% varying)
+                return(private$cclass_value_varying(val))
+            else
+                return(private$cclass$symbol_value(val))
+        },
+
+        ##
+        ## Macro accessors
+        ##
+
+        macro_all = function()
+        {
+            return(private$macro_syms$all_values())
+        },
+
+        macro_names = function()
+        {
+            return(private$macro$all_symbols())
+        },
+
+        macro_set = function(sym, val)
+        {
+            return(private$macro_syms$set_symbol(sym, val))
+        },
+
+        macro_unset = function(sym)
+        {
+            return(private$macro_syms$unset_symbol(sym))
+        },
+
+        macro_value = function(sym)
+        {
+            return(private$macro_syms$symbol_value(sym))
+        },
+
+        macro_defined = function(sym)
+        {
+            return(private$macro_syms$symbol_defined(sym))
+        }
+
+        ##
+        ## Settings accessors
+        ##
+
+        setting_all = function()
+        {
+            return(private$settings$all_values())
+        },
+
+        setting_names = function()
+        {
+            return(private$settings$all_symbols())
+        },
+
+        setting_set = function(sym, val)
+        {
+            return(private$settings$set_symbol(sym, val))
+        },
+
+        setting_unset = function(sym)
+        {
+            return(private$settings$unset_symbol(sym))
+        },
+
+        setting_value = function(sym)
+        {
+            return(private$settings$symbol_value(sym))
+        },
+
+        setting_defined = function(sym)
+        {
+            return(private$settings$symbol_defined(sym))
         }
     ),
 
     private = list(
+        # Several things here: the macro substitution symbol
+        # tables, a lookup table (as an environment) for settings, and the
+        # (e,r,c)-class value symbol tables (which are also environments).
+
+        logger = NULL,
+
+        rclass = NULL,
+        cclass = NULL,
+        eclass = NULL,
+        settings = NULL,
+        macro_syms = NULL,
+
+        default_webuse_url = function()
+        {
+            return('https://www.stata-press.com/data/r15/')
+        },
+
+        # Default settings (for, e.g., restoring to defaults)
+        setting_value_defaults = function()
+        {
+            return(list(
+                webuse_url = private$default_webuse_url()
+            ))
+        },
+
+        # Return the default c-class env values
+        cclass_value_defaults = function()
+        {
+            return(list(
+                ##
+                ## Mathematical constants
+                ##
+
+                pi = pi,
+                e = exp(1),
+
+                ##
+                ## Letters
+                ##
+
+                alpha = paste0(letters, collapse=" "),
+                ALPHA = paste0(LETTERS, collapse=" "),
+
+                ##
+                ## Weeks and months
+                ## The Stata docs imply these aren't localized, but they should be.
+                ##
+
+                Wdays = paste0(weekdays(seq(as.Date("2013-06-03"), by=1, len=7),
+                                        abbreviate=TRUE),
+                               collapse=" "),
+
+                Weekdays = paste0(weekdays(seq(as.Date("2013-06-03"), by=1, len=7)),
+                                  collapse=" "),
+
+                Mons = paste0(format(ISOdate(2000, 1:12, 1), "%b"), collapse=" "),
+                Months = paste0(format(ISOdate(2000, 1:12, 1), "%B"), collapse=" "),
+
+                ##
+                ## URLs for webuse, also available in settings
+                ##
+
+                default_webuse_url = private$default_webuse_url(),
+
+                ##
+                ## OS or machine info that can't change during execution
+                ##
+                os = if(.Platform$OS.type == "windows") "Windows"
+                        else if(Sys.info()["sysname"] == "Darwin") "MacOSX"
+                        else "Unix",
+                osdtl = Sys.info()["release"] %p% " " %p% Sys.info()["version"],
+                bit = 8 * .Machine$sizeof.pointer, # e.g., 8 * 8 = 64-bit
+                machine_type = utils::sessionInfo()$platform,
+                byteorder = if(.Platform$endian == 'big') "hilo" else "lohi",
+                processors = parallel::detectCores(),
+                processors_mach = parallel::detectCores(),
+                processors_max = parallel::detectCores(),
+
+                dirsep = .Platform$file.sep,
+
+                #Almost if not quite exactly right
+                mindouble = -.Machine$double.xmax,
+
+                maxdouble = .Machine$double.xmax,
+                epsdouble = .Machine$double.eps,
+                smallestdouble = .Machine$double.xmin,
+
+                #R does have a 4-byte integer type, even though integers are
+                #generally represented as doubles
+                minlong = -2^31 + 1,
+
+                maxlong = 2^31 - 1,
+
+                #Almost if not quite exactly right
+                minfloat = -.Machine$double.xmax,
+
+                maxfloat = .Machine$double.xmax,
+                epsfloat = .Machine$double.eps,
+
+                ##
+                ## Versions of R or ado, also can't change during execution
+                ##
+
+                rversion = R.version$version.string,
+                ado_version = utils::packageVersion(utils::packageName()),
+
+                ##
+                ## Resource limits
+                ##
+
+                max_N_theory = 2^31 - 1,
+                max_k_theory = 2^31 - 1,
+
+                #This corresponds to a data.frame of 2^31 - 1 columns and 2^31 - 1 rows,
+                #where each cell is a string of 2^31 - 1 bytes' length. There's a reason
+                #this variable's name ends in "theory".
+                max_width_theory = (2^31 - 1)^3,
+
+                #As hardcoded into our lexer: see ado.fl's redefinition
+                #of the C macro YYLMAX
+                max_macrolen = 2^16,
+                macrolen = 2^16,
+
+                max_macro_namelen = 32, # Stata disallows long identifiers
+
+                #The real limit is on the length of a single lexer token, which can
+                #be no longer than 2^16 bytes. There's no limit on the length of
+                #commands, provided they can be represented as R strings, and an R
+                #string can be no longer than 2^31 - 1 bytes. Note that encountering
+                #a single token longer than YYLMAX = 2^16 bytes will cause yylex() to
+                #raise an R error condition rather than calling the C exit() function
+                #on the R process.
+                max_cmdlen = 2^31 - 1,
+
+                cmdlen = 2^31 - 1,
+
+                #The maximum length of the symbol type as of R 2.13.0
+                namelen = 10000,
+
+                #This is the limit on vector size hardcoded into R in various places;
+                #the newer long vectors can be, of course, longer, but using them is
+                #still difficult and we've made no effort to do so.
+                maxvar = 2^31 - 1,
+
+                maxstrvarlen = 2^31 - 1,
+
+                #The str# and strL types as we implement them are the same
+                maxstrlvarlen = 2^31 - 1
+            ))
+        },
+
+        # These are the c-class values that may change during execution,
+        # which means we can't set any default values for them; they have
+        # to be looked up at query time
+        cclass_value_varying = function(val)
+        {
+            # NOTE: if you add a new one, be sure to update the hardcoded
+            # list in cclass_query() as well
+            if(val == 'current_date')
+            {
+                return(Sys.Date())
+            } else if(val == 'current_time')
+            {
+                return(Sys.time())
+            } else if(val == 'mode')
+            {
+                if(interactive())
+                {
+                    return("")
+                } else
+                {
+                    return("batch")
+                }
+            } else if(val == 'console')
+            {
+                if(.Platform$GUI == "unknown")
+                {
+                    return("console")
+                } else
+                {
+                    return("")
+                }
+            } else if(val == 'hostname')
+            {
+                return(Sys.info()["nodename"])
+            } else if(val == 'username')
+            {
+                return(Sys.info()["user"])
+            } else if(val == 'tmpdir')
+            {
+                return(tempdir())
+            } else if(val == 'pwd')
+            {
+                return(getwd())
+            } else if(val == 'N')
+            {
+                return(self$dta$dim[1])
+            } else if(val == 'k')
+            {
+                return(self$dta$dim[2])
+            } else if(val == 'width')
+            {
+                return(utils::object.size(self$dta))
+            } else if(val == 'changed')
+            {
+                return(self$dta$changed)
+            } else if(val == 'filename')
+            {
+                return(self$dta$filename)
+            } else if(val == 'filedate')
+            {
+                return(self$dta$filedate)
+            } else if(val == 'memory')
+            {
+                #it's appalling that this is the recommended way to check mem usage
+                mem <- gc()
+                return( 1024 * (mem[1, "(Mb)"] + mem[2, "(Mb)"]) )
+            } else if(val == 'niceness')
+            {
+                return(tools::psnice())
+            } else if(val == 'rng')
+            {
+                return(paste0(RNGkind(), collapse=" "))
+            } else if(val == 'rngstate')
+            {
+                return(paste0(.Random.seed, collapse=","))
+            } else if(val == 'rc')
+            {
+                #FIXME - need to implement the machinery for commands to have
+                #return codes; it's not clear what this should look like in an
+                #implementation where control flow at a low level is based on
+                #calls to signalCondition().
+                return(0)
+            } else
+            {
+                raiseCondition("Bad c-class value")
+            }
+        },
+
         # The main command-processing callback function for the parser
         process_cmd = function(ast, debug_level=0)
         {
@@ -277,8 +823,7 @@ R6::R6Class("AdoInterpreter",
         #Recursive evaluation of the sort of expression object that the parser builds.
         #This function both evaluates the expressions and sends the results through
         #the logger.
-        deep_eval <-
-        function(expr, envir=parent.frame(),
+        deep_eval = function(expr, envir=parent.frame(),
                  enclos=if(is.list(envir) || is.pairlist(envir))
                      parent.frame()
                  else
@@ -296,7 +841,7 @@ R6::R6Class("AdoInterpreter",
 
                     if(tmp$visible)
                     {
-                        self$logger$log_result(fmt(tmp$value))
+                        self$log_result(fmt(tmp$value))
                     }
                 }
             }
@@ -307,7 +852,8 @@ R6::R6Class("AdoInterpreter",
             ret
         },
 
-        #Callbacks: a macro value accessor that allows the lexer to retrieve macro values.
+        # A callback that allows the lexer to retrieve macro and
+        # (e,r,c)-class values
         macro_value_accessor = function(name)
         {
             #Implement the e() and r() stored results objects, and the c() system
@@ -365,10 +911,10 @@ R6::R6Class("AdoInterpreter",
             }
 
             #a normal macro
-            if(!(self$macro_syms$symbol_defined(name)))
+            if(!(private$macro_syms$symbol_defined(name)))
                 return("")
             else
-                return(self$macro_syms$symbol_value(name))
+                return(private$macro_syms$symbol_value(name))
         }
     )
 )
