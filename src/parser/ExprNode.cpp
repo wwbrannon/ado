@@ -7,8 +7,6 @@ ExprNode::ExprNode()
     dummy = true;
 }
 
-
-
 ExprNode::ExprNode(std::string _type)
 {
     dummy = false;
@@ -17,8 +15,6 @@ ExprNode::ExprNode(std::string _type)
     types.push_back("ado_ast_node");
     types.push_back(_type);
 }
-
-
 
 ExprNode::ExprNode(std::initializer_list<std::string> _types)
 {
@@ -33,8 +29,6 @@ ExprNode::ExprNode(std::initializer_list<std::string> _types)
     }
 }
 
-
-
 ExprNode::~ExprNode()
 {
     for(auto elem : children)
@@ -42,8 +36,6 @@ ExprNode::~ExprNode()
         delete elem;
     }
 }
-
-
 
 /*
  * Adding data
@@ -53,8 +45,6 @@ ExprNode::addData(std::string _name, std::string _value)
 {
     data[_name] = _value;
 }
-
-
 
 /*
  * Adding children
@@ -88,7 +78,7 @@ ExprNode::appendChild(ExprNode *_child)
 }
 
 void
-ExprNode::setChildren(std::initializer_list<ExprNode *> _children)
+ExprNode::setChildren(std::vector<ExprNode *> _children)
 {
     children.clear();
     names.clear();
@@ -103,11 +93,18 @@ ExprNode::setChildren(std::initializer_list<ExprNode *> _children)
 void
 ExprNode::setChildren(std::vector<std::string> _names, std::vector<ExprNode *> _children)
 {
-    names = _names;
-    children = _children;
+    if(_names.size() != _children.size())
+        throw std::invalid_argument("Need same number of names as children");
+
+    children.clear();
+    names.clear();
+
+    for(auto elem : _children)
+        children.push_back(elem);
+
+    for(auto elem : _names)
+        names.push_back(elem);
 }
-
-
 
 /*
  * Accessor methods
@@ -130,12 +127,30 @@ ExprNode::isDummy()
     return dummy;
 }
 
+std::vector<ExprNode*>
+ExprNode::getChildren()
+{
+    return(children);
+}
+
+std::vector<std::string>
+ExprNode::getChildrenNames()
+{
+    return(names);
+}
+
+std::map<std::string, std::string>
+ExprNode::getData()
+{
+    return(data);
+}
+
 ExprNode *
 ExprNode::pop_at_index(unsigned int index)
 {
     ExprNode *ret;
 
-    if(index < 0 || index >= children.size())
+    if(index >= children.size())
     {
         ret = NULL;
     }
@@ -149,8 +164,6 @@ ExprNode::pop_at_index(unsigned int index)
 
     return ret;
 }
-
-
 
 /*
  * Recursively convert to an R data structure
@@ -200,4 +213,3 @@ ExprNode::as_R_object() const
 
     return res;
 }
-

@@ -1,40 +1,51 @@
-## C files
+## Build system
 /src/Makevars
-/src/parser/Makefile
+/src/Makevars.win
 /src/parser/ado.output
+
+## C files
 # Object files
 *.o
 *.ko
+
 # Libraries
 *.lib
 *.a
+
 # Shared objects (inc. Windows DLLs)
 *.dll
 *.so
 *.so.*
 *.dylib
+
 # Executables
 *.exe
 *.out
 *.app
+
 ## R files
 # History files
 .Rhistory
+
 # Example code in package build process
 *-Ex.R
+
 # R data files from past sessions
 .Rdata
 .RData
+
 ## misc
 build/
+scratch/
+
 # vim files
 .*.swp
 .swp
+
 # RStudio files
 .Rproj.user
+
+# packrat
 packrat/lib*/
 packrat/src/
-# autoconf detritus
-config.status
-autom4te.cache
-config.log
+

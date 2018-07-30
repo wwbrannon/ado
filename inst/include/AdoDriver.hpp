@@ -17,7 +17,7 @@ class AdoDriver
     public:
         // ctor for parse_accept
         AdoDriver(std::string text, int debug_level);
-        
+
         // ctor for do_parse
         AdoDriver(std::string text, Rcpp::Function log_command,
                   int debug_level);
@@ -27,7 +27,7 @@ class AdoDriver
                      Rcpp::Function macro_value_accessor,
                      Rcpp::Function log_command,
                      std::string text, int debug_level, int echo);
-        
+
         ~AdoDriver();
 
         ExprNode *ast;
@@ -37,11 +37,11 @@ class AdoDriver
         int callbacks;
         void wrap_cmd_action(Rcpp::List ast);
         Rcpp::Function cmd_action;
+        Rcpp::Function macro_value_accessor;
         Rcpp::Function log_command;
 
         std::string get_macro_value(std::string name);
         std::string get_macro_value(const char *name);
-        Rcpp::Function macro_value_accessor;
 
         // error-handling functions and state
         int error_seen;

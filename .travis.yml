@@ -2,7 +2,7 @@ language: r
 cache: packages
 
 dist: trusty
-sudo: required
+sudo: false
 
 r:
     - oldrel
@@ -17,6 +17,9 @@ matrix:
     fast_finish: true
     allow_failures:
         - r: devel
+
+after_success:
+  - Rscript -e 'covr::codecov()'
 
 branches:
     only:

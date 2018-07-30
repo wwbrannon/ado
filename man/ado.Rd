@@ -6,8 +6,9 @@
 \alias{ado-package}
 \title{ado: An implementation of Stata's ado language in R.}
 \usage{
-ado(dta = NULL, filename = NULL, string = NULL, assign.back = FALSE,
-  debug_level = 0, print.results = 1, echo = NULL)
+ado(dta = NULL, filename = NULL, string = NULL,
+  assign.back = FALSE, debug_level = 0, print.results = 1,
+  echo = NULL)
 }
 \arguments{
 \item{dta}{If NULL, start with an empty dataset; if a data.frame, use a copy

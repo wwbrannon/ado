@@ -35,7 +35,7 @@ DEBUG_NO_PARSE_ERROR <- 32
 #' @return Invisible NULL.
 #'
 #' @export
-#' @useDynLib ado
+#' @useDynLib ado, .registration = TRUE
 #' @import Rcpp
 ado <-
 function(dta = NULL, filename=NULL, string=NULL, assign.back=FALSE,
