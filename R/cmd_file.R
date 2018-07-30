@@ -143,7 +143,7 @@ function(expression, option_list=NULL, return.match.call=NULL)
     if(hasOption(option_list, "starbang"))
         lines <- Filter(function(x) substring(x, 0, 2) == "*!", lines)
 
-    return(cat(Reduce(paste0, lines)))
+    return(cat(Reduce(function(x, y) paste0(x, y, collapse='\n'), lines)))
 }
 
 ### Aliases for other commands
