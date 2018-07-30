@@ -1,10 +1,4 @@
----
-output: github_document
----
-
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-
-
 
 [![Build Status](https://img.shields.io/travis/wwbrannon/ado.svg?style=flat)](https://travis-ci.org/wwbrannon/ado)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/wwbrannon/ado?branch=master&svg=true)](https://ci.appveyor.com/project/wwbrannon/ado)
