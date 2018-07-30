@@ -7,10 +7,7 @@
 ^src/parser/ado.a$
 ^.travis.yml$
 ^README.Rmd$
-config.status
-autom4te.cache
-config.log
 scratch/
-
 ^appveyor\.yml$
 ^codecov\.yml$
+
