@@ -1,7 +1,6 @@
 #FIXME c-class accessors broken / bad
 #FIXME should these context variables be nullable?
 #FIXME error handling for symboltable?
-#FIXME remove direct reference to private vars in here where possible
 
 #' ado: An implementation of Stata's ado language in R.
 #'
@@ -164,9 +163,9 @@ R6::R6Class("AdoInterpreter",
             private$settings <- SymbolTable$new()
             private$settings$set_symbols_from_list(private$setting_value_defaults())
 
-            private$settings$set_symbol("echo", echo)
-            private$settings$set_symbol("print_results", print_results)
-            private$settings$set_symbol("debug_level", debug_level)
+            self$setting_set("echo", echo)
+            self$setting_set("print_results", print_results)
+            self$setting_set("debug_level", debug_level)
 
             if(!is.null(df))
                 self$dta$use_dataframe(df)
@@ -184,11 +183,11 @@ R6::R6Class("AdoInterpreter",
 
         interpret = function(con = NULL, echo = NULL)
         {
-            debug_level <- private$settings$symbol_value("debug_level")
+            debug_level <- private$setting_value("debug_level")
 
             # Allow the echo setting to be overridden
             if(is.null(echo))
-                echo <- private$settings$symbol_value("echo")
+                echo <- private$setting_value("echo")
 
             while(TRUE)
             {
@@ -206,10 +205,9 @@ R6::R6Class("AdoInterpreter",
 
                             #Send the input to the bison parser, which, after reading
                             #each command, invokes the process_cmd callback
-                            lc <- function(msg) self$log_command(msg)
                             do_parse_with_callbacks(text=inpt, cmd_action=private$process_cmd,
                                                     macro_value_accessor=private$macro_value_accessor,
-                                                    log_command=lc, debug_level=debug_level,
+                                                    log_command=self$log_command, debug_level=debug_level,
                                                     echo=echo)
                         },
                         error = function(c) c)
@@ -881,9 +879,8 @@ R6::R6Class("AdoInterpreter",
             if(start != -1)
             {
                 txt <- substr(name, start, start + len - 1)
-                val <- as.character(ado_func_e(txt))
 
-                return(val)
+                return(self$eclass_value(txt))
             }
 
             #the r() class
@@ -893,9 +890,8 @@ R6::R6Class("AdoInterpreter",
             if(start != -1)
             {
                 txt <- substr(name, start, start + len - 1)
-                val <- as.character(ado_func_r(txt))
 
-                return(val)
+                return(self$rclass_value(txt))
             }
 
             #the c() class
@@ -905,16 +901,16 @@ R6::R6Class("AdoInterpreter",
             if(start != -1)
             {
                 txt <- substr(name, start, start + len - 1)
-                val <- as.character(ado_func_c(txt))
 
-                return(val)
+                return(self$cclass_value(txt))
             }
 
             #a normal macro
-            if(!(private$macro_syms$symbol_defined(name)))
+            if(!(self$macro_defined(name)))
                 return("")
             else
-                return(private$macro_syms$symbol_value(name))
+                return(self$macro_value(name))
         }
     )
 )
+
