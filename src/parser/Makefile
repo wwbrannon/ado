@@ -9,13 +9,13 @@ parser.a: build ExprNode.o AdoDriver.o utils.o lex.o parse.o
 build:
 	mkdir -p build
 
-ExprNode.o: build
+ExprNode.o: build ExprNode.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) ExprNode.cpp -o build/ExprNode.o
 
-AdoDriver.o: build
+AdoDriver.o: build AdoDriver.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) AdoDriver.cpp -o build/AdoDriver.o
 
-utils.o: build
+utils.o: build utils.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) utils.cpp -o build/utils.o
 
 lex.o: build lex.yy.cpp
@@ -30,11 +30,10 @@ parse.o: build ado.tab.cpp
 
 regenerate:
 	flex -o lex.yy.cpp --header-file=../../inst/include/lex.yy.hpp ado.fl
-
 	bison -d -Wall -b ado ado.ypp
-	mv location.hh position.hh stack.hh ../../inst/include
-	mv ado.tab.hpp ../../inst/include
+	mv location.hh position.hh stack.hh ado.tab.hpp ../../inst/include
 
 clean:
 	rm -f parser.a
 	rm -rf build
+
