@@ -27,9 +27,9 @@
 # stats:::foo
 
 ado_cmd_addCommand <-
-function(expression, option_list=NULL, return.match.call=NULL)
+function(expression, option_list=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     valid_opts <- c("env", "newname")

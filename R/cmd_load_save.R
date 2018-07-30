@@ -1,7 +1,7 @@
 ado_cmd_insheet <-
-function(using_clause, varlist=NULL, option_list=NULL, return.match.call=NULL)
+function(using_clause, varlist=NULL, option_list=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
     
     #validate the options given against the valid list, raising a condition if
@@ -52,9 +52,9 @@ function(using_clause, varlist=NULL, option_list=NULL, return.match.call=NULL)
 }
 
 ado_cmd_save <-
-function(expression=NULL, option_list=NULL, return.match.call=NULL)
+function(expression=NULL, option_list=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
     
     #Handle options
@@ -85,9 +85,9 @@ function(expression=NULL, option_list=NULL, return.match.call=NULL)
 }
 
 ado_cmd_saveold <-
-function(expression=NULL, option_list=NULL, return.match.call=NULL)
+function(expression=NULL, option_list=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
     
     #Handle options
@@ -116,9 +116,9 @@ function(expression=NULL, option_list=NULL, return.match.call=NULL)
 }
 
 ado_cmd_use <-
-function(expression, option_list=NULL, return.match.call=NULL)
+function(expression, option_list=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
     
     valid_opts <- c("clear")
@@ -153,9 +153,9 @@ function(expression, option_list=NULL, return.match.call=NULL)
 #       exported from the datasets pacakge
 #    o) correspondingly there is no logic about a ".dta" extension
 ado_cmd_sysuse <-
-function(expression, option_list=NULL, return.match.call=NULL)
+function(expression, option_list=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
     
     valid_opts <- c("clear")
@@ -186,9 +186,9 @@ function(expression, option_list=NULL, return.match.call=NULL)
 }
 
 ado_cmd_webuse <-
-function(expression_list, option_list=NULL, return.match.call=NULL)
+function(expression_list, option_list=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
     
     valid_opts <- c("clear")

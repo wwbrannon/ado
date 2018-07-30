@@ -3,9 +3,9 @@
 ### in the future.
 
 ado_cmd_quietly <-
-function(to_call, return.match.call=NULL)
+function(to_call, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     #We do need to eval the to_call command,
@@ -14,9 +14,9 @@ function(to_call, return.match.call=NULL)
 }
 
 ado_cmd_noisily <-
-function(to_call, return.match.call=NULL)
+function(to_call, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     #This command is basically a no-op
@@ -24,9 +24,9 @@ function(to_call, return.match.call=NULL)
 }
 
 ado_cmd_capture <-
-function(to_call, return.match.call=NULL)
+function(to_call, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     #Eval the command given in to_call, but catch any exceptions
@@ -52,9 +52,9 @@ function(to_call, return.match.call=NULL)
 
 rstata_cmd_xi <-
 function(expression_list=NULL, option_list=NULL, to_call=NULL,
-         return.match.call=NULL)
+         return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
     
     valid_opts <- c("prefix", "omit", "noomit")
@@ -94,9 +94,9 @@ function(expression_list=NULL, option_list=NULL, to_call=NULL,
 #the point at which these arguments are checked. If it's not NULL, there's a spurious
 #missing-argument error, and it's not currently worth re-architecting to fix that.
 ado_cmd_bysort <-
-function(varlist, to_call=NULL, option_list=NULL, return.match.call=NULL)
+function(varlist, to_call=NULL, option_list=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     if(is.null(to_call))
@@ -114,9 +114,9 @@ function(varlist, to_call=NULL, option_list=NULL, return.match.call=NULL)
 }
 
 ado_cmd_by <-
-function(varlist, to_call=NULL, option_list=NULL, return.match.call=NULL)
+function(varlist, to_call=NULL, option_list=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     if(is.null(to_call))
@@ -151,9 +151,9 @@ function(varlist, to_call=NULL, option_list=NULL, return.match.call=NULL)
 
 ado_cmd_xi <-
 function(expression_list=NULL, option_list=NULL, to_call=NULL,
-         return.match.call=NULL)
+         return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     valid_opts <- c("prefix", "omit", "noomit")

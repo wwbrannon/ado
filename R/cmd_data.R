@@ -1,7 +1,7 @@
 ado_cmd_clear <-
-function(expression=NULL, return.match.call=NULL)
+function(expression=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     if(is.null(expression))
@@ -37,9 +37,9 @@ function(expression=NULL, return.match.call=NULL)
 }
 
 ado_cmd_head <-
-function(option_list=NULL, return.match.call=NULL)
+function(option_list=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     valid_opts <- c("n")
@@ -66,9 +66,9 @@ function(option_list=NULL, return.match.call=NULL)
 }
 
 ado_cmd_list <-
-function(varlist=NULL, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
+function(varlist=NULL, if_clause=NULL, in_clause=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     raiseif(!is.null(if_clause) && !is.null(in_clause),
@@ -104,9 +104,9 @@ function(varlist=NULL, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
 }
 
 ado_cmd_drop <-
-function(varlist=NULL, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
+function(varlist=NULL, if_clause=NULL, in_clause=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     #Only certain combinations of these arguments are valid
@@ -143,9 +143,9 @@ function(varlist=NULL, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
 }
 
 ado_cmd_keep <-
-function(varlist=NULL, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
+function(varlist=NULL, if_clause=NULL, in_clause=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     #Only certain combinations of these arguments are valid
@@ -189,9 +189,9 @@ function(varlist=NULL, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
 }
 
 ado_cmd_count <-
-function(if_clause=NULL, in_clause=NULL, return.match.call=NULL)
+function(if_clause=NULL, in_clause=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     raiseif(!is.null(if_clause) && !is.null(in_clause),
@@ -215,9 +215,9 @@ function(if_clause=NULL, in_clause=NULL, return.match.call=NULL)
 }
 
 ado_cmd_gsort <-
-function(expression_list, option_list=NULL, return.match.call=NULL)
+function(expression_list, option_list=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     valid_opts <- c("generate", "mfirst")
@@ -245,9 +245,9 @@ function(expression_list, option_list=NULL, return.match.call=NULL)
 }
 
 ado_cmd_sort <-
-function(varlist, in_clause=NULL, option_list=NULL, return.match.call=NULL)
+function(varlist, in_clause=NULL, option_list=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     valid_opts <- c("stable")
@@ -269,9 +269,9 @@ function(varlist, in_clause=NULL, option_list=NULL, return.match.call=NULL)
 }
 
 ado_cmd_lookfor <-
-function(expression_list, return.match.call=NULL)
+function(expression_list, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     dt <- get("ado_dta", envir=ado_env)
@@ -291,9 +291,9 @@ function(expression_list, return.match.call=NULL)
 }
 
 ado_cmd_rename <-
-function(expression_list, return.match.call=NULL)
+function(expression_list, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     raiseifnot(length(expression_list) == 2,
@@ -312,9 +312,9 @@ function(expression_list, return.match.call=NULL)
 }
 
 ado_cmd_isid <-
-function(varlist, using_clause=NULL, option_list=NULL, return.match.call=NULL)
+function(varlist, using_clause=NULL, option_list=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     valid_opts <- c("sort", "missok")
@@ -363,9 +363,9 @@ function(varlist, using_clause=NULL, option_list=NULL, return.match.call=NULL)
 
 ado_cmd_sample <-
 function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
-         return.match.call=NULL)
+         return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     raiseif(!is.null(if_clause) && !is.null(in_clause),
@@ -424,9 +424,9 @@ function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
 }
 
 ado_cmd_order <-
-function(varlist, option_list=NULL, return.match.call=NULL)
+function(varlist, option_list=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     valid_opts <- c("first", "last", "before", "after", "alphabetic", "sequential")
@@ -547,9 +547,9 @@ function(varlist, option_list=NULL, return.match.call=NULL)
 # =============================================================================
 
 ado_cmd_compare <-
-function(varlist, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
+function(varlist, if_clause=NULL, in_clause=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     raiseifnot(length(varlist) == 2,
@@ -584,9 +584,9 @@ function(varlist, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
 
 ado_cmd_duplicates <-
 function(varlist, if_clause=NULL, in_clause=NULL, option_list=NULL,
-         return.match.call=NULL)
+         return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     raiseifnot(length(varlist) >= 1,
@@ -652,24 +652,24 @@ function(varlist, if_clause=NULL, in_clause=NULL, option_list=NULL,
 
 ado_cmd_append <-
 function(expression_list=NULL, using_clause=NULL, option_list=NULL,
-         return.match.call=NULL)
+         return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 }
 
 ado_cmd_merge <-
-function(varlist, using_clause, option_list=NULL, return.match.call=NULL)
+function(varlist, using_clause, option_list=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 }
 
 ado_cmd_split <-
 function(varlist, if_clause=NULL, in_clause=NULL, option_list=NULL,
-         return.match.call=NULL)
+         return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     valid_opts <- c("generate", "parse", "limit", "notrim",
@@ -680,66 +680,66 @@ function(varlist, if_clause=NULL, in_clause=NULL, option_list=NULL,
 
 ado_cmd_codebook <-
 function(expression_list=NULL, if_clause=NULL, in_clause=NULL,
-         option_list=NULL, return.match.call=NULL)
+         option_list=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 }
 
 ado_cmd_collapse <-
 function(expression_list, if_clause=NULL, in_clause=NULL, weight_clause=NULL,
-         option_list=NULL, return.match.call=NULL)
+         option_list=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 }
 
 ado_cmd_describe <-
 function(expression_list=NULL, using_clause=NULL, option_list=NULL,
-         return.match.call=NULL)
+         return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 }
 
 ado_cmd_expand <-
 function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
-         return.match.call=NULL)
+         return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 }
 
 ado_cmd_recode <-
 function(expression_list, if_clause=NULL, in_clause=NULL, option_list=NULL,
-         return.match.call=NULL)
+         return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 }
 
 #FIXME - need to revise grammar to allow e.g. "reshape long"
 ado_cmd_reshape <-
-function(expression_list=NULL, option_list=NULL, return.match.call=NULL)
+function(expression_list=NULL, option_list=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 }
 
 ado_cmd_separate <-
 function(expression, option_list, if_clause=NULL, in_clause=NULL,
-         return.match.call=NULL)
+         return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 }
 
 # =============================================================================
 
 ado_cmd_recast <-
-function(expression, option_list=NULL, return.match.call=NULL)
+function(expression, option_list=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     valid_opts <- c("force")
@@ -749,86 +749,86 @@ function(expression, option_list=NULL, return.match.call=NULL)
 
 rstata_cmd_egen <-
 function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
-         return.match.call=NULL)
+         return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 }
 
 rstata_cmd_generate <-
 function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
-         return.match.call=NULL)
+         return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 }
 
 # =============================================================================
 ado_cmd_tostring <-
-function(varlist, option_list=NULL, return.match.call=NULL)
+function(varlist, option_list=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 }
 
 ado_cmd_destring <-
-function(varlist=NULL, option_list=NULL, return.match.call=NULL)
+function(varlist=NULL, option_list=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 }
 
 ado_cmd_decode <-
 function(expression, if_clause=NULL, in_clause=NULL, option_list,
-         return.match.call=NULL)
+         return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 }
 
 ado_cmd_egen <-
 function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
-         return.match.call=NULL)
+         return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 }
 
 ado_cmd_encode <-
 function(expression, if_clause=NULL, in_clause=NULL, option_list,
-         return.match.call=NULL)
+         return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 }
 
 ado_cmd_format <-
-function(expression_list=NULL, return.match.call=NULL)
+function(expression_list=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 }
 
 ado_cmd_replace <-
-function(expression, if_clause=NULL, in_clause=NULL, return.match.call=NULL)
+function(expression, if_clause=NULL, in_clause=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 }
 
 ado_cmd_generate <-
 function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
-         return.match.call=NULL)
+         return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 }
 
 ado_cmd_label <-
 function(expression_list, using_clause=NULL, option_list=NULL,
-         return.match.call=NULL)
+         return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 }
 

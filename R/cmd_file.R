@@ -1,7 +1,7 @@
 ado_cmd_cd <-
-function(expression=NULL, return.match.call=NULL)
+function(expression=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     if(is.null(expression))
@@ -16,18 +16,18 @@ function(expression=NULL, return.match.call=NULL)
 }
 
 ado_cmd_pwd <-
-function(return.match.call=NULL)
+function(return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     return(cat(getwd()))
 }
 
 ado_cmd_rm <-
-function(expression, return.match.call=NULL)
+function(expression, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     raiseifnot(length(expression) == 1, msg="Too many arguments to rm/erase")
@@ -38,9 +38,9 @@ function(expression, return.match.call=NULL)
 }
 
 ado_cmd_mkdir <-
-function(expression, option_list=NULL, return.match.call=NULL)
+function(expression, option_list=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     valid_opts <- c("public")
@@ -57,9 +57,9 @@ function(expression, option_list=NULL, return.match.call=NULL)
 }
 
 ado_cmd_ls <-
-function(expression=NULL, option_list=NULL, return.match.call=NULL)
+function(expression=NULL, option_list=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     valid_opts <- c("wide")
@@ -77,9 +77,9 @@ function(expression=NULL, option_list=NULL, return.match.call=NULL)
 }
 
 ado_cmd_cp <-
-function(expression_list=NULL, option_list=NULL, return.match.call=NULL)
+function(expression_list=NULL, option_list=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     valid_opts <- c("public", "replace", "recursive")
@@ -115,9 +115,9 @@ function(expression_list=NULL, option_list=NULL, return.match.call=NULL)
 }
 
 ado_cmd_cat <-
-function(expression, option_list=NULL, return.match.call=NULL)
+function(expression, option_list=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     valid_opts <- c("showtabs", "starbang", "lines")

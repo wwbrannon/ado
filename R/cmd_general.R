@@ -2,7 +2,7 @@
 ## First, things that are more nearly flow-control constructs than
 ## "commands" in the usual sense
 ado_cmd_quit <-
-function(return.match.call=NULL)
+function(return.match.call=FALSE)
 {
     #Don't do anything with return.match.call because otherwise we can't get
     #out of ado() when testing with return.match.call
@@ -10,7 +10,7 @@ function(return.match.call=NULL)
 }
 
 ado_cmd_continue <-
-function(option_list=NULL, return.match.call=NULL)
+function(option_list=NULL, return.match.call=FALSE)
 {
     #Similarly, we shouldn't return match.call here because
     #then it's impossible to test loops properly, and this command
@@ -26,9 +26,9 @@ function(option_list=NULL, return.match.call=NULL)
 }
 
 ado_cmd_do <-
-function(expression_list, return.match.call=NULL)
+function(expression_list, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     filename <- as.character(expression_list[[1]])
@@ -73,9 +73,9 @@ function(expression_list, return.match.call=NULL)
 
 #The if expr { } construct
 ado_cmd_if <-
-function(expression, compound_cmd, return.match.call=NULL)
+function(expression, compound_cmd, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 }
 
@@ -85,9 +85,9 @@ ado_cmd_run <- ado_cmd_do
 #====================================================================
 ## Now, more normal commands
 ado_cmd_about <-
-function(return.match.call=NULL)
+function(return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     fields <- c("Package", "Authors@R", "Version", "Title", "License", "URL", "BugReports")
@@ -97,9 +97,9 @@ function(return.match.call=NULL)
 }
 
 ado_cmd_sleep <-
-function(expression, return.match.call=NULL)
+function(expression, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     Sys.sleep(expression[[1]])
@@ -108,9 +108,9 @@ function(expression, return.match.call=NULL)
 }
 
 ado_cmd_display <-
-function(expression, return.match.call=NULL)
+function(expression, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     ret <- eval(expression[[1]])
@@ -118,9 +118,9 @@ function(expression, return.match.call=NULL)
 }
 
 ado_cmd_preserve <-
-function(option_list=NULL, return.match.call=NULL)
+function(option_list=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     valid_opts <- c("memory")
@@ -135,9 +135,9 @@ function(option_list=NULL, return.match.call=NULL)
 }
 
 ado_cmd_restore <-
-function(option_list=NULL, return.match.call=NULL)
+function(option_list=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     valid_opts <- c("not")
@@ -152,9 +152,9 @@ function(option_list=NULL, return.match.call=NULL)
 }
 
 ado_cmd_query <-
-function(varlist=NULL, return.match.call=NULL)
+function(varlist=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     #Subcommand is accepted for compatibility but (currently) ignored.
@@ -171,9 +171,9 @@ function(varlist=NULL, return.match.call=NULL)
 }
 
 ado_cmd_set <-
-function(expression_list=NULL, return.match.call=NULL)
+function(expression_list=NULL, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     if(is.null(expression_list))
@@ -248,9 +248,9 @@ function(expression_list=NULL, return.match.call=NULL)
 }
 
 ado_cmd_creturn <-
-function(expression, return.match.call=NULL)
+function(expression, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     #Must be invoked as "creturn list"
@@ -270,9 +270,9 @@ function(expression, return.match.call=NULL)
 }
 
 ado_cmd_return <-
-function(expression, return.match.call=NULL)
+function(expression, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     #Must be invoked as "return list"
@@ -289,9 +289,9 @@ function(expression, return.match.call=NULL)
 }
 
 ado_cmd_ereturn <-
-function(expression, return.match.call=NULL)
+function(expression, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     #Must be invoked as "ereturn list"
@@ -309,9 +309,9 @@ function(expression, return.match.call=NULL)
 
 ado_cmd_log <-
 function(expression_list=NULL, using_clause=NULL, option_list=NULL,
-         return.match.call=NULL)
+         return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     valid_opts <- c("append", "replace", "text", "smcl", "name")
@@ -380,9 +380,9 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
 
 ado_cmd_cmdlog <-
 function(expression_list=NULL, using_clause=NULL, option_list=NULL,
-         return.match.call=NULL)
+         return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     valid_opts <- c("append", "replace", "permanently")
@@ -442,9 +442,9 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
 }
 
 ado_cmd_help <-
-function(expression, return.match.call=NULL)
+function(expression, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 }
 

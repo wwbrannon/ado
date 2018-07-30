@@ -1,9 +1,9 @@
 ## Macro management commands
 
 ado_cmd_local <-
-function(expression_list, return.match.call=NULL)
+function(expression_list, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     env <- get("ado_macro_env", envir=ado_env)
@@ -58,9 +58,9 @@ function(expression_list, return.match.call=NULL)
 }
 
 ado_cmd_global <-
-function(expression_list, return.match.call=NULL)
+function(expression_list, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     env <- get("ado_macro_env", envir=ado_env)
@@ -110,9 +110,9 @@ function(expression_list, return.match.call=NULL)
 }
 
 ado_cmd_tempfile <-
-function(expression_list, return.match.call=NULL)
+function(expression_list, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     env <- get("ado_macro_env", envir=ado_env)
@@ -137,9 +137,9 @@ function(expression_list, return.match.call=NULL)
 }
 
 ado_cmd_macro <-
-function(expression_list, return.match.call=NULL)
+function(expression_list, return.match.call=FALSE)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(return.match.call)
         return(match.call())
 
     env <- get("ado_macro_env", envir=ado_env)
