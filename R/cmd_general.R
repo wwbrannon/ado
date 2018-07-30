@@ -128,8 +128,7 @@ function(option_list=NULL, context=NULL, return.match.call=FALSE)
 
     mem <- hasOption(option_list, "memory")
 
-    dt <- get("ado_dta", envir=ado_env)
-    dt$preserve(memory=mem)
+    context$dta$preserve(memory=mem)
 
     return(invisible(NULL))
 }
@@ -145,8 +144,7 @@ function(option_list=NULL, context=NULL, return.match.call=FALSE)
 
     cancel <- hasOption(option_list, "not")
 
-    dt <- get("ado_dta", envir=ado_env)
-    dt$restore(cancel=cancel)
+    context$dta$restore(cancel=cancel)
 
     return(invisible(NULL))
 }
@@ -163,11 +161,7 @@ function(varlist=NULL, context=NULL, return.match.call=FALSE)
     raiseifnot(is.null(varlist) || length(varlist) == 1,
                msg="Wrong number of arguments to query")
 
-    nm <- allSettings()
-    vals <- lapply(nm, getSettingValue)
-    names(vals) <- nm
-
-    return(structure(vals, class="ado_cmd_query"))
+    return(structure(context$settings$all_values(), class="ado_cmd_query"))
 }
 
 ado_cmd_set <-
@@ -236,12 +230,10 @@ function(expression_list=NULL, context=NULL, return.match.call=FALSE)
             raiseCondition("Bad # of obs to set")
         }
 
-        dt <- get("ado_dta", envir=ado_env)
-        dt$set_obs(value)
+        context$dta$set_obs(value)
     } else
     {
-        env <- get("ado_settings_env", envir=ado_env)
-        assign(setting, value, envir=env)
+        context$settings$set_symbol(setting, value)
     }
 
     return(invisible(NULL))
@@ -320,14 +312,12 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
     raiseif(!is.null(using_clause) && !is.null(expression_list),
             msg="Cannot specify using clause and a subcommand")
 
-    lg <- get("ado_logger", envir=ado_env)
-
     if(is.null(using_clause) && is.null(expression_list))
     {
         raiseifnot(is.null(option_list), msg="Cannot specify options here")
 
         msg <- "Open logging sinks: \n\n"
-        for(con in lg$log_sinks)
+        for(con in context$logger$log_sinks)
         {
             msg <- msg %p% con
         }
@@ -337,7 +327,7 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
     {
         raiseif(hasOption(option_list, "smcl"), msg="SMCL is not supported")
 
-        lg$register_sink(using_clause, type="log")
+        context$logger$register_sink(using_clause, type="log")
     } else #we have a subcommand
     {
         raiseifnot(is.null(option_list), msg="Cannot specify options here")
@@ -348,7 +338,7 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
         if(cmd == "query")
         {
             msg <- "Open logging sinks: \n\n"
-            for(con in lg$log_sinks)
+            for(con in context$logger$log_sinks)
             {
                 msg <- msg %p% con
             }
@@ -361,17 +351,17 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
 
             if(length(expression_list) == 1)
             {
-                lg$deregister_all_sinks(type="log")
+                context$logger$deregister_all_sinks(type="log")
             } else
             {
-                lg$deregister_sink(as.character(expression_list[[2]]))
+                context$logger$deregister_sink(as.character(expression_list[[2]]))
             }
         } else if(cmd == "on")
         {
-            lg$log_enabled <- TRUE
+            context$logger$log_enabled <- TRUE
         } else if(cmd == "off")
         {
-            lg$log_enabled <- FALSE
+            context$logger$log_enabled <- FALSE
         }
     }
 
@@ -391,14 +381,12 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
     raiseif(!is.null(using_clause) && !is.null(expression_list),
             msg="Cannot specify using clause and a subcommand")
 
-    lg <- get("ado_logger", envir=ado_env)
-
     if(is.null(using_clause) && is.null(expression_list))
     {
         raiseifnot(is.null(option_list), msg="Cannot specify options here")
 
         msg <- "Open command logging sinks: \n\n"
-        for(con in lg$cmdlog_sinks)
+        for(con in context$logger$cmdlog_sinks)
         {
             msg <- msg %p% con
         }
@@ -409,7 +397,7 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
         raiseif(hasOption(option_list, "permanently"),
                 msg="Permanent option setting is not supported")
 
-        lg$register_sink(using_clause, type="cmdlog")
+        context$logger$register_sink(using_clause, type="cmdlog")
     } else #we have a subcommand
     {
         raiseifnot(is.null(option_list), msg="Cannot specify options here")
@@ -424,17 +412,17 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
 
             if(length(expression_list) == 1)
             {
-                lg$deregister_all_sinks(type="cmdlog")
+                context$logger$deregister_all_sinks(type="cmdlog")
             } else
             {
-                lg$deregister_sink(as.character(expression_list[[2]]))
+                context$logger$deregister_sink(as.character(expression_list[[2]]))
             }
         } else if(cmd == "on")
         {
-            lg$cmdlog_enabled <- FALSE
+            context$logger$cmdlog_enabled <- FALSE
         } else if(cmd == "off")
         {
-            lg$cmdlog_enabled <- FALSE
+            context$logger$cmdlog_enabled <- FALSE
         }
     }
 

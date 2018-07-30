@@ -299,6 +299,11 @@ function(node, context=NULL, debug_level=0)
     args <- lapply(args, function(x) codegen(x, context=context, debug_level=debug_level))
     names(args) <- NULL
 
+    if(op == "()")
+    {
+        args <- c(args, context=context)
+    }
+
     as.call(c(list(op), args))
 }
 

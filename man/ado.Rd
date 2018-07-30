@@ -7,7 +7,7 @@
 \title{ado: An implementation of Stata's ado language in R.}
 \usage{
 ado(dta = NULL, filename = NULL, string = NULL,
-  assign.back = FALSE, debug_level = 0, print.results = 1,
+  assign.back = FALSE, debug_level = 0, print_results = 1,
   echo = NULL)
 }
 \arguments{
@@ -29,7 +29,7 @@ the old value will not necessarily be garbage-collected.}
 
 \item{debug_level}{How verbose debug messages should be.}
 
-\item{print.results}{Whether to print command results. Values 0 or 1. The value
+\item{print_results}{Whether to print command results. Values 0 or 1. The value
 passed here becomes the ado setting "print_results".}
 
 \item{echo}{Whether to echo command input. Values 0, 1, and NULL are accepted;

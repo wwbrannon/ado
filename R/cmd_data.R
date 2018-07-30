@@ -23,8 +23,7 @@ function(expression=NULL, context=NULL, return.match.call=FALSE)
 
     if(drop_data)
     {
-        dt <- get("ado_dta", envir=ado_env)
-        dt$clear()
+        context$dta$clear()
     }
 
     if(drop_results)
@@ -55,8 +54,7 @@ function(option_list=NULL, context=NULL, return.match.call=FALSE)
         n <- pn[[1]]
     }
 
-    dt <- get("ado_dta", envir=ado_env)
-    if(dt$dim[1] == 0)
+    if(context$dta$dim[1] == 0)
     {
         return(invisible(NULL))
     } else
@@ -74,32 +72,30 @@ function(varlist=NULL, if_clause=NULL, in_clause=NULL, context=NULL, return.matc
     raiseif(!is.null(if_clause) && !is.null(in_clause),
             msg="Cannot specify both in clause and if clause at once")
 
-    dt <- get("ado_dta", envir=ado_env)
-
     cols <- varlist
     if(is.null(cols))
     {
-        cols <- dt$names
+        cols <- context$dta$names
     }
 
     if(!is.null(if_clause))
     {
-        rows <- dt$rows_where(if_clause)
+        rows <- context$dta$rows_where(if_clause)
     } else if(!is.null(in_clause))
     {
-        rn <- dt$in_clause_to_row_numbers(in_clause)
+        rn <- context$dta$in_clause_to_row_numbers(in_clause)
         rows <- seq.int(rn[1], rn[2])
     } else
     {
-        rows <- seq.int(1, dt$dim[1])
+        rows <- seq.int(1, context$dta$dim[1])
     }
 
-    if(dt$dim[1] == 0)
+    if(context$dta$dim[1] == 0)
     {
         return(invisible(NULL))
     } else
     {
-        return(dt$iloc(rows, cols))
+        return(context$dta$iloc(rows, cols))
     }
 }
 
@@ -117,26 +113,25 @@ function(varlist=NULL, if_clause=NULL, in_clause=NULL, context=NULL, return.matc
     raiseif(!is.null(if_clause) && !is.null(in_clause),
             msg="Cannot specify both an in clause and an if clause at once")
 
-    dt <- get("ado_dta", envir=ado_env)
     varlist <- lapply(varlist, as.character)
 
     #One Stata syntax: we're dropping columns
     if(!is.null(varlist))
     {
-        dt$drop_columns(varlist)
+        context$dta$drop_columns(varlist)
     }
 
     #We're dropping rows but keeping all columns
     if(!is.null(if_clause))
     {
-        rows <- dt$rows_where(if_clause)
-        dt$drop_rows(rows)
+        rows <- context$dta$rows_where(if_clause)
+        context$dta$drop_rows(rows)
     }
 
     if(!is.null(in_clause))
     {
-        rn <- dt$in_clause_to_row_numbers(in_clause)
-        dt$drop_rows(seq.int(rn[1], rn[2]))
+        rn <- context$dta$in_clause_to_row_numbers(in_clause)
+        context$dta$drop_rows(seq.int(rn[1], rn[2]))
     }
 
     return(invisible(NULL))
@@ -156,33 +151,32 @@ function(varlist=NULL, if_clause=NULL, in_clause=NULL, context=NULL, return.matc
     raiseif(!is.null(if_clause) && !is.null(in_clause),
             msg="Cannot specify both an in clause and an if clause at once")
 
-    dt <- get("ado_dta", envir=ado_env)
     varlist <- lapply(varlist, as.character)
 
     #One Stata syntax: we're dropping columns
     if(!is.null(varlist))
     {
-        cols <- setdiff(dt$names, varlist)
-        dt$drop_columns(cols)
+        cols <- setdiff(context$dta$names, varlist)
+        context$dta$drop_columns(cols)
     }
 
     #We're dropping rows but keeping all columns
     if(!is.null(if_clause))
     {
-        all_rows = seq.int(dt$dim[1], dt$dim[2])
-        rows <- dt$rows_where(if_clause)
+        all_rows = seq.int(context$dta$dim[1], context$dta$dim[2])
+        rows <- context$dta$rows_where(if_clause)
 
-        dt$drop_rows(setdiff(all_rows, rows))
+        context$dta$drop_rows(setdiff(all_rows, rows))
     }
 
     if(!is.null(in_clause))
     {
-        rn <- dt$in_clause_to_row_numbers(in_clause)
+        rn <- context$dta$in_clause_to_row_numbers(in_clause)
 
-        all_rows = seq.int(dt$dim[1], dt$dim[2])
+        all_rows = seq.int(context$dta$dim[1], context$dta$dim[2])
         rows <- seq.int(rn[1], rn[2])
 
-        dt$drop_rows(setdiff(all_rows, rows))
+        context$dta$drop_rows(setdiff(all_rows, rows))
     }
 
     return(invisible(NULL))
@@ -197,20 +191,18 @@ function(if_clause=NULL, in_clause=NULL, context=NULL, return.match.call=FALSE)
     raiseif(!is.null(if_clause) && !is.null(in_clause),
             msg="Cannot give both an if clause and an in clause at once")
 
-    dt <- get("ado_dta", envir=ado_env)
-
     #We don't need to do any expensive copying here, fortunately
     if(!is.null(if_clause))
     {
-        rows <- dt$rows_where(if_clause)
+        rows <- context$dta$rows_where(if_clause)
         return(length(rows))
     } else if(!is.null(in_clause))
     {
-        rn <- dt$in_clause_to_row_numbers(in_clause)
+        rn <- context$dta$in_clause_to_row_numbers(in_clause)
         return(rn[2] - rn[1] + 1)
     } else
     {
-        return(dt$dim[1])
+        return(context$dta$dim[1])
     }
 }
 
@@ -231,15 +223,13 @@ function(expression_list, option_list=NULL, context=NULL, return.match.call=FALS
         rn <- optionArgs(option_list, "generate")
     }
 
-    dt <- get("ado_dta", envir=ado_env)
-
     #These are unevaluated calls to ado_func_ functions, so they
     #need to be evaluated before being used.
     proc <- lapply(expression_list, eval)
     cols <- lapply(proc, function(x) x$col)
     ords <- lapply(proc, function(x) x$asc)
 
-    dt$sort(cols, asc=ords, row_number=rn, na.last=na.last)
+    context$dta$sort(cols, asc=ords, row_number=rn, na.last=na.last)
 
     return(invisible(TRUE))
 }
@@ -254,16 +244,14 @@ function(varlist, in_clause=NULL, option_list=NULL, context=NULL, return.match.c
     option_list <- validateOpts(option_list, valid_opts)
     stable <- hasOption(option_list, "stable")
 
-    dt <- get("ado_dta", envir=ado_env)
-
     rows <- NULL
     if(!is.null(in_clause))
     {
-        rn <- dt$in_clause_to_row_numbers(in_clause)
+        rn <- context$dta$in_clause_to_row_numbers(in_clause)
         rows <- seq.int(rn[1], rn[2])
     }
 
-    dt$sort(varlist, rows=rows, stable=stable)
+    context$dta$sort(varlist, rows=rows, stable=stable)
 
     return(invisible(TRUE))
 }
@@ -274,17 +262,15 @@ function(expression_list, context=NULL, return.match.call=FALSE)
     if(return.match.call)
         return(match.call())
 
-    dt <- get("ado_dta", envir=ado_env)
-
     ind <- numeric(0)
     for(expr in expression_list)
     {
         re <- ".*" %p% as.character(expr) %p% ".*"
-        ind <- c(ind, grep(re, dt$names))
+        ind <- c(ind, grep(re, context$dta$names))
     }
 
-    df <- data.frame(variable_name=dt$names[ind],
-                     storage_type=dt$dtypes[ind],
+    df <- data.frame(variable_name=context$dta$names[ind],
+                     storage_type=context$dta$dtypes[ind],
                      row.names=NULL)
 
     return(df)
@@ -299,14 +285,13 @@ function(expression_list, context=NULL, return.match.call=FALSE)
     raiseifnot(length(expression_list) == 2,
                msg="Incorrect number of arguments")
 
-    dt <- get("ado_dta", envir=ado_env)
     expression_list <- lapply(expression_list, as.character)
 
-    nm <- dt$names
+    nm <- context$dta$names
     ind <- which(nm == expression_list[[1]])
     nm[ind] <- expression_list[[2]]
 
-    dt$setnames(nm)
+    context$dta$setnames(nm)
 
     return(invisible(TRUE))
 }
@@ -337,7 +322,7 @@ function(varlist, using_clause=NULL, option_list=NULL, context=NULL, return.matc
         dt$use(using_clause)
     } else
     {
-        dt <- get("ado_dta", envir=ado_env)
+        dt <- context$dta
     }
 
     if(!missok)
@@ -383,17 +368,16 @@ function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
         byvars <- NULL
     }
 
-    dt <- get("ado_dta", envir=ado_env)
     if(!is.null(in_clause))
     {
-        rn <- dt$in_clause_to_row_numbers(in_clause)
+        rn <- context$dta$in_clause_to_row_numbers(in_clause)
         rows <- seq.int(rn[1], rn[2])
     } else if(!is.null(if_clause))
     {
-        rows <- dt$rows_where(if_clause)
+        rows <- context$dta$rows_where(if_clause)
     } else
     {
-        rows <- seq.int(1, dt$dim[1])
+        rows <- seq.int(1, context$dta$dim[1])
     }
 
     if(count)
@@ -412,14 +396,14 @@ function(expression, if_clause=NULL, in_clause=NULL, option_list=NULL,
         samp <- sample(rows, cnt)
     } else
     {
-        idx <- dt$iloc(rows, byvars)
+        idx <- context$dta$iloc(rows, byvars)
 
         samp <- c(tapply(rows, idx, function(x) sample(x, cnt), simplify=TRUE))
         samp <- samp[which(!is.na(samp))]
     }
 
     to_drop <- setdiff(rows, samp)
-    dt$drop_rows(to_drop)
+    context$dta$drop_rows(to_drop)
     return(structure(length(to_drop), class="ado_cmd_sample"))
 }
 
@@ -467,8 +451,7 @@ function(varlist, option_list=NULL, context=NULL, return.match.call=FALSE)
     }
 
     varlist <- vapply(varlist, as.character, character(1))
-    dt <- get("ado_dta", envir=ado_env)
-    nm <- dt$names
+    nm <- context$dta$names
 
     raiseifnot(all(varlist %in% nm),
                msg="Not all variable names specified exist in the dataset")
@@ -540,7 +523,7 @@ function(varlist, option_list=NULL, context=NULL, return.match.call=FALSE)
         nm <- c(pre, varname, varlist, post)
     }
 
-    dt$setcolorder(nm)
+    context$dta$setcolorder(nm)
     return(invisible(TRUE))
 }
 
@@ -558,22 +541,20 @@ function(varlist, if_clause=NULL, in_clause=NULL, context=NULL, return.match.cal
     raiseif(!is.null(if_clause) && !is.null(in_clause),
             msg="Cannot specify both if and in clause at once")
 
-    dt <- get("ado_dta", envir=ado_env)
-
     if(!is.null(in_clause))
     {
-        rn <- dt$in_clause_to_row_numbers(in_clause)
+        rn <- context$dta$in_clause_to_row_numbers(in_clause)
         rows <- seq.int(rn[1], rn[2])
     } else if(!is.null(if_clause))
     {
-        rows <- dt$rows_where(if_clause)
+        rows <- context$dta$rows_where(if_clause)
     } else
     {
-        rows <- seq.int(1, dt$dim[1])
+        rows <- seq.int(1, context$dta$dim[1])
     }
 
-    v1 <- dt$iloc(rows, as.character(varlist[[1]]))
-    v2 <- dt$iloc(rows, as.character(varlist[[2]]))
+    v1 <- context$dta$iloc(rows, as.character(varlist[[1]]))
+    v2 <- context$dta$iloc(rows, as.character(varlist[[2]]))
 
     ret <- list()
 
@@ -600,11 +581,9 @@ function(varlist, if_clause=NULL, in_clause=NULL, option_list=NULL,
     gen <- hasOption(option_list, "generate")
     fr <- hasOption(option_list, "force")
 
-    dt <- get("ado_dta", envir=ado_env)
-
     if(length(varlist) == 1)
     {
-        varlist <- dt$names
+        varlist <- context$dta$names
     } else
     {
         varlist <- varlist[2:length(varlist)]
@@ -612,14 +591,14 @@ function(varlist, if_clause=NULL, in_clause=NULL, option_list=NULL,
 
     if(!is.null(in_clause))
     {
-        rn <- dt$in_clause_to_row_numbers(in_clause)
+        rn <- context$dta$in_clause_to_row_numbers(in_clause)
         rows <- seq.int(rn[1], rn[2])
     } else if(!is.null(if_clause))
     {
-        rows <- dt$rows_where(if_clause)
+        rows <- context$dta$rows_where(if_clause)
     } else
     {
-        rows <- seq.int(dt$dim[1], dt$dim[2])
+        rows <- seq.int(context$dta$dim[1], context$dta$dim[2])
     }
 
     subcommands <- c("tag", "report", "list", "examples", "drop")

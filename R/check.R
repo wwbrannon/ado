@@ -8,7 +8,7 @@ function(node, debug_level=0)
     #General checks all AST nodes should pass
     raiseifnot(node %is% "ado_ast_node",
                msg=if(debug_level) NULL else "Missing or malformed command object")
-    raiseifnot(every(c("data", "children") %in% names(node)),
+    raiseifnot(all(c("data", "children") %in% names(node)),
                msg=if(debug_level) NULL else "Malformed command object")
 
     #Recursively check the children
@@ -123,7 +123,7 @@ function(node, debug_level=0)
     #Children - length, names, types
     raiseifnot(length(node$children) > 2,
                msg=if(debug_level) NULL else "Malformed loop statement")
-    raiseifnot(every(c("macro_name", "text") %in% names(node$children)),
+    raiseifnot(all(c("macro_name", "text") %in% names(node$children)),
                msg=if(debug_level) NULL else "Malformed loop statement")
     raiseifnot(node$children$macro_name %is% "ado_ident",
                msg=if(debug_level) NULL else "Malformed loop statement")
@@ -150,14 +150,14 @@ function(node, debug_level=0)
         raiseifnot(node$children$numlist %is% "ado_expression_list",
                    msg=if(debug_level) NULL else "Invalid numlist given to foreach statement")
 
-        raiseifnot(every(vapply(node$children$numlist$children, function(v) v %is% "ado_number", logical(1))),
+        raiseifnot(all(vapply(node$children$numlist$children, function(v) v %is% "ado_number", logical(1))),
                    msg=if(debug_level) NULL else "Invalid numlist given to foreach statement")
     } else if("varlist" %in% names(node$children))
     {
         raiseifnot(node$children$varlist %is% "ado_expression_list",
                    msg=if(debug_level) NULL else "")
 
-        raiseifnot(every(vapply(node$children$varlist, function(v) v %is% "ado_ident", logical(1))),
+        raiseifnot(all(vapply(node$children$varlist, function(v) v %is% "ado_ident", logical(1))),
                    msg=if(debug_level) NULL else "Invalid varlist given to foreach statement")
     } else if("local_macro_source" %in% names(node$children))
     {
@@ -178,7 +178,7 @@ function(node, debug_level=0)
 {
     raiseifnot(length(node$children) %in% c(4,5),
                msg=if(debug_level) NULL else "Malformed forvalues statement")
-    raiseifnot(every(c("upper", "lower") %in% names(node$children)),
+    raiseifnot(all(c("upper", "lower") %in% names(node$children)),
                msg=if(debug_level) NULL else "Malformed forvalues statement")
 
     raiseifnot(node$children$upper %is% "ado_number",
@@ -343,7 +343,7 @@ function(node, debug_level=0)
     #Children - length, names, types
     #Length at least 0, checked above
     #No name requirements for children
-    raiseifnot(every(vapply(node$children, function(x) x %is% "ado_option", TRUE)),
+    raiseifnot(all(vapply(node$children, function(x) x %is% "ado_option", TRUE)),
                msg=if(debug_level) NULL else "Non-option in option list")
 
     invisible(TRUE)
@@ -388,7 +388,7 @@ function(node, debug_level=0)
     #No name requirements for children
     raiseifnot(length(node$children) > 0,
                msg=if(debug_level) NULL else "Empty compound/block command")
-    raiseifnot(every(vapply(node$children,
+    raiseifnot(all(vapply(node$children,
                             function(x) x %is% "ado_compound_cmd" ||     #they can be nested
                                 x %is% "ado_embedded_code" ||    #embedded R or sh code
                                 x %is% "ado_cmd" ||              #a usual Stata cmd
@@ -411,7 +411,7 @@ function(node, debug_level=0)
     #Children - length, names, types
     raiseifnot(length(node$children) == 2,
                msg=if(debug_level) NULL else "Malformed if command")
-    raiseifnot(every(c("expression", "compound_cmd") %in% names(node$children)),
+    raiseifnot(all(c("expression", "compound_cmd") %in% names(node$children)),
                msg=if(debug_level) NULL else "Malformed if command")
 
     raiseifnot(node$children$expression %is% "ado_expression" ||
@@ -434,7 +434,7 @@ function(node, debug_level=0)
     #Children - length, names, types
     raiseifnot(length(node$children) > 0,
                msg=if(debug_level) NULL else "Empty prefix command list")
-    raiseifnot(every(vapply(node$children,
+    raiseifnot(all(vapply(node$children,
                             function(x) x %is% "ado_modifier_cmd_list" ||
                                 x %is% "ado_modifier_cmd" ||
                                 x %is% "ado_general_cmd" ||
@@ -497,7 +497,7 @@ function(node, debug_level=0)
     raiseifnot(node$children$verb %is% "ado_ident",
                msg=if(debug_level) NULL else "Malformed command object: bad command name")
 
-    raiseifnot(every(valid_cmd_part(names(node$children))),
+    raiseifnot(all(valid_cmd_part(names(node$children))),
                msg=if(debug_level) NULL else "Malformed command object")
 
     #Data members - length, names, values
@@ -570,14 +570,14 @@ function(node, debug_level=0)
     }
     given <- setdiff(names(chlds), c("verb"))
 
-    raiseifnot(every(given %in% names(args)),
+    raiseifnot(all(given %in% names(args)),
                msg=if(debug_level) NULL else "Incorrect clause or option for command")
-    raiseifnot(every(vapply(names(args),
+    raiseifnot(all(vapply(names(args),
                             function(x) is.null(args[[x]]) || x %in% given,
                             TRUE)),
                msg=if(debug_level) NULL else "Required clause or option missing for command")
 
-    raiseifnot(every(correct_arg_types_for_cmd(chlds)),
+    raiseifnot(all(correct_arg_types_for_cmd(chlds)),
                msg=if(debug_level) NULL else "Incorrect argument given to command")
 
     invisible(TRUE)
@@ -597,7 +597,7 @@ function(node, debug_level=0)
     raiseifnot(length(node$children) > 0,
                msg=if(debug_level) NULL else "Empty expression or variable list")
 
-    raiseifnot(every(vapply(node$children, function(x) x %is% "ado_expression" ||
+    raiseifnot(all(vapply(node$children, function(x) x %is% "ado_expression" ||
                                 x %is% "ado_literal", TRUE)),
                msg=if(debug_level) NULL else "Non-expression in expression or variable list")
 
@@ -616,12 +616,12 @@ function(node, debug_level=0)
     raiseifnot(length(node$children) > 0,
                msg=if(debug_level) NULL else "Empty function or option argument list")
 
-    raiseifnot(every(vapply(node$children, function(x) x %is% "ado_expression_list", TRUE)),
+    raiseifnot(all(vapply(node$children, function(x) x %is% "ado_expression_list", TRUE)),
                msg=if(debug_level) NULL else "Invalid argument to function or option")
 
     for(n in node$children)
     {
-        raiseifnot(every(vapply(n$children,
+        raiseifnot(all(vapply(n$children,
                                 function(x) !(x %is% "ado_assignment_expression") &&
                                     !(x %is% "ado_factor_expression") &&
                                     !(x %is% "ado_cross_expression"),
@@ -666,7 +666,7 @@ function(node, debug_level=0)
                msg=if(debug_level) NULL else "Malformed type specifier expression")
     raiseifnot(node$children$left %is% "ado_expression_list",
                msg=if(debug_level) NULL else "Malformed type specifier expression")
-    raiseifnot(every(vapply(node$children$left$children, function(x) x %is% "ado_ident", TRUE)),
+    raiseifnot(all(vapply(node$children$left$children, function(x) x %is% "ado_ident", TRUE)),
                msg=if(debug_level) NULL else "Non-variable given as argument to type specifier expression")
 
     invisible(TRUE)
@@ -720,7 +720,7 @@ function(node, debug_level=0)
                        !is.na(as.numeric(node$data["levelend"])),
                    msg=if(debug_level) NULL else "Bad level given to 'i.' operator")
     else if(length(grep("level[0-9]+", nm)) == length(nm))
-        raiseifnot(every(vapply(nm, function(x) !is.na(as.numeric(x)), TRUE)),
+        raiseifnot(all(vapply(nm, function(x) !is.na(as.numeric(x)), TRUE)),
                    msg=if(debug_level) NULL else "Bad level given to 'i.' operator")
     else
         raiseifnot(1==0, msg=if(debug_level) NULL else "Bad level given to 'i.' operator")
@@ -748,7 +748,7 @@ function(node, debug_level=0)
                        !is.na(as.numeric(node$data["levelend"])),
                    msg=if(debug_level) NULL else "Bad level given to 'o.' operator")
     else if(length(grep("level[0-9]+", nm)) == length(nm))
-        raiseifnot(every(vapply(nm, function(x) !is.na(as.numeric(x)), TRUE)),
+        raiseifnot(all(vapply(nm, function(x) !is.na(as.numeric(x)), TRUE)),
                    msg=if(debug_level) NULL else "Bad level given to 'o.' operator")
     else
         raiseifnot(1==0, msg=if(debug_level) NULL else "Bad level given to 'o.' operator")
@@ -789,7 +789,7 @@ function(node, debug_level=0)
     #Children - length, names, types
     raiseifnot(length(node$children) == 2,
                msg=if(debug_level) NULL else "Malformed cross or factorial cross expression")
-    raiseifnot(every(c("left", "right") %in% names(node$children)),
+    raiseifnot(all(c("left", "right") %in% names(node$children)),
                msg=if(debug_level) NULL else "Malformed cross or factorial cross expression")
 
     raiseifnot(node$children$left %is% "ado_ident" ||
@@ -817,7 +817,7 @@ function(node, debug_level=0)
     #Children - length, names, types
     raiseifnot(length(node$children) == 2,
                msg=if(debug_level) NULL else "Malformed exponentiation expression")
-    raiseifnot(every(c("left", "right") %in% names(node$children)),
+    raiseifnot(all(c("left", "right") %in% names(node$children)),
                msg=if(debug_level) NULL else "Malformed exponentiation expression")
 
     raiseifnot(node$children$left %is% "ado_ident" ||
@@ -870,7 +870,7 @@ function(node, debug_level=0)
     #Children - length, names, types
     raiseifnot(length(node$children) == 2,
                msg=if(debug_level) NULL else "Malformed multiplication/division expression")
-    raiseifnot(every(c("left", "right") %in% names(node$children)),
+    raiseifnot(all(c("left", "right") %in% names(node$children)),
                msg=if(debug_level) NULL else "Malformed multiplication/division expression")
 
     raiseifnot(node$children$left %is% "ado_ident" ||
@@ -899,7 +899,7 @@ function(node, debug_level=0)
     #Children - length, names, types
     raiseifnot(length(node$children) == 2,
                msg=if(debug_level) NULL else "Malformed addition/subtraction expression")
-    raiseifnot(every(c("left", "right") %in% names(node$children)),
+    raiseifnot(all(c("left", "right") %in% names(node$children)),
                msg=if(debug_level) NULL else "Malformed addition/subtraction expression")
 
     raiseifnot(node$children$left %is% "ado_ident" ||
@@ -929,7 +929,7 @@ function(node, debug_level=0)
     #Children - length, names, types
     raiseifnot(length(node$children) == 2,
                msg=if(debug_level) NULL else "Malformed equality expression")
-    raiseifnot(every(c("left", "right") %in% names(node$children)),
+    raiseifnot(all(c("left", "right") %in% names(node$children)),
                msg=if(debug_level) NULL else "Malformed equality expression")
 
     raiseifnot(
@@ -978,7 +978,7 @@ function(node, debug_level=0)
     #Children - length, names, types
     raiseifnot(length(node$children) == 2,
                msg=if(debug_level) NULL else "Malformed logical expression")
-    raiseifnot(every(c("left", "right") %in% names(node$children)),
+    raiseifnot(all(c("left", "right") %in% names(node$children)),
                msg=if(debug_level) NULL else "Malformed logical expression")
 
     raiseifnot(
@@ -1027,7 +1027,7 @@ function(node, debug_level=0)
     #Children - length, names, types
     raiseifnot(length(node$children) == 2,
                msg=if(debug_level) NULL else "Malformed relational expression")
-    raiseifnot(every(c("left", "right") %in% names(node$children)),
+    raiseifnot(all(c("left", "right") %in% names(node$children)),
                msg=if(debug_level) NULL else "Malformed relational expression")
 
     raiseifnot(
@@ -1114,7 +1114,7 @@ function(node, debug_level=0)
     #Children - length, names, types
     raiseifnot(length(node$children) == 2,
                msg=if(debug_level) NULL else "Malformed assignment expression")
-    raiseifnot(every(c("left", "right") %in% names(node$children)),
+    raiseifnot(all(c("left", "right") %in% names(node$children)),
                msg=if(debug_level) NULL else "Malformed assignment expression")
 
     raiseifnot(node$children$left %is% "ado_ident" ||
@@ -1155,7 +1155,7 @@ function(node, debug_level=0)
     #Children - length, names, types
     raiseifnot(length(node$children) == 2,
                msg=if(debug_level) NULL else "Malformed anova expression")
-    raiseifnot(every(c("left", "right") %in% names(node$children)),
+    raiseifnot(all(c("left", "right") %in% names(node$children)),
                msg=if(debug_level) NULL else "Malformed anova expression")
 
     raiseifnot(node$children$left %is% "ado_ident" ||
@@ -1178,7 +1178,7 @@ function(node, debug_level=0)
     #Children - length, names, types
     raiseifnot(length(node$children) == 1,
                msg=if(debug_level) NULL else "Malformed anova expression")
-    raiseifnot(every(names(node$children) %in% c("left", "right")),
+    raiseifnot(all(names(node$children) %in% c("left", "right")),
                msg=if(debug_level) NULL else "Malformed anova expression")
 
     raiseifnot(node$children$left %is% "ado_ident" ||

@@ -1,22 +1,284 @@
+default_webuse_url <- 'https://www.stata-press.com/data/r15/'
+
 test_parse <-
-function(text, debug_level=0)
+function(text, context=NULL, debug_level=0)
 {
-    return(codegen(do_parse(text, log_command=log_command,
-                            debug_level=debug_level)))
+    lc <- function(msg) context$logger$log_command(msg)
+    return(codegen(do_parse(text, log_command=lc, debug_level=debug_level)))
 }
 
-log_result <-
-function(msg)
+# Return the default c-class env values. This is not the
+# only place c-class values are looked up (see ado_func_c),
+# but we still need to set certain values here.
+get_default_cclass_values <-
+function()
 {
-    lg <- get("ado_logger", envir=ado_env)
-    lg$log_result(msg)
+    return(list(
+        ##
+        ## Mathematical constants
+        ##
+
+        pi = pi,
+        e = exp(1),
+
+        ##
+        ## Letters
+        ##
+
+        alpha = paste0(letters, collapse=" "),
+        ALPHA = paste0(LETTERS, collapse=" "),
+
+        ##
+        ## Weeks and months
+        ## The Stata docs imply these aren't localized, but they should be.
+        ##
+
+        Wdays = paste0(weekdays(seq(as.Date("2013-06-03"), by=1, len=7),
+                                abbreviate=TRUE),
+                       collapse=" "),
+
+        Weekdays = paste0(weekdays(seq(as.Date("2013-06-03"), by=1, len=7)),
+                          collapse=" "),
+
+        Mons = paste0(format(ISOdate(2000, 1:12, 1), "%b"), collapse=" "),
+        Months = paste0(format(ISOdate(2000, 1:12, 1), "%B"), collapse=" "),
+
+        ##
+        ## URLs for webuse, also available in settings
+        ##
+
+        default_webuse_url = default_webuse_url,
+
+        ##
+        ## OS or machine info that can't change during execution
+        ##
+        os = if(.Platform$OS.type == "windows") "Windows"
+             else if(Sys.info()["sysname"] == "Darwin") "MacOSX"
+             else "Unix",
+        osdtl = Sys.info()["release"] %p% " " %p% Sys.info()["version"],
+        bit = 8 * .Machine$sizeof.pointer, # e.g., 8 * 8 = 64-bit
+        machine_type = utils::sessionInfo()$platform,
+        byteorder = if(.Platform$endian == 'big') "hilo" else "lohi",
+        processors = parallel::detectCores(),
+        processors_mach = parallel::detectCores(),
+        processors_max = parallel::detectCores(),
+
+        dirsep = .Platform$file.sep,
+
+        #Almost if not quite exactly right
+        mindouble = -.Machine$double.xmax,
+
+        maxdouble = .Machine$double.xmax,
+        epsdouble = .Machine$double.eps,
+        smallestdouble = .Machine$double.xmin,
+
+        #R does have a 4-byte integer type, even though integers are
+        #generally represented as doubles
+        minlong = -2^31 + 1,
+
+        maxlong = 2^31 - 1,
+
+        #Almost if not quite exactly right
+        minfloat = -.Machine$double.xmax,
+
+        maxfloat = .Machine$double.xmax,
+        epsfloat = .Machine$double.eps,
+
+        ##
+        ## Versions of R or ado, also can't change during execution
+        ##
+
+        rversion = R.version$version.string,
+        ado_version = utils::packageVersion(utils::packageName()),
+
+        ##
+        ## Resource limits
+        ##
+
+        max_N_theory = 2^31 - 1,
+        max_k_theory = 2^31 - 1,
+
+        #This corresponds to a data.frame of 2^31 - 1 columns and 2^31 - 1 rows,
+        #where each cell is a string of 2^31 - 1 bytes' length. There's a reason
+        #this variable's name ends in "theory".
+        max_width_theory = (2^31 - 1)^3,
+
+        #As hardcoded into our lexer: see ado.fl's redefinition
+        #of the C macro YYLMAX
+        max_macrolen = 2^16,
+        macrolen = 2^16,
+
+        #The real limit is on the length of a single lexer token, which can
+        #be no longer than 2^16 bytes. There's no limit on the length of
+        #commands, provided they can be represented as R strings, and an R
+        #string can be no longer than 2^31 - 1 bytes. Note that encountering
+        #a single token longer than YYLMAX = 2^16 bytes will cause yylex() to
+        #raise an R error condition rather than calling the C exit() function
+        #on the R process.
+        max_cmdlen = 2^31 - 1,
+
+        cmdlen = 2^31 - 1,
+
+        #The maximum length of the symbol type as of R 2.13.0
+        namelen = 10000,
+
+        #This is the limit on vector size hardcoded into R in various places;
+        #the newer long vectors can be, of course, longer, but using them is
+        #still difficult and we've made no effort to do so.
+        maxvar = 2^31 - 1,
+
+        maxstrvarlen = 2^31 - 1,
+
+        #The str# and strL types as we implement them are the same
+        maxstrlvarlen = 2^31 - 1
+    ))
 }
 
-log_command <-
-function(msg)
+get_varying_cclass_value <-
+function(val, context=NULL)
 {
-    lg <- get("ado_logger", envir=ado_env)
-    lg$log_command(msg)
+    if(val == 'current_date')
+    {
+        return(Sys.Date())
+    } else if(val == 'current_time')
+    {
+        return(Sys.time())
+    } else if(val == 'mode')
+    {
+        if(interactive())
+        {
+            return("")
+        } else
+        {
+            return("batch")
+        }
+    } else if(val == 'console')
+    {
+        if(.Platform$GUI == "unknown")
+        {
+            return("console")
+        } else
+        {
+            return("")
+        }
+    } else if(val == 'hostname')
+    {
+        return(Sys.info()["nodename"])
+    } else if(val == 'username')
+    {
+        return(Sys.info()["user"])
+    } else if(val == 'tmpdir')
+    {
+        return(tempdir())
+    } else if(val == 'pwd')
+    {
+        return(getwd())
+    } else if(val == 'N')
+    {
+        return(context$dta$dim[1])
+    } else if(val == 'k')
+    {
+        return(context$dta$dim[2])
+    } else if(val == 'width')
+    {
+        return(utils::object.size(context$dta))
+    } else if(val == 'changed')
+    {
+        return(context$dta$changed)
+    } else if(val == 'filename')
+    {
+        return(context$dta$filename)
+    } else if(val == 'filedate')
+    {
+        return(context$dta$filedate)
+    } else if(val == 'memory')
+    {
+        #it's appalling that this is the recommended way to check mem usage
+        mem <- gc()
+        return( 1024 * (mem[1, "(Mb)"] + mem[2, "(Mb)"]) )
+    } else if(val == 'niceness')
+    {
+        return(tools::psnice())
+    } else if(val == 'rng')
+    {
+        return(paste0(RNGkind(), collapse=" "))
+    } else if(val == 'rngstate')
+    {
+        return(paste0(.Random.seed, collapse=","))
+    } else if(val == 'rc')
+    {
+        #FIXME - need to implement the machinery for commands to have
+        #return codes; it's not clear what this should look like in an
+        #implementation where control flow at a low level is based on
+        #calls to signalCondition().
+        return(0)
+    } else
+    {
+        return(get(val, envir=env, inherits=FALSE))
+    }
+}
+
+get_default_setting_values <-
+function()
+{
+    return(list(
+        webuse_url = default_webuse_url
+    ))
+}
+
+### Option-list accessor methods
+
+#Validate and unabbreviate the provided options against the list of valid
+#options for the function calling this helper.
+validateOpts <-
+function(option_list, valid_opts)
+{
+    if(length(option_list) == 0)
+        return(option_list)
+
+    #Extract the option names as strings
+    given <- vapply(option_list, function(x) as.character(x$name), character(1))
+
+    #Unabbreviate each option. The unabbreviateName function will raise an
+    #error condition if an option is invalid or ambiguous.
+    given <- vapply(given, function(x) unabbreviateName(x, valid_opts), character(1))
+
+    #The same option can't be given more than once
+    raiseifnot(length(given) == length(unique(given)),
+               msg="Option given more than once")
+
+    #Update the names
+    for(i in 1:length(given))
+        option_list[[i]]$name <- given[i]
+
+    option_list
+}
+
+#This function assumes that the option_list has already been validated and
+#unabbreviated by the validateOpts function above.
+hasOption <-
+function(option_list, opt)
+{
+    nm <- vapply(option_list, function(v) as.character(v$name), character(1))
+    opt %in% nm
+}
+
+#Get the arguments provided to the option named by opt.
+#This function assumes that the option_list has already been validated and
+#unabbreviated by the validateOpts function above.
+optionArgs <-
+function(option_list, opt)
+{
+    raiseifnot(hasOption(option_list, opt), msg="Option not provided")
+
+    #extract the option names as strings
+    nm <- vapply(option_list, function(v) as.character(v$name), character(1))
+
+    ind <- which(nm == opt)
+    if("args" %in% names(option_list[[ind]]))
+        return(option_list[[ind]]$args)
+    else
+        return(NULL)
 }
 
 temporary_name <-
@@ -75,18 +337,6 @@ function(x)
 
         x <- Reduce(c, x)
     }
-}
-
-#Like any(), but check if _all_ elements of the argument are TRUE
-every <-
-function(vec)
-{
-    len <- length(which(vec))
-
-    if(is.na(len) || len != length(vec))
-        return(FALSE)
-    else
-        return(TRUE)
 }
 
 #Some useful infix operators

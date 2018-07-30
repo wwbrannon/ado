@@ -21,11 +21,11 @@ function(expression_list, context=NULL, return.match.call=FALSE)
             rm(list=nm, envir=env)
         } else if(is.call(stmt) && stmt[[1]] == as.symbol("<-"))
         {
-            #Max macro lengths per Stata
+            #Max macro *name* lengths per Stata
             raiseifnot(nchar(as.character(stmt[[2]])) <= 31, cls="EvalErrorException",
                        msg="Macro name too long")
 
-            #Disallow macros long enough to overflow yylex's buffer
+            #Disallow macro values long enough to overflow yylex's buffer
             val <- as.character(eval(stmt[[3]])) #the RHS
             raiseifnot(nchar(val) <= 65436, cls="EvalErrorException",
                        msg="Macro value too long")

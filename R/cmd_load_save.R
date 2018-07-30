@@ -9,8 +9,7 @@ function(using_clause, varlist=NULL, option_list=NULL, context=NULL, return.matc
     valid_opts <- c("tab", "comma", "delimiter", "clear", "case", "names", "nonames")
     option_list <- validateOpts(option_list, valid_opts)
     
-    dt <- get("ado_dta", envir=ado_env)
-    raiseifnot(hasOption(option_list, "clear") || dt$dim[1] == 0,
+    raiseifnot(hasOption(option_list, "clear") || context$dta$dim[1] == 0,
                msg="No; data in memory would be lost")
     
     header <- hasOption(option_list, "nonames")
@@ -38,17 +37,17 @@ function(using_clause, varlist=NULL, option_list=NULL, context=NULL, return.matc
         delim <- NULL
     
     #Actually read the thing in
-    dt$use_csv(filename=filename, header=header, sep=delim)
+    context$dta$use_csv(filename=filename, header=header, sep=delim)
 
     if(!hasOption(option_list, "case"))
-        dt$setnames(tolower(dt$names))
+        context$dta$setnames(tolower(context$dta$names))
     
     if(!is.null(varlist))
-        dt$drop_columns(varlist)
+        context$dta$drop_columns(varlist)
     
     #As is common in return values from these command functions,
     #this is an S3 class so it can pretty-print
-    return(structure(dt$dim, class="ado_cmd_insheet"))
+    return(structure(context$dta$dim, class="ado_cmd_insheet"))
 }
 
 ado_cmd_save <-
@@ -78,8 +77,7 @@ function(expression=NULL, option_list=NULL, context=NULL, return.match.call=FALS
             pth <- pth %p% ".dta"
     }
     
-    dt <- get("ado_dta", envir=ado_env)
-    dt$save(pth, replace=repl, emptyok=emptyok)
+    context$dta$save(pth, replace=repl, emptyok=emptyok)
     
     return(structure(pth, class="ado_cmd_save"))
 }
@@ -109,8 +107,7 @@ function(expression=NULL, option_list=NULL, context=NULL, return.match.call=FALS
             pth <- pth %p% ".dta"
     }
     
-    dt <- get("ado_dta", envir=ado_env)
-    dt$saveold(pth, replace=repl)
+    context$dta$saveold(pth, replace=repl)
     
     return(structure(pth, class="ado_cmd_save"))
 }
@@ -124,8 +121,7 @@ function(expression, option_list=NULL, context=NULL, return.match.call=FALSE)
     valid_opts <- c("clear")
     option_list <- validateOpts(option_list, valid_opts)
     
-    dt <- get("ado_dta", envir=ado_env)
-    raiseifnot(hasOption(option_list, "clear") || dt$dim[1] == 0,
+    raiseifnot(hasOption(option_list, "clear") || context$dta$dim[1] == 0,
                msg="No; data in memory would be lost")
     
     #We only support the load-the-whole-dataset form of this command,
@@ -139,17 +135,17 @@ function(expression, option_list=NULL, context=NULL, return.match.call=FALSE)
         pth <- pth %p% ".dta"
     
     #Load the dataset
-    dt$use(pth)
+    context$dta$use(pth)
     
-    if(length(dt$data_label) == 0 || dt$data_label == "")
+    if(length(context$dta$data_label) == 0 || context$dta$data_label == "")
         return(structure("Data loaded", class="ado_cmd_use"))
     else
-        return(structure(dt$data_label, class="ado_cmd_use"))
+        return(structure(context$dta$data_label, class="ado_cmd_use"))
 }
 
 #This is a bit different from the Stata version of sysuse:
 #    o) The datasets are different; these are the R datasets package's datasets
-#    o) The argument isn't a filename, it's a string coercible to a symbol name
+#    o) The argument isn't a filename, it's a string coercible to a symbol
 #       exported from the datasets pacakge
 #    o) correspondingly there is no logic about a ".dta" extension
 ado_cmd_sysuse <-
@@ -171,17 +167,16 @@ function(expression, option_list=NULL, context=NULL, return.match.call=FALSE)
     }
     else
     {
-        dt <- get("ado_dta", envir=ado_env)
-        raiseifnot(hasOption(option_list, "clear") || dt$dim[1] == 0,
+        raiseifnot(hasOption(option_list, "clear") || context$dta$dim[1] == 0,
                    msg="No; data in memory would be lost")
         
         df <- get(expression[[1]], envir=as.environment("package:datasets"))
-        dt$use_dataframe(df)
+        context$dta$use_dataframe(df)
         
-        if(length(dt$data_label) == 0 || dt$data_label == "")
+        if(length(context$dta$data_label) == 0 || context$dta$data_label == "")
             return(structure("Data loaded", class="ado_cmd_use"))
         else
-            return(structure(dt$data_label, class="ado_cmd_use"))
+            return(structure(context$dta$data_label, class="ado_cmd_use"))
     }
 }
 
@@ -195,10 +190,9 @@ function(expression_list, option_list=NULL, context=NULL, return.match.call=FALS
     option_list <- validateOpts(option_list, valid_opts)
 
     default_url <- ado_func_c("default_webuse_url")
-    webuse_url <- getSettingValue("webuse_url")
+    webuse_url <- context$settings$symbol_value("webuse_url")
     
-    dt <- get("ado_dta", envir=ado_env)
-    raiseifnot(hasOption(option_list, "clear") || dt$dim[1] == 0,
+    raiseifnot(hasOption(option_list, "clear") || context$dta$dim[1] == 0,
                msg="No; data in memory would be lost")
     
     if(is.symbol(expression_list[[1]]))
@@ -210,9 +204,9 @@ function(expression_list, option_list=NULL, context=NULL, return.match.call=FALS
         else if(as.character(expression_list[[1]]) == "set")
         {
             if(length(expression_list) == 1)
-                assignSetting("webuse_url", default_url)
+                context$settings$set_symbol("webuse_url", default_url)
             else if(length(expression_list) == 2)
-                assignSetting("webuse_url", as.character(expression_list[[2]]))
+                context$settings$set_symbol("webuse_url", as.character(expression_list[[2]]))
             else
                 raiseCondition("Incorrect use of webuse set: too many arguments")
             
@@ -230,16 +224,16 @@ function(expression_list, option_list=NULL, context=NULL, return.match.call=FALS
         if(tools::file_ext(pth) == "")
             pth <- pth %p% ".dta"
         
-        url_base <- getSettingValue("webuse_url")
+        url_base <- context$settings$symbol_value("webuse_url")
         url <- url_base %p% pth
         
         #Pass off fetching and loading to the Dataset object (and specifically
         #data.table's fread() method)
-        dt$use_url(url)
+        context$dta$use_url(url)
         
-        if(length(dt$data_label) == 0 || dt$data_label == "")
+        if(length(context$dta$data_label) == 0 || context$dta$data_label == "")
             return(structure("Data loaded", class="ado_cmd_use"))
         else
-            return(structure(dt$data_label, class="ado_cmd_use"))
+            return(structure(context$dta$data_label, class="ado_cmd_use"))
     }
 }

@@ -129,11 +129,9 @@ function(varlist, to_call=NULL, option_list=NULL, context=NULL, return.match.cal
 
     varlist <- vapply(varlist, as.character, character(1))
 
-    dt <- get("ado_dta", envir=ado_env)
-
     #If requested, sort the dataset by the variables
     if(hasOption(option_list, "sort"))
-        dt$sort(varlist)
+        context$dta$sort(varlist)
 
     #Get the variables saying what to group by
     #idx <- dt$iloc(rows, byvars)
