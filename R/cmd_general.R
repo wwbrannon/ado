@@ -2,7 +2,7 @@
 ## First, things that are more nearly flow-control constructs than
 ## "commands" in the usual sense
 ado_cmd_quit <-
-function(context=NULL, return.match.call=FALSE)
+function(context, return.match.call=FALSE)
 {
     #Don't do anything with return.match.call because otherwise we can't get
     #out of ado() when testing with return.match.call
@@ -10,7 +10,7 @@ function(context=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_continue <-
-function(option_list=NULL, context=NULL, return.match.call=FALSE)
+function(context, option_list=NULL, return.match.call=FALSE)
 {
     #Similarly, we shouldn't return match.call here because
     #then it's impossible to test loops properly, and this command
@@ -26,7 +26,7 @@ function(option_list=NULL, context=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_do <-
-function(expression_list, context=NULL, return.match.call=FALSE)
+function(context, expression_list, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())
@@ -73,7 +73,7 @@ function(expression_list, context=NULL, return.match.call=FALSE)
 
 #The if expr { } construct
 ado_cmd_if <-
-function(expression, compound_cmd, context=NULL, return.match.call=FALSE)
+function(context, expression, compound_cmd, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())
@@ -85,7 +85,7 @@ ado_cmd_run <- ado_cmd_do
 #====================================================================
 ## Now, more normal commands
 ado_cmd_about <-
-function(context=NULL, return.match.call=FALSE)
+function(context, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())
@@ -97,7 +97,7 @@ function(context=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_sleep <-
-function(expression, context=NULL, return.match.call=FALSE)
+function(context, expression, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())
@@ -108,7 +108,7 @@ function(expression, context=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_display <-
-function(expression, context=NULL, return.match.call=FALSE)
+function(context, expression, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())
@@ -118,7 +118,7 @@ function(expression, context=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_preserve <-
-function(option_list=NULL, context=NULL, return.match.call=FALSE)
+function(context, option_list=NULL, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())
@@ -134,7 +134,7 @@ function(option_list=NULL, context=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_restore <-
-function(option_list=NULL, context=NULL, return.match.call=FALSE)
+function(context, option_list=NULL, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())
@@ -150,7 +150,7 @@ function(option_list=NULL, context=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_query <-
-function(varlist=NULL, context=NULL, return.match.call=FALSE)
+function(context, varlist=NULL, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())
@@ -165,7 +165,7 @@ function(varlist=NULL, context=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_set <-
-function(expression_list=NULL, context=NULL, return.match.call=FALSE)
+function(context, expression_list=NULL, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())
@@ -240,7 +240,7 @@ function(expression_list=NULL, context=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_creturn <-
-function(expression, context=NULL, return.match.call=FALSE)
+function(context, expression, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())
@@ -262,7 +262,7 @@ function(expression, context=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_return <-
-function(expression, context=NULL, return.match.call=FALSE)
+function(context, expression, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())
@@ -281,7 +281,7 @@ function(expression, context=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_ereturn <-
-function(expression, context=NULL, return.match.call=FALSE)
+function(context, expression, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())
@@ -300,8 +300,8 @@ function(expression, context=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_log <-
-function(expression_list=NULL, using_clause=NULL, option_list=NULL,
-         context=NULL, return.match.call=FALSE)
+function(context, expression_list=NULL, using_clause=NULL, option_list=NULL,
+         return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())
@@ -369,8 +369,8 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
 }
 
 ado_cmd_cmdlog <-
-function(expression_list=NULL, using_clause=NULL, option_list=NULL,
-         context=NULL, return.match.call=FALSE)
+function(context, expression_list=NULL, using_clause=NULL, option_list=NULL,
+         return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())
@@ -430,7 +430,7 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
 }
 
 ado_cmd_help <-
-function(expression, context=NULL, return.match.call=FALSE)
+function(context, expression, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())

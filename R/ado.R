@@ -1,8 +1,9 @@
 #FIXME c-class accessors broken / bad
-#FIXME should these context variables be nullable?
-#FIXME error handling for symboltable?
+#FIXME rig up function_for_ado_operator and codegen to pass context pointer to all non-builtin functions
+#FIXME error handling for symboltable
+#FIXME kill off return.match.call and have the fns check context
 
-#' ado: An implementation of Stata's ado language in R.
+#' ado: An implementation of Stata's ado language for R.
 #'
 #' The ado package provides an R-based interpreter for a dialect of Stata's
 #' ado language. Loops, macros, data manipulation commands and statistics commands
@@ -252,7 +253,7 @@ R6::R6Class("AdoInterpreter",
         log_sink_type = function(filename)
         {
             return(private$logger$sink_type(filename = filename))
-        }
+        },
 
         log_register_sink = function(filename, type="log", header = TRUE)
         {
@@ -337,7 +338,7 @@ R6::R6Class("AdoInterpreter",
         eclass_defined = function(sym)
         {
             return(private$eclass$symbol_defined(sym))
-        }
+        },
 
         eclass_query = function(val=NULL, enum=NULL)
         {
@@ -382,7 +383,7 @@ R6::R6Class("AdoInterpreter",
         rclass_defined = function(sym)
         {
             return(private$rclass$symbol_defined(sym))
-        }
+        },
 
         rclass_query = function(val=NULL, enum=NULL)
         {
@@ -397,17 +398,20 @@ R6::R6Class("AdoInterpreter",
 
         ##
         ## c-class accessors
-        ## FIXME
         ##
 
         cclass_all = function()
         {
+            lst <- list()
             return(private$cclass$all_values())
         },
 
         cclass_names = function()
         {
-            return(private$cclass$all_symbols())
+            st <- private$cclass$all_symbols()
+            se <- names(private$cclass_value_varying_quoted())
+
+            return(c(st, se))
         },
 
         cclass_set = function(sym, val)
@@ -428,25 +432,17 @@ R6::R6Class("AdoInterpreter",
         cclass_defined = function(sym)
         {
             return(private$cclass$symbol_defined(sym))
-        }
+        },
 
         cclass_query = function(val=NULL, enum=NULL)
         {
             raiseif(is.null(val) && is.null(enum),
                     msg="Must provide argument for c-class query")
 
-            #These are the ones implemented in cclass_value_varying
-            varying <- c('current_date', 'current_time', 'mode', 'console',
-                         'hostname', 'username', 'tmpdir', 'pwd', 'N', 'k',
-                         'width', 'changed', 'filename', 'filedate', 'memory',
-                         'niceness', 'rng', 'rc', 'rngstate')
-
             if(enum)
-                return(c(private$cclass$all_symbols(), varying))
-            else if(val %in% varying)
-                return(private$cclass_value_varying(val))
+                return(self$cclass_names())
             else
-                return(private$cclass$symbol_value(val))
+                return(self$cclass_value(val))
         },
 
         ##
@@ -481,7 +477,7 @@ R6::R6Class("AdoInterpreter",
         macro_defined = function(sym)
         {
             return(private$macro_syms$symbol_defined(sym))
-        }
+        },
 
         ##
         ## Settings accessors
@@ -673,89 +669,48 @@ R6::R6Class("AdoInterpreter",
         # These are the c-class values that may change during execution,
         # which means we can't set any default values for them; they have
         # to be looked up at query time
+        cclass_value_varying_quoted = function()
+        {
+            return(list(
+                current_date = quote(Sys.Date()),
+                current_time = quote(Sys.time()),
+                mode = quote(if(interactive()) "" else "batch"),
+                console = quote(if(.Platform$GUI == "unknown") "console" else ""),
+                hostname = quote(Sys.info()["nodename"]),
+                username = quote(Sys.info()["user"]),
+                tempdir = quote(tempdir()),
+                tmpdir = quote(tempdir()),
+                pwd = quote(getwd()),
+                N = quote(self$dta$dim[1]),
+                k = quote(self$dta$dim[2]),
+                width = quote(utils::object.size(self$dta)),
+                changed = quote(self$dta$changed),
+                filename = quote(self$dta$filename),
+                filedate = quote(self$dta$filedate),
+                niceness = quote(tools::psnice()),
+                rng = quote(paste0(RNGkind(), collapse=" ")),
+                rngstate = quote(paste0(.Random.seed, collapse=",")),
+
+                # it's appalling that triggering a garbage collection is the
+                # recommended way to check mem usage
+                memory = quote({mem <- gc(); 1024 * (mem[1, "(Mb)"] + mem[2, "(Mb)"])}),
+
+                # FIXME - need to implement the machinery for commands to have
+                # return codes; it's not clear what this should look like in an
+                # implementation where control flow at a low level is based on
+                # calls to signalCondition().
+                rc = quote(0)
+            ))
+        },
+
         cclass_value_varying = function(val)
         {
-            # NOTE: if you add a new one, be sure to update the hardcoded
-            # list in cclass_query() as well
-            if(val == 'current_date')
-            {
-                return(Sys.Date())
-            } else if(val == 'current_time')
-            {
-                return(Sys.time())
-            } else if(val == 'mode')
-            {
-                if(interactive())
-                {
-                    return("")
-                } else
-                {
-                    return("batch")
-                }
-            } else if(val == 'console')
-            {
-                if(.Platform$GUI == "unknown")
-                {
-                    return("console")
-                } else
-                {
-                    return("")
-                }
-            } else if(val == 'hostname')
-            {
-                return(Sys.info()["nodename"])
-            } else if(val == 'username')
-            {
-                return(Sys.info()["user"])
-            } else if(val == 'tmpdir')
-            {
-                return(tempdir())
-            } else if(val == 'pwd')
-            {
-                return(getwd())
-            } else if(val == 'N')
-            {
-                return(self$dta$dim[1])
-            } else if(val == 'k')
-            {
-                return(self$dta$dim[2])
-            } else if(val == 'width')
-            {
-                return(utils::object.size(self$dta))
-            } else if(val == 'changed')
-            {
-                return(self$dta$changed)
-            } else if(val == 'filename')
-            {
-                return(self$dta$filename)
-            } else if(val == 'filedate')
-            {
-                return(self$dta$filedate)
-            } else if(val == 'memory')
-            {
-                #it's appalling that this is the recommended way to check mem usage
-                mem <- gc()
-                return( 1024 * (mem[1, "(Mb)"] + mem[2, "(Mb)"]) )
-            } else if(val == 'niceness')
-            {
-                return(tools::psnice())
-            } else if(val == 'rng')
-            {
-                return(paste0(RNGkind(), collapse=" "))
-            } else if(val == 'rngstate')
-            {
-                return(paste0(.Random.seed, collapse=","))
-            } else if(val == 'rc')
-            {
-                #FIXME - need to implement the machinery for commands to have
-                #return codes; it's not clear what this should look like in an
-                #implementation where control flow at a low level is based on
-                #calls to signalCondition().
-                return(0)
-            } else
-            {
+            qtd <- private$cclass_value_varying_quoted()
+
+            if(val %in% names(qtd))
+                return(eval(qtd[[val]]))
+            else
                 raiseCondition("Bad c-class value")
-            }
         },
 
         # The main command-processing callback function for the parser

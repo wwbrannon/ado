@@ -718,9 +718,14 @@ function(node, debug_level=0)
 
     raiseifnot(all(given %in% names(args)),
                msg=if(debug_level) NULL else "Incorrect clause or option for command")
-    raiseifnot(all(vapply(names(args),
-                            function(x) is.null(args[[x]]) || x %in% given,
-                            TRUE)),
+    
+    # the "context" argument is special: it's a pointer to the calling
+    # interpreter, inserted by codegen(). Marking it as optional by giving
+    # it a default value of NULL, to satisfy this check, is misleading: it's
+    # not optional, the code generator will always insert it, but it's not
+    # present here for checking.
+    fn <- function(x) is.null(args[[x]]) || x %in% given || x == 'context'
+    raiseifnot(all(vapply(names(args), fn, logical(0))),
                msg=if(debug_level) NULL else "Required clause or option missing for command")
 
     raiseifnot(all(correct_arg_types_for_cmd(chlds)),

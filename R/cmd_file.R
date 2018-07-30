@@ -1,5 +1,5 @@
 ado_cmd_cd <-
-function(expression=NULL, context=NULL, return.match.call=FALSE)
+function(context, expression=NULL, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())
@@ -16,7 +16,7 @@ function(expression=NULL, context=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_pwd <-
-function(context=NULL, return.match.call=FALSE)
+function(context, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())
@@ -25,7 +25,7 @@ function(context=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_rm <-
-function(expression, context=NULL, return.match.call=FALSE)
+function(context, expression, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())
@@ -38,7 +38,7 @@ function(expression, context=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_mkdir <-
-function(expression, option_list=NULL, context=NULL, return.match.call=FALSE)
+function(context, expression, option_list=NULL, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())
@@ -57,7 +57,7 @@ function(expression, option_list=NULL, context=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_ls <-
-function(expression=NULL, option_list=NULL, context=NULL, return.match.call=FALSE)
+function(context, expression=NULL, option_list=NULL, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())
@@ -77,7 +77,7 @@ function(expression=NULL, option_list=NULL, context=NULL, return.match.call=FALS
 }
 
 ado_cmd_cp <-
-function(expression_list=NULL, option_list=NULL, context=NULL, return.match.call=FALSE)
+function(context, expression_list=NULL, option_list=NULL, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())
@@ -115,7 +115,7 @@ function(expression_list=NULL, option_list=NULL, context=NULL, return.match.call
 }
 
 ado_cmd_cat <-
-function(expression, option_list=NULL, context=NULL, return.match.call=FALSE)
+function(context, expression, option_list=NULL, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())
@@ -153,3 +153,4 @@ ado_cmd_dir   <- ado_cmd_ls
 ado_cmd_erase <- ado_cmd_rm
 ado_cmd_rmdir <- ado_cmd_rm
 ado_cmd_type  <- ado_cmd_cat
+

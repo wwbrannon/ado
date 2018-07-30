@@ -1,7 +1,7 @@
 ## Macro management commands
 
 ado_cmd_local <-
-function(expression_list, context=NULL, return.match.call=FALSE)
+function(context, expression_list, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())
@@ -58,7 +58,7 @@ function(expression_list, context=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_global <-
-function(expression_list, context=NULL, return.match.call=FALSE)
+function(context, expression_list, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())
@@ -111,7 +111,7 @@ function(expression_list, context=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_tempfile <-
-function(expression_list, context=NULL, return.match.call=FALSE)
+function(context, expression_list, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())
@@ -140,7 +140,7 @@ function(expression_list, context=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_macro <-
-function(expression_list, context=NULL, return.match.call=FALSE)
+function(context, expression_list, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())

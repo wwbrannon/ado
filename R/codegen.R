@@ -88,21 +88,21 @@ function(name)
 ##
 
 codegen <-
-function(node, context=NULL, debug_level=0)
+function(node, context, debug_level=0)
     UseMethod("codegen")
 
 ##############################################################################
 ## Loops
 #' @export
 codegen.ado_loop <-
-function(node, context=NULL, debug_level=0)
+function(node, context, debug_level=0)
 {
     NextMethod()
 }
 
 #' @export
 codegen.ado_foreach <-
-function(node, context=NULL, debug_level=0)
+function(node, context, debug_level=0)
 {
     what <- setdiff(names(node$children), c("macro_name", "text"))
     val <- codegen(node$children[[what]], context=context, debug_level=debug_level)
@@ -118,7 +118,7 @@ function(node, context=NULL, debug_level=0)
 
 #' @export
 codegen.ado_forvalues <-
-function(node, context=NULL, debug_level=0)
+function(node, context, debug_level=0)
 {
     macro_name <- codegen(node$children$macro_name, context=context, debug_level=debug_level)
     text <- codegen(node$children$text, context=context, debug_level=debug_level)
@@ -148,7 +148,7 @@ function(node, context=NULL, debug_level=0)
 ## Compound and atomic commands
 #' @export
 codegen.ado_compound_cmd <-
-function(node, context=NULL, debug_level=0)
+function(node, context, debug_level=0)
 {
     lst <- list()
     chlds <- lapply(node$children, function(x) codegen(x, context=context, debug_level=debug_level))
@@ -161,7 +161,7 @@ function(node, context=NULL, debug_level=0)
 
 #' @export
 codegen.ado_if_cmd <-
-function(node, context=NULL, debug_level=0)
+function(node, context, debug_level=0)
 {
     exp <- codegen(node$children$expression, context=context, debug_level=debug_level)
     cmp <- codegen(node$children$compound_cmd, context=context, debug_level=debug_level)
@@ -179,7 +179,7 @@ function(node, context=NULL, debug_level=0)
 
 #' @export
 codegen.ado_embedded_code <-
-function(node, context=NULL, debug_level=0)
+function(node, context, debug_level=0)
 {
     if(node$data["lang"] == "R")
         return(parse(text=node$data["value"]))
@@ -193,14 +193,14 @@ function(node, context=NULL, debug_level=0)
 
 #' @export
 codegen.ado_cmd <-
-function(node, context=NULL, debug_level=0)
+function(node, context, debug_level=0)
 {
     NextMethod()
 }
 
 #' @export
 codegen.ado_general_cmd <-
-function(node, context=NULL, debug_level=0)
+function(node, context, debug_level=0)
 {
     name <- as.character(codegen(node$children$verb, context=context, debug_level=debug_level))
     name <- unabbreviateCommand(paste0("ado_cmd_", name))
@@ -239,7 +239,7 @@ function(node, context=NULL, debug_level=0)
 
 #' @export
 codegen.ado_modifier_cmd <-
-function(node, context=NULL, debug_level=0)
+function(node, context, debug_level=0)
 {
     name <- as.character(codegen(node$children$verb, context=context, debug_level=debug_level))
     name <- unabbreviateCommand(paste0("ado_cmd_", name))
@@ -258,7 +258,7 @@ function(node, context=NULL, debug_level=0)
 
 #' @export
 codegen.ado_modifier_cmd_list <-
-function(node, context=NULL, debug_level=0)
+function(node, context, debug_level=0)
 {
     lst <- unlist(lapply(node$children, function(x) codegen(x, context=context, debug_level=debug_level)))
     lst <- rev(lst)
@@ -278,14 +278,14 @@ function(node, context=NULL, debug_level=0)
 ## Command parts
 #' @export
 codegen.ado_if_clause <-
-function(node, context=NULL, debug_level=0)
+function(node, context, debug_level=0)
 {
     codegen(node$children$if_expression, context=context, debug_level=debug_level)
 }
 
 #' @export
 codegen.ado_in_clause <-
-function(node, context=NULL, debug_level=0)
+function(node, context, debug_level=0)
 {
     upper <- codegen(node$children$upper, context=context, debug_level=debug_level)
     lower <- upper
@@ -300,14 +300,14 @@ function(node, context=NULL, debug_level=0)
 
 #' @export
 codegen.ado_using_clause <-
-function(node, context=NULL, debug_level=0)
+function(node, context, debug_level=0)
 {
     as.character(codegen(node$children$filename, context=context, debug_level=debug_level))
 }
 
 #' @export
 codegen.ado_weight_clause <-
-function(node, context=NULL, debug_level=0)
+function(node, context, debug_level=0)
 {
     list(kind=codegen(node$children$left, context=context, debug_level=debug_level),
          weight_expression=codegen(node$children$right, context=context, debug_level=debug_level))
@@ -315,7 +315,7 @@ function(node, context=NULL, debug_level=0)
 
 #' @export
 codegen.ado_option <-
-function(node, context=NULL, debug_level=0)
+function(node, context, debug_level=0)
 {
     if("args" %in% names(node$children))
         list(name=codegen(node$children$name, context=context, debug_level=debug_level),
@@ -326,7 +326,7 @@ function(node, context=NULL, debug_level=0)
 
 #' @export
 codegen.ado_option_list <-
-function(node, context=NULL, debug_level=0)
+function(node, context, debug_level=0)
 {
     nm <- names(node$children)
     ret <- lapply(node$children, function(x) codegen(x, context=context, debug_level=debug_level))
@@ -339,14 +339,14 @@ function(node, context=NULL, debug_level=0)
 ## Lists of expressions
 #' @export
 codegen.ado_expression_list <-
-function(node, context=NULL, debug_level=0)
+function(node, context, debug_level=0)
 {
     lapply(node$children, function(x) codegen(x, context=context, debug_level=debug_level))
 }
 
 #' @export
 codegen.ado_argument_expression_list <-
-function(node, context=NULL, debug_level=0)
+function(node, context, debug_level=0)
 {
     flatten(lapply(node$children, function(x) codegen(x, context=context, debug_level=debug_level)))
 }
@@ -355,7 +355,7 @@ function(node, context=NULL, debug_level=0)
 ## Expression branch nodes
 #' @export
 codegen.ado_expression <-
-function(node, context=NULL, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Get the function to call and its arguments in lists
     op <- node$data["verb"]
@@ -385,21 +385,21 @@ function(node, context=NULL, debug_level=0)
 ## Literal expressions
 #' @export
 codegen.ado_literal <-
-function(node, context=NULL, debug_level=0)
+function(node, context, debug_level=0)
 {
     NextMethod()
 }
 
 #' @export
 codegen.ado_ident <-
-function(node, context=NULL, debug_level=0)
+function(node, context, debug_level=0)
 {
     as.symbol(node$data["value"])
 }
 
 #' @export
 codegen.ado_number <-
-function(node, context=NULL, debug_level=0)
+function(node, context, debug_level=0)
 {
     if(node$data["value"] == ".")
         NA
@@ -409,7 +409,7 @@ function(node, context=NULL, debug_level=0)
 
 #' @export
 codegen.ado_string_literal <-
-function(node, context=NULL, debug_level=0)
+function(node, context, debug_level=0)
 {
     val <- as.character(node$data["value"])
 
@@ -421,14 +421,14 @@ function(node, context=NULL, debug_level=0)
 
 #' @export
 codegen.ado_datetime <-
-function(node, context=NULL, debug_level=0)
+function(node, context, debug_level=0)
 {
     as.POSIXct(node$data["value"])
 }
 
 #' @export
 codegen.ado_format_spec <-
-function(node, context=NULL, debug_level=0)
+function(node, context, debug_level=0)
 {
     val <- as.character(node$data["value"])
 
