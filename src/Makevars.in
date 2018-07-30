@@ -10,3 +10,4 @@ parser:
 	(cd parser && $(MAKE) CXX="$(CXX)" AR="$(AR)" \
 	 					  CXXFLAGS="$(CXXFLAGS) @CXXFLAGS@ -c" \
 	 					  CPPFLAGS="$(CPPFLAGS) @CPPFLAGS@ -I../../inst/include/")
+
