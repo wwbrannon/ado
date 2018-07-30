@@ -1,7 +1,7 @@
 #Functions that implement the two types of loops we support
 ado_foreach <-
 function(macro_name, text, varlist=NULL, numlist=NULL,
-         local_macro_source=NULL, global_macro_source=NULL)
+         local_macro_source=NULL, global_macro_source=NULL, context=NULL)
 {
     #Sanity-check that we got sensible input
     cnt <- vapply(c(varlist, numlist, local_macro_source, global_macro_source),
@@ -68,7 +68,7 @@ function(macro_name, text, varlist=NULL, numlist=NULL,
 
 ado_forvalues <-
 function(macro_name, text, upper, lower,
-         increment=NULL, increment_t=NULL)
+         increment=NULL, increment_t=NULL, context=NULL)
 {
     #Sanity-check that we got sensible input
     raiseifnot(!is.null(upper) && !is.null(lower) &&

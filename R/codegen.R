@@ -34,6 +34,7 @@ function(node, context=NULL, debug_level=0)
     val <- codegen(node$children[[what]], context=context, debug_level=debug_level)
 
     ret <- list(as.symbol("ado_foreach"),
+                context=context,
                 macro_name=codegen(node$children$macro_name, context=context, debug_level=debug_level),
                 text=codegen(node$children$text, context=context, debug_level=debug_level))
     ret[[what]] <- val
@@ -52,6 +53,7 @@ function(node, context=NULL, debug_level=0)
     lower <- codegen(node$children$lower, context=context, debug_level=debug_level)
 
     ret <- list(as.symbol("ado_forvalues"),
+                context=context,
                 macro_name=macro_name,
                 text=text,
                 upper=upper,
