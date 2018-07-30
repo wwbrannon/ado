@@ -29,7 +29,7 @@ DEBUG_NO_PARSE_ERROR <- 32
 #' @param debug_level How verbose debug messages should be.
 #' @param echo Whether to echo command input. Values 0, 1, and NULL are accepted;
 #'             if NULL, echo only when running non-interactively.
-#' @param print.results Whether to print command results. Values 0 or 1. The value
+#' @param print_results Whether to print command results. Values 0 or 1. The value
 #'                      passed here becomes the ado setting "print_results".
 #'
 #' @return Invisible NULL.
@@ -39,7 +39,7 @@ DEBUG_NO_PARSE_ERROR <- 32
 #' @import Rcpp
 ado <-
 function(dta = NULL, filename=NULL, string=NULL, assign.back=FALSE,
-         debug_level=0, print.results=1, echo=NULL)
+         debug_level=0, print_results=1, echo=NULL)
 {
     #We have a package-wide environment because of scoping issues,
     #but the data in it shouldn't persist across calls to this function
@@ -119,7 +119,7 @@ function(dta = NULL, filename=NULL, string=NULL, assign.back=FALSE,
 
     #Make the echo level and the results-printing level into settings as well
     assignSetting("echo", echo)
-    assignSetting("print_results", print.results)
+    assignSetting("print_results", print_results)
 
     #=========================================================================
     #The actual work of parsing and executing commands is here: time for an REPL,
