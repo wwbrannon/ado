@@ -6,7 +6,7 @@ cxxflags <- c(read_r_config("CXXFLAGS")$CXXFLAGS,
 
 cppflags <- read_r_config("CPPFLAGS")$CPPFLAGS
 r_include_dir <- Sys.getenv("R_INCLUDE_DIR", unset="")
-if(r_include_dir == "")
+if(r_include_dir != "")
     cppflags <- c(cppflags, paste0('-I', r_include_dir))
 
 define(STDVER = "CXX11")
