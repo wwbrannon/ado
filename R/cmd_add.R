@@ -27,7 +27,7 @@
 # stats:::foo
 
 ado_cmd_addCommand <-
-function(expression, option_list=NULL, return.match.call=FALSE)
+function(expression, option_list=NULL, context=NULL, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())

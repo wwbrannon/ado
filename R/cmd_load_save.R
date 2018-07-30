@@ -1,5 +1,5 @@
 ado_cmd_insheet <-
-function(using_clause, varlist=NULL, option_list=NULL, return.match.call=FALSE)
+function(using_clause, varlist=NULL, option_list=NULL, context=NULL, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())
@@ -52,7 +52,7 @@ function(using_clause, varlist=NULL, option_list=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_save <-
-function(expression=NULL, option_list=NULL, return.match.call=FALSE)
+function(expression=NULL, option_list=NULL, context=NULL, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())
@@ -85,7 +85,7 @@ function(expression=NULL, option_list=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_saveold <-
-function(expression=NULL, option_list=NULL, return.match.call=FALSE)
+function(expression=NULL, option_list=NULL, context=NULL, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())
@@ -116,7 +116,7 @@ function(expression=NULL, option_list=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_use <-
-function(expression, option_list=NULL, return.match.call=FALSE)
+function(expression, option_list=NULL, context=NULL, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())
@@ -153,7 +153,7 @@ function(expression, option_list=NULL, return.match.call=FALSE)
 #       exported from the datasets pacakge
 #    o) correspondingly there is no logic about a ".dta" extension
 ado_cmd_sysuse <-
-function(expression, option_list=NULL, return.match.call=FALSE)
+function(expression, option_list=NULL, context=NULL, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())
@@ -186,7 +186,7 @@ function(expression, option_list=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_webuse <-
-function(expression_list, option_list=NULL, return.match.call=FALSE)
+function(expression_list, option_list=NULL, context=NULL, return.match.call=FALSE)
 {
     if(return.match.call)
         return(match.call())
