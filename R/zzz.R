@@ -76,7 +76,7 @@ function()
     assign("Weekdays", Weekdays, envir=cc_env)
 
     #URLs for webuse
-    assign('default_webuse_url', 'http://www.stata-press.com/data/r13/', envir=cc_env)
+    assign('default_webuse_url', 'https://www.stata-press.com/data/r15/', envir=cc_env)
 
     assign("ado_cclass_env", cc_env, envir=ado_env)
 
