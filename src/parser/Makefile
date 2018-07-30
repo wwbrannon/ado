@@ -1,4 +1,4 @@
-.PHONY: all regenerate clean
+.PHONY: all clean regenerate
 
 all: parser.a
 
@@ -24,16 +24,16 @@ lex.o: build lex.yy.cpp
 parse.o: build ado.tab.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) ado.tab.cpp -o build/parse.o
 
+clean:
+	rm -f parser.a
+	rm -rf build
+
 ##
 ## Development-only targets
 ##
 
 regenerate:
-	flex -o lex.yy.cpp --header-file=../../inst/include/lex.yy.hpp ado.fl
+	flex -o lex.yy.cpp --header-file=include/lex.yy.hpp ado.fl
 	bison -d -Wall -b ado ado.ypp
-	mv location.hh position.hh stack.hh ado.tab.hpp ../../inst/include
-
-clean:
-	rm -f parser.a
-	rm -rf build
+	mv location.hh position.hh stack.hh ado.tab.hpp include
 

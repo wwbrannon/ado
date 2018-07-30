@@ -2,9 +2,9 @@
 #define yyHEADER_H 1
 #define yyIN_HEADER 1
 
-#line 6 "../../inst/include/lex.yy.hpp"
+#line 6 "include/lex.yy.hpp"
 
-#line 8 "../../inst/include/lex.yy.hpp"
+#line 8 "include/lex.yy.hpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -516,6 +516,6 @@ extern int yylex \
 #line 2098 "ado.fl"
 
 
-#line 520 "../../inst/include/lex.yy.hpp"
+#line 520 "include/lex.yy.hpp"
 #undef yyIN_HEADER
 #endif /* yyHEADER_H */
