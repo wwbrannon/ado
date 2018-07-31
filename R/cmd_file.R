@@ -1,11 +1,11 @@
 ado_cmd_cd <-
-function(context, expression=NULL, return.match.call=FALSE)
+function(context, expression=NULL)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     if(is.null(expression))
-        return(ado_cmd_pwd(return.match.call=return.match.call))
+        return(ado_cmd_pwd(context=context))
     else
     {
         raiseifnot(length(expression) == 1, msg="Too many arguments to cd/chdir")
@@ -16,18 +16,18 @@ function(context, expression=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_pwd <-
-function(context, return.match.call=FALSE)
+function(context)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     return(cat(getwd()))
 }
 
 ado_cmd_rm <-
-function(context, expression, return.match.call=FALSE)
+function(context, expression)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     raiseifnot(length(expression) == 1, msg="Too many arguments to rm/erase")
@@ -38,9 +38,9 @@ function(context, expression, return.match.call=FALSE)
 }
 
 ado_cmd_mkdir <-
-function(context, expression, option_list=NULL, return.match.call=FALSE)
+function(context, expression, option_list=NULL)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     valid_opts <- c("public")
@@ -57,9 +57,9 @@ function(context, expression, option_list=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_ls <-
-function(context, expression=NULL, option_list=NULL, return.match.call=FALSE)
+function(context, expression=NULL, option_list=NULL)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     valid_opts <- c("wide")
@@ -77,9 +77,9 @@ function(context, expression=NULL, option_list=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_cp <-
-function(context, expression_list=NULL, option_list=NULL, return.match.call=FALSE)
+function(context, expression_list=NULL, option_list=NULL)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     valid_opts <- c("public", "replace", "recursive")
@@ -115,9 +115,9 @@ function(context, expression_list=NULL, option_list=NULL, return.match.call=FALS
 }
 
 ado_cmd_cat <-
-function(context, expression, option_list=NULL, return.match.call=FALSE)
+function(context, expression, option_list=NULL)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     valid_opts <- c("showtabs", "starbang", "lines")

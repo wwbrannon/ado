@@ -1,7 +1,7 @@
 ado_cmd_insheet <-
-function(context, using_clause, varlist=NULL, option_list=NULL, return.match.call=FALSE)
+function(context, using_clause, varlist=NULL, option_list=NULL)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     #validate the options given against the valid list, raising a condition if
@@ -51,9 +51,9 @@ function(context, using_clause, varlist=NULL, option_list=NULL, return.match.cal
 }
 
 ado_cmd_save <-
-function(context, expression=NULL, option_list=NULL, return.match.call=FALSE)
+function(context, expression=NULL, option_list=NULL)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     #Handle options
@@ -65,7 +65,7 @@ function(context, expression=NULL, option_list=NULL, return.match.call=FALSE)
     #Handle the path we got or perhaps didn't get
     if(is.null(expression))
     {
-        pth <- ado_func_c("filename")
+        pth <- ado_func_c(context=context, val="filename")
     } else
     {
         raiseifnot(length(expression) == 1, msg="Too many filenames given to save")
@@ -83,9 +83,9 @@ function(context, expression=NULL, option_list=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_saveold <-
-function(context, expression=NULL, option_list=NULL, return.match.call=FALSE)
+function(context, expression=NULL, option_list=NULL)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     #Handle options
@@ -95,7 +95,7 @@ function(context, expression=NULL, option_list=NULL, return.match.call=FALSE)
 
     #Handle the path we got or perhaps didn't get
     if(is.null(expression))
-        pth <- ado_func_c("filename")
+        pth <- ado_func_c(context=context, val="filename")
     else
     {
         raiseifnot(length(expression) == 1, msg="Too many filenames given to save")
@@ -113,9 +113,9 @@ function(context, expression=NULL, option_list=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_use <-
-function(context, expression, option_list=NULL, return.match.call=FALSE)
+function(context, expression, option_list=NULL)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     valid_opts <- c("clear")
@@ -149,9 +149,9 @@ function(context, expression, option_list=NULL, return.match.call=FALSE)
 #       exported from the datasets pacakge
 #    o) correspondingly there is no logic about a ".dta" extension
 ado_cmd_sysuse <-
-function(context, expression, option_list=NULL, return.match.call=FALSE)
+function(context, expression, option_list=NULL)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     valid_opts <- c("clear")
@@ -181,15 +181,15 @@ function(context, expression, option_list=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_webuse <-
-function(context, expression_list, option_list=NULL, return.match.call=FALSE)
+function(context, expression_list, option_list=NULL)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     valid_opts <- c("clear")
     option_list <- validateOpts(option_list, valid_opts)
 
-    default_url <- ado_func_c("default_webuse_url")
+    default_url <- ado_func_c(context=context, val="default_webuse_url")
     webuse_url <- context$setting_value("webuse_url")
 
     raiseifnot(hasOption(option_list, "clear") || context$dta$dim[1] == 0,

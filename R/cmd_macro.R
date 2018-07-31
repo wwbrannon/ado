@@ -1,9 +1,9 @@
 ## Macro management commands
 
 ado_cmd_local <-
-function(context, expression_list, return.match.call=FALSE)
+function(context, expression_list)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     exprs <- expression_list
@@ -58,9 +58,9 @@ function(context, expression_list, return.match.call=FALSE)
 }
 
 ado_cmd_global <-
-function(context, expression_list, return.match.call=FALSE)
+function(context, expression_list)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     exprs <- expression_list
@@ -111,9 +111,9 @@ function(context, expression_list, return.match.call=FALSE)
 }
 
 ado_cmd_tempfile <-
-function(context, expression_list, return.match.call=FALSE)
+function(context, expression_list)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     exprs <- expression_list
@@ -140,9 +140,9 @@ function(context, expression_list, return.match.call=FALSE)
 }
 
 ado_cmd_macro <-
-function(context, expression_list, return.match.call=FALSE)
+function(context, expression_list)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     exprs <- expression_list
@@ -155,13 +155,13 @@ function(context, expression_list, return.match.call=FALSE)
 
     if(what == "local")
     {
-        return(ado_cmd_local(exprs[-1]))
+        return(ado_cmd_local(context=context, expression_list=exprs[-1]))
     } else if(what == "global")
     {
-        return(ado_cmd_global(exprs[-1]))
+        return(ado_cmd_global(context=context, expression_list=exprs[-1]))
     } else if(what == "tempfile")
     {
-        return(ado_cmd_tempfile(exprs[-1]))
+        return(ado_cmd_tempfile(context=context, expression_list=exprs[-1]))
     } else if(what == "drop")
     {
         raiseifnot(length(exprs) == 2, cls="EvalErrorException",

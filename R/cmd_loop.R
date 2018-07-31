@@ -32,7 +32,9 @@ function(context, macro_name, text, varlist=NULL, numlist=NULL,
     for(val in vals)
     {
         #Set the macro value
-        ado_cmd_local(list(substitute(macro_name), as.character(val)))
+        ado_cmd_local(context=context,
+                      expression_list=list(substitute(macro_name),
+                                           as.character(val)))
 
         #And re-parse the text block
         ret <- tryCatch(context$interpret(textConnection(text), echo=0),
@@ -91,7 +93,9 @@ function(context, macro_name, text, upper, lower, increment=NULL,
     for(val in vals)
     {
         #Set the macro value
-        ado_cmd_local(list(substitute(macro_name), as.character(val)))
+        ado_cmd_local(context=context,
+                      expression_list=list(substitute(macro_name),
+                                           as.character(val)))
 
         #And re-parse the text block
         ret <- tryCatch(context$interpret(textConnection(text), echo=0),

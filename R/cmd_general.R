@@ -2,15 +2,15 @@
 ## First, things that are more nearly flow-control constructs than
 ## "commands" in the usual sense
 ado_cmd_quit <-
-function(context, return.match.call=FALSE)
+function(context)
 {
-    #Don't do anything with return.match.call because otherwise we can't get
-    #out of ado() when testing with return.match.call
+    #Don't do anything with context$debug_match_call because otherwise we can't get
+    #out of ado() when using that flag to test
     raiseCondition("Exit requested", "ExitRequestedException")
 }
 
 ado_cmd_continue <-
-function(context, option_list=NULL, return.match.call=FALSE)
+function(context, option_list=NULL)
 {
     #Similarly, we shouldn't return match.call here because
     #then it's impossible to test loops properly, and this command
@@ -26,9 +26,9 @@ function(context, option_list=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_do <-
-function(context, expression_list, return.match.call=FALSE)
+function(context, expression_list)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     filename <- as.character(expression_list[[1]])
@@ -48,7 +48,7 @@ function(context, expression_list, return.match.call=FALSE)
             mname <- as.symbol(as.character(ind))
             val <- as.character(vals[ind])
 
-            ado_cmd_local(expression_list=list(mname, val))
+            ado_cmd_local(context=context, expression_list=list(mname, val))
         }
     }
 
@@ -64,7 +64,7 @@ function(context, expression_list, return.match.call=FALSE)
         for(ind in inds)
         {
             mname <- as.symbol(as.character(ind))
-            ado_cmd_local(expression_list=list(mname))
+            ado_cmd_local(context=context, expression_list=list(mname))
         }
     }
 
@@ -73,9 +73,9 @@ function(context, expression_list, return.match.call=FALSE)
 
 #The if expr { } construct
 ado_cmd_if <-
-function(context, expression, compound_cmd, return.match.call=FALSE)
+function(context, expression, compound_cmd)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 }
 
@@ -85,9 +85,9 @@ ado_cmd_run <- ado_cmd_do
 #====================================================================
 ## Now, more normal commands
 ado_cmd_about <-
-function(context, return.match.call=FALSE)
+function(context)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     fields <- c("Package", "Authors@R", "Version", "Title", "License", "URL", "BugReports")
@@ -97,9 +97,9 @@ function(context, return.match.call=FALSE)
 }
 
 ado_cmd_sleep <-
-function(context, expression, return.match.call=FALSE)
+function(context, expression)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     Sys.sleep(expression[[1]])
@@ -108,9 +108,9 @@ function(context, expression, return.match.call=FALSE)
 }
 
 ado_cmd_display <-
-function(context, expression, return.match.call=FALSE)
+function(context, expression)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     ret <- eval(expression[[1]])
@@ -118,9 +118,9 @@ function(context, expression, return.match.call=FALSE)
 }
 
 ado_cmd_preserve <-
-function(context, option_list=NULL, return.match.call=FALSE)
+function(context, option_list=NULL)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     valid_opts <- c("memory")
@@ -134,9 +134,9 @@ function(context, option_list=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_restore <-
-function(context, option_list=NULL, return.match.call=FALSE)
+function(context, option_list=NULL)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     valid_opts <- c("not")
@@ -150,9 +150,9 @@ function(context, option_list=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_query <-
-function(context, varlist=NULL, return.match.call=FALSE)
+function(context, varlist=NULL)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     #Subcommand is accepted for compatibility but (currently) ignored.
@@ -165,14 +165,14 @@ function(context, varlist=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_set <-
-function(context, expression_list=NULL, return.match.call=FALSE)
+function(context, expression_list=NULL)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     if(is.null(expression_list))
     {
-        return(ado_cmd_query())
+        return(ado_cmd_query(context=context))
     }
 
     raiseifnot(length(expression_list) == 2,
@@ -240,9 +240,9 @@ function(context, expression_list=NULL, return.match.call=FALSE)
 }
 
 ado_cmd_creturn <-
-function(context, expression, return.match.call=FALSE)
+function(context, expression)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     #Must be invoked as "creturn list"
@@ -254,17 +254,17 @@ function(context, expression, return.match.call=FALSE)
     #Get the values and put them into a list with their names as
     #the list names. This format is easier for the print method
     #to work with.
-    nm <- ado_func_c(enum=TRUE)
-    vals <- lapply(nm, ado_func_c)
+    nm <- ado_func_c(context=context, enum=TRUE)
+    vals <- lapply(nm, function(x) ado_func_c(context=context, val=x))
     names(vals) <- nm
 
     return(structure(vals, class="ado_cmd_creturn"))
 }
 
 ado_cmd_return <-
-function(context, expression, return.match.call=FALSE)
+function(context, expression)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     #Must be invoked as "return list"
@@ -273,17 +273,17 @@ function(context, expression, return.match.call=FALSE)
         raiseCondition("Unrecognized subcommand")
     }
 
-    nm <- ado_func_r(enum=TRUE)
-    vals <- lapply(nm, ado_func_r)
+    nm <- ado_func_r(context=context, enum=TRUE)
+    vals <- lapply(nm, function(x) ado_func_r(context=context, val=x))
     names(vals) <- nm
 
     return(structure(vals, class="ado_cmd_return"))
 }
 
 ado_cmd_ereturn <-
-function(context, expression, return.match.call=FALSE)
+function(context, expression)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     #Must be invoked as "ereturn list"
@@ -292,18 +292,17 @@ function(context, expression, return.match.call=FALSE)
         raiseCondition("Unrecognized subcommand")
     }
 
-    nm <- ado_func_e(enum=TRUE)
-    vals <- lapply(nm, ado_func_e)
+    nm <- ado_func_e(context=context, enum=TRUE)
+    vals <- lapply(nm, function(x) ado_func_e(context=context, val=x))
     names(vals) <- nm
 
     return(structure(vals, class="ado_cmd_ereturn"))
 }
 
 ado_cmd_log <-
-function(context, expression_list=NULL, using_clause=NULL, option_list=NULL,
-         return.match.call=FALSE)
+function(context, expression_list=NULL, using_clause=NULL, option_list=NULL)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     valid_opts <- c("append", "replace", "text", "smcl", "name")
@@ -369,10 +368,9 @@ function(context, expression_list=NULL, using_clause=NULL, option_list=NULL,
 }
 
 ado_cmd_cmdlog <-
-function(context, expression_list=NULL, using_clause=NULL, option_list=NULL,
-         return.match.call=FALSE)
+function(context, expression_list=NULL, using_clause=NULL, option_list=NULL)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     valid_opts <- c("append", "replace", "permanently")
@@ -430,9 +428,9 @@ function(context, expression_list=NULL, using_clause=NULL, option_list=NULL,
 }
 
 ado_cmd_help <-
-function(context, expression, return.match.call=FALSE)
+function(context, expression)
 {
-    if(return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 }
 
