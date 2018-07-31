@@ -723,7 +723,7 @@ R6::R6Class("AdoInterpreter",
                 tryCatch(
                     {
                         check(ast, self$debug_parse_trace)
-                        codegen(ast, context = self, self$debug_match_call)
+                        codegen(ast, context = self)
                     },
                     error=function(c) c,
                     BadCommandException=function(c) c)
