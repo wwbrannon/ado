@@ -1,6 +1,6 @@
-#line 2 "lex.yy.cpp"
+#line 2 "../lex.yy.cpp"
 
-#line 4 "lex.yy.cpp"
+#line 4 "../lex.yy.cpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -1172,9 +1172,9 @@ typedef yy::AdoParser::token token;
 
 // Code run each time a pattern is matched
 #define YY_USER_ACTION  { llocp->columns(yyleng); }
-#line 1176 "lex.yy.cpp"
+#line 1176 "../lex.yy.cpp"
 
-#line 1178 "lex.yy.cpp"
+#line 1178 "../lex.yy.cpp"
 
 #define INITIAL 0
 #define LONG_COMMENT 1
@@ -1496,7 +1496,7 @@ std::stack<std::vector<std::string>> macro_stack;
 size_t macro_length = 0;
 
                                     /* if you write {{{ ... }}}, the ... will be executed as R code */
-#line 1500 "lex.yy.cpp"
+#line 1500 "../lex.yy.cpp"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -4269,7 +4269,7 @@ YY_RULE_SETUP
 #line 2098 "ado.fl"
 ECHO;
 	YY_BREAK
-#line 4273 "lex.yy.cpp"
+#line 4273 "../lex.yy.cpp"
 
 	case YY_END_OF_BUFFER:
 		{
