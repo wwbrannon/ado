@@ -158,9 +158,7 @@ AdoDriver::wrap_cmd_action(Rcpp::List ast)
 std::string
 AdoDriver::get_macro_value(std::string name)
 {
-    std::string str = Rcpp::as<std::string>(macro_value_accessor(name));
-
-    return str;
+    return Rcpp::as<std::string>(macro_value_accessor(name));
 }
 
 std::string
