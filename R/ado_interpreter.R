@@ -490,6 +490,32 @@ R6::R6Class("AdoInterpreter",
         }
     ),
 
+    active = list(
+        debug_parse_trace = function()
+        {
+            debug_level <- self$setting_value("debug_level") # set in ctor
+            return((debug_level %&% DEBUG_PARSE_TRACE) != 0)
+        },
+
+        debug_match_call = 
+        {
+            debug_level <- self$setting_value("debug_level")
+            return((debug_level %&% DEBUG_MATCH_CALL) != 0)
+        },
+
+        debug_verbose_error = 
+        {
+            debug_level <- self$setting_value("debug_level")
+            return((debug_level %&% DEBUG_VERBOSE_ERROR) != 0)
+        },
+
+        debug_no_parse_error = 
+        {
+            debug_level <- self$setting_value("debug_level")
+            return((debug_level %&% DEBUG_NO_PARSE_ERROR) != 0)
+        }
+    ),
+
     private = list(
         # Several things here: the macro substitution symbol
         # tables, a lookup table (as an environment) for settings, and the
@@ -696,10 +722,8 @@ R6::R6Class("AdoInterpreter",
             ret_p1 <-
                 tryCatch(
                     {
-                        check(ast, ifelse( (debug_level %&% DEBUG_VERBOSE_ERROR) != 0, 1, 0))
-
-                        codegen(ast, context = self,
-                                ifelse( (debug_level %&% DEBUG_MATCH_CALL) != 0, 1, 0))
+                        check(ast, self$debug_parse_trace)
+                        codegen(ast, context = self, self$debug_match_call)
                     },
                     error=function(c) c,
                     BadCommandException=function(c) c)
