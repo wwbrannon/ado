@@ -18,7 +18,7 @@ R6::R6Class("SymbolTable",
 
         symbol_defined = function(sym)
         {
-            return(sym %in% private$all_symbols())
+            return(sym %in% self$all_symbols())
         },
 
         symbol_value = function(sym)
