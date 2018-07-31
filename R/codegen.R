@@ -13,70 +13,81 @@
 ## Utility functions used only under codegen()
 ##
 
-#Take the name of an ado-language operator, whether unary or binary, and return
-#a symbol for the R function that implements that operator.
+# Take the name of an ado-language operator, whether unary or binary, and return
+# a symbol for the R function that implements that operator, as well as a flag
+# for whether to pass the context field.
 function_for_ado_operator <-
 function(name)
 {
-    #Arithmetic expressions
     if(name %in% c("^", "-", "+", "*", "/", "+", "-"))
-        return(as.symbol(name))
-
-    #Logical, relational and other expressions
-    if(name %in% c("&", "|", "!", ">", "<", ">=", "<="))
-        return(as.symbol(name))
-
-    if(name == "()")
-        return(as.symbol("do.call"))
-
-    if(name == "=")
-        return(as.symbol("<-"))
-
-    if(name == "[]")
-        return(as.symbol("["))
-
-    if(name == "==")
-        return(as.symbol("%==%"))
-
-    #Factor operators
-    if(name == "c.")
-        return(as.symbol("op_cont"))
-
-    if(name == "i.")
-        return(as.symbol("op_ind"))
-
-    if(name == "o.")
-        return(as.symbol("op_omit"))
-
-    if(name == "ib.")
-        return(as.symbol("op_base"))
-
-    if(name == "##")
-        return(as.symbol("%##%"))
-
-    if(name == "#")
-        return(as.symbol("%#%"))
-
-    if(name == "%anova_nest%")
-        return(as.symbol("%anova_nest%"))
-
-    if(name == "%anova_error%")
-        return(as.symbol("%anova_error%"))
-
-    #Type constructors
-    if(valid_data_type(name))
     {
+        ret <- as.symbol(name) #Arithmetic expressions
+        context <- FALSE
+    } else if(name %in% c("&", "|", "!", ">", "<", ">=", "<="))
+    {
+        ret <- as.symbol(name) #Logical, relational and other expressions
+        context <- FALSE
+    } else if(name == "()")
+    {
+        ret <- as.symbol("do.call")
+        context <- TRUE
+    } else if(name == "=")
+    {
+        ret <- as.symbol("<-")
+        context <- FALSE
+    } else if(name == "[]")
+    {
+        ret <- as.symbol("[")
+        context <- FALSE
+    } else if(name == "==")
+    {
+        ret <- as.symbol("%==%")
+        context <- TRUE
+    } else if(name == "c.")
+    {
+        ret <- as.symbol("op_cont") #Factor operators
+        context <- TRUE
+    } else if(name == "i.")
+    {
+        ret <- as.symbol("op_ind")
+        context <- TRUE
+    } else if(name == "o.")
+    {
+        ret <- as.symbol("op_omit")
+        context <- TRUE
+    } else if(name == "ib.")
+    {
+        ret <- as.symbol("op_base")
+        context <- TRUE
+    } else if(name == "##")
+    {
+        ret <- as.symbol("%##%")
+        context <- TRUE
+    } else if(name == "#")
+    {
+        ret <- as.symbol("%#%")
+        context <- TRUE
+    } else if(name == "%anova_nest%")
+    {
+        ret <- as.symbol("%anova_nest%")
+        context <- TRUE
+    } else if(name == "%anova_error%")
+    {
+        ret <- as.symbol("%anova_error%")
+        context <- TRUE
+    } else if(valid_data_type(name))
+    {
+        #Type constructors
         if(substr(name, 1, 3) == "str")
-        {
-            return(as.symbol('ado_type_str'))
-        }
+            ret <- as.symbol('ado_type_str')
         else
-        {
-            return(as.symbol('ado_type_' %p% name))
-        }
-    }
+            ret <- as.symbol('ado_type_' %p% name)
 
-    raiseCondition("Bad operator or function", cls="BadCommandException")
+        context <- TRUE
+    } else
+        raiseCondition("Bad operator or function", cls="BadCommandException")
+
+    return(list(symbol=ret, context=context))
 }
 
 ##
@@ -348,16 +359,16 @@ function(node, context)
         args$left$data["value"] <- paste0("ado_func_", args$left$data["value"])
     }
 
-    op <- function_for_ado_operator(op)
+    oplist <- function_for_ado_operator(op)
     args <- lapply(args, function(x) codegen(x, context=context))
     names(args) <- NULL
 
-    if(op == "()")
+    if(oplist$context)
     {
-        args <- c(args, context=context)
+        args <- c(context=context, args)
     }
 
-    as.call(c(list(op), args))
+    as.call(c(list(oplist$symbol), args))
 }
 
 ##############################################################################

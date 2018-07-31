@@ -19,92 +19,78 @@ function(context, col)
 ado_func_recode_rule_ident <-
 function(context, args)
 {
-    #FIXME
 }
 
 ado_func_recode_rule_range <-
 function(context, args)
 {
-    #FIXME
 }
 
 ado_func_recode_rule_numlist <-
 function(context, args)
 {
-    #FIXME
 }
 
 ado_func_collapse_stata <-
 function(context, args)
 {
-    #FIXME
 }
 
 ado_func_collapse_reassign <-
 function(context, args)
 {
-    #FIXME
 }
 
 ado_func_collapse_newvar <-
 function(context, args)
 {
-    #FIXME
 }
 
 ado_func_lrtest_termlist <-
 function(context, args)
 {
-    #FIXME
 }
 
 #the "c." operator
 op_cont <-
 function(context, arg)
 {
-    #FIXME
 }
 
 #the "i." operator
 op_ind <-
 function(context, arg)
 {
-    #FIXME
 }
 
 #the "o." operator
 op_omit <-
 function(context, arg)
 {
-    #FIXME
 }
 
 #the "ib." and "b." operators
 op_base <-
 function(context, arg)
 {
-    #FIXME
 }
 
 #the "#" operator
 `%#%` <-
 function(context, left, right)
 {
-    #FIXME
 }
 
 #the "##" operator
 `%##%` <-
 function(context, left, right)
 {
-    #FIXME
 }
 
 #a version of "==" that handles NA the way Stata does
 `%==%` <-
 function(context, left, right)
 {
-    #FIXME
 }
 
 #a pair of infix operators allowed only in expressions given
@@ -112,26 +98,22 @@ function(context, left, right)
 `%anova_nest%` <-
 function(context, left, right)
 {
-    #FIXME
 }
 
 `%anova_error%` <-
 function(context, left, right)
 {
-    #FIXME
 }
 
 #type constructor operators
 ado_type_double <-
 function(context, vars)
 {
-    #FIXME
 }
 
 ado_type_str <-
 function(context, vars)
 {
-    #FIXME
 }
 
 ado_type_byte <- ado_type_double

@@ -1,5 +1,4 @@
 #FIXME c-class accessors broken / bad
-#FIXME rig up function_for_ado_operator and codegen to pass context pointer to all non-builtin functions
 #FIXME error handling for symboltable
 
 ##
