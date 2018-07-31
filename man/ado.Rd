@@ -4,7 +4,7 @@
 \name{ado}
 \alias{ado}
 \alias{ado-package}
-\title{ado: An implementation of Stata's ado language in R.}
+\title{ado: An implementation of Stata's ado language for R.}
 \usage{
 ado(df = NULL, filename = NULL, string = NULL, assign.back = FALSE,
   debug_level = 0, print_results = 1, echo = NULL)
