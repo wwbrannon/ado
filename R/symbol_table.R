@@ -1,3 +1,5 @@
+#FIXME error handling for symboltable
+
 SymbolTable <-
 R6::R6Class("SymbolTable",
     public = list(

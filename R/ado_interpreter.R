@@ -1,6 +1,3 @@
-#FIXME c-class accessors broken / bad
-#FIXME error handling for symboltable
-
 ##
 ## The core interpreter class
 ##
@@ -8,6 +5,7 @@
 #Flags you can bitwise OR to enable debugging features.
 #It's necessary that these have the same numeric values as
 #the macros in the C++ header file.
+
 DEBUG_PARSE_TRACE <- 4
 DEBUG_MATCH_CALL <- 8
 DEBUG_VERBOSE_ERROR <- 16
@@ -25,19 +23,25 @@ R6::R6Class("AdoInterpreter",
         initialize = function(df = NULL, debug_level = 0, print_results = 1,
                               echo = NULL)
         {
+            ## Create objects
             self$dta <- Dataset$new()
 
             private$logger <- Logger$new()
 
             private$rclass <- SymbolTable$new()
             private$eclass <- SymbolTable$new()
+            private$cclass <- SymbolTable$new()
+            private$settings <- SymbolTable$new()
             private$macro_syms <- SymbolTable$new()
 
-            private$cclass <- SymbolTable$new()
-            private$cclass$set_symbols_from_list(private$cclass_value_defaults())
+            ## Populate the objects
+            defaults <- private$cclass_value_defaults()
+            for(nm in names(defaults))
+                self$cclass_set(nm, defaults[[nm]])
 
-            private$settings <- SymbolTable$new()
-            private$settings$set_symbols_from_list(private$setting_value_defaults())
+            defaults <- private$setting_value_defaults()
+            for(nm in names(defaults))
+                self$setting_set(nm, defaults[[nm]])
 
             self$setting_set("echo", echo)
             self$setting_set("print_results", print_results)
@@ -275,10 +279,17 @@ R6::R6Class("AdoInterpreter",
         ## c-class accessors
         ##
 
+        # NOTE: this function may have side effects. Some of the c-class
+        # values do things on access, like create tempfiles.
         cclass_all = function()
         {
+            nms <- names(private$cclass_value_varying_quoted())
+
             lst <- list()
-            return(private$cclass$all_values())
+            for(nm in nms)
+                lst[[length(lst)+1]] <- private$cclass_value_varying(nm)
+
+            return(c(lst, private$cclass$all_values()))
         },
 
         cclass_names = function()
@@ -291,22 +302,34 @@ R6::R6Class("AdoInterpreter",
 
         cclass_set = function(sym, val)
         {
-            return(private$cclass$set_symbol(sym, val))
+            if(sym %in% names(private$cclass_value_varying_quoted()))
+                raiseCondition("Cannot set varying c-class value")
+            else
+                return(private$cclass$set_symbol(sym, val))
         },
 
         cclass_unset = function(sym)
         {
-            return(private$cclass$unset_symbol(sym))
+            if(sym %in% names(private$cclass_value_varying_quoted()))
+                raiseCondition("Cannot unset varying c-class value")
+            else
+                return(private$cclass$unset_symbol(sym))
         },
 
         cclass_value = function(sym)
         {
-            return(private$cclass$symbol_value(sym))
+            if(sym %in% names(private$cclass_value_varying_quoted()))
+                return(private$cclass_value_varying(sym))
+            else
+                return(private$cclass$symbol_value(sym))
         },
 
         cclass_defined = function(sym)
         {
-            return(private$cclass$symbol_defined(sym))
+            if(sym %in% names(private$cclass_value_varying_quoted()))
+                return(TRUE)
+            else
+                return(private$cclass$symbol_defined(sym))
         },
 
         cclass_query = function(val=NULL, enum=NULL)

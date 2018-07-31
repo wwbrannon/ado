@@ -27,6 +27,8 @@
 #'
 #' @return Invisible NULL.
 #'
+#' @rdname ado
+#' 
 #' @export
 #' @useDynLib ado, .registration = TRUE
 #' @import Rcpp
