@@ -397,19 +397,19 @@ R6::R6Class("AdoInterpreter",
             return((debug_level %&% DEBUG_PARSE_TRACE) != 0)
         },
 
-        debug_match_call = 
+        debug_match_call = function()
         {
             debug_level <- self$setting_value("debug_level")
             return((debug_level %&% DEBUG_MATCH_CALL) != 0)
         },
 
-        debug_verbose_error = 
+        debug_verbose_error = function()
         {
             debug_level <- self$setting_value("debug_level")
             return((debug_level %&% DEBUG_VERBOSE_ERROR) != 0)
         },
 
-        debug_no_parse_error = 
+        debug_no_parse_error = function()
         {
             debug_level <- self$setting_value("debug_level")
             return((debug_level %&% DEBUG_NO_PARSE_ERROR) != 0)
