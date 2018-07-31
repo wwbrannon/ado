@@ -58,9 +58,9 @@ AdoDriver::AdoDriver(int _callbacks, Rcpp::Function _cmd_action,
            log_command(Rcpp::Function("identity"))
 {
     text = _text;
-    
+
     ast = (ExprNode *) NULL;
-    
+
     callbacks = _callbacks;
     cmd_action = _cmd_action;
     macro_value_accessor = _macro_value_accessor;
@@ -128,7 +128,7 @@ AdoDriver::wrap_cmd_action(Rcpp::List ast)
 {
   this->write_echo_text();
 
-  Rcpp::List ret = cmd_action(ast, this->debug_level);
+  Rcpp::List ret = cmd_action(ast);
 
   int status = Rcpp::as<int>(ret[0]);
   std::string msg = Rcpp::as<std::string>(ret[1]);

@@ -60,11 +60,11 @@ R6::R6Class("AdoInterpreter",
 
         interpret = function(con = NULL, echo = NULL)
         {
-            debug_level <- private$setting_value("debug_level")
+            debug_level <- self$setting_value("debug_level")
 
             # Allow the echo setting to be overridden
             if(is.null(echo))
-                echo <- private$setting_value("echo")
+                echo <- self$setting_value("echo")
 
             while(TRUE)
             {
@@ -87,7 +87,7 @@ R6::R6Class("AdoInterpreter",
                                                     log_command=self$log_command, debug_level=debug_level,
                                                     echo=echo)
                         },
-                        error = function(c) c)
+                        error = identity)
 
                 if(inherits(val, "error"))
                 {
@@ -160,7 +160,7 @@ R6::R6Class("AdoInterpreter",
             return(private$logger$log_command(msg = msg, echo = echo))
         },
 
-        log_results = function(msg, print_results = NULL)
+        log_result = function(msg, print_results = NULL)
         {
             if(is.null(print_results))
             {
@@ -170,7 +170,7 @@ R6::R6Class("AdoInterpreter",
                     print_results <- FALSE
             }
 
-            return(private$logger$log_command(msg = msg, print_results = print_reslts))
+            return(private$logger$log_result(msg = msg, print_results = print_results))
         },
 
         log_sinks = function() private$logger$log_sinks,
@@ -616,17 +616,17 @@ R6::R6Class("AdoInterpreter",
         },
 
         # The main command-processing callback function for the parser
-        process_cmd = function(ast, debug_level=0)
+        process_cmd = function(ast)
         {
             #Semantic analysis and code generation
             ret_p1 <-
-                tryCatch(
-                    {
-                        check(ast, self$debug_parse_trace)
-                        codegen(ast, context = self)
-                    },
-                    error=function(c) c,
-                    BadCommandException=function(c) c)
+            tryCatch(
+                {
+                    check(ast, self$debug_parse_trace)
+                    codegen(ast, context = self)
+                },
+                error=identity,
+                BadCommandException=identity)
 
             #Raising conditions with custom classes through an intervening
             #C++ layer is quite tricky, so we're going to return ints and have
@@ -638,16 +638,17 @@ R6::R6Class("AdoInterpreter",
 
             #Evaluate the generated calls for their side effects and for printable objects
             ret_p2 <-
-                tryCatch(
-                    {
-                        deep_eval(ret_p1, envir=parent.env(environment()), enclos=self)
-                    },
-                    error=function(c) c,
-                    EvalErrorException=function(c) c,
-                    BadCommandException=function(c) c,
-                    ExitRequestedException=function(c) c,
-                    ContinueException=function(c) c,
-                    BreakException=function(c) c)
+            tryCatch(
+                {
+                    private$deep_eval(ret_p1, envir=parent.env(environment()),
+                                      enclos=self)
+                },
+                error=identity,
+                EvalErrorException=identity,
+                BadCommandException=identity,
+                ExitRequestedException=identity,
+                ContinueException=identity,
+                BreakException=identity)
 
             if(inherits(ret_p2, "EvalErrorException") || inherits(ret_p2, "BadCommandException") ||
                inherits(ret_p2, "error"))
@@ -677,19 +678,21 @@ R6::R6Class("AdoInterpreter",
         #This function both evaluates the expressions and sends the results through
         #the logger.
         deep_eval = function(expr, envir=parent.frame(),
-                 enclos=if(is.list(envir) || is.pairlist(envir))
-                     parent.frame()
-                 else
-                     baseenv())
+                             enclos=if(is.list(envir) || is.pairlist(envir))
+                                 parent.frame()
+                             else
+                                 baseenv())
         {
             ret <- list()
             for(chld in expr)
             {
                 if(is.expression(chld))
-                    ret[[length(ret)+1]] <- deep_eval(chld, envir=envir, enclos=enclos)
+                    ret[[length(ret)+1]] <- private$deep_eval(chld, envir=envir,
+                                                           enclos=enclos)
                 else
                 {
-                    tmp <- suppressWarnings(withVisible(eval(chld, envir=envir, enclos=enclos)))
+                    tmp <- suppressWarnings(withVisible(eval(chld, envir=envir,
+                                                             enclos=enclos)))
                     ret[[length(ret)+1]] <- tmp$value
 
                     if(tmp$visible)
@@ -768,4 +771,3 @@ R6::R6Class("AdoInterpreter",
         }
     )
 )
-
