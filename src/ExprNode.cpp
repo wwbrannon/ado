@@ -1,4 +1,3 @@
-#include <cstdio>
 #include <Rcpp.h>
 #include "Ado.hpp"
 
