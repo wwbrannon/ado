@@ -1456,10 +1456,10 @@ YY_DECL
 			yyg->yy_start = 1;	/* first start state */
 
 		if ( ! yyin )
-			yyin = stdin;
+			yyin = (FILE *) NULL;
 
 		if ( ! yyout )
-			yyout = stdout;
+			yyout = (FILE *) NULL;
 
 		if ( ! YY_CURRENT_BUFFER ) {
 			yyensure_buffer_stack (yyscanner);
