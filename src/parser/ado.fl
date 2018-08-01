@@ -1,9 +1,6 @@
+%option noyywrap nostdinit never-interactive ecs
+%option bison-bridge reentrant
 %option stack
-%option bison-bridge
-%option noyywrap
-%option nostdinit
-%option never-interactive
-%option reentrant
 
 %{ /* -*- C++ -*- */
 #if __cplusplus > 199711L
