@@ -48,7 +48,6 @@ typedef void* yyscan_t;
 #include "ado.tab.hpp"
 #include <string>
 #include <cstring>
-#include <iostream>
 #include <Rcpp.h>
 #include "ParseDriver.hpp"
 
