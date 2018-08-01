@@ -55,14 +55,10 @@ typedef void* yyscan_t;
                           yy::AdoParser::location_type* llocp,        \
                           ParseDriver& driver, yyscan_t yyscanner)      
 
-#define R_ACTION(node) \
-    if(driver.callbacks == 1 && !(driver.error_seen)) \
-    { \
-        driver.wrap_cmd_action(node->as_R_object()); \
-    }
+#define R_ACTION(node) driver.wrap_cmd_action(node->as_R_object());
 
 
-#line 66 "ado.tab.hpp" // lalr1.cc:377
+#line 62 "ado.tab.hpp" // lalr1.cc:377
 
 
 # include <cstdlib> // std::abort
@@ -134,7 +130,7 @@ typedef void* yyscan_t;
 
 
 namespace yy {
-#line 138 "ado.tab.hpp" // lalr1.cc:377
+#line 134 "ado.tab.hpp" // lalr1.cc:377
 
 
 
@@ -148,12 +144,12 @@ namespace yy {
     /// Symbol semantic values.
     union semantic_type
     {
-    #line 41 "ado.ypp" // lalr1.cc:377
+    #line 37 "ado.ypp" // lalr1.cc:377
 
     std::string   *str;
     ExprNode      *node;
 
-#line 157 "ado.tab.hpp" // lalr1.cc:377
+#line 153 "ado.tab.hpp" // lalr1.cc:377
     };
 #else
     typedef YYSTYPE semantic_type;
@@ -575,7 +571,7 @@ namespace yy {
 
 
 } // yy
-#line 579 "ado.tab.hpp" // lalr1.cc:377
+#line 575 "ado.tab.hpp" // lalr1.cc:377
 
 
 

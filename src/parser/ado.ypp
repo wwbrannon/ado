@@ -25,11 +25,7 @@ typedef void* yyscan_t;
                           yy::AdoParser::location_type* llocp,        \
                           ParseDriver& driver, yyscan_t yyscanner)      
 
-#define R_ACTION(node) \
-    if(driver.callbacks == 1 && !(driver.error_seen)) \
-    { \
-        driver.wrap_cmd_action(node->as_R_object()); \
-    }
+#define R_ACTION(node) driver.wrap_cmd_action(node->as_R_object());
 
 }
 

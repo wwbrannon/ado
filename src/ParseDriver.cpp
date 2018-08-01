@@ -120,12 +120,17 @@ ParseDriver::parse()
 void
 ParseDriver::wrap_cmd_action(Rcpp::List ast)
 {
+    // don't do anything if a) we've been told not to, or
+    // b) we couldn't parse the input correctly
+    if(this->callbacks != 1 || this->error_seen)
+        return;
+
     if(this->echo)
     {
         std::string txt = trim(this->echo_text_buffer, std::string("\n"));
         txt = ". " + txt + std::string("\n");
 
-        log_command(txt);
+        this->log_command(txt);
         this->echo_text_buffer.clear();
     }
 
