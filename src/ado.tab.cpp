@@ -57,7 +57,7 @@
 #include <cstring>
 #include <iostream>
 #include <Rcpp.h>
-#include "AdoDriver.hpp"
+#include "ParseDriver.hpp"
 
 YY_DECL;
 
@@ -137,7 +137,7 @@ yy::AdoParser::error(const location_type& l, const std::string& m)
 
 #else // !YYDEBUG
 
-# define YYCDEBUG if (false) Rcpp::Rcerr
+# define YYCDEBUG if (false) std::cerr
 # define YY_SYMBOL_PRINT(Title, Symbol)  YYUSE(Symbol)
 # define YY_REDUCE_PRINT(Rule)           static_cast<void>(0)
 # define YY_STACK_PRINT()                static_cast<void>(0)
@@ -195,11 +195,11 @@ namespace yy {
 
 
   /// Build a parser object.
-   AdoParser :: AdoParser  (AdoDriver& driver_yyarg, yyscan_t yyscanner_yyarg)
+   AdoParser :: AdoParser  (ParseDriver& driver_yyarg, yyscan_t yyscanner_yyarg)
     :
 #if YYDEBUG
       yydebug_ (false),
-      yycdebug_ (&Rcpp::Rcerr),
+      yycdebug_ (&std::cerr),
 #endif
       driver (driver_yyarg),
       yyscanner (yyscanner_yyarg)
@@ -1259,8 +1259,10 @@ namespace yy {
     std::ostream& yyoutput = yyo;
     YYUSE (yyoutput);
     symbol_number_type yytype = yysym.type_get ();
+    // Avoid a (spurious) G++ 4.8 warning about "array subscript is
+    // below array bounds".
     if (yysym.empty ())
-      return;
+      std::abort ();
     yyo << (yytype < yyntokens_ ? "token" : "nterm")
         << ' ' << yytname_[yytype] << " ("
         << yysym.location << ": ";

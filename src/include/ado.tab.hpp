@@ -48,12 +48,12 @@
 
 #include <memory>
 #include "Ado.hpp"
-class AdoDriver;
+class ParseDriver;
 typedef void* yyscan_t;
 
 #define YY_DECL int yylex(yy::AdoParser::semantic_type* yylval_param, \
                           yy::AdoParser::location_type* llocp,        \
-                          AdoDriver& driver, yyscan_t yyscanner)      
+                          ParseDriver& driver, yyscan_t yyscanner)      
 
 #define R_ACTION(node) \
     if(driver.callbacks == 1 && !(driver.error_seen)) \
@@ -355,7 +355,7 @@ namespace yy {
 
 
     /// Build a parser object.
-     AdoParser  (AdoDriver& driver_yyarg, yyscan_t yyscanner_yyarg);
+     AdoParser  (ParseDriver& driver_yyarg, yyscan_t yyscanner_yyarg);
     virtual ~ AdoParser  ();
 
     /// Parse.
@@ -568,7 +568,7 @@ namespace yy {
 
 
     // User arguments.
-    AdoDriver& driver;
+    ParseDriver& driver;
     yyscan_t yyscanner;
   };
 

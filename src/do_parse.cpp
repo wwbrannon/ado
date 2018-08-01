@@ -2,7 +2,7 @@
 #include <Rcpp.h>
 #include "ado.tab.hpp"
 
-#include "AdoDriver.hpp"
+#include "ParseDriver.hpp"
 #include "AdoExceptions.hpp"
 
 // for C++11 features
@@ -18,8 +18,8 @@ do_parse_with_callbacks(std::string text, Rcpp::Function cmd_action,
   try
   {
 
-    AdoDriver *driver = new AdoDriver(1, cmd_action, macro_value_accessor,
-                                      log_command, text, debug_level, echo);
+    ParseDriver *driver = new ParseDriver(1, cmd_action, macro_value_accessor,
+                                          log_command, text, debug_level, echo);
 
     driver->parse();
     delete driver;
@@ -41,7 +41,7 @@ do_parse(std::string text, Rcpp::Function log_command, int debug_level=0)
   try
   {
     Rcpp::List res;
-    AdoDriver *driver = new AdoDriver(text, log_command, debug_level);
+    ParseDriver *driver = new ParseDriver(text, log_command, debug_level);
 
     // parse the input
     if( driver->parse() != 0 || driver->error_seen != 0)
@@ -71,7 +71,7 @@ parse_accept(std::string text)
 
   try
   {
-    AdoDriver *driver = new AdoDriver(text, DEBUG_NO_PARSE_ERROR);
+    ParseDriver *driver = new ParseDriver(text, DEBUG_NO_PARSE_ERROR);
 
     if(driver->parse() == 0 && driver->error_seen == 0)
         ret = 1;

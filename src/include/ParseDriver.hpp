@@ -12,23 +12,23 @@
 #define DEBUG_VERBOSE_ERROR     16
 #define DEBUG_NO_PARSE_ERROR    32
 
-class AdoDriver
+class ParseDriver
 {
     public:
         // ctor for parse_accept
-        AdoDriver(std::string text, int debug_level);
+        ParseDriver(std::string text, int debug_level);
 
         // ctor for do_parse
-        AdoDriver(std::string text, Rcpp::Function log_command,
+        ParseDriver(std::string text, Rcpp::Function log_command,
                   int debug_level);
 
         // ctor for do_parse_with_callbacks
-        AdoDriver(int callback, Rcpp::Function cmd_action,
+        ParseDriver(int callback, Rcpp::Function cmd_action,
                      Rcpp::Function macro_value_accessor,
                      Rcpp::Function log_command,
                      std::string text, int debug_level, int echo);
 
-        ~AdoDriver();
+        ~ParseDriver();
 
         ExprNode *ast;
 
@@ -55,8 +55,8 @@ class AdoDriver
         void write_echo_text();
 
     private:
-        AdoDriver(const AdoDriver& that); // no copy ctor
-        AdoDriver& operator=(AdoDriver const&); // no assignment
+        ParseDriver(const ParseDriver& that); // no copy ctor
+        ParseDriver& operator=(ParseDriver const&); // no assignment
 
         std::string text;
         std::string echo_text_buffer;

@@ -1118,7 +1118,7 @@ static const flex_int16_t yy_chk[2135] =
 
 #include "Ado.hpp"
 #include "ado.tab.hpp"
-#include "AdoDriver.hpp"
+#include "ParseDriver.hpp"
 #include "utils.hpp"
 
 #ifndef YYSTYPE
@@ -1456,10 +1456,10 @@ YY_DECL
 			yyg->yy_start = 1;	/* first start state */
 
 		if ( ! yyin )
-			yyin = (FILE *) NULL;
+			yyin = stdin;
 
 		if ( ! yyout )
-			yyout = (FILE *) NULL;
+			yyout = stdout;
 
 		if ( ! YY_CURRENT_BUFFER ) {
 			yyensure_buffer_stack (yyscanner);
