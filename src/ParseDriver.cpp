@@ -2,7 +2,6 @@
 #include <string>
 #include <Rcpp.h>
 #include "Ado.hpp"
-#include "utils.hpp"
 
 // A lot of messy forward declarations of type names to make flex and
 // bison play nicely together, and with this driver class
@@ -15,7 +14,6 @@ typedef yy::AdoParser::semantic_type YYSTYPE;
 #include "lex.yy.hpp"
 
 #include "ParseDriver.hpp"
-#include "AdoExceptions.hpp"
 
 // ctors
 ParseDriver::ParseDriver(std::string _text, int _debug_level)

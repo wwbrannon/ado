@@ -3,7 +3,6 @@
 #include "ado.tab.hpp"
 
 #include "ParseDriver.hpp"
-#include "AdoExceptions.hpp"
 
 // for C++11 features
 // [[Rcpp::plugins("cpp11")]]

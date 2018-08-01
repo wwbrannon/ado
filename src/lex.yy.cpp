@@ -1119,7 +1119,6 @@ static const flex_int16_t yy_chk[2135] =
 #include "Ado.hpp"
 #include "ado.tab.hpp"
 #include "ParseDriver.hpp"
-#include "utils.hpp"
 
 #ifndef YYSTYPE
 #define YYSTYPE yy::AdoParser::semantic_type
@@ -1172,9 +1171,9 @@ typedef yy::AdoParser::token token;
 
 // Code run each time a pattern is matched
 #define YY_USER_ACTION  { llocp->columns(yyleng); }
-#line 1176 "../lex.yy.cpp"
+#line 1175 "../lex.yy.cpp"
 
-#line 1178 "../lex.yy.cpp"
+#line 1177 "../lex.yy.cpp"
 
 #define INITIAL 0
 #define LONG_COMMENT 1
@@ -1471,11 +1470,11 @@ YY_DECL
 		}
 
 	{
-#line 110 "ado.fl"
+#line 109 "ado.fl"
 
 
 
-#line 114 "ado.fl"
+#line 113 "ado.fl"
 // Code run each time yylex is called
 llocp->step();
 
@@ -1496,7 +1495,7 @@ std::stack<std::vector<std::string>> macro_stack;
 size_t macro_length = 0;
 
                                     /* if you write {{{ ... }}}, the ... will be executed as R code */
-#line 1500 "../lex.yy.cpp"
+#line 1499 "../lex.yy.cpp"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1552,7 +1551,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 134 "ado.fl"
+#line 133 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1563,7 +1562,7 @@ YY_RULE_SETUP
 
 case 2:
 YY_RULE_SETUP
-#line 141 "ado.fl"
+#line 140 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1580,7 +1579,7 @@ YY_RULE_SETUP
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 154 "ado.fl"
+#line 153 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1591,7 +1590,7 @@ YY_RULE_SETUP
 case 4:
 /* rule 4 can match eol */
 YY_RULE_SETUP
-#line 160 "ado.fl"
+#line 159 "ado.fl"
 { 
                                         R_ECHO(yytext);
                                         
@@ -1601,7 +1600,7 @@ YY_RULE_SETUP
 case 5:
 /* rule 5 can match eol */
 YY_RULE_SETUP
-#line 165 "ado.fl"
+#line 164 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1610,7 +1609,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 170 "ado.fl"
+#line 169 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1618,7 +1617,7 @@ YY_RULE_SETUP
                                     }
 	YY_BREAK
 case YY_STATE_EOF(EMBED):
-#line 176 "ado.fl"
+#line 175 "ado.fl"
 {
                                         embed_buf.clear();
                                         yy_pop_state(yyscanner);
@@ -1631,7 +1630,7 @@ case YY_STATE_EOF(EMBED):
 /* INITIAL rules to match macros, local and global */
 case 7:
 YY_RULE_SETUP
-#line 188 "ado.fl"
+#line 187 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1650,7 +1649,7 @@ case 8:
 yyg->yy_c_buf_p = yy_cp = yy_bp + 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 200 "ado.fl"
+#line 199 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1666,7 +1665,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 212 "ado.fl"
+#line 211 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1684,7 +1683,7 @@ YY_RULE_SETUP
 
 case 10:
 YY_RULE_SETUP
-#line 229 "ado.fl"
+#line 228 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1699,7 +1698,7 @@ YY_RULE_SETUP
 case 11:
 /* rule 11 can match eol */
 YY_RULE_SETUP
-#line 240 "ado.fl"
+#line 239 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1719,7 +1718,7 @@ YY_RULE_SETUP
 /* We've reached the matching close quote - let's expand the macro */
 case 12:
 YY_RULE_SETUP
-#line 257 "ado.fl"
+#line 256 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1756,7 +1755,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 291 "ado.fl"
+#line 290 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1770,7 +1769,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 301 "ado.fl"
+#line 300 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1784,7 +1783,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 311 "ado.fl"
+#line 310 "ado.fl"
 {
                                         // These macros can't contain braces because the braces might
                                         // not be balanced, which would greatly complicate parsing loops
@@ -1803,7 +1802,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 326 "ado.fl"
+#line 325 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1817,7 +1816,7 @@ YY_RULE_SETUP
 	YY_BREAK
 /* This is an error (failing to close the macro) */
 case YY_STATE_EOF(LOCAL_MACRO):
-#line 338 "ado.fl"
+#line 337 "ado.fl"
 {
                                         while(!macro_stack.empty())
                                             macro_stack.pop();
@@ -1840,7 +1839,7 @@ case YY_STATE_EOF(LOCAL_MACRO):
 /* A global macro name that doesn't need to be disambiguated with braces */
 case 17:
 YY_RULE_SETUP
-#line 358 "ado.fl"
+#line 357 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1856,7 +1855,7 @@ YY_RULE_SETUP
 case 18:
 /* rule 18 can match eol */
 YY_RULE_SETUP
-#line 370 "ado.fl"
+#line 369 "ado.fl"
 {
                                         // don't R_ECHO because we're unputting the matched text to process again
 
@@ -1897,7 +1896,7 @@ YY_RULE_SETUP
 	YY_BREAK
 /* EOF is also a delimiter, but flex won't allow it in a normal rule */
 case YY_STATE_EOF(GMACRO_ALPHA):
-#line 409 "ado.fl"
+#line 408 "ado.fl"
 {
                                         std::vector<std::string> frame = macro_stack.top();
                                         std::string combined, replacement;
@@ -1936,7 +1935,7 @@ case YY_STATE_EOF(GMACRO_ALPHA):
 /* Allow any type of macro to be nested here */
 case 19:
 YY_RULE_SETUP
-#line 447 "ado.fl"
+#line 446 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1952,7 +1951,7 @@ case 20:
 yyg->yy_c_buf_p = yy_cp = yy_bp + 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 456 "ado.fl"
+#line 455 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1965,7 +1964,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 465 "ado.fl"
+#line 464 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1978,7 +1977,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 474 "ado.fl"
+#line 473 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -1992,7 +1991,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 484 "ado.fl"
+#line 483 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2006,7 +2005,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 495 "ado.fl"
+#line 494 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2021,7 +2020,7 @@ YY_RULE_SETUP
 /* Characters that should be part of the name */
 case 25:
 YY_RULE_SETUP
-#line 507 "ado.fl"
+#line 506 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2036,7 +2035,7 @@ YY_RULE_SETUP
 /* We've seen the closing brace - wrap up and expand this macro */
 case 26:
 YY_RULE_SETUP
-#line 519 "ado.fl"
+#line 518 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2074,7 +2073,7 @@ YY_RULE_SETUP
 case 27:
 /* rule 27 can match eol */
 YY_RULE_SETUP
-#line 553 "ado.fl"
+#line 552 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2093,7 +2092,7 @@ YY_RULE_SETUP
 	YY_BREAK
 /* EOF here is an error - the user forgot the closing "}" */
 case YY_STATE_EOF(GMACRO_BRACE):
-#line 570 "ado.fl"
+#line 569 "ado.fl"
 {
                                         while(!macro_stack.empty())
                                             macro_stack.pop();
@@ -2127,7 +2126,7 @@ case YY_STATE_EOF(GMACRO_BRACE):
                                      * reentrant, even though R isn't multithreaded.) */
 case 28:
 YY_RULE_SETUP
-#line 602 "ado.fl"
+#line 601 "ado.fl"
 {
                                         R_ECHO(yytext);
 
@@ -2140,7 +2139,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 611 "ado.fl"
+#line 610 "ado.fl"
 {
                                         R_ECHO(yytext);
 
@@ -2153,7 +2152,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 620 "ado.fl"
+#line 619 "ado.fl"
 {
                                         R_ECHO(yytext);
 
@@ -2166,7 +2165,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 629 "ado.fl"
+#line 628 "ado.fl"
 {
                                         R_ECHO(yytext);
 
@@ -2179,7 +2178,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 638 "ado.fl"
+#line 637 "ado.fl"
 {
                                         R_ECHO(yytext);
 
@@ -2192,7 +2191,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 647 "ado.fl"
+#line 646 "ado.fl"
 {
                                         R_ECHO(yytext);
 
@@ -2205,7 +2204,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 656 "ado.fl"
+#line 655 "ado.fl"
 {
                                         R_ECHO(yytext);
 
@@ -2219,7 +2218,7 @@ YY_RULE_SETUP
 
 case 35:
 YY_RULE_SETUP
-#line 669 "ado.fl"
+#line 668 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2232,7 +2231,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 678 "ado.fl"
+#line 677 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         return token::TOK_LOCAL;
@@ -2240,7 +2239,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 682 "ado.fl"
+#line 681 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         return token::TOK_GLOBAL;
@@ -2248,7 +2247,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 686 "ado.fl"
+#line 685 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         return token::TOK_VARLIST;
@@ -2256,7 +2255,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 690 "ado.fl"
+#line 689 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         return token::TOK_NEWLIST;
@@ -2264,7 +2263,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 694 "ado.fl"
+#line 693 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         return token::TOK_NUMLIST;
@@ -2272,14 +2271,14 @@ YY_RULE_SETUP
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 698 "ado.fl"
+#line 697 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         return token::TOK_OF;
                                     }
 	YY_BREAK
 case YY_STATE_EOF(FOREACH):
-#line 702 "ado.fl"
+#line 701 "ado.fl"
 {
                                         // getting to EOF in this state is an error
                                         do {
@@ -2294,7 +2293,7 @@ case YY_STATE_EOF(FOREACH):
 
 case 42:
 YY_RULE_SETUP
-#line 716 "ado.fl"
+#line 715 "ado.fl"
 {
                                         R_ECHO(yytext);
 
@@ -2307,14 +2306,14 @@ YY_RULE_SETUP
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 725 "ado.fl"
+#line 724 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         return token::TOK_TO;
                                     }
 	YY_BREAK
 case YY_STATE_EOF(FORVALUES):
-#line 729 "ado.fl"
+#line 728 "ado.fl"
 {
                                         // getting to EOF in this state is an error
                                         do {
@@ -2331,7 +2330,7 @@ case YY_STATE_EOF(FORVALUES):
                                      * so just eat them now, exactly as usual */
 case 44:
 YY_RULE_SETUP
-#line 745 "ado.fl"
+#line 744 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         yy_push_state(LONG_COMMENT, yyscanner);
@@ -2339,7 +2338,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 749 "ado.fl"
+#line 748 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         yy_push_state(SHORT_COMMENT, yyscanner);
@@ -2347,7 +2346,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 753 "ado.fl"
+#line 752 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         yy_push_state(SHORT_COMMENT, yyscanner);
@@ -2355,7 +2354,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 758 "ado.fl"
+#line 757 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2370,7 +2369,7 @@ YY_RULE_SETUP
                                      * we want to defer until the subsequent reinvocation of the frontend on this text block. */
 case 48:
 YY_RULE_SETUP
-#line 770 "ado.fl"
+#line 769 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2381,7 +2380,7 @@ YY_RULE_SETUP
 case 49:
 /* rule 49 can match eol */
 YY_RULE_SETUP
-#line 776 "ado.fl"
+#line 775 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2391,7 +2390,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 782 "ado.fl"
+#line 781 "ado.fl"
 {
                                         R_ECHO(yytext);
 
@@ -2401,7 +2400,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 788 "ado.fl"
+#line 787 "ado.fl"
 {
                                         // don't R_ECHO because we're going to unput the matched text to process again
 
@@ -2442,7 +2441,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 825 "ado.fl"
+#line 824 "ado.fl"
 {
                                         R_ECHO(yytext);
 
@@ -2450,7 +2449,7 @@ YY_RULE_SETUP
                                     }
 	YY_BREAK
 case YY_STATE_EOF(ACCUMULATE):
-#line 831 "ado.fl"
+#line 830 "ado.fl"
 {
                                         // getting to EOF in this state is an error
                                         do {
@@ -2466,7 +2465,7 @@ case YY_STATE_EOF(ACCUMULATE):
 /* Saw the matching close quote - all done */
 case 53:
 YY_RULE_SETUP
-#line 846 "ado.fl"
+#line 845 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         loop_buf += std::string(yytext);
@@ -2477,7 +2476,7 @@ YY_RULE_SETUP
 case 54:
 /* rule 54 can match eol */
 YY_RULE_SETUP
-#line 853 "ado.fl"
+#line 852 "ado.fl"
 {
                                         // getting to EOF in this state is an error
                                         R_ECHO(yytext);
@@ -2493,7 +2492,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 866 "ado.fl"
+#line 865 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         loop_buf += std::string(yytext);
@@ -2501,7 +2500,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 870 "ado.fl"
+#line 869 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         loop_buf += std::string(yytext);
@@ -2509,7 +2508,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 875 "ado.fl"
+#line 874 "ado.fl"
 {
                                         // this rule is the entire reason for this state - it matches
                                         // opening curly braces but doesn't increment brace_count
@@ -2518,7 +2517,7 @@ YY_RULE_SETUP
                                     }
 	YY_BREAK
 case YY_STATE_EOF(STRING_ACCUMULATE):
-#line 882 "ado.fl"
+#line 881 "ado.fl"
 {
                                         // getting to EOF in this state is an error
                                         do {
@@ -2534,7 +2533,7 @@ case YY_STATE_EOF(STRING_ACCUMULATE):
 /* Saw the matching close quote - all done */
 case 58:
 YY_RULE_SETUP
-#line 897 "ado.fl"
+#line 896 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         loop_buf += std::string(yytext);
@@ -2549,7 +2548,7 @@ YY_LINENO_REWIND_TO(yy_bp + 1);
 yyg->yy_c_buf_p = yy_cp = yy_bp + 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 904 "ado.fl"
+#line 903 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         loop_buf += std::string(yytext);
@@ -2558,7 +2557,7 @@ YY_RULE_SETUP
 case 60:
 /* rule 60 can match eol */
 YY_RULE_SETUP
-#line 909 "ado.fl"
+#line 908 "ado.fl"
 {
                                         // getting to EOF in this state is an error
                                         R_ECHO(yytext);
@@ -2574,7 +2573,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 922 "ado.fl"
+#line 921 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         loop_buf += std::string(yytext);
@@ -2582,7 +2581,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 926 "ado.fl"
+#line 925 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         loop_buf += std::string(yytext);
@@ -2590,7 +2589,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 931 "ado.fl"
+#line 930 "ado.fl"
 {
                                         // once again, the fact that this rule matches the "{" character
                                         // but doesn't increment brace_count is why we have this state
@@ -2599,7 +2598,7 @@ YY_RULE_SETUP
                                     }
 	YY_BREAK
 case YY_STATE_EOF(CDQUOTE_ACCUMULATE):
-#line 938 "ado.fl"
+#line 937 "ado.fl"
 {
                                         // getting to EOF in this state is an error
                                         do {
@@ -2614,7 +2613,7 @@ case YY_STATE_EOF(CDQUOTE_ACCUMULATE):
 /* Eat long comments */
 case 64:
 YY_RULE_SETUP
-#line 952 "ado.fl"
+#line 951 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2625,7 +2624,7 @@ YY_RULE_SETUP
 /* Got a close-comment marker, all done */
 case 65:
 YY_RULE_SETUP
-#line 959 "ado.fl"
+#line 958 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2634,7 +2633,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 965 "ado.fl"
+#line 964 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2643,7 +2642,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 970 "ado.fl"
+#line 969 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2653,7 +2652,7 @@ YY_RULE_SETUP
 case 68:
 /* rule 68 can match eol */
 YY_RULE_SETUP
-#line 975 "ado.fl"
+#line 974 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2661,7 +2660,7 @@ YY_RULE_SETUP
                                     }
 	YY_BREAK
 case YY_STATE_EOF(LONG_COMMENT):
-#line 981 "ado.fl"
+#line 980 "ado.fl"
 {
                                         yy_pop_state(yyscanner);
                                         driver.error(*llocp, "Unclosed comment");
@@ -2673,7 +2672,7 @@ case YY_STATE_EOF(LONG_COMMENT):
 case 69:
 /* rule 69 can match eol */
 YY_RULE_SETUP
-#line 991 "ado.fl"
+#line 990 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2683,7 +2682,7 @@ YY_RULE_SETUP
 /* Eat short comments */
 case 70:
 YY_RULE_SETUP
-#line 1000 "ado.fl"
+#line 999 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2692,7 +2691,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 1005 "ado.fl"
+#line 1004 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2702,7 +2701,7 @@ YY_RULE_SETUP
 
 case 72:
 YY_RULE_SETUP
-#line 1011 "ado.fl"
+#line 1010 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2712,7 +2711,7 @@ YY_RULE_SETUP
 case 73:
 /* rule 73 can match eol */
 YY_RULE_SETUP
-#line 1016 "ado.fl"
+#line 1015 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2722,7 +2721,7 @@ YY_RULE_SETUP
                                     }
 	YY_BREAK
 case YY_STATE_EOF(SHORT_COMMENT):
-#line 1023 "ado.fl"
+#line 1022 "ado.fl"
 {
                                         // one-line comments can be the last thing in the file
                                         yy_pop_state(yyscanner);
@@ -2739,7 +2738,7 @@ case 74:
 yyg->yy_c_buf_p = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 1036 "ado.fl"
+#line 1035 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2757,7 +2756,7 @@ case 75:
 yyg->yy_c_buf_p = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 1047 "ado.fl"
+#line 1046 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2774,7 +2773,7 @@ YY_RULE_SETUP
 case 76:
 /* rule 76 can match eol */
 YY_RULE_SETUP
-#line 1062 "ado.fl"
+#line 1061 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2785,7 +2784,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 1069 "ado.fl"
+#line 1068 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2796,7 +2795,7 @@ YY_RULE_SETUP
 /* ignore whitespace but track column numbers */
 case 78:
 YY_RULE_SETUP
-#line 1077 "ado.fl"
+#line 1076 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2805,7 +2804,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 1084 "ado.fl"
+#line 1083 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2817,7 +2816,7 @@ YY_RULE_SETUP
 /* Allow any type of macro to be nested here */
 case 80:
 YY_RULE_SETUP
-#line 1092 "ado.fl"
+#line 1091 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2833,7 +2832,7 @@ case 81:
 yyg->yy_c_buf_p = yy_cp = yy_bp + 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 1101 "ado.fl"
+#line 1100 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2846,7 +2845,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 1110 "ado.fl"
+#line 1109 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2860,7 +2859,7 @@ YY_RULE_SETUP
 /* Saw the matching close quote - all done */
 case 83:
 YY_RULE_SETUP
-#line 1121 "ado.fl"
+#line 1120 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2879,7 +2878,7 @@ YY_LINENO_REWIND_TO(yy_bp + 1);
 yyg->yy_c_buf_p = yy_cp = yy_bp + 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 1132 "ado.fl"
+#line 1131 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2889,7 +2888,7 @@ YY_RULE_SETUP
 case 85:
 /* rule 85 can match eol */
 YY_RULE_SETUP
-#line 1138 "ado.fl"
+#line 1137 "ado.fl"
 {
                                         // this is an error
                                         R_ECHO(yytext);
@@ -2904,7 +2903,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 86:
 YY_RULE_SETUP
-#line 1150 "ado.fl"
+#line 1149 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2913,7 +2912,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
-#line 1155 "ado.fl"
+#line 1154 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2922,7 +2921,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
-#line 1160 "ado.fl"
+#line 1159 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2931,7 +2930,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 89:
 YY_RULE_SETUP
-#line 1165 "ado.fl"
+#line 1164 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2940,7 +2939,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
-#line 1170 "ado.fl"
+#line 1169 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2949,7 +2948,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 91:
 YY_RULE_SETUP
-#line 1175 "ado.fl"
+#line 1174 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2958,7 +2957,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
-#line 1180 "ado.fl"
+#line 1179 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2967,7 +2966,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 93:
 YY_RULE_SETUP
-#line 1185 "ado.fl"
+#line 1184 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2976,7 +2975,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 94:
 YY_RULE_SETUP
-#line 1190 "ado.fl"
+#line 1189 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2985,7 +2984,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 95:
 YY_RULE_SETUP
-#line 1196 "ado.fl"
+#line 1195 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -2993,7 +2992,7 @@ YY_RULE_SETUP
                                     }
 	YY_BREAK
 case YY_STATE_EOF(CDQUOTE):
-#line 1202 "ado.fl"
+#line 1201 "ado.fl"
 {
                                         cdquote_buf.clear();
                                         yy_pop_state(yyscanner);
@@ -3005,7 +3004,7 @@ case YY_STATE_EOF(CDQUOTE):
 
 case 96:
 YY_RULE_SETUP
-#line 1211 "ado.fl"
+#line 1210 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3017,7 +3016,7 @@ YY_RULE_SETUP
 /* Allow any type of macro to be nested here */
 case 97:
 YY_RULE_SETUP
-#line 1219 "ado.fl"
+#line 1218 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3033,7 +3032,7 @@ case 98:
 yyg->yy_c_buf_p = yy_cp = yy_bp + 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 1228 "ado.fl"
+#line 1227 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3046,7 +3045,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 99:
 YY_RULE_SETUP
-#line 1237 "ado.fl"
+#line 1236 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3060,7 +3059,7 @@ YY_RULE_SETUP
 /* Saw the matching close quote - all done */
 case 100:
 YY_RULE_SETUP
-#line 1248 "ado.fl"
+#line 1247 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3075,7 +3074,7 @@ YY_RULE_SETUP
 case 101:
 /* rule 101 can match eol */
 YY_RULE_SETUP
-#line 1259 "ado.fl"
+#line 1258 "ado.fl"
 {
                                         // this is an error
                                         R_ECHO(yytext);
@@ -3090,7 +3089,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 102:
 YY_RULE_SETUP
-#line 1271 "ado.fl"
+#line 1270 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3099,7 +3098,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 103:
 YY_RULE_SETUP
-#line 1276 "ado.fl"
+#line 1275 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3108,7 +3107,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 104:
 YY_RULE_SETUP
-#line 1281 "ado.fl"
+#line 1280 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3117,7 +3116,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 105:
 YY_RULE_SETUP
-#line 1286 "ado.fl"
+#line 1285 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3126,7 +3125,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 106:
 YY_RULE_SETUP
-#line 1291 "ado.fl"
+#line 1290 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3135,7 +3134,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 107:
 YY_RULE_SETUP
-#line 1296 "ado.fl"
+#line 1295 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3144,7 +3143,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 108:
 YY_RULE_SETUP
-#line 1301 "ado.fl"
+#line 1300 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3153,7 +3152,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 109:
 YY_RULE_SETUP
-#line 1306 "ado.fl"
+#line 1305 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3162,7 +3161,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 110:
 YY_RULE_SETUP
-#line 1311 "ado.fl"
+#line 1310 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3171,7 +3170,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 111:
 YY_RULE_SETUP
-#line 1316 "ado.fl"
+#line 1315 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3180,7 +3179,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 112:
 YY_RULE_SETUP
-#line 1322 "ado.fl"
+#line 1321 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3188,7 +3187,7 @@ YY_RULE_SETUP
                                     }
 	YY_BREAK
 case YY_STATE_EOF(STRING):
-#line 1328 "ado.fl"
+#line 1327 "ado.fl"
 {
                                         string_buf.clear();
                                         yy_pop_state(yyscanner);
@@ -3201,7 +3200,7 @@ case YY_STATE_EOF(STRING):
 /* datetime literals */
 case 113:
 YY_RULE_SETUP
-#line 1340 "ado.fl"
+#line 1339 "ado.fl"
 {
                                        R_ECHO(yytext);
                                    
@@ -3216,7 +3215,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 114:
 YY_RULE_SETUP
-#line 1351 "ado.fl"
+#line 1350 "ado.fl"
 {
                                                             R_ECHO(yytext);
                                         
@@ -3230,7 +3229,7 @@ YY_RULE_SETUP
 /* format specifiers */
 case 115:
 YY_RULE_SETUP
-#line 1364 "ado.fl"
+#line 1363 "ado.fl"
 {
                                         // numeric formats
                                         R_ECHO(yytext);
@@ -3244,7 +3243,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 116:
 YY_RULE_SETUP
-#line 1374 "ado.fl"
+#line 1373 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         yylval->node = new ExprNode({"ado_literal", "ado_format_spec"});
@@ -3257,7 +3256,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 117:
 YY_RULE_SETUP
-#line 1383 "ado.fl"
+#line 1382 "ado.fl"
 {
                                         // string formats
                                         R_ECHO(yytext);
@@ -3271,7 +3270,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 118:
 YY_RULE_SETUP
-#line 1393 "ado.fl"
+#line 1392 "ado.fl"
 {
                                         // datetime formats
                                         R_ECHO(yytext);
@@ -3286,7 +3285,7 @@ YY_RULE_SETUP
 /* Numeric data types */
 case 119:
 YY_RULE_SETUP
-#line 1407 "ado.fl"
+#line 1406 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3296,7 +3295,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 120:
 YY_RULE_SETUP
-#line 1413 "ado.fl"
+#line 1412 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3306,7 +3305,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 121:
 YY_RULE_SETUP
-#line 1419 "ado.fl"
+#line 1418 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3316,7 +3315,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 122:
 YY_RULE_SETUP
-#line 1425 "ado.fl"
+#line 1424 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3326,7 +3325,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 123:
 YY_RULE_SETUP
-#line 1431 "ado.fl"
+#line 1430 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3337,7 +3336,7 @@ YY_RULE_SETUP
 /* String data types */
 case 124:
 YY_RULE_SETUP
-#line 1441 "ado.fl"
+#line 1440 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3347,7 +3346,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 125:
 YY_RULE_SETUP
-#line 1447 "ado.fl"
+#line 1446 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3357,7 +3356,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 126:
 YY_RULE_SETUP
-#line 1453 "ado.fl"
+#line 1452 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3369,7 +3368,7 @@ YY_RULE_SETUP
                                      * before we lex numbers */
 case 127:
 YY_RULE_SETUP
-#line 1462 "ado.fl"
+#line 1461 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3382,7 +3381,7 @@ YY_RULE_SETUP
 /* numeric literals in their various formats */
 case 128:
 YY_RULE_SETUP
-#line 1473 "ado.fl"
+#line 1472 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3394,7 +3393,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 129:
 YY_RULE_SETUP
-#line 1481 "ado.fl"
+#line 1480 "ado.fl"
 { /* hex */
                                         R_ECHO(yytext);
                                         
@@ -3406,7 +3405,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 130:
 YY_RULE_SETUP
-#line 1489 "ado.fl"
+#line 1488 "ado.fl"
 { /* octal */
                                         R_ECHO(yytext);
                                         
@@ -3418,7 +3417,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 131:
 YY_RULE_SETUP
-#line 1497 "ado.fl"
+#line 1496 "ado.fl"
 { /* decimal integer */
                                         R_ECHO(yytext);
                                         
@@ -3435,7 +3434,7 @@ YY_LINENO_REWIND_TO(yy_cp - 1);
 yyg->yy_c_buf_p = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 1505 "ado.fl"
+#line 1504 "ado.fl"
 { /* decimal float */
                                         R_ECHO(yytext);
                                         
@@ -3447,7 +3446,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 133:
 YY_RULE_SETUP
-#line 1513 "ado.fl"
+#line 1512 "ado.fl"
 { /* scientific notation */
                                         R_ECHO(yytext);
                                         
@@ -3459,7 +3458,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 134:
 YY_RULE_SETUP
-#line 1521 "ado.fl"
+#line 1520 "ado.fl"
 { /* scientific notation with fractions, or numbers like ".0239" */
                                         R_ECHO(yytext);
                                         
@@ -3472,7 +3471,7 @@ YY_RULE_SETUP
 /* Other keywords */
 case 135:
 YY_RULE_SETUP
-#line 1533 "ado.fl"
+#line 1532 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3482,7 +3481,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 136:
 YY_RULE_SETUP
-#line 1539 "ado.fl"
+#line 1538 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3492,7 +3491,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 137:
 YY_RULE_SETUP
-#line 1545 "ado.fl"
+#line 1544 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3502,7 +3501,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 138:
 YY_RULE_SETUP
-#line 1551 "ado.fl"
+#line 1550 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3514,7 +3513,7 @@ YY_RULE_SETUP
 /* Weight-clause specifiers (this is a hack) */
 case 139:
 YY_RULE_SETUP
-#line 1562 "ado.fl"
+#line 1561 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3536,7 +3535,7 @@ YY_RULE_SETUP
 /* infix operators and various single-character tokens */
 case 140:
 YY_RULE_SETUP
-#line 1583 "ado.fl"
+#line 1582 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3546,7 +3545,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 141:
 YY_RULE_SETUP
-#line 1589 "ado.fl"
+#line 1588 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3556,7 +3555,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 142:
 YY_RULE_SETUP
-#line 1595 "ado.fl"
+#line 1594 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3566,7 +3565,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 143:
 YY_RULE_SETUP
-#line 1601 "ado.fl"
+#line 1600 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3576,7 +3575,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 144:
 YY_RULE_SETUP
-#line 1607 "ado.fl"
+#line 1606 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3586,7 +3585,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 145:
 YY_RULE_SETUP
-#line 1613 "ado.fl"
+#line 1612 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3596,7 +3595,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 146:
 YY_RULE_SETUP
-#line 1619 "ado.fl"
+#line 1618 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3606,7 +3605,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 147:
 YY_RULE_SETUP
-#line 1625 "ado.fl"
+#line 1624 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3616,7 +3615,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 148:
 YY_RULE_SETUP
-#line 1631 "ado.fl"
+#line 1630 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3626,7 +3625,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 149:
 YY_RULE_SETUP
-#line 1637 "ado.fl"
+#line 1636 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3636,7 +3635,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 150:
 YY_RULE_SETUP
-#line 1643 "ado.fl"
+#line 1642 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3646,7 +3645,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 151:
 YY_RULE_SETUP
-#line 1650 "ado.fl"
+#line 1649 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3656,7 +3655,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 152:
 YY_RULE_SETUP
-#line 1656 "ado.fl"
+#line 1655 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3666,7 +3665,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 153:
 YY_RULE_SETUP
-#line 1662 "ado.fl"
+#line 1661 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3676,7 +3675,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 154:
 YY_RULE_SETUP
-#line 1668 "ado.fl"
+#line 1667 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3686,7 +3685,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 155:
 YY_RULE_SETUP
-#line 1674 "ado.fl"
+#line 1673 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3696,7 +3695,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 156:
 YY_RULE_SETUP
-#line 1680 "ado.fl"
+#line 1679 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3706,7 +3705,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 157:
 YY_RULE_SETUP
-#line 1686 "ado.fl"
+#line 1685 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3716,7 +3715,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 158:
 YY_RULE_SETUP
-#line 1692 "ado.fl"
+#line 1691 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3726,7 +3725,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 159:
 YY_RULE_SETUP
-#line 1698 "ado.fl"
+#line 1697 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3736,7 +3735,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 160:
 YY_RULE_SETUP
-#line 1704 "ado.fl"
+#line 1703 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3746,7 +3745,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 161:
 YY_RULE_SETUP
-#line 1710 "ado.fl"
+#line 1709 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3756,7 +3755,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 162:
 YY_RULE_SETUP
-#line 1716 "ado.fl"
+#line 1715 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3766,7 +3765,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 163:
 YY_RULE_SETUP
-#line 1722 "ado.fl"
+#line 1721 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3776,7 +3775,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 164:
 YY_RULE_SETUP
-#line 1728 "ado.fl"
+#line 1727 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3787,7 +3786,7 @@ YY_RULE_SETUP
 /* Factor variable operators and level-restricted virtual variables */
 case 165:
 YY_RULE_SETUP
-#line 1736 "ado.fl"
+#line 1735 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3799,7 +3798,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 166:
 YY_RULE_SETUP
-#line 1744 "ado.fl"
+#line 1743 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3811,7 +3810,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 167:
 YY_RULE_SETUP
-#line 1753 "ado.fl"
+#line 1752 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3824,7 +3823,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 168:
 YY_RULE_SETUP
-#line 1762 "ado.fl"
+#line 1761 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3837,7 +3836,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 169:
 YY_RULE_SETUP
-#line 1771 "ado.fl"
+#line 1770 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3850,7 +3849,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 170:
 YY_RULE_SETUP
-#line 1780 "ado.fl"
+#line 1779 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3863,7 +3862,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 171:
 YY_RULE_SETUP
-#line 1789 "ado.fl"
+#line 1788 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3882,7 +3881,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 172:
 YY_RULE_SETUP
-#line 1804 "ado.fl"
+#line 1803 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3901,7 +3900,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 173:
 YY_RULE_SETUP
-#line 1820 "ado.fl"
+#line 1819 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3916,7 +3915,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 174:
 YY_RULE_SETUP
-#line 1831 "ado.fl"
+#line 1830 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3937,7 +3936,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 175:
 YY_RULE_SETUP
-#line 1848 "ado.fl"
+#line 1847 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3954,7 +3953,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 176:
 YY_RULE_SETUP
-#line 1862 "ado.fl"
+#line 1861 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3973,7 +3972,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 177:
 YY_RULE_SETUP
-#line 1877 "ado.fl"
+#line 1876 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -3999,7 +3998,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 178:
 YY_RULE_SETUP
-#line 1899 "ado.fl"
+#line 1898 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4022,7 +4021,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 179:
 YY_RULE_SETUP
-#line 1919 "ado.fl"
+#line 1918 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4032,7 +4031,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 180:
 YY_RULE_SETUP
-#line 1925 "ado.fl"
+#line 1924 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4043,7 +4042,7 @@ YY_RULE_SETUP
 /* command verbs that have to be hardcoded into the grammar */
 case 181:
 YY_RULE_SETUP
-#line 1935 "ado.fl"
+#line 1934 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4056,7 +4055,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 182:
 YY_RULE_SETUP
-#line 1944 "ado.fl"
+#line 1943 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4069,7 +4068,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 183:
 YY_RULE_SETUP
-#line 1953 "ado.fl"
+#line 1952 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4082,7 +4081,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 184:
 YY_RULE_SETUP
-#line 1962 "ado.fl"
+#line 1961 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4095,7 +4094,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 185:
 YY_RULE_SETUP
-#line 1971 "ado.fl"
+#line 1970 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4109,7 +4108,7 @@ YY_RULE_SETUP
 /* Non-prefix special commands */
 case 186:
 YY_RULE_SETUP
-#line 1982 "ado.fl"
+#line 1981 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4122,7 +4121,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 187:
 YY_RULE_SETUP
-#line 1991 "ado.fl"
+#line 1990 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4135,7 +4134,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 188:
 YY_RULE_SETUP
-#line 2000 "ado.fl"
+#line 1999 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4150,7 +4149,7 @@ YY_RULE_SETUP
                                      * have idiosyncratic syntax */
 case 189:
 YY_RULE_SETUP
-#line 2012 "ado.fl"
+#line 2011 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4163,7 +4162,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 190:
 YY_RULE_SETUP
-#line 2021 "ado.fl"
+#line 2020 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4176,7 +4175,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 191:
 YY_RULE_SETUP
-#line 2030 "ado.fl"
+#line 2029 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4189,7 +4188,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 192:
 YY_RULE_SETUP
-#line 2039 "ado.fl"
+#line 2038 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4202,7 +4201,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 193:
 YY_RULE_SETUP
-#line 2048 "ado.fl"
+#line 2047 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4215,7 +4214,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 194:
 YY_RULE_SETUP
-#line 2057 "ado.fl"
+#line 2056 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4228,7 +4227,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 195:
 YY_RULE_SETUP
-#line 2066 "ado.fl"
+#line 2065 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4242,7 +4241,7 @@ YY_RULE_SETUP
 /* all non-keyword identifiers */
 case 196:
 YY_RULE_SETUP
-#line 2079 "ado.fl"
+#line 2078 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4253,7 +4252,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 197:
 YY_RULE_SETUP
-#line 2087 "ado.fl"
+#line 2086 "ado.fl"
 {
                                         R_ECHO(yytext);
                                         
@@ -4261,15 +4260,15 @@ YY_RULE_SETUP
                                     }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 2093 "ado.fl"
+#line 2092 "ado.fl"
 { return token::TOK_END; }
 	YY_BREAK
 case 198:
 YY_RULE_SETUP
-#line 2095 "ado.fl"
+#line 2094 "ado.fl"
 ECHO;
 	YY_BREAK
-#line 4273 "../lex.yy.cpp"
+#line 4272 "../lex.yy.cpp"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -5497,7 +5496,7 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 2095 "ado.fl"
+#line 2094 "ado.fl"
 
 
 void

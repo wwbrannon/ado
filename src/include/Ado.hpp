@@ -1,12 +1,27 @@
 #ifndef ADO_H
 #define ADO_H
 
-#include <cstdio>
+#include <exception>
+#include <string>
+#include <vector>
+
 #include <Rcpp.h>
+
+/*
+ * Utilities
+ */
 
 void raise_condition(const std::string& msg, const std::string& type);
 
-// The main class of node in the AST the parser generates
+std::vector<std::string> split(const std::string &s, char delim);
+std::vector<std::string> &split(const std::string &s, char delim,
+                                std::vector<std::string> &elems);
+std::string trim(const std::string& str, const std::string& what = " ");
+
+/*
+ * The main class of node in the AST the parser generates
+ */
+
 class ExprNode
 {
     public:
@@ -57,6 +72,140 @@ class ExprNode
         //     o) children[i] corresponds to names[i] for all i
         std::vector<ExprNode*> children;
         std::vector<std::string> names;
+};
+
+/*
+ * Exceptions
+ */
+
+class BadCommandException : public std::exception
+{
+  public:
+    explicit BadCommandException()
+    {
+      msg = "Unspecified semantic error";
+    }
+    
+    explicit BadCommandException(const std::string& what_arg)
+    {
+      msg = what_arg;
+    }
+    explicit BadCommandException(const char *what_arg)
+    {
+      msg = std::string(what_arg);
+    }
+    
+    const char *what() const noexcept
+    {
+      return msg.c_str();
+    }
+    
+  private:
+    std::string msg;
+};
+
+class EvalErrorException : public std::exception
+{
+  public:
+    explicit EvalErrorException()
+    {
+      msg = "Unknown runtime error in evaluation";
+    }
+    
+    explicit EvalErrorException(const std::string& what_arg)
+    {
+      msg = what_arg;
+    }
+    explicit EvalErrorException(const char *what_arg)
+    {
+      msg = std::string(what_arg);
+    }
+    
+    const char *what() const noexcept
+    {
+        return msg.c_str();
+    }
+  
+  private:
+    std::string msg;
+};
+
+class ExitRequestedException : public std::exception
+{
+  public:
+    explicit ExitRequestedException()
+    {
+      msg = "Exit requested";
+    }
+    
+    explicit ExitRequestedException(const std::string& what_arg)
+    {
+      msg = what_arg;
+    }
+    explicit ExitRequestedException(const char *what_arg)
+    {
+      msg = std::string(what_arg);
+    }
+    
+    const char *what() const noexcept
+    {
+      return msg.c_str();
+    }
+
+  private:
+    std::string msg;
+};
+
+class ContinueException : public std::exception
+{
+  public:
+    explicit ContinueException()
+    {
+      msg = "Statement can only be used within a loop";
+    }
+    
+    explicit ContinueException(const std::string& what_arg)
+    {
+      msg = what_arg;
+    }
+    explicit ContinueException(const char *what_arg)
+    {
+      msg = std::string(what_arg);
+    }
+    
+    const char *what() const noexcept
+    {
+      return msg.c_str();
+    }
+
+  private:
+    std::string msg;
+};
+
+class BreakException : public std::exception
+{
+  public:
+    explicit BreakException()
+    {
+      msg = "Statement can only be used within a loop";
+    }
+    
+    explicit BreakException(const std::string& what_arg )
+    {
+      msg = what_arg;
+    }
+    explicit BreakException(const char* what_arg )
+    {
+      msg = std::string(what_arg);
+    }
+    
+    const char *what() const noexcept
+    {
+      return msg.c_str();
+    }
+
+  private:
+    std::string msg;
 };
 
 #endif /* ADO_H */

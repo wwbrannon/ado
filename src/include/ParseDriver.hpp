@@ -1,7 +1,6 @@
 #ifndef ADO_DRIVER_H
 #define ADO_DRIVER_H
 
-#include <cstdio>
 #include <string>
 #include <Rcpp.h>
 #include "Ado.hpp"
