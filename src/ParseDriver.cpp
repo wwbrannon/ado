@@ -118,7 +118,7 @@ ParseDriver::parse()
 }
 
 void
-ParseDriver::wrap_cmd_action(Rcpp::List ast)
+ParseDriver::wrap_cmd_action(ExprNode *node)
 {
     // don't do anything if a) we've been told not to, or
     // b) we couldn't parse the input correctly
@@ -134,7 +134,7 @@ ParseDriver::wrap_cmd_action(Rcpp::List ast)
         this->echo_text_buffer.clear();
     }
 
-    Rcpp::List ret = cmd_action(ast);
+    Rcpp::List ret = cmd_action(node->as_R_object());
 
     int status = Rcpp::as<int>(ret[0]);
     std::string msg = Rcpp::as<std::string>(ret[1]);

@@ -34,7 +34,7 @@ class ParseDriver
         int parse();
 
         int callbacks;
-        void wrap_cmd_action(Rcpp::List ast);
+        void wrap_cmd_action(ExprNode *ast);
         Rcpp::Function cmd_action;
         Rcpp::Function macro_value_accessor;
         Rcpp::Function log_command;
