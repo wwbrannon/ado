@@ -49,9 +49,6 @@
 void ado_yy_fatal_error(std::string& msg);
 void ado_yy_fatal_error(const char *msg);
 
-// the ado_yy_fatal_error function uses this function to stop execution
-void raise_condition(const std::string& msg, const std::string& type);
-
 typedef yy::AdoParser::token token;
 
 // Should we echo the matched text to Rcpp::Rcout? It's

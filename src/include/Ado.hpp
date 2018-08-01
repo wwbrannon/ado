@@ -11,6 +11,7 @@
  * Utilities
  */
 
+// the ado_yy_fatal_error function uses this function to stop execution
 void raise_condition(const std::string& msg, const std::string& type);
 
 std::vector<std::string> split(const std::string &s, char delim);
