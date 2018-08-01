@@ -47,7 +47,6 @@ typedef void* yyscan_t;
 {
 #include "ado.tab.hpp"
 #include <string>
-#include <cstdio>
 #include <cstring>
 #include <iostream>
 #include <Rcpp.h>
