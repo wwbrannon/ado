@@ -131,12 +131,14 @@ function(str)
     simplify2array(pts)
 }
 
-#The process_cmd callback catches certain types of conditions signaled in
-#code that it calls, so we want to have a concise idiom for signaling those
+#The command processing callback catches certain types of conditions signaled
+#in code that it calls, so we want to have a concise idiom for signaling those
 #conditions. That way we can use them for exception handling.
 raiseCondition <-
 function(msg, cls="BadCommandException")
 {
+    cls <- c("AdoCondition", cls)
+
     cond <- simpleCondition(msg)
     class(cond) <- c(class(cond), cls)
     signalCondition(cond)
@@ -151,7 +153,7 @@ function(expr, cls="BadCommandException", msg=NULL)
 }
 
 #Like stopifnot(), but rather than actually calling stop(), just throw an
-#exception to the point in process_cmd where it's caught and handled.
+#exception to the point where it's caught and handled.
 raiseif <-
 function(expr, cls="BadCommandException", msg=NULL)
 {
@@ -273,7 +275,8 @@ unabbreviateName <-
 function(name, choices, cls="EvalErrorException", msg=NULL)
 {
   matched <- charmatch(name, choices)
-  raiseifnot(length(matched) == 1 && matched != 0 && !is.na(matched), cls=cls, msg=msg)
+  raiseifnot(length(matched) == 1 && matched != 0 && !is.na(matched),
+             cls=cls, msg=msg)
 
   choices[matched]
 }
