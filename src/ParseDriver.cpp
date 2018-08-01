@@ -6,19 +6,16 @@
 // bison play nicely together, and with this driver class
 class ParseDriver;
 typedef void* yyscan_t;
-
 #include "ado.tab.hpp"
 typedef yy::AdoParser::semantic_type YYSTYPE;
-
 #include "lex.yy.hpp"
-
 #include "ParseDriver.hpp"
 
 // ctors
 ParseDriver::ParseDriver(std::string _text, int _debug_level)
-         : cmd_action(Rcpp::Function("identity")),
-           macro_value_accessor(Rcpp::Function("identity")),
-           log_command(Rcpp::Function("identity"))
+    : cmd_action(Rcpp::Function("identity")),
+      macro_value_accessor(Rcpp::Function("identity")),
+      log_command(Rcpp::Function("identity"))
 {
     text = _text;
     ast = (ExprNode *) NULL;
@@ -31,10 +28,10 @@ ParseDriver::ParseDriver(std::string _text, int _debug_level)
 }
 
 ParseDriver::ParseDriver(std::string _text, Rcpp::Function _log_command,
-                     int _debug_level)
-         : cmd_action(Rcpp::Function("identity")),
-           macro_value_accessor(Rcpp::Function("identity")),
-           log_command(Rcpp::Function("identity"))
+                         int _debug_level)
+    : cmd_action(Rcpp::Function("identity")),
+      macro_value_accessor(Rcpp::Function("identity")),
+      log_command(Rcpp::Function("identity"))
 {
     text = _text;
 
@@ -47,12 +44,12 @@ ParseDriver::ParseDriver(std::string _text, Rcpp::Function _log_command,
 }
 
 ParseDriver::ParseDriver(int _callbacks, Rcpp::Function _cmd_action,
-                        Rcpp::Function _macro_value_accessor,
-                        Rcpp::Function _log_command,
-                        std::string _text, int _debug_level, int _echo)
-         : cmd_action(Rcpp::Function("identity")),
-           macro_value_accessor(Rcpp::Function("identity")),
-           log_command(Rcpp::Function("identity"))
+                         Rcpp::Function _macro_value_accessor,
+                         Rcpp::Function _log_command,
+                         std::string _text, int _debug_level, int _echo)
+    : cmd_action(Rcpp::Function("identity")),
+      macro_value_accessor(Rcpp::Function("identity")),
+      log_command(Rcpp::Function("identity"))
 {
     text = _text;
 
@@ -78,6 +75,8 @@ ParseDriver::~ParseDriver()
 int
 ParseDriver::parse()
 {
+    int res;
+
     // Initialize the reentrant scanner
     yyscan_t yyscanner;
     yylex_init(&yyscanner);
@@ -102,8 +101,6 @@ ParseDriver::parse()
     // tempfile, because that works correctly.
     yy_switch_to_buffer(yy_create_buffer(this->tmp, YY_BUF_SIZE, yyscanner), yyscanner);
 
-    int res;
-
     yy::AdoParser parser(*this, yyscanner);
 
     if( (this->debug_level & DEBUG_PARSE_TRACE) != 0 )
@@ -123,33 +120,40 @@ ParseDriver::parse()
 void
 ParseDriver::wrap_cmd_action(Rcpp::List ast)
 {
-  this->write_echo_text();
+    if(this->echo)
+    {
+        std::string txt = trim(this->echo_text_buffer, std::string("\n"));
+        txt = ". " + txt + std::string("\n");
 
-  Rcpp::List ret = cmd_action(ast);
+        log_command(txt);
+        this->echo_text_buffer.clear();
+    }
 
-  int status = Rcpp::as<int>(ret[0]);
-  std::string msg = Rcpp::as<std::string>(ret[1]);
+    Rcpp::List ret = cmd_action(ast);
 
-  // success
-  if(status == 0)
-    return;
+    int status = Rcpp::as<int>(ret[0]);
+    std::string msg = Rcpp::as<std::string>(ret[1]);
 
-  // an error in the semantic analyzer or code generator
-  if(status == 1)
-    throw BadCommandException(msg);
+    // success
+    if(status == 0)
+        return;
 
-  // a runtime error in evaluation or printing
-  if(status == 2)
-    throw EvalErrorException(msg);
+    // an error in the semantic analyzer or code generator
+    if(status == 1)
+        throw BadCommandException(msg);
 
-  if(status == 3)
-    throw ExitRequestedException(msg);
+    // a runtime error in evaluation or printing
+    if(status == 2)
+        throw EvalErrorException(msg);
 
-  if(status == 4)
-    throw ContinueException(msg);
+    if(status == 3)
+        throw ExitRequestedException(msg);
 
-  if(status == 5)
-    throw BreakException(msg);
+    if(status == 4)
+        throw ContinueException(msg);
+
+    if(status == 5)
+        throw BreakException(msg);
 }
 
 std::string
@@ -158,34 +162,12 @@ ParseDriver::get_macro_value(std::string name)
     return Rcpp::as<std::string>(macro_value_accessor(name));
 }
 
-std::string
-ParseDriver::get_macro_value(const char *name)
-{
-    std::string s = std::string(name);
-    return Rcpp::as<std::string>(macro_value_accessor(s));
-}
-
 void
 ParseDriver::push_echo_text(std::string echo_text)
 {
     if(this->echo)
     {
-       this->echo_text_buffer += echo_text;
-    }
-
-    return;
-}
-
-void
-ParseDriver::write_echo_text()
-{
-    if(this->echo)
-    {
-        std::string txt = trim(this->echo_text_buffer, std::string("\n"));
-        txt = ". " + txt + std::string("\n");
-
-        log_command(txt);
-        this->echo_text_buffer.clear();
+        this->echo_text_buffer += echo_text;
     }
 
     return;
@@ -197,8 +179,8 @@ ParseDriver::error(const yy::location& l, const std::string& m)
     if( (this->debug_level & DEBUG_NO_PARSE_ERROR) == 0 )
     {
         const std::string msg = std::string("Error: line ") + std::to_string(l.begin.line) +
-                                std::string(", column ") + std::to_string(l.begin.column) +
-                                std::string(": ") + m;
+            std::string(", column ") + std::to_string(l.begin.column) +
+            std::string(": ") + m;
 
         Rcpp::Rcerr << msg << std::endl;
     }
@@ -217,4 +199,3 @@ ParseDriver::error(const std::string& m)
 
     error_seen = 1;
 }
-

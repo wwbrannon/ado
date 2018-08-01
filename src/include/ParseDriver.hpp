@@ -40,7 +40,6 @@ class ParseDriver
         Rcpp::Function log_command;
 
         std::string get_macro_value(std::string name);
-        std::string get_macro_value(const char *name);
 
         // error-handling functions and state
         int error_seen;
@@ -48,10 +47,8 @@ class ParseDriver
         void error(const std::string& m);
         int debug_level;
 
-        // state and functions for echoing read text
         int echo;
         void push_echo_text(std::string echo_text);
-        void write_echo_text();
 
     private:
         ParseDriver(const ParseDriver& that); // no copy ctor
