@@ -1,5 +1,3 @@
-#FIXME error handling for symboltable
-
 SymbolTable <-
 R6::R6Class("SymbolTable",
     public = list(
@@ -10,43 +8,72 @@ R6::R6Class("SymbolTable",
 
         all_symbols = function()
         {
-            return(ls(private$env))
+            ret <- tryCatch(ls(private$env), error=identity)
+
+            if(inherits(ret, "error"))
+                raiseCondition("Error in symbol table access")
+            else
+                return(ret)
         },
 
         all_values = function()
         {
-            return(as.list(private$env))
+            ret <- tryCatch(as.list(private$env), error=identity)
+
+            if(inherits(ret, "error"))
+                raiseCondition("Error in symbol table access")
+            else
+                return(ret)
         },
 
         symbol_defined = function(sym)
         {
-            return(sym %in% self$all_symbols())
+            ret <- tryCatch(sym %in% self$all_symbols(), error=identity)
+
+            if(inherits(ret, "error"))
+                raiseCondition("Error in symbol table access")
+            else
+                return(ret)
         },
 
         symbol_value = function(sym)
         {
-            return(get(sym, envir=private$env))
+            ret <- tryCatch(get(sym, envir=private$env), error=identity)
+
+            if(inherits(ret, "error"))
+                raiseCondition("Error in symbol table access")
+            else
+                return(ret)
         },
 
         set_symbol = function(sym, val)
         {
-            assign(sym, val, envir=private$env)
+            ret <- tryCatch(assign(sym, val, envir=private$env), error=identity)
 
-            return(invisible(NULL))
+            if(inherits(ret, "error"))
+                raiseCondition("Error in symbol table access")
+            else
+                return(invisible(ret))
         },
 
         unset_symbol = function(sym)
         {
-            rm(sym, envir=private$env)
+            ret <- tryCatch(rm(sym, envir=private$env), error=identity)
 
-            return(invisible(NULL))
+            if(inherits(ret, "error"))
+                raiseCondition("Error in symbol table access")
+            else
+                return(invisible(ret))
         },
 
         set_symbols_from_list = function(lst)
         {
-            list2env(x=lst, envir=private$env)
+            ret <- tryCatch(list2env(x=lst, envir=private$env), error=identity)
 
-            return(invisible(NULL))
+            if(inherits(ret, "error"))
+                raiseCondition("Error in symbol table access")
+            else
+                return(invisible(ret))
         },
 
         symbol_values_from_list = function(lst)
@@ -60,7 +87,12 @@ R6::R6Class("SymbolTable",
                 lst <- as.character(lst)
             }
 
-            return(mget(lst, envir=private$env))
+            ret <- tryCatch(mget(lst, envir=private$env), error=identity)
+
+            if(inherits(ret, "error"))
+                raiseCondition("Error in symbol table access")
+            else
+                return(ret)
         }
 
     ),
@@ -69,3 +101,4 @@ R6::R6Class("SymbolTable",
         env = NULL
     )
 )
+
