@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 
+#include <Rcpp.h>
+
 std::vector<std::string> &
 split(const std::string &s, char delim, std::vector<std::string> &elems) {
     std::stringstream ss(s);
@@ -30,5 +32,16 @@ trim(const std::string& str, const std::string& what)
         return "";
 
     return str.substr(start, len);
+}
+
+void
+raise_condition(const std::string& msg, const std::string& type)
+{
+  Rcpp::List cond;
+  cond["message"] = msg;
+  cond["call"] = R_NilValue;
+  cond.attr("class") = Rcpp::CharacterVector::create(type, "condition");
+  Rcpp::Function stopper("stop");
+  stopper(cond);
 }
 
