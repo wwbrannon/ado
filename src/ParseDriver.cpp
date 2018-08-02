@@ -88,26 +88,18 @@ void
 ParseDriver::wrap_cmd_action(ExprNode *node)
 {
     // don't do anything if a) we've been told not to, or
-    // b) we couldn't parse the input correctly
+    // b) we couldn't parse the input
     if( (this->debug_level & DEBUG_NO_CALLBACKS) != 0 )
         return;
 
     if(this->error_seen)
         return;
 
-    if(this->echo)
-    {
-        std::string txt = trim(this->echo_text_buffer, std::string("\n"));
-        txt = ". " + txt + std::string("\n");
-
-        Rcpp::Function logger = this->context["log_command"];
-        logger(txt);
-
-        this->echo_text_buffer.clear();
-    }
+    std::string txt = this->echo_text_buffer; // copy it
+    this->echo_text_buffer.clear(); // clear even if error in cmd_action
 
     Rcpp::Function cmd_action = this->context["cmd_action"];
-    cmd_action(node->as_R_object());
+    cmd_action(node->as_R_object(), txt, this->echo);
 }
 
 std::string

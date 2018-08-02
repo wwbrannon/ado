@@ -61,61 +61,6 @@ R6::R6Class("AdoInterpreter",
         },
 
         ##
-        ## The main entry point
-        ##
-
-        interpret = function(con = NULL, echo = NULL)
-        {
-            debug_level <- self$setting_value("debug_level")
-
-            if(is.null(echo))
-                # Allow the echo setting to be overridden
-                echo <- self$setting_value("echo")
-
-            while(TRUE)
-            {
-                val <-
-                tryCatch(
-                {
-                    inpt <- read_input(con)
-
-                    if(length(inpt) == 0) # we've hit EOF
-                        raiseCondition(msg="Exit requested",
-                                       cls="ExitRequestedException")
-
-                    cls <- methods::getRefClass("ParseDriver")
-                    obj <- cls$new(inpt, self, debug_level, echo)
-                    obj$parse()
-                },
-                error=identity,
-                AdoException=identity)
-
-                if(inherits(val, "ExitRequestedException"))
-                {
-                    break
-                } else if(inherits(val, "BadCommandException") ||
-                          inherits(val, "EvalErrorException") ||
-                          inherits(val, "ContinueException") ||
-                          inherits(val, "BreakException"))
-                {
-                    self$log_result(cat(val$message %p% "\n\n"))
-
-                    next
-                } else if(inherits(val, "condition"))
-                {
-                    self$log_result(cat(val$message %p% "\n\n"))
-
-                    break
-                } else
-                {
-                    cat("\n")
-                }
-            }
-
-            return(invisible(NULL))
-        },
-
-        ##
         ## Logging methods
         ##
 
@@ -407,11 +352,70 @@ R6::R6Class("AdoInterpreter",
         },
 
         ##
+        ## The main entry point
+        ##
+
+        interpret = function(con = NULL, echo = NULL)
+        {
+            debug_level <- self$setting_value("debug_level")
+
+            if(is.null(echo))
+                # Allow the echo setting to be overridden
+                echo <- self$setting_value("echo")
+
+            while(TRUE)
+            {
+                val <-
+                tryCatch(
+                    {
+                        inpt <- read_input(con)
+
+                        if(length(inpt) == 0) # we've hit EOF
+                            raiseCondition(msg="Exit requested",
+                                           cls="ExitRequestedException")
+
+                        cls <- methods::getRefClass("ParseDriver")
+                        obj <- cls$new(inpt, self, debug_level, echo)
+                        obj$parse()
+                    },
+                    error=identity,
+                    AdoException=identity
+                )
+
+                if(inherits(val, "ExitRequestedException"))
+                {
+                    break
+                } else if(inherits(val, "BadCommandException") ||
+                          inherits(val, "EvalErrorException") ||
+                          inherits(val, "ContinueException") ||
+                          inherits(val, "BreakException"))
+                {
+                    self$log_result(val$message %p% "\n\n")
+
+                    next
+                } else if(inherits(val, "condition"))
+                {
+                    self$log_result(val$message %p% "\n\n")
+
+                    break
+                } else
+                {
+                    cat("\n")
+                }
+            }
+
+            return(invisible(NULL))
+        },
+
+        ##
         ## Callbacks for the frontend
         ##
 
-        cmd_action = function(ast)
+        cmd_action = function(ast, txt, echo)
         {
+            if(echo)
+                self$log_command(". " + trimws(txt) + "\n")
+
             check(ast, self$debug_parse_trace)
 
             ns <- getNamespace(utils::packageName())
@@ -441,9 +445,8 @@ R6::R6Class("AdoInterpreter",
             }
 
             # Return this so that higher layers can check whether it's a condition,
-            # but those layers don't print it. All printing of results happens
-            # above.
-            ret
+            # but those layers don't print it. Result printing happens above.
+            return(ret)
         },
 
         # A callback that allows the lexer to retrieve macro and
