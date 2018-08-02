@@ -42,11 +42,6 @@
 // //                    "%code requires" blocks.
 #line 14 "ado.ypp" // lalr1.cc:377
 
-#if __cplusplus > 199711L
-#define register      // Deprecated in C++11.
-#endif  // #if __cplusplus > 199711L
-
-#include <memory>
 #include "Ado.hpp"
 class ParseDriver;
 typedef void* yyscan_t;
@@ -58,7 +53,7 @@ typedef void* yyscan_t;
 #define R_ACTION(node) driver.wrap_cmd_action(node);
 
 
-#line 62 "ado.tab.hpp" // lalr1.cc:377
+#line 57 "ado.tab.hpp" // lalr1.cc:377
 
 
 # include <cstdlib> // std::abort
@@ -130,7 +125,7 @@ typedef void* yyscan_t;
 
 
 namespace yy {
-#line 134 "ado.tab.hpp" // lalr1.cc:377
+#line 129 "ado.tab.hpp" // lalr1.cc:377
 
 
 
@@ -144,12 +139,12 @@ namespace yy {
     /// Symbol semantic values.
     union semantic_type
     {
-    #line 37 "ado.ypp" // lalr1.cc:377
+    #line 32 "ado.ypp" // lalr1.cc:377
 
     std::string   *str;
     ExprNode      *node;
 
-#line 153 "ado.tab.hpp" // lalr1.cc:377
+#line 148 "ado.tab.hpp" // lalr1.cc:377
     };
 #else
     typedef YYSTYPE semantic_type;
@@ -571,7 +566,7 @@ namespace yy {
 
 
 } // yy
-#line 575 "ado.tab.hpp" // lalr1.cc:377
+#line 570 "ado.tab.hpp" // lalr1.cc:377
 
 
 
