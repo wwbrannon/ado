@@ -65,8 +65,10 @@ R6::R6Class("AdoInterpreter",
 
         interpret = function(con = NULL, echo = NULL)
         {
-            # Allow the echo setting to be overridden
+            debug_level <- self$setting_value("debug_level")
+
             if(is.null(echo))
+                # Allow the echo setting to be overridden
                 echo <- self$setting_value("echo")
 
             while(TRUE)
@@ -76,16 +78,15 @@ R6::R6Class("AdoInterpreter",
                         {
                             inpt <- read_input(con)
 
-                            #We've hit EOF
-                            if(length(inpt) == 0)
+                            if(length(inpt) == 0) # we've hit EOF
                             {
                                 raiseCondition(msg="Exit requested",
                                                c("error", "ExitRequestedException"))
                             }
 
-                            #Send the input to the bison parser, which, after reading
-                            #each command, invokes the cmd processing callback
-                            do_parse_with_callbacks(text=inpt, context=self, echo=echo)
+                            cls <- methods::getRefClass("ParseDriver")
+                            obj <- cls$new(inpt, self, debug_level, echo)
+                            obj$parse()
                         },
                         error = identity)
 
@@ -99,6 +100,7 @@ R6::R6Class("AdoInterpreter",
                               inherits(val, "ContinueException") ||
                               inherits(val, "BreakException"))
                     {
+                        # FIXME use logging
                         cat(paste0(val$message, "\n\n"))
 
                         next
@@ -407,7 +409,7 @@ R6::R6Class("AdoInterpreter",
         {
             return(private$settings$symbol_defined(sym))
         },
-        
+
         ##
         ## Callbacks for the frontend
         ##
