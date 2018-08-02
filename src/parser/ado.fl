@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <stack>
 #include <vector>
+#include <sstream>
 #include <string>
 
 #include <Rcpp.h>
@@ -37,8 +38,13 @@
 #define YYLMAX 65536
 
 // our error handling routine for fatal errors, defined below
-void ado_yy_fatal_error(std::string& msg);
 void ado_yy_fatal_error(const char *msg);
+
+// String utilities only used here
+std::vector<std::string> split(const std::string &s, char delim);
+std::vector<std::string> &split(const std::string &s, char delim,
+                                std::vector<std::string> &elems);
+std::string trim(const std::string& str, const std::string& what = " ");
 
 typedef yy::AdoParser::token token;
 
@@ -2086,14 +2092,48 @@ anova                               {
 %%
 
 void
-ado_yy_fatal_error(std::string& msg)
-{
-    raise_condition(msg, "error");
-}
-
-void
 ado_yy_fatal_error(const char *msg)
 {
-    raise_condition(std::string(msg), "error");
+    Rcpp::List cond;
+    Rcpp::CharacterVector cls;
+
+    cond["message"] = std::string(msg);
+    cond["call"] = R_NilValue;
+    
+    cls = Rcpp::CharacterVector::create("error", "condition");
+    
+    cond.attr("class") = cls;
+    Rcpp::Function stopper("stop");
+    stopper(cond);
+}
+
+std::vector<std::string> &
+split(const std::string &s, char delim, std::vector<std::string> &elems) {
+    std::stringstream ss(s);
+    std::string item;
+    while (std::getline(ss, item, delim)) {
+        elems.push_back(item);
+    }
+    return elems;
+}
+
+std::vector<std::string>
+split(const std::string &s, char delim) {
+    std::vector<std::string> elems;
+    split(s, delim, elems);
+    return elems;
+}
+
+std::string
+trim(const std::string& str, const std::string& what)
+{
+    size_t start = str.find_first_not_of(what);
+    size_t end = str.find_last_not_of(what);
+    size_t len = end - start + 1;
+
+    if (start == std::string::npos)
+        return "";
+
+    return str.substr(start, len);
 }
 

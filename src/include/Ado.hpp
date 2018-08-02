@@ -8,18 +8,6 @@
 #include <Rcpp.h>
 
 /*
- * Utilities
- */
-
-// the ado_yy_fatal_error function uses this function to stop execution
-void raise_condition(const std::string& msg, const std::string& type);
-
-std::vector<std::string> split(const std::string &s, char delim);
-std::vector<std::string> &split(const std::string &s, char delim,
-                                std::vector<std::string> &elems);
-std::string trim(const std::string& str, const std::string& what = " ");
-
-/*
  * The main class of node in the AST the parser generates
  */
 
