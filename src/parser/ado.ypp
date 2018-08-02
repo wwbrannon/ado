@@ -14,7 +14,6 @@
 %code requires
 {
 #include "Ado.hpp"
-class ParseDriver;
 typedef void* yyscan_t;
 
 #define YY_DECL int yylex(yy::AdoParser::semantic_type* yylval_param, \
@@ -38,7 +37,6 @@ typedef void* yyscan_t;
 {
 #include <string>
 #include <Rcpp.h>
-#include "ParseDriver.hpp"
 
 YY_DECL;
 

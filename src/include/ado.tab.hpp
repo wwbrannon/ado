@@ -43,7 +43,6 @@
 #line 15 "ado.ypp" // lalr1.cc:377
 
 #include "Ado.hpp"
-class ParseDriver;
 typedef void* yyscan_t;
 
 #define YY_DECL int yylex(yy::AdoParser::semantic_type* yylval_param, \
@@ -53,7 +52,7 @@ typedef void* yyscan_t;
 #define R_ACTION(node) driver.wrap_cmd_action(node);
 #define RETURN_AST(node) driver.set_ast(node);
 
-#line 57 "ado.tab.hpp" // lalr1.cc:377
+#line 56 "ado.tab.hpp" // lalr1.cc:377
 
 
 # include <cstdlib> // std::abort
@@ -125,7 +124,7 @@ typedef void* yyscan_t;
 
 
 namespace yy {
-#line 129 "ado.tab.hpp" // lalr1.cc:377
+#line 128 "ado.tab.hpp" // lalr1.cc:377
 
 
 
@@ -139,12 +138,12 @@ namespace yy {
     /// Symbol semantic values.
     union semantic_type
     {
-    #line 32 "ado.ypp" // lalr1.cc:377
+    #line 31 "ado.ypp" // lalr1.cc:377
 
     std::string   *str;
     ExprNode      *node;
 
-#line 148 "ado.tab.hpp" // lalr1.cc:377
+#line 147 "ado.tab.hpp" // lalr1.cc:377
     };
 #else
     typedef YYSTYPE semantic_type;
@@ -566,7 +565,7 @@ namespace yy {
 
 
 } // yy
-#line 570 "ado.tab.hpp" // lalr1.cc:377
+#line 569 "ado.tab.hpp" // lalr1.cc:377
 
 
 
