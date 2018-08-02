@@ -385,10 +385,7 @@ R6::R6Class("AdoInterpreter",
                 if(inherits(val, "ExitRequestedException"))
                 {
                     break
-                } else if(inherits(val, "BadCommandException") ||
-                          inherits(val, "EvalErrorException") ||
-                          inherits(val, "ContinueException") ||
-                          inherits(val, "BreakException"))
+                } else if(inherits(val, "AdoException"))
                 {
                     self$log_result(val$message %p% "\n\n")
 
@@ -414,7 +411,7 @@ R6::R6Class("AdoInterpreter",
         cmd_action = function(ast, txt, echo)
         {
             if(echo)
-                self$log_command(". " + trimws(txt) + "\n")
+                self$log_command(". " %p% trimws(txt) %p% "\n")
 
             check(ast, self$debug_parse_trace)
 
