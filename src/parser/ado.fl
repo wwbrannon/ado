@@ -42,8 +42,14 @@ void ado_yy_fatal_error(const char *msg);
 
 typedef yy::AdoParser::token token;
 
-// Should we echo the matched text to Rcpp::Rcout? It's
-// necessary for logging and for printing commands run in do-files.
+// How to get macro expansions from R
+#define R_MACRO_VALUE(name) driver.get_macro_value(name);
+
+// How to report errors to R for further processing
+#define R_ERROR(val) driver.error(*llocp, val);
+
+// Should we echo the matched text? It's necessary for
+// logging and for printing commands run in do-files.
 #define R_ECHO(val) { \
                         std::string tmp = std::string(val); \
                         \
@@ -162,7 +168,7 @@ size_t macro_length = 0;
                                         embed_buf.clear();
                                         yy_pop_state(yyscanner);
                                         
-                                        driver.error(*llocp, "Unclosed embed block");
+                                        R_ERROR("Unclosed embed block");
                                         yyterminate();
                                     }
 }
@@ -234,7 +240,7 @@ size_t macro_length = 0;
                                             yy_pop_state(yyscanner);
                                         } while(yy_top_state(yyscanner) != INITIAL);
                                         
-                                        driver.error(*llocp, "Unclosed local macro");
+                                        R_ERROR("Unclosed local macro");
                                         yyterminate();
                                     }
 
@@ -251,7 +257,7 @@ size_t macro_length = 0;
                                             combined += frame[i];
                                         combined = std::string("_") + combined; // local macros start with a "_"
                                         
-                                        replacement = driver.get_macro_value(combined);
+                                        replacement = R_MACRO_VALUE(combined);
 
                                         if(!macro_stack.empty())
                                         {
@@ -305,7 +311,7 @@ size_t macro_length = 0;
                                             yy_pop_state(yyscanner);
                                         } while(yy_top_state(yyscanner) != INITIAL);
                                         
-                                        driver.error(*llocp, "Invalid character in local macro");
+                                        R_ERROR("Invalid character in local macro");
                                         yyterminate();
                                     }
     [^\\\`\'\n\{\}]+                {
@@ -328,7 +334,7 @@ size_t macro_length = 0;
                                             yy_pop_state(yyscanner);
                                         } while(yy_top_state(yyscanner) != INITIAL);
                                         
-                                        driver.error(*llocp, "Unclosed local macro");
+                                        R_ERROR("Unclosed local macro");
                                         yyterminate();
                                     }
 }
@@ -366,7 +372,7 @@ size_t macro_length = 0;
                                         for(size_t i = 0; i < frame.size(); i++)
                                             combined += frame[i];
                                         
-                                        replacement = driver.get_macro_value(combined);
+                                        replacement = R_MACRO_VALUE(combined);
 
                                         if(!macro_stack.empty())
                                         {
@@ -400,7 +406,7 @@ size_t macro_length = 0;
                                         for(size_t i = 0; i < frame.size(); i++)
                                             combined += frame[i];
                                         
-                                        replacement = driver.get_macro_value(combined);
+                                        replacement = R_MACRO_VALUE(combined);
 
                                         if(!macro_stack.empty())
                                         {
@@ -512,7 +518,7 @@ size_t macro_length = 0;
                                         for(size_t i = 0; i < frame.size(); i++)
                                             combined += frame[i];
                                         
-                                        replacement = driver.get_macro_value(combined);
+                                        replacement = R_MACRO_VALUE(combined);
 
                                         if(!macro_stack.empty())
                                         {
@@ -547,7 +553,7 @@ size_t macro_length = 0;
                                             yy_pop_state(yyscanner);
                                         } while(yy_top_state(yyscanner) != INITIAL);
                                         
-                                        driver.error(*llocp, "Unclosed brace-delimited global macro");
+                                        R_ERROR("Unclosed brace-delimited global macro");
                                         yyterminate();
                                     }
                                     
@@ -560,7 +566,7 @@ size_t macro_length = 0;
                                             yy_pop_state(yyscanner);
                                         } while(yy_top_state(yyscanner) != INITIAL);
                                         
-                                        driver.error(*llocp, "Unclosed brace-delimited global macro");
+                                        R_ERROR("Unclosed brace-delimited global macro");
                                         yyterminate();
                                     }
 }
@@ -690,7 +696,7 @@ size_t macro_length = 0;
                                             yy_pop_state(yyscanner);
                                         } while(yy_top_state(yyscanner) != INITIAL);
                                         
-                                        driver.error(*llocp, "Foreach loop without a statement body");
+                                        R_ERROR("Foreach loop without a statement body");
                                         yyterminate();
                                     }
 }
@@ -717,7 +723,7 @@ size_t macro_length = 0;
                                             yy_pop_state(yyscanner);
                                         } while(yy_top_state(yyscanner) != INITIAL);
                                         
-                                        driver.error(*llocp, "Foreach loop without a statement body");
+                                        R_ERROR("Foreach loop without a statement body");
                                         yyterminate();
                                     }
 }
@@ -803,7 +809,7 @@ size_t macro_length = 0;
                                                 yy_pop_state(yyscanner);
                                             } while(yy_top_state(yyscanner) != INITIAL);
                                             
-                                            driver.error(*llocp, "Invalid statement body for loop");
+                                            R_ERROR("Invalid statement body for loop");
                                             yyterminate();
                                         }
                                     }
@@ -819,7 +825,7 @@ size_t macro_length = 0;
                                             yy_pop_state(yyscanner);
                                         } while(yy_top_state(yyscanner) != INITIAL);
                                         
-                                        driver.error(*llocp, "Loop statement without a closing brace");
+                                        R_ERROR("Loop statement without a closing brace");
                                         yyterminate();
                                     }
 }
@@ -844,7 +850,7 @@ size_t macro_length = 0;
                                             yy_pop_state(yyscanner);
                                         } while(yy_top_state(yyscanner) != INITIAL);
                                         
-                                        driver.error(*llocp, "Unclosed string literal");
+                                        R_ERROR("Unclosed string literal");
                                         yyterminate();
                                     }
 
@@ -870,7 +876,7 @@ size_t macro_length = 0;
                                             yy_pop_state(yyscanner);
                                         } while(yy_top_state(yyscanner) != INITIAL);
                                         
-                                        driver.error(*llocp, "Unclosed string literal");
+                                        R_ERROR("Unclosed string literal");
                                         yyterminate();
                                     }
 }
@@ -900,7 +906,7 @@ size_t macro_length = 0;
                                             yy_pop_state(yyscanner);
                                         } while(yy_top_state(yyscanner) != INITIAL);
                                         
-                                        driver.error(*llocp, "Unclosed compound double quote");
+                                        R_ERROR("Unclosed compound double quote");
                                         yyterminate();
                                     }
 
@@ -926,7 +932,7 @@ size_t macro_length = 0;
                                             yy_pop_state(yyscanner);
                                         } while(yy_top_state(yyscanner) != INITIAL);
                                         
-                                        driver.error(*llocp, "Unclosed compound double quote");
+                                        R_ERROR("Unclosed compound double quote");
                                         yyterminate();
                                     }
 }
@@ -965,7 +971,7 @@ size_t macro_length = 0;
     
     <<EOF>>                         {
                                         yy_pop_state(yyscanner);
-                                        driver.error(*llocp, "Unclosed comment");
+                                        R_ERROR("Unclosed comment");
                                         yyterminate();
                                     }
 }
@@ -1128,7 +1134,7 @@ size_t macro_length = 0;
                                         cdquote_buf.clear();
                                         yy_pop_state(yyscanner);
 
-                                        driver.error(*llocp, "Unclosed compound double quote");
+                                        R_ERROR("Unclosed compound double quote");
                                         yyterminate();
                                     }
 
@@ -1188,7 +1194,7 @@ size_t macro_length = 0;
                                         cdquote_buf.clear();
                                         yy_pop_state(yyscanner);
 
-                                        driver.error(*llocp, "Unclosed compound double quote");
+                                        R_ERROR("Unclosed compound double quote");
                                         yyterminate();
                                     }
 }
@@ -1249,7 +1255,7 @@ size_t macro_length = 0;
                                         string_buf.clear();
                                         yy_pop_state(yyscanner);
 
-                                        driver.error(*llocp, "Unclosed string literal");
+                                        R_ERROR("Unclosed string literal");
                                         yyterminate();
                                     }
 
@@ -1314,7 +1320,7 @@ size_t macro_length = 0;
                                         string_buf.clear();
                                         yy_pop_state(yyscanner);
 
-                                        driver.error(*llocp, "Unclosed string literal");
+                                        R_ERROR("Unclosed string literal");
                                         yyterminate();
                                     }
 }
@@ -2071,8 +2077,8 @@ anova                               {
 
 .                                   {
                                         R_ECHO(yytext);
-                                        
-                                        driver.error(*llocp, "Illegal character"); yyterminate();
+                                        R_ERROR("Illegal character");
+                                        yyterminate();
                                     }
 
 <<EOF>>                             { return token::TOK_END; }

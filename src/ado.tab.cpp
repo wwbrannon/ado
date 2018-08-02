@@ -60,7 +60,7 @@ YY_DECL;
 void
 yy::AdoParser::error(const location_type& l, const std::string& m)
 {
-        driver.error(l, m);
+    driver.error(l, m);
 }
 
 
@@ -1478,7 +1478,7 @@ namespace yy {
     {
         ExprNode *node = new ExprNode("ado_compound_cmd");
         node->appendChild((yystack_[0].value.node));
-        driver.set_ast(node);
+        RETURN_AST(node);
 
         if( !((yystack_[0].value.node)->isDummy()) )
         {
@@ -1501,11 +1501,11 @@ namespace yy {
             node->appendChild((yystack_[0].value.node));
 
             // FIXME? is this a memory leak?
-            driver.set_ast(node);
+            RETURN_AST(node);
             R_ACTION(node);
         } else
         {
-            driver.set_ast((yystack_[1].value.node));
+            RETURN_AST((yystack_[1].value.node));
         }
 
         (yylhs.value.node) = (yystack_[1].value.node);
@@ -1518,9 +1518,9 @@ namespace yy {
     {
         (yystack_[0].value.node); // shut up, bison...
 
-        // we shouldn't need to assign the driver's ast attribute here, because
-        // the earlier production that created the translation_unit will have
-        // done so already (unlike the one-statement error production below)
+        // we shouldn't need to use set_ast here, because the earlier
+        // production that created the translation_unit will have done
+        // so already (unlike the one-statement error production below)
         (yylhs.value.node) = (yystack_[1].value.node);
     }
 #line 1527 "ado.tab.cpp" // lalr1.cc:859
@@ -1533,7 +1533,7 @@ namespace yy {
         
         ExprNode *node = new ExprNode("ado_compound_cmd");
         
-        driver.set_ast(node);
+        RETURN_AST(node);
         (yylhs.value.node) = node;
     }
 #line 1540 "ado.tab.cpp" // lalr1.cc:859

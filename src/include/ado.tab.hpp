@@ -51,7 +51,7 @@ typedef void* yyscan_t;
                           ParseDriver& driver, yyscan_t yyscanner)      
 
 #define R_ACTION(node) driver.wrap_cmd_action(node);
-
+#define RETURN_AST(node) driver.set_ast(node);
 
 #line 57 "ado.tab.hpp" // lalr1.cc:377
 

@@ -22,7 +22,7 @@ typedef void* yyscan_t;
                           ParseDriver& driver, yyscan_t yyscanner)      
 
 #define R_ACTION(node) driver.wrap_cmd_action(node);
-
+#define RETURN_AST(node) driver.set_ast(node);
 }
 
 %param { ParseDriver& driver }
@@ -45,7 +45,7 @@ YY_DECL;
 void
 yy::AdoParser::error(const location_type& l, const std::string& m)
 {
-        driver.error(l, m);
+    driver.error(l, m);
 }
 
 }
@@ -178,7 +178,7 @@ translation_unit:
     {
         ExprNode *node = new ExprNode("ado_compound_cmd");
         node->appendChild($1);
-        driver.set_ast(node);
+        RETURN_AST(node);
 
         if( !($1->isDummy()) )
         {
@@ -197,11 +197,11 @@ translation_unit:
             node->appendChild($2);
 
             // FIXME? is this a memory leak?
-            driver.set_ast(node);
+            RETURN_AST(node);
             R_ACTION(node);
         } else
         {
-            driver.set_ast($1);
+            RETURN_AST($1);
         }
 
         $$ = $1;
@@ -210,9 +210,9 @@ translation_unit:
     {
         $2; // shut up, bison...
 
-        // we shouldn't need to assign the driver's ast attribute here, because
-        // the earlier production that created the translation_unit will have
-        // done so already (unlike the one-statement error production below)
+        // we shouldn't need to use set_ast here, because the earlier
+        // production that created the translation_unit will have done
+        // so already (unlike the one-statement error production below)
         $$ = $1;
     }
     | error
@@ -221,7 +221,7 @@ translation_unit:
         
         ExprNode *node = new ExprNode("ado_compound_cmd");
         
-        driver.set_ast(node);
+        RETURN_AST(node);
         $$ = node;
     }
     ;
