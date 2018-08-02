@@ -6,31 +6,27 @@
 using namespace Rcpp;
 
 // do_parse_with_callbacks
-SEXP do_parse_with_callbacks(std::string text, Rcpp::Function cmd_action, Rcpp::Function macro_value_accessor, Rcpp::Function log_command, int debug_level, int echo);
-RcppExport SEXP _ado_do_parse_with_callbacks(SEXP textSEXP, SEXP cmd_actionSEXP, SEXP macro_value_accessorSEXP, SEXP log_commandSEXP, SEXP debug_levelSEXP, SEXP echoSEXP) {
+SEXP do_parse_with_callbacks(std::string text, Rcpp::Environment context, int debug_level, int echo);
+RcppExport SEXP _ado_do_parse_with_callbacks(SEXP textSEXP, SEXP contextSEXP, SEXP debug_levelSEXP, SEXP echoSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type text(textSEXP);
-    Rcpp::traits::input_parameter< Rcpp::Function >::type cmd_action(cmd_actionSEXP);
-    Rcpp::traits::input_parameter< Rcpp::Function >::type macro_value_accessor(macro_value_accessorSEXP);
-    Rcpp::traits::input_parameter< Rcpp::Function >::type log_command(log_commandSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Environment >::type context(contextSEXP);
     Rcpp::traits::input_parameter< int >::type debug_level(debug_levelSEXP);
     Rcpp::traits::input_parameter< int >::type echo(echoSEXP);
-    rcpp_result_gen = Rcpp::wrap(do_parse_with_callbacks(text, cmd_action, macro_value_accessor, log_command, debug_level, echo));
+    rcpp_result_gen = Rcpp::wrap(do_parse_with_callbacks(text, context, debug_level, echo));
     return rcpp_result_gen;
 END_RCPP
 }
 // do_parse
-Rcpp::List do_parse(std::string text, Rcpp::Function log_command, int debug_level);
-RcppExport SEXP _ado_do_parse(SEXP textSEXP, SEXP log_commandSEXP, SEXP debug_levelSEXP) {
+Rcpp::List do_parse(std::string text);
+RcppExport SEXP _ado_do_parse(SEXP textSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type text(textSEXP);
-    Rcpp::traits::input_parameter< Rcpp::Function >::type log_command(log_commandSEXP);
-    Rcpp::traits::input_parameter< int >::type debug_level(debug_levelSEXP);
-    rcpp_result_gen = Rcpp::wrap(do_parse(text, log_command, debug_level));
+    rcpp_result_gen = Rcpp::wrap(do_parse(text));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -58,12 +54,14 @@ END_RCPP
 }
 
 RcppExport SEXP run_testthat_tests();
+RcppExport SEXP _rcpp_module_boot_class_ParseDriver();
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_ado_do_parse_with_callbacks", (DL_FUNC) &_ado_do_parse_with_callbacks, 6},
-    {"_ado_do_parse", (DL_FUNC) &_ado_do_parse, 3},
+    {"_ado_do_parse_with_callbacks", (DL_FUNC) &_ado_do_parse_with_callbacks, 4},
+    {"_ado_do_parse", (DL_FUNC) &_ado_do_parse, 1},
     {"_ado_parse_accept", (DL_FUNC) &_ado_parse_accept, 1},
     {"_ado_unlockEnvironment", (DL_FUNC) &_ado_unlockEnvironment, 1},
+    {"_rcpp_module_boot_class_ParseDriver", (DL_FUNC) &_rcpp_module_boot_class_ParseDriver, 0},
     {"run_testthat_tests",           (DL_FUNC) &run_testthat_tests,           0},
     {NULL, NULL, 0}
 };

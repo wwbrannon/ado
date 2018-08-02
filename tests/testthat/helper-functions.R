@@ -1,11 +1,4 @@
 ## Functions for parsing tests
-test_parse <-
-function(text, context=NULL, debug_level=0)
-{
-    lc <- function(msg) context$logger$log_command(msg)
-    return(codegen(do_parse(text, log_command=lc, debug_level=debug_level)))
-}
-
 expect_parse_accept <- function(str) eval(bquote(expect_equal(parse_accept(.(str)), 1)))
 expect_parse_reject <- function(str) eval(bquote(expect_equal(parse_accept(.(str)), 0)))
 

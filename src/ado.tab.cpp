@@ -1478,7 +1478,7 @@ namespace yy {
     {
         ExprNode *node = new ExprNode("ado_compound_cmd");
         node->appendChild((yystack_[0].value.node));
-        driver.ast = node;
+        driver.set_ast(node);
 
         if( !((yystack_[0].value.node)->isDummy()) )
         {
@@ -1501,11 +1501,11 @@ namespace yy {
             node->appendChild((yystack_[0].value.node));
 
             // FIXME? is this a memory leak?
-            driver.ast = node;
+            driver.set_ast(node);
             R_ACTION(node);
         } else
         {
-            driver.ast = (yystack_[1].value.node);
+            driver.set_ast((yystack_[1].value.node));
         }
 
         (yylhs.value.node) = (yystack_[1].value.node);
@@ -1533,7 +1533,7 @@ namespace yy {
         
         ExprNode *node = new ExprNode("ado_compound_cmd");
         
-        driver.ast = node;
+        driver.set_ast(node);
         (yylhs.value.node) = node;
     }
 #line 1540 "ado.tab.cpp" // lalr1.cc:859

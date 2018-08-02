@@ -2,14 +2,16 @@
 ## The core interpreter class
 ##
 
+ParseDriver <- setRcppClass("ParseDriver")
+
 #Flags you can bitwise OR to enable debugging features.
 #It's necessary that these have the same numeric values as
 #the macros in the C++ header file.
-
-DEBUG_PARSE_TRACE <- 4
-DEBUG_MATCH_CALL <- 8
-DEBUG_VERBOSE_ERROR <- 16
-DEBUG_NO_PARSE_ERROR <- 32
+DEBUG_PARSE_TRACE       <- 4
+DEBUG_MATCH_CALL        <- 8
+DEBUG_VERBOSE_ERROR     <- 16
+DEBUG_NO_PARSE_ERROR    <- 32
+DEBUG_NO_CALLBACKS      <- 64
 
 AdoInterpreter <-
 R6::R6Class("AdoInterpreter",
@@ -63,8 +65,6 @@ R6::R6Class("AdoInterpreter",
 
         interpret = function(con = NULL, echo = NULL)
         {
-            debug_level <- self$setting_value("debug_level")
-
             # Allow the echo setting to be overridden
             if(is.null(echo))
                 echo <- self$setting_value("echo")
@@ -84,11 +84,8 @@ R6::R6Class("AdoInterpreter",
                             }
 
                             #Send the input to the bison parser, which, after reading
-                            #each command, invokes the process_cmd callback
-                            do_parse_with_callbacks(text=inpt, cmd_action=private$process_cmd,
-                                                    macro_value_accessor=private$macro_value_accessor,
-                                                    log_command=self$log_command, debug_level=debug_level,
-                                                    echo=echo)
+                            #each command, invokes the cmd processing callback
+                            do_parse_with_callbacks(text=inpt, context=self, echo=echo)
                         },
                         error = identity)
 
@@ -409,6 +406,164 @@ R6::R6Class("AdoInterpreter",
         setting_defined = function(sym)
         {
             return(private$settings$symbol_defined(sym))
+        },
+        
+        ##
+        ## Callbacks for the frontend
+        ##
+
+        cmd_action = function(ast)
+        {
+            #Semantic analysis and code generation
+            ret_p1 <-
+            tryCatch(
+                {
+                    check(ast, self$debug_parse_trace)
+                    codegen(ast, context = self)
+                },
+                error=identity,
+                BadCommandException=identity)
+
+            #Raising conditions with custom classes through an intervening
+            #C++ layer is quite tricky, so we're going to return ints and have
+            #the C++ code re-raise the exceptions in a more controllable way
+            if(inherits(ret_p1, "BadCommandException") || inherits(ret_p1, "error"))
+            {
+                return( list(1, ret_p1$message) )
+            }
+
+            #Evaluate the generated calls for their side effects and for printable objects
+            ret_p2 <-
+            tryCatch(
+                {
+                    private$deep_eval(ret_p1, envir=parent.env(environment()),
+                                      enclos=self)
+                },
+                error=identity,
+                EvalErrorException=identity,
+                BadCommandException=identity,
+                ExitRequestedException=identity,
+                ContinueException=identity,
+                BreakException=identity)
+
+            if(inherits(ret_p2, "EvalErrorException") || inherits(ret_p2, "BadCommandException") ||
+               inherits(ret_p2, "error"))
+            {
+                return( list(2, ret_p2$message) )
+            }
+
+            if(inherits(ret_p2, "ExitRequestedException"))
+            {
+                return( list(3, ret_p2$message) )
+            }
+
+            if(inherits(ret_p2, "ContinueException"))
+            {
+                return( list(4, ret_p2$message) )
+            }
+
+            if(inherits(ret_p2, "BreakException"))
+            {
+                return( list(5, ret_p2$message) )
+            }
+
+            return( list(0, "Success") );
+        },
+
+        #Recursive evaluation of the sort of expression object that the parser builds.
+        #This function both evaluates the expressions and sends the results through
+        #the logger.
+        deep_eval = function(expr, envir=parent.frame(),
+                             enclos=if(is.list(envir) || is.pairlist(envir))
+                                 parent.frame()
+                             else
+                                 baseenv())
+        {
+            ret <- list()
+            for(chld in expr)
+            {
+                if(is.expression(chld))
+                    ret[[length(ret)+1]] <- private$deep_eval(chld, envir=envir,
+                                                           enclos=enclos)
+                else
+                {
+                    tmp <- suppressWarnings(withVisible(eval(chld, envir=envir,
+                                                             enclos=enclos)))
+                    ret[[length(ret)+1]] <- tmp$value
+
+                    if(tmp$visible)
+                    {
+                        self$log_result(fmt(tmp$value))
+                    }
+                }
+            }
+
+            # Return this so that higher layers can check whether it's a condition,
+            # but those layers don't print it. All printing of results happens
+            # above.
+            ret
+        },
+
+        # A callback that allows the lexer to retrieve macro and
+        # (e,r,c)-class values
+        macro_accessor = function(name)
+        {
+            #Implement the e() and r() stored results objects, and the c() system
+            #values object. All of the regexes here are a little screwy: when the e(),
+            #r(), or c() appears at the beginning of the macro text, everything after
+            #the close paren is ignored. But this is actually Stata's behavior,
+            #so we'll run with it.
+
+            #The (e,r,c)-classes are ONLY recognized when at the start of a macro text.
+            #The "_?" in the regexes matches them when used in either a local macro
+            #(which the parser expands into a global with a prefixed "_") or a global.
+
+            #One peculiarity of note: for the c-class values, we don't just
+            #check the c-class environment. We also have to looks up certain
+            #c-class values from other places, mainly Sys.* R functions and
+            #other wrappers around system APIs. C-class values not resolved from
+            #such lookups are looked for in the usual symbol table. E-class and
+            #r-class values don't behave this way, and all values are stored in
+            #the corresponding symbol tables.
+
+            #the e() class
+            m <- regexpr("^e_?\\((?<match>.*)\\)", name, perl=TRUE)
+            start <- attr(m, "capture.start")
+            len <- attr(m, "capture.length")
+            if(start != -1)
+            {
+                txt <- substr(name, start, start + len - 1)
+
+                return(self$eclass_value(txt))
+            }
+
+            #the r() class
+            m <- regexpr("^_?r\\((?<match>.*)\\)", name, perl=TRUE)
+            start <- attr(m, "capture.start")
+            len <- attr(m, "capture.length")
+            if(start != -1)
+            {
+                txt <- substr(name, start, start + len - 1)
+
+                return(self$rclass_value(txt))
+            }
+
+            #the c() class
+            m <- regexpr("^_?c\\((?<match>.*)\\)", name, perl=TRUE)
+            start <- attr(m, "capture.start")
+            len <- attr(m, "capture.length")
+            if(start != -1)
+            {
+                txt <- substr(name, start, start + len - 1)
+
+                return(self$cclass_value(txt))
+            }
+
+            #a normal macro
+            if(!(self$macro_defined(name)))
+                return("")
+            else
+                return(self$macro_value(name))
         }
     ),
 
@@ -635,161 +790,6 @@ R6::R6Class("AdoInterpreter",
                 return(eval(qtd[[val]]))
             else
                 raiseCondition("Bad c-class value")
-        },
-
-        # The main command-processing callback function for the parser
-        process_cmd = function(ast)
-        {
-            #Semantic analysis and code generation
-            ret_p1 <-
-            tryCatch(
-                {
-                    check(ast, self$debug_parse_trace)
-                    codegen(ast, context = self)
-                },
-                error=identity,
-                BadCommandException=identity)
-
-            #Raising conditions with custom classes through an intervening
-            #C++ layer is quite tricky, so we're going to return ints and have
-            #the C++ code re-raise the exceptions in a more controllable way
-            if(inherits(ret_p1, "BadCommandException") || inherits(ret_p1, "error"))
-            {
-                return( list(1, ret_p1$message) )
-            }
-
-            #Evaluate the generated calls for their side effects and for printable objects
-            ret_p2 <-
-            tryCatch(
-                {
-                    private$deep_eval(ret_p1, envir=parent.env(environment()),
-                                      enclos=self)
-                },
-                error=identity,
-                EvalErrorException=identity,
-                BadCommandException=identity,
-                ExitRequestedException=identity,
-                ContinueException=identity,
-                BreakException=identity)
-
-            if(inherits(ret_p2, "EvalErrorException") || inherits(ret_p2, "BadCommandException") ||
-               inherits(ret_p2, "error"))
-            {
-                return( list(2, ret_p2$message) )
-            }
-
-            if(inherits(ret_p2, "ExitRequestedException"))
-            {
-                return( list(3, ret_p2$message) )
-            }
-
-            if(inherits(ret_p2, "ContinueException"))
-            {
-                return( list(4, ret_p2$message) )
-            }
-
-            if(inherits(ret_p2, "BreakException"))
-            {
-                return( list(5, ret_p2$message) )
-            }
-
-            return( list(0, "Success") );
-        },
-
-        #Recursive evaluation of the sort of expression object that the parser builds.
-        #This function both evaluates the expressions and sends the results through
-        #the logger.
-        deep_eval = function(expr, envir=parent.frame(),
-                             enclos=if(is.list(envir) || is.pairlist(envir))
-                                 parent.frame()
-                             else
-                                 baseenv())
-        {
-            ret <- list()
-            for(chld in expr)
-            {
-                if(is.expression(chld))
-                    ret[[length(ret)+1]] <- private$deep_eval(chld, envir=envir,
-                                                           enclos=enclos)
-                else
-                {
-                    tmp <- suppressWarnings(withVisible(eval(chld, envir=envir,
-                                                             enclos=enclos)))
-                    ret[[length(ret)+1]] <- tmp$value
-
-                    if(tmp$visible)
-                    {
-                        self$log_result(fmt(tmp$value))
-                    }
-                }
-            }
-
-            # Return this so that higher layers can check whether it's a condition,
-            # but those layers don't print it. All printing of results happens
-            # above.
-            ret
-        },
-
-        # A callback that allows the lexer to retrieve macro and
-        # (e,r,c)-class values
-        macro_value_accessor = function(name)
-        {
-            #Implement the e() and r() stored results objects, and the c() system
-            #values object. All of the regexes here are a little screwy: when the e(),
-            #r(), or c() appears at the beginning of the macro text, everything after
-            #the close paren is ignored. But this is actually Stata's behavior,
-            #so we'll run with it.
-
-            #The (e,r,c)-classes are ONLY recognized when at the start of a macro text.
-            #The "_?" in the regexes matches them when used in either a local macro
-            #(which the parser expands into a global with a prefixed "_") or a global.
-
-            #One peculiarity of note: for the c-class values, we don't just
-            #check the c-class environment. We also have to looks up certain
-            #c-class values from other places, mainly Sys.* R functions and
-            #other wrappers around system APIs. C-class values not resolved from
-            #such lookups are looked for in the usual symbol table. E-class and
-            #r-class values don't behave this way, and all values are stored in
-            #the corresponding symbol tables.
-
-            #the e() class
-            m <- regexpr("^e_?\\((?<match>.*)\\)", name, perl=TRUE)
-            start <- attr(m, "capture.start")
-            len <- attr(m, "capture.length")
-            if(start != -1)
-            {
-                txt <- substr(name, start, start + len - 1)
-
-                return(self$eclass_value(txt))
-            }
-
-            #the r() class
-            m <- regexpr("^_?r\\((?<match>.*)\\)", name, perl=TRUE)
-            start <- attr(m, "capture.start")
-            len <- attr(m, "capture.length")
-            if(start != -1)
-            {
-                txt <- substr(name, start, start + len - 1)
-
-                return(self$rclass_value(txt))
-            }
-
-            #the c() class
-            m <- regexpr("^_?c\\((?<match>.*)\\)", name, perl=TRUE)
-            start <- attr(m, "capture.start")
-            len <- attr(m, "capture.length")
-            if(start != -1)
-            {
-                txt <- substr(name, start, start + len - 1)
-
-                return(self$cclass_value(txt))
-            }
-
-            #a normal macro
-            if(!(self$macro_defined(name)))
-                return("")
-            else
-                return(self$macro_value(name))
         }
     )
 )

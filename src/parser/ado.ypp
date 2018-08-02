@@ -178,7 +178,7 @@ translation_unit:
     {
         ExprNode *node = new ExprNode("ado_compound_cmd");
         node->appendChild($1);
-        driver.ast = node;
+        driver.set_ast(node);
 
         if( !($1->isDummy()) )
         {
@@ -197,11 +197,11 @@ translation_unit:
             node->appendChild($2);
 
             // FIXME? is this a memory leak?
-            driver.ast = node;
+            driver.set_ast(node);
             R_ACTION(node);
         } else
         {
-            driver.ast = $1;
+            driver.set_ast($1);
         }
 
         $$ = $1;
@@ -221,7 +221,7 @@ translation_unit:
         
         ExprNode *node = new ExprNode("ado_compound_cmd");
         
-        driver.ast = node;
+        driver.set_ast(node);
         $$ = node;
     }
     ;

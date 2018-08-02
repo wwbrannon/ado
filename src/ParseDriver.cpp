@@ -11,65 +11,30 @@ typedef yy::AdoParser::semantic_type YYSTYPE;
 #include "lex.yy.hpp"
 #include "ParseDriver.hpp"
 
-// ctors
-ParseDriver::ParseDriver(std::string _text, int _debug_level)
-    : cmd_action(Rcpp::Function("identity")),
-      macro_value_accessor(Rcpp::Function("identity")),
-      log_command(Rcpp::Function("identity"))
+ParseDriver::ParseDriver(std::string text, Rcpp::Environment context,
+                         int debug_level, int echo)
+    : text(text), context(context), debug_level(debug_level), echo(echo)
 {
-    text = _text;
-    ast = (ExprNode *) NULL;
-
-    callbacks = 0;
-
-    debug_level = _debug_level;
-    error_seen = 0;
-    echo = 0;
-}
-
-ParseDriver::ParseDriver(std::string _text, Rcpp::Function _log_command,
-                         int _debug_level)
-    : cmd_action(Rcpp::Function("identity")),
-      macro_value_accessor(Rcpp::Function("identity")),
-      log_command(Rcpp::Function("identity"))
-{
-    text = _text;
-
-    callbacks = 0; // now a little misleading - doesn't include log_command
-    log_command = _log_command;
-
-    debug_level = _debug_level;
-    error_seen = 0;
-    echo = 0;
-}
-
-ParseDriver::ParseDriver(int _callbacks, Rcpp::Function _cmd_action,
-                         Rcpp::Function _macro_value_accessor,
-                         Rcpp::Function _log_command,
-                         std::string _text, int _debug_level, int _echo)
-    : cmd_action(Rcpp::Function("identity")),
-      macro_value_accessor(Rcpp::Function("identity")),
-      log_command(Rcpp::Function("identity"))
-{
-    text = _text;
-
-    ast = (ExprNode *) NULL;
-
-    callbacks = _callbacks;
-    cmd_action = _cmd_action;
-    macro_value_accessor = _macro_value_accessor;
-    log_command = _log_command;
-
-    debug_level = _debug_level;
-    echo = _echo;
     error_seen = 0;
 }
 
-// dtor
 ParseDriver::~ParseDriver()
 {
+    // all the other members still get their destructors called
     if(ast != NULL)
-        delete ast; // all the other members still get their destructors called
+        delete ast;
+}
+
+void
+ParseDriver::set_ast(ExprNode *node)
+{
+    this->ast = node;
+}
+
+Rcpp::List
+ParseDriver::get_ast()
+{
+    return(this->ast->as_R_object());
 }
 
 int
@@ -77,9 +42,9 @@ ParseDriver::parse()
 {
     int res;
     FILE *tmp;
+    yyscan_t yyscanner;
 
     // Initialize the reentrant scanner
-    yyscan_t yyscanner;
     yylex_init(&yyscanner);
 
     if( !(tmp = tmpfile()) )
@@ -100,7 +65,8 @@ ParseDriver::parse()
     // but there's a probable flex bug that overflows yytext on unput()
     // when input comes from yy_scan_string(). Instead, let's create a
     // tempfile, because that works correctly.
-    yy_switch_to_buffer(yy_create_buffer(tmp, YY_BUF_SIZE, yyscanner), yyscanner);
+    yy_switch_to_buffer(yy_create_buffer(tmp, YY_BUF_SIZE, yyscanner),
+                        yyscanner);
 
     yy::AdoParser parser(*this, yyscanner);
 
@@ -121,9 +87,14 @@ ParseDriver::parse()
 void
 ParseDriver::wrap_cmd_action(ExprNode *node)
 {
+    Rcpp::List ret;
+    
     // don't do anything if a) we've been told not to, or
     // b) we couldn't parse the input correctly
-    if(this->callbacks != 1 || this->error_seen)
+    if( (this->debug_level & DEBUG_NO_CALLBACKS) != 0 )
+        return;
+
+    if(this->error_seen)
         return;
 
     if(this->echo)
@@ -131,11 +102,14 @@ ParseDriver::wrap_cmd_action(ExprNode *node)
         std::string txt = trim(this->echo_text_buffer, std::string("\n"));
         txt = ". " + txt + std::string("\n");
 
-        this->log_command(txt);
+        Rcpp::Function log_command = this->context["log_command"];
+        log_command(txt);
+        
         this->echo_text_buffer.clear();
     }
-
-    Rcpp::List ret = cmd_action(node->as_R_object());
+    
+    Rcpp::Function cmd_action = this->context["cmd_action"];
+    ret = cmd_action(node->as_R_object());
 
     int status = Rcpp::as<int>(ret[0]);
     std::string msg = Rcpp::as<std::string>(ret[1]);
@@ -165,18 +139,16 @@ ParseDriver::wrap_cmd_action(ExprNode *node)
 std::string
 ParseDriver::get_macro_value(std::string name)
 {
-    return Rcpp::as<std::string>(macro_value_accessor(name));
+    Rcpp::Function macro_accessor = this->context["macro_accessor"];
+    
+    return Rcpp::as<std::string>(macro_accessor(name));
 }
 
 void
 ParseDriver::push_echo_text(std::string echo_text)
 {
     if(this->echo)
-    {
         this->echo_text_buffer += echo_text;
-    }
-
-    return;
 }
 
 void
@@ -205,3 +177,19 @@ ParseDriver::error(const std::string& m)
 
     error_seen = 1;
 }
+
+using namespace Rcpp;
+RCPP_MODULE(class_ParseDriver) {
+    class_<ParseDriver>("ParseDriver")
+
+    .constructor<std::string,Rcpp::Environment,int,int>()
+
+    .field_readonly("error_seen", &ParseDriver::error_seen)
+    .field_readonly("debug_level", &ParseDriver::debug_level)
+    .field_readonly("echo", &ParseDriver::echo)
+
+    .method("parse", &ParseDriver::parse)
+    .method("get_ast", &ParseDriver::get_ast)
+    ;
+}
+
