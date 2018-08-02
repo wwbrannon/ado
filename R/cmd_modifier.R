@@ -50,7 +50,7 @@ function(context, to_call)
     }
 }
 
-rstata_cmd_xi <-
+ado_cmd_xi <-
 function(context, expression_list=NULL, option_list=NULL, to_call=NULL)
 {
     if(context$debug_match_call)

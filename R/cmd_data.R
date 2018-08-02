@@ -719,14 +719,14 @@ function(context, expression, option_list=NULL)
 
 }
 
-rstata_cmd_egen <-
+ado_cmd_egen <-
 function(context, expression, if_clause=NULL, in_clause=NULL, option_list=NULL)
 {
     if(context$debug_match_call)
         return(match.call())
 }
 
-rstata_cmd_generate <-
+ado_cmd_generate <-
 function(context, expression, if_clause=NULL, in_clause=NULL, option_list=NULL)
 {
     if(context$debug_match_call)
