@@ -56,9 +56,6 @@ class ParseDriver
 
         std::string text;
         std::string echo_text_buffer;
-
-        // See the comments in ado.fl for an explanation of this awful hack
-        FILE *tmp;
 };
 
 #endif /* ADO_DRIVER_H */
