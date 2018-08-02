@@ -5,25 +5,13 @@
 
 using namespace Rcpp;
 
-// unlockEnvironment
-bool unlockEnvironment(Rcpp::Environment env);
-RcppExport SEXP _ado_unlockEnvironment(SEXP envSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::Environment >::type env(envSEXP);
-    rcpp_result_gen = Rcpp::wrap(unlockEnvironment(env));
-    return rcpp_result_gen;
-END_RCPP
-}
 
 RcppExport SEXP run_testthat_tests();
 RcppExport SEXP _rcpp_module_boot_class_ParseDriver();
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_ado_unlockEnvironment", (DL_FUNC) &_ado_unlockEnvironment, 1},
     {"_rcpp_module_boot_class_ParseDriver", (DL_FUNC) &_rcpp_module_boot_class_ParseDriver, 0},
-    {"run_testthat_tests",     (DL_FUNC) &run_testthat_tests,     0},
+    {"run_testthat_tests", (DL_FUNC) &run_testthat_tests, 0},
     {NULL, NULL, 0}
 };
 

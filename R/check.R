@@ -149,7 +149,7 @@ function(children)
 ##
 
 check <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #General checks all AST nodes should pass
     raiseifnot(node %is% "ado_ast_node",
@@ -165,22 +165,22 @@ function(node, debug_level=0)
                    msg=if(debug_level) NULL else "Malformed command object")
 
         for(chld in node$children)
-            check(chld, debug_level)
+            check(chld, context, debug_level)
     }
 
     #Check this node in a way appropriate to its type
-    verifynode(node, debug_level)
+    verifynode(node, context, debug_level)
 }
 
 verifynode <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
     UseMethod("verifynode")
 
 ##############################################################################
 ## Literals
 #' @export
 verifynode.ado_literal <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Children - length, names, types
     raiseifnot(length(node$children) == 0,
@@ -197,7 +197,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_ident <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     raiseifnot(length(grep("^[_A-Za-z][A-Za-z0-9_]*$", node$data["value"])) > 0,
                msg=if(debug_level) NULL else "Invalid identifier")
@@ -209,7 +209,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_number <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     if(node$data["value"] == ".")
     {
@@ -226,7 +226,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_string_literal <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     val <- as.character(node$data["value"])
     raiseifnot(!is.na(val) && !is.null(val),
@@ -237,7 +237,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_datetime <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     val <- as.POSIXct(strptime(node$data["value"], format="%d%b%Y %H:%M:%S"))
     raiseifnot(!is.na(val) && !is.null(val),
@@ -248,7 +248,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_format_spec <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     raiseifnot(valid_format_spec(node$data["value"]),
                msg=if(debug_level) NULL else "Invalid format specifier")
@@ -260,7 +260,7 @@ function(node, debug_level=0)
 ## Loops
 #' @export
 verifynode.ado_loop <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) == 0,
@@ -281,7 +281,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_foreach <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     raiseifnot(length(node$children) == 3,
                msg=if(debug_level) NULL else "Malformed foreach statement")
@@ -320,7 +320,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_forvalues <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     raiseifnot(length(node$children) %in% c(4,5),
                msg=if(debug_level) NULL else "Malformed forvalues statement")
@@ -353,7 +353,7 @@ function(node, debug_level=0)
 ## Command parts
 #' @export
 verifynode.ado_if_clause <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) == 0,
@@ -377,7 +377,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_in_clause <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) == 0,
@@ -425,7 +425,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_using_clause <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) == 0,
@@ -450,7 +450,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_weight_clause <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) == 0,
@@ -480,7 +480,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_option_list <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) == 0,
@@ -497,7 +497,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_option <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) == 0,
@@ -524,7 +524,7 @@ function(node, debug_level=0)
 ## Compound and atomic commands
 #' @export
 verifynode.ado_compound_cmd <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) == 0,
@@ -548,7 +548,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_if_cmd <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) == 0,
@@ -571,7 +571,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_modifier_cmd_list <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) == 0,
@@ -608,7 +608,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_embedded_code <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) == 2,
@@ -633,7 +633,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_cmd <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Children - length, names, types
     raiseifnot(length(node$children) > 0,
@@ -654,7 +654,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_modifier_cmd <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) == 0,
@@ -669,8 +669,8 @@ function(node, debug_level=0)
                msg=if(debug_level) NULL else "Malformed prefix command object")
 
     func <- paste0("ado_cmd_", node$children$verb$data["value"])
-    func <- unabbreviateCommand(func, cls="BadCommandException",
-                                msg=if(debug_level) NULL else "Cannot unabbreviate prefix command")
+    func <- context$cmd_unabbreviate(func, cls="BadCommandException",
+                                     msg=if(debug_level) NULL else "Cannot unabbreviate prefix command")
 
     raiseifnot(exists(func), msg=if(debug_level) NULL else "Prefix command not found")
 
@@ -679,7 +679,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_general_cmd <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) == 0,
@@ -687,8 +687,8 @@ function(node, debug_level=0)
 
     #Children - length, names, types
     func <- paste0("ado_cmd_", node$children$verb$data["value"])
-    func <- unabbreviateCommand(func, cls="BadCommandException",
-                                msg=if(debug_level) NULL else "Cannot unabbreviate command")
+    func <- context$cmd_unabbreviate(func, cls="BadCommandException",
+                                     msg=if(debug_level) NULL else "Cannot unabbreviate command")
     raiseifnot(exists(func), msg=if(debug_level) NULL else "Command not found")
 
     args <-
@@ -738,7 +738,7 @@ function(node, debug_level=0)
 ## Lists of expressions
 #' @export
 verifynode.ado_expression_list <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) == 0,
@@ -757,7 +757,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_argument_expression_list <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) == 0,
@@ -787,7 +787,7 @@ function(node, debug_level=0)
 ## Expression branch nodes - literals are above
 #' @export
 verifynode.ado_expression <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) > 0,
@@ -800,7 +800,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_type_expression <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) == 1,
@@ -826,7 +826,7 @@ function(node, debug_level=0)
 ## Tightly binding factor operators
 #' @export
 verifynode.ado_factor_expression <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Children - length, names, types
     raiseifnot(length(node$children) == 1,
@@ -842,7 +842,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_continuous_expression <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) == 1,
@@ -853,7 +853,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_indicator_expression <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(node$data["verb"] == "i.",
@@ -881,7 +881,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_omit_expression <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) > 1,
@@ -909,7 +909,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_baseline_expression <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) == 2,
@@ -929,7 +929,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_cross_expression <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) == 1,
@@ -957,7 +957,7 @@ function(node, debug_level=0)
 ## Arithmetic expressions
 #' @export
 verifynode.ado_power_expression <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) == 1,
@@ -986,7 +986,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_unary_expression <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) == 1,
@@ -1010,7 +1010,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_multiplication_expression <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) == 1,
@@ -1039,7 +1039,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_additive_expression <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) == 1,
@@ -1069,7 +1069,7 @@ function(node, debug_level=0)
 ## Logical, relational and other expressions
 #' @export
 verifynode.ado_equality_expression <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) == 1,
@@ -1118,7 +1118,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_logical_expression <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) == 1,
@@ -1167,7 +1167,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_relational_expression <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) == 1,
@@ -1216,7 +1216,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_postfix_expression <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) == 1,
@@ -1254,7 +1254,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_assignment_expression <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) == 1,
@@ -1295,7 +1295,7 @@ function(node, debug_level=0)
 ##the parser will generate these classes is if it's seen an ANOVA token.
 #' @export
 verifynode.ado_anova_nest_expression <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) == 1,
@@ -1318,7 +1318,7 @@ function(node, debug_level=0)
 
 #' @export
 verifynode.ado_anova_error_expression <-
-function(node, debug_level=0)
+function(node, context, debug_level=0)
 {
     #Data members - length, names, values
     raiseifnot(length(node$data) == 1,

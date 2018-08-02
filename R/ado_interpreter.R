@@ -37,6 +37,9 @@ R6::R6Class("AdoInterpreter",
             private$settings <- SymbolTable$new()
             private$macro_syms <- SymbolTable$new()
 
+            ns <- getNamespace(utils::packageName())
+            private$cmd = SymbolTable$new(parent=ns)
+
             ## Populate the objects
             defaults <- private$cclass_value_defaults()
             for(nm in names(defaults))
@@ -352,6 +355,62 @@ R6::R6Class("AdoInterpreter",
         },
 
         ##
+        ## Methods for adding and removing user-defined commands
+        ## FIXME how to do this? the names suggest they refer to all cmds,
+        ## which currently they don't; should symboltable methods have a
+        ## "parent" arg?
+        ##
+
+        cmd_all = function()
+        {
+            return(private$cmd$all_values(parent=TRUE))
+        },
+
+        cmd_names = function()
+        {
+            return(private$cmd$all_symbols(parent=TRUE))
+        },
+
+        cmd_set = function(sym, val)
+        {
+            raiseif(sym %in% ls(envir=parent.env(private$cmd$env)),
+                    msg="User-defined cmd must not shadow built-in cmd name")
+
+            raiseifnot(substr(sym, 1, 8) == 'ado_cmd_',
+                       msg="User-defined cmd name must have ado_cmd_ prefix")
+
+            # FIXME better validation of val
+            raiseifnot(is.function(val),
+                       msg="User-defined cmd must be function")
+
+            return(private$cmd$set_symbol(sym, val))
+        },
+
+        cmd_unset = function(sym)
+        {
+            return(private$cmd$unset_symbol(sym))
+        },
+
+        cmd_value = function(sym)
+        {
+            return(private$cmd$symbol_value(sym, parent=TRUE))
+        },
+
+        cmd_defined = function(sym)
+        {
+            return(private$cmd$symbol_defined(sym, parent=TRUE))
+        },
+
+        cmd_unabbreviate = function(name, cls="error", msg=NULL)
+        {
+            #FIXME
+            funcs <- self$cmd_names()
+            funcs <- funcs[grep("^ado_cmd_", funcs)]
+
+            return(unabbreviateName(name, funcs, cls=cls, msg=msg))
+        },
+
+        ##
         ## The main entry point
         ##
 
@@ -413,10 +472,9 @@ R6::R6Class("AdoInterpreter",
             if(echo)
                 self$log_command(". " %p% trimws(txt) %p% "\n")
 
-            check(ast, self$debug_parse_trace)
-
-            ns <- getNamespace(utils::packageName())
-            self$deep_eval(codegen(ast, context=self), envir=ns)
+            check(ast, context=self, self$debug_parse_trace)
+            self$deep_eval(codegen(ast, context=self),
+                           envir=private$usercmd$env) # inherits namespace:ado
         },
 
         #Recursive evaluation of the sort of expression object that the parser builds.
@@ -536,10 +594,6 @@ R6::R6Class("AdoInterpreter",
     ),
 
     private = list(
-        # Several things here: the macro substitution symbol
-        # tables, a lookup table (as an environment) for settings, and the
-        # (e,r,c)-class value symbol tables (which are also environments).
-
         logger = NULL,
 
         rclass = NULL,
@@ -547,6 +601,8 @@ R6::R6Class("AdoInterpreter",
         eclass = NULL,
         settings = NULL,
         macro_syms = NULL,
+
+        cmd = NULL,
 
         default_webuse_url = function()
         {

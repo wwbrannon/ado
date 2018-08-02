@@ -64,24 +64,13 @@ function(context, expression, option_list=NULL)
         nm <- as.character(expression)
     }
 
-    # possible FIXME? should we allow overriding objects that ship with ado?
-
     #Get the function from the environment
     src <- as.character(expression)
     fn <- tryCatch(get(src, envir=env, mode="function", inherits=FALSE),
                    error=function(e) e)
     raiseif(inherits(fn, "error"), msg="No such function")
 
-    #Unlock the package environment, make the binding, and relock
-    pkenv <- getNamespace('ado')
-    if(environmentIsLocked(pkenv))
-    {
-        unlockEnvironment(pkenv)
-    }
-
-    environment(fn) <- pkenv
-    assign(paste0('ado_cmd_', nm), fn, pkenv) #need this prefix for codegen
-    lockEnvironment(pkenv)
+    context$cmd_set('ado_cmd_' %p% nm, fn)
 
     return(invisible(NULL))
 }

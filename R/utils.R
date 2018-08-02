@@ -281,17 +281,6 @@ function(name, choices, cls="EvalErrorException", msg=NULL)
   choices[matched]
 }
 
-#For unabbreviating command names against the list of all the
-#ado_* command-implementing functions.
-unabbreviateCommand <-
-function(name, cls="error", msg=NULL)
-{
-  funcs <- ls(envir=parent.env(environment()))
-  funcs <- funcs[grep("^ado_cmd_", funcs)]
-
-  unabbreviateName(name, funcs, cls=cls, msg=msg)
-}
-
 #FIXME - this doesn't handle large parts of stata formula syntax yet
 #Those commands which take an exp list and interpret it as an R formula
 #can call this function to convert it to one. If the dv flag is TRUE,

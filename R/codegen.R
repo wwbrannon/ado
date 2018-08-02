@@ -205,7 +205,7 @@ codegen.ado_general_cmd <-
 function(node, context)
 {
     name <- as.character(codegen(node$children$verb, context=context))
-    name <- unabbreviateCommand(paste0("ado_cmd_", name))
+    name <- context$cmd_unabbreviate(paste0("ado_cmd_", name)) # validated in check()
     verb <- get(name, mode="function")
 
     args <- node$children
@@ -238,7 +238,7 @@ codegen.ado_modifier_cmd <-
 function(node, context)
 {
     name <- as.character(codegen(node$children$verb, context=context))
-    name <- unabbreviateCommand(paste0("ado_cmd_", name))
+    name <- context$cmd_unabbreviate(paste0("ado_cmd_", name)) # validated in check()
     verb <- get(name, mode="function")
 
     lst <- list(as.symbol(name), context=context)
