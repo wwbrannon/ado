@@ -34,7 +34,7 @@ class ParseDriver
         std::string get_macro_value(std::string name);
         void push_echo_text(std::string echo_text);
 
-        void error(const yy::location& l, const std::string& m);
+        void error(int lineno, int col, const std::string& m);
         void error(const std::string& m);
 
     private:

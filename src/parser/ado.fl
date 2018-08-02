@@ -52,7 +52,7 @@ typedef yy::AdoParser::token token;
 #define R_MACRO_VALUE(name) driver.get_macro_value(name);
 
 // How to report errors to R for further processing
-#define R_ERROR(val) driver.error(*llocp, val);
+#define R_ERROR(val) driver.error(llocp->begin.line, llocp->begin.column, val);
 
 // Should we echo the matched text? It's necessary for
 // logging and for printing commands run in do-files.

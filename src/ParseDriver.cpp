@@ -124,10 +124,10 @@ ParseDriver::push_echo_text(std::string echo_text)
 }
 
 void
-ParseDriver::error(const yy::location& l, const std::string& m)
+ParseDriver::error(int lineno, int col, const std::string& m)
 {
-    std::string msg = std::to_string(l.begin.line) + std::string(":") + \
-                      std::to_string(l.begin.column) + std::string(": ") + m;
+    std::string msg = std::to_string(lineno) + std::string(":") + \
+                      std::to_string(col) + std::string(": ") + m;
 
     this->error(msg);
 }

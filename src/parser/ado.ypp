@@ -45,7 +45,7 @@ YY_DECL;
 void
 yy::AdoParser::error(const location_type& l, const std::string& m)
 {
-    driver.error(l, m);
+    driver.error(l.begin.line, l.begin.column, m);
 }
 
 }
