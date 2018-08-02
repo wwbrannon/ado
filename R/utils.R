@@ -137,7 +137,7 @@ function(str)
 raiseCondition <-
 function(msg, cls="BadCommandException")
 {
-    cls <- c("AdoCondition", cls)
+    cls <- unique(c("AdoException", cls))
 
     cond <- simpleCondition(msg)
     class(cond) <- c(class(cond), cls)

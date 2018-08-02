@@ -87,8 +87,6 @@ ParseDriver::parse()
 void
 ParseDriver::wrap_cmd_action(ExprNode *node)
 {
-    Rcpp::List ret;
-    
     // don't do anything if a) we've been told not to, or
     // b) we couldn't parse the input correctly
     if( (this->debug_level & DEBUG_NO_CALLBACKS) != 0 )
@@ -104,36 +102,12 @@ ParseDriver::wrap_cmd_action(ExprNode *node)
 
         Rcpp::Function logger = this->context["log_command"];
         logger(txt);
-        
+
         this->echo_text_buffer.clear();
     }
-    
+
     Rcpp::Function cmd_action = this->context["cmd_action"];
-    ret = cmd_action(node->as_R_object());
-
-    int status = Rcpp::as<int>(ret[0]);
-    std::string msg = Rcpp::as<std::string>(ret[1]);
-
-    // success
-    if(status == 0)
-        return;
-
-    // an error in the semantic analyzer or code generator
-    if(status == 1)
-        throw BadCommandException(msg);
-
-    // a runtime error in evaluation or printing
-    if(status == 2)
-        throw EvalErrorException(msg);
-
-    if(status == 3)
-        throw ExitRequestedException(msg);
-
-    if(status == 4)
-        throw ContinueException(msg);
-
-    if(status == 5)
-        throw BreakException(msg);
+    cmd_action(node->as_R_object());
 }
 
 std::string
@@ -170,7 +144,7 @@ void
 ParseDriver::error(const std::string& m)
 {
     this->error_seen = 1;
-    
+
     if( (this->debug_level & DEBUG_NO_PARSE_ERROR) == 0 )
     {
         std::string msg = std::string("Error: ") + m;

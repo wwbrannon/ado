@@ -2,6 +2,7 @@
 ## The core interpreter class
 ##
 
+#' @importFrom methods new
 ParseDriver <- setRcppClass("ParseDriver")
 
 #Flags you can bitwise OR to enable debugging features.
@@ -74,42 +75,37 @@ R6::R6Class("AdoInterpreter",
             while(TRUE)
             {
                 val <-
-                    tryCatch(
-                        {
-                            inpt <- read_input(con)
-
-                            if(length(inpt) == 0) # we've hit EOF
-                            {
-                                raiseCondition(msg="Exit requested",
-                                               c("error", "ExitRequestedException"))
-                            }
-
-                            cls <- methods::getRefClass("ParseDriver")
-                            obj <- cls$new(inpt, self, debug_level, echo)
-                            obj$parse()
-                        },
-                        error = identity)
-
-                if(inherits(val, "error"))
+                tryCatch(
                 {
-                    if(inherits(val, "ExitRequestedException"))
-                    {
-                        break
-                    } else if(inherits(val, "BadCommandException") ||
-                              inherits(val, "EvalErrorException") ||
-                              inherits(val, "ContinueException") ||
-                              inherits(val, "BreakException"))
-                    {
-                        # FIXME use logging
-                        cat(paste0(val$message, "\n\n"))
+                    inpt <- read_input(con)
 
-                        next
-                    } else
-                    {
-                        cat(paste0(val$message, "\n\n"))
+                    if(length(inpt) == 0) # we've hit EOF
+                        raiseCondition(msg="Exit requested",
+                                       cls="ExitRequestedException")
 
-                        break
-                    }
+                    cls <- methods::getRefClass("ParseDriver")
+                    obj <- cls$new(inpt, self, debug_level, echo)
+                    obj$parse()
+                },
+                error=identity,
+                AdoException=identity)
+
+                if(inherits(val, "ExitRequestedException"))
+                {
+                    break
+                } else if(inherits(val, "BadCommandException") ||
+                          inherits(val, "EvalErrorException") ||
+                          inherits(val, "ContinueException") ||
+                          inherits(val, "BreakException"))
+                {
+                    self$log_result(cat(val$message %p% "\n\n"))
+
+                    next
+                } else if(inherits(val, "condition"))
+                {
+                    self$log_result(cat(val$message %p% "\n\n"))
+
+                    break
                 } else
                 {
                     cat("\n")
@@ -416,60 +412,10 @@ R6::R6Class("AdoInterpreter",
 
         cmd_action = function(ast)
         {
-            #Semantic analysis and code generation
-            ret_p1 <-
-            tryCatch(
-                {
-                    check(ast, self$debug_parse_trace)
-                    codegen(ast, context = self)
-                },
-                error=identity,
-                BadCommandException=identity)
+            check(ast, self$debug_parse_trace)
 
-            #Raising conditions with custom classes through an intervening
-            #C++ layer is quite tricky, so we're going to return ints and have
-            #the C++ code re-raise the exceptions in a more controllable way
-            if(inherits(ret_p1, "BadCommandException") || inherits(ret_p1, "error"))
-            {
-                return( list(1, ret_p1$message) )
-            }
-
-            #Evaluate the generated calls for their side effects and for printable objects
-            ret_p2 <-
-            tryCatch(
-                {
-                    ns <- getNamespace(utils::packageName())
-                    self$deep_eval(ret_p1, envir=ns)
-                },
-                error=identity,
-                EvalErrorException=identity,
-                BadCommandException=identity,
-                ExitRequestedException=identity,
-                ContinueException=identity,
-                BreakException=identity)
-
-            if(inherits(ret_p2, "EvalErrorException") || inherits(ret_p2, "BadCommandException") ||
-               inherits(ret_p2, "error"))
-            {
-                return( list(2, ret_p2$message) )
-            }
-
-            if(inherits(ret_p2, "ExitRequestedException"))
-            {
-                return( list(3, ret_p2$message) )
-            }
-
-            if(inherits(ret_p2, "ContinueException"))
-            {
-                return( list(4, ret_p2$message) )
-            }
-
-            if(inherits(ret_p2, "BreakException"))
-            {
-                return( list(5, ret_p2$message) )
-            }
-
-            return( list(0, "Success") );
+            ns <- getNamespace(utils::packageName())
+            self$deep_eval(codegen(ast, context=self), envir=ns)
         },
 
         #Recursive evaluation of the sort of expression object that the parser builds.
