@@ -6,7 +6,7 @@ function(str)
     echo <- 0
 
     cls <- methods::getRefClass("ParseDriver")
-    obj <- cls$new(inpt, emptyenv(), debug_level, echo)
+    obj <- cls$new(str, emptyenv(), debug_level, echo)
 
     ret <- obj$parse()
 
@@ -33,7 +33,7 @@ function(str)
     echo <- 0
 
     cls <- methods::getRefClass("ParseDriver")
-    obj <- cls$new(inpt, emptyenv(), debug_level, echo)
+    obj <- cls$new(str, emptyenv(), debug_level, echo)
 
     ret <- obj$parse()
 
