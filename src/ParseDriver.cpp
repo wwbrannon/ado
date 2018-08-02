@@ -102,8 +102,8 @@ ParseDriver::wrap_cmd_action(ExprNode *node)
         std::string txt = trim(this->echo_text_buffer, std::string("\n"));
         txt = ". " + txt + std::string("\n");
 
-        Rcpp::Function log_command = this->context["log_command"];
-        log_command(txt);
+        Rcpp::Function logger = this->context["log_command"];
+        logger(txt);
         
         this->echo_text_buffer.clear();
     }
@@ -139,9 +139,15 @@ ParseDriver::wrap_cmd_action(ExprNode *node)
 std::string
 ParseDriver::get_macro_value(std::string name)
 {
-    Rcpp::Function macro_accessor = this->context["macro_accessor"];
-    
-    return Rcpp::as<std::string>(macro_accessor(name));
+    if( (this->debug_level & DEBUG_NO_CALLBACKS) == 0 )
+    {
+        Rcpp::Function macro_accessor = this->context["macro_accessor"];
+        return Rcpp::as<std::string>(macro_accessor(name));
+    } else
+    {
+        Rcpp::Rcerr << "Returning empty macro for debug" << std::endl;
+        return std::string("");
+    }
 }
 
 void
@@ -154,28 +160,29 @@ ParseDriver::push_echo_text(std::string echo_text)
 void
 ParseDriver::error(const yy::location& l, const std::string& m)
 {
-    if( (this->debug_level & DEBUG_NO_PARSE_ERROR) == 0 )
-    {
-        const std::string msg = std::string("Error: line ") + std::to_string(l.begin.line) +
-            std::string(", column ") + std::to_string(l.begin.column) +
-            std::string(": ") + m;
+    std::string msg = std::to_string(l.begin.line) + std::string(":") + \
+                      std::to_string(l.begin.column) + std::string(": ") + m;
 
-        Rcpp::Rcerr << msg << std::endl;
-    }
-    error_seen = 1;
+    this->error(msg);
 }
 
 void
 ParseDriver::error(const std::string& m)
 {
+    this->error_seen = 1;
+    
     if( (this->debug_level & DEBUG_NO_PARSE_ERROR) == 0 )
     {
-        const std::string msg = std::string("Error: line unknown, column unknown: ") + m;
+        std::string msg = std::string("Error: ") + m;
 
-        Rcpp::Rcerr << msg << std::endl;
+        if( (this->debug_level & DEBUG_NO_CALLBACKS) == 0 )
+        {
+            Rcpp::Function logger = this->context["log_result"];
+            logger(msg);
+        }
+        else
+            Rcpp::Rcerr << msg << std::endl;
     }
-
-    error_seen = 1;
 }
 
 using namespace Rcpp;
