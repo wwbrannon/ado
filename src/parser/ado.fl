@@ -3,14 +3,6 @@
 %option stack
 
 %{ /* -*- C++ -*- */
-#if __cplusplus > 199711L
-#define register      // Deprecated in C++11.
-#endif  // #if __cplusplus > 199711L
-
-#include <cstring>
-#include <climits>
-#include <cstdlib>
-
 #include <algorithm>
 #include <stack>
 #include <vector>
