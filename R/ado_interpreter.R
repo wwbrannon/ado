@@ -36,9 +36,10 @@ R6::R6Class("AdoInterpreter",
             private$cclass <- SymbolTable$new()
             private$settings <- SymbolTable$new()
             private$macro_syms <- SymbolTable$new()
-
+            private$usercmd <- SymbolTable$new()
+            
             ns <- getNamespace(utils::packageName())
-            private$cmd = SymbolTable$new(parent=ns)
+            private$defaultcmd <- SymbolTable$new(env=ns)
 
             ## Populate the objects
             defaults <- private$cclass_value_defaults()
@@ -361,51 +362,54 @@ R6::R6Class("AdoInterpreter",
         ## "parent" arg?
         ##
 
-        cmd_all = function()
+        usercmd_all = function()
         {
-            return(private$cmd$all_values(parent=TRUE))
+            return(private$usercmd$all_values())
         },
 
-        cmd_names = function()
+        usercmd_names = function()
         {
-            return(private$cmd$all_symbols(parent=TRUE))
+            return(private$usercmd$all_symbols())
         },
 
-        cmd_set = function(sym, val)
+        usercmd_set = function(sym, val)
         {
-            raiseif(sym %in% ls(envir=parent.env(private$cmd$env)),
-                    msg="User-defined cmd must not shadow built-in cmd name")
-
             raiseifnot(substr(sym, 1, 8) == 'ado_cmd_',
                        msg="User-defined cmd name must have ado_cmd_ prefix")
+
+            raiseif(sym %in% private$defaultcmd$all_symbols(),
+                    msg="User-defined cmd must not shadow built-in cmd name")
 
             # FIXME better validation of val
             raiseifnot(is.function(val),
                        msg="User-defined cmd must be function")
 
-            return(private$cmd$set_symbol(sym, val))
+            return(private$usercmd$set_symbol(sym, val))
         },
 
-        cmd_unset = function(sym)
+        usercmd_unset = function(sym)
         {
-            return(private$cmd$unset_symbol(sym))
+            return(private$usercmd$unset_symbol(sym))
         },
 
-        cmd_value = function(sym)
+        usercmd_value = function(sym)
         {
-            return(private$cmd$symbol_value(sym, parent=TRUE))
+            return(private$usercmd$symbol_value(sym))
         },
 
-        cmd_defined = function(sym)
+        usercmd_defined = function(sym)
         {
-            return(private$cmd$symbol_defined(sym, parent=TRUE))
+            return(private$usercmd$symbol_defined(sym))
         },
+
+        ##
+        ## Other utilities
+        ##
 
         cmd_unabbreviate = function(name, cls="error", msg=NULL)
         {
-            #FIXME
-            funcs <- self$cmd_names()
-            funcs <- funcs[grep("^ado_cmd_", funcs)]
+            funcs <- funcs[grep("^ado_cmd_", private$defaultcmd$all_symbols())]
+            funcs <- c(funcs, self$usercmd_names())
 
             return(unabbreviateName(name, funcs, cls=cls, msg=msg))
         },
@@ -473,23 +477,25 @@ R6::R6Class("AdoInterpreter",
                 self$log_command(". " %p% trimws(txt) %p% "\n")
 
             check(ast, context=self, self$debug_parse_trace)
-            self$deep_eval(codegen(ast, context=self),
-                           envir=private$usercmd$env) # inherits namespace:ado
+            self$deep_eval(codegen(ast, context=self))
         },
 
         #Recursive evaluation of the sort of expression object that the parser builds.
         #This function both evaluates the expressions and sends the results through
         #the logger.
-        deep_eval = function(expr, envir)
+        deep_eval = function(expr)
         {
+            envir <- private$usercmd$env
+            enclos <- private$defaultcmd$env
+
             ret <- list()
             for(chld in expr)
             {
                 if(is.expression(chld))
-                    ret[[length(ret)+1]] <- self$deep_eval(chld, envir=envir)
+                    ret[[length(ret)+1]] <- self$deep_eval(chld, envir=envir, enclos=enclos)
                 else
                 {
-                    tmp <- suppressWarnings(withVisible(eval(chld, envir=envir)))
+                    tmp <- suppressWarnings(withVisible(eval(chld, envir=envir, enclos=enclos)))
                     ret[[length(ret)+1]] <- tmp$value
 
                     if(tmp$visible)
@@ -601,8 +607,8 @@ R6::R6Class("AdoInterpreter",
         eclass = NULL,
         settings = NULL,
         macro_syms = NULL,
-
-        cmd = NULL,
+        usercmd = NULL,
+        defaultcmd = NULL,
 
         default_webuse_url = function()
         {

@@ -3,9 +3,12 @@ R6::R6Class("SymbolTable",
     public = list(
         env = NULL,
 
-        initialize = function(parent=emptyenv())
+        initialize = function(env=NULL)
         {
-            self$env <- new.env(hash=TRUE, parent=parent)
+            if(is.null(env))
+                self$env <- new.env(hash=TRUE, parent=emptyenv())
+            else
+                self$env <- env
         },
 
         ##
@@ -14,7 +17,7 @@ R6::R6Class("SymbolTable",
 
         all_symbols = function()
         {
-            ret <- tryCatch(ls(self$env), error=identity)
+            ret <- tryCatch(ls(envir=self$env), error=identity)
 
             if(inherits(ret, "error"))
                 raiseCondition("Error in symbol table access")
@@ -44,7 +47,8 @@ R6::R6Class("SymbolTable",
 
         symbol_value = function(sym)
         {
-            ret <- tryCatch(get(sym, envir=self$env), error=identity)
+            ret <- tryCatch(get(sym, envir=self$env, inherits=FALSE),
+                            error=identity)
 
             if(inherits(ret, "error"))
                 raiseCondition("Error in symbol table access")
@@ -97,7 +101,8 @@ R6::R6Class("SymbolTable",
                 lst <- as.character(lst)
             }
 
-            ret <- tryCatch(mget(lst, envir=self$env), error=identity)
+            ret <- tryCatch(mget(lst, envir=self$env, inherits=FALSE),
+                            error=identity)
 
             if(inherits(ret, "error"))
                 raiseCondition("Error in symbol table access")
@@ -106,3 +111,4 @@ R6::R6Class("SymbolTable",
         }
     )
 )
+

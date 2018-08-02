@@ -1,30 +1,5 @@
 ## Add user-defined commands provided at runtime, rather than defined in this
-## package's source. Even by R standards, this is arcane: it relies on a poorly
-## documented (but very stable) set of C macros in the R source code to unlock
-## the package environment and inject the user's function. See our C++ function
-## that wraps around those macros in src/unlockEnvironment.cpp.
-
-## Here's essentially what we're doing:
-# foo <- function(x) x+1
-# foo(3)
-#
-# env <- getNamespace('stats')
-# environmentIsLocked(env)
-#
-# #throws an error
-# assign("foo", foo, env)
-#
-# #not anymore
-# ado:::unlockEnvironment(env) # our C++ function
-# environmentIsLocked(env)
-#
-# environment(foo) <- getNamespace('stats')
-# assign("foo", foo, env)
-#
-# lockEnvironment(env)
-# environmentIsLocked(env)
-#
-# stats:::foo
+## package's source.
 
 ado_cmd_addCommand <-
 function(context, expression, option_list=NULL)
@@ -70,7 +45,7 @@ function(context, expression, option_list=NULL)
                    error=function(e) e)
     raiseif(inherits(fn, "error"), msg="No such function")
 
-    context$cmd_set('ado_cmd_' %p% nm, fn)
+    context$usercmd_set('ado_cmd_' %p% nm, fn)
 
     return(invisible(NULL))
 }
