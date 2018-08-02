@@ -6,9 +6,10 @@
 %define parse.trace
 %define parse.error verbose
 %define api.token.prefix {TOK_}
-
 %define api.pure
+
 %pure-parser
+%locations
 
 %code requires
 {
@@ -26,7 +27,6 @@ typedef void* yyscan_t;
 
 %param { ParseDriver& driver }
 %param { yyscan_t yyscanner }
-%locations
 
 %union
 {
@@ -36,9 +36,7 @@ typedef void* yyscan_t;
 
 %code
 {
-#include "ado.tab.hpp"
 #include <string>
-#include <cstring>
 #include <Rcpp.h>
 #include "ParseDriver.hpp"
 

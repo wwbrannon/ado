@@ -40,7 +40,7 @@
 #ifndef YY_YY_ADO_TAB_HPP_INCLUDED
 # define YY_YY_ADO_TAB_HPP_INCLUDED
 // //                    "%code requires" blocks.
-#line 14 "ado.ypp" // lalr1.cc:377
+#line 15 "ado.ypp" // lalr1.cc:377
 
 #include "Ado.hpp"
 class ParseDriver;
