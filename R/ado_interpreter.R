@@ -438,8 +438,8 @@ R6::R6Class("AdoInterpreter",
             ret_p2 <-
             tryCatch(
                 {
-                    private$deep_eval(ret_p1, envir=parent.env(environment()),
-                                      enclos=self)
+                    ns <- getNamespace(utils::packageName())
+                    self$deep_eval(ret_p1, envir=ns)
                 },
                 error=identity,
                 EvalErrorException=identity,
@@ -475,22 +475,16 @@ R6::R6Class("AdoInterpreter",
         #Recursive evaluation of the sort of expression object that the parser builds.
         #This function both evaluates the expressions and sends the results through
         #the logger.
-        deep_eval = function(expr, envir=parent.frame(),
-                             enclos=if(is.list(envir) || is.pairlist(envir))
-                                 parent.frame()
-                             else
-                                 baseenv())
+        deep_eval = function(expr, envir)
         {
             ret <- list()
             for(chld in expr)
             {
                 if(is.expression(chld))
-                    ret[[length(ret)+1]] <- private$deep_eval(chld, envir=envir,
-                                                           enclos=enclos)
+                    ret[[length(ret)+1]] <- self$deep_eval(chld, envir=envir)
                 else
                 {
-                    tmp <- suppressWarnings(withVisible(eval(chld, envir=envir,
-                                                             enclos=enclos)))
+                    tmp <- suppressWarnings(withVisible(eval(chld, envir=envir)))
                     ret[[length(ret)+1]] <- tmp$value
 
                     if(tmp$visible)
