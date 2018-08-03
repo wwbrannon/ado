@@ -12,7 +12,6 @@ function(path, pattern)
 
 remove_file("src/Makevars")
 remove_file("src/Makevars.win")
-remove_file("src/parser/build")
 
 remove_pattern(path='src', pattern='\\.o$')
 remove_pattern(path='src', pattern='\\.a$')

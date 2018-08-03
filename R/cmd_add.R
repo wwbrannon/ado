@@ -1,35 +1,10 @@
 ## Add user-defined commands provided at runtime, rather than defined in this
-## package's source. Even by R standards, this is arcane: it relies on a poorly
-## documented (but very stable) set of C macros in the R source code to unlock
-## the package environment and inject the user's function. See our C++ function
-## that wraps around those macros in src/unlockEnvironment.cpp.
-
-## Here's essentially what we're doing:
-# foo <- function(x) x+1
-# foo(3)
-#
-# env <- getNamespace('stats')
-# environmentIsLocked(env)
-#
-# #throws an error
-# assign("foo", foo, env)
-#
-# #not anymore
-# ado:::unlockEnvironment(env) # our C++ function
-# environmentIsLocked(env)
-#
-# environment(foo) <- getNamespace('stats')
-# assign("foo", foo, env)
-#
-# lockEnvironment(env)
-# environmentIsLocked(env)
-#
-# stats:::foo
+## package's source.
 
 ado_cmd_addCommand <-
-function(expression, option_list=NULL, return.match.call=NULL)
+function(context, expression, option_list=NULL)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     valid_opts <- c("env", "newname")
@@ -64,24 +39,13 @@ function(expression, option_list=NULL, return.match.call=NULL)
         nm <- as.character(expression)
     }
 
-    # possible FIXME? should we allow overriding objects that ship with ado?
-
     #Get the function from the environment
     src <- as.character(expression)
     fn <- tryCatch(get(src, envir=env, mode="function", inherits=FALSE),
                    error=function(e) e)
     raiseif(inherits(fn, "error"), msg="No such function")
 
-    #Unlock the package environment, make the binding, and relock
-    pkenv <- getNamespace('ado')
-    if(environmentIsLocked(pkenv))
-    {
-        unlockEnvironment(pkenv)
-    }
-
-    environment(fn) <- pkenv
-    assign(paste0('ado_cmd_', nm), fn, pkenv) #need this prefix for codegen
-    lockEnvironment(pkenv)
+    context$usercmd_set('ado_cmd_' %p% nm, fn)
 
     return(invisible(NULL))
 }

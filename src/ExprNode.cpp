@@ -1,4 +1,3 @@
-#include <cstdio>
 #include <Rcpp.h>
 #include "Ado.hpp"
 
@@ -213,3 +212,4 @@ ExprNode::as_R_object() const
 
     return res;
 }
+

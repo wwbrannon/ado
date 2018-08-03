@@ -1,4 +1,4 @@
-#' ado: An implementation of Stata's ado language in R.
+#' ado: An implementation of Stata's ado language for R.
 #'
 #' The ado package provides an R-based interpreter for a dialect of Stata's
 #' ado language. Loops, macros, data manipulation commands and statistics commands
@@ -22,3 +22,7 @@
 #' @name ado
 NULL
 
+.packageName <- "ado"
+.PACKAGE <- .packageName
+
+.datatable.aware <- TRUE
