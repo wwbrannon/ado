@@ -94,7 +94,8 @@ ParseDriver::wrap_cmd_action(ExprNode *node)
     this->echo_text_buffer.clear(); // clear even if error in cmd_action
 
     Rcpp::Function cmd_action = this->context["cmd_action"];
-    cmd_action(node->as_R_object(), txt, this->echo);
+    cmd_action(node->as_R_object(), Rcpp::CharacterVector::create(txt),
+               this->echo);
 }
 
 std::string

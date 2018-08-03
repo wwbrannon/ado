@@ -26,7 +26,7 @@ R6::R6Class("AdoInterpreter",
         ##
 
         initialize = function(df = NULL, debug_level = 0, print_results = 1,
-                              echo = NULL)
+                              echo = 0)
         {
             ## Create objects
             self$dta <- Dataset$new()
@@ -486,8 +486,7 @@ R6::R6Class("AdoInterpreter",
 
         cmd_action = function(ast, txt, echo)
         {
-            if(echo)
-                self$log_command(". " %p% trimws(txt) %p% "\n")
+            self$log_command(". " %p% trimws(txt) %p% "\n", echo=echo)
 
             check(ast, context=self, self$debug_parse_trace)
             self$deep_eval(codegen(ast, context=self))
