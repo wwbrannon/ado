@@ -1,5 +1,3 @@
-## FIXME "Expecting a single value: [extent=0]." on interpret(..., echo=1)
-
 ##
 ## The core interpreter class
 ##
