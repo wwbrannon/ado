@@ -72,7 +72,8 @@ R6::R6Class("SymbolTable",
 
         unset_symbol = function(sym)
         {
-            ret <- tryCatch(rm(sym, envir=self$env), error=identity)
+            ret <- tryCatch(rm(list=as.character(sym), envir=self$env),
+                            error=identity)
 
             if(inherits(ret, "error"))
                 raiseCondition("Error in symbol table access")

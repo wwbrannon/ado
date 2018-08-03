@@ -8,7 +8,7 @@ typedef yy::AdoParser::semantic_type YYSTYPE;
 
 ParseDriver::ParseDriver(std::string text, Rcpp::Environment context,
                          int debug_level, int echo)
-    : text(text), context(context), debug_level(debug_level), echo(echo)
+    : context(context), debug_level(debug_level), echo(echo), text(text)
 {
     error_seen = 0;
 }

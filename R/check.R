@@ -672,7 +672,8 @@ function(node, context, debug_level=0)
     func <- context$cmd_unabbreviate(func, cls="BadCommandException",
                                      msg=if(debug_level) NULL else "Cannot unabbreviate prefix command")
 
-    raiseifnot(exists(func), msg=if(debug_level) NULL else "Prefix command not found")
+    raiseifnot(func %in% context$cmd_names_all(),
+               msg=if(debug_level) NULL else "Prefix command not found")
 
     invisible(TRUE)
 }
@@ -689,14 +690,12 @@ function(node, context, debug_level=0)
     func <- paste0("ado_cmd_", node$children$verb$data["value"])
     func <- context$cmd_unabbreviate(func, cls="BadCommandException",
                                      msg=if(debug_level) NULL else "Cannot unabbreviate command")
-    raiseifnot(exists(func), msg=if(debug_level) NULL else "Command not found")
+    
+    raiseifnot(func %in% context$cmd_names_all(),
+               msg=if(debug_level) NULL else "Command not found")
 
-    args <-
-        tryCatch(
-            {
-                formals(get(func))
-            },
-            error=function(c) c)
+    args <- tryCatch(formals(context$cmd_all()[[func]]),
+                     error=identity)
 
     if(inherits(args, "error"))
     {

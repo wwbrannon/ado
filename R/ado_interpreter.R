@@ -1,3 +1,5 @@
+## FIXME "Expecting a single value: [extent=0]." on interpret(..., echo=1)
+
 ##
 ## The core interpreter class
 ##
@@ -37,7 +39,7 @@ R6::R6Class("AdoInterpreter",
             private$settings <- SymbolTable$new()
             private$macro_syms <- SymbolTable$new()
             private$usercmd <- SymbolTable$new()
-            
+
             ns <- getNamespace(utils::packageName())
             private$defaultcmd <- SymbolTable$new(env=ns)
 
@@ -406,12 +408,26 @@ R6::R6Class("AdoInterpreter",
         ## Other utilities
         ##
 
+        cmd_all = function()
+        {
+            # unique already, see usercmd_set
+            return(c(private$defaultcmd$all_values(),
+                     private$usercmd$all_values()))
+        },
+
+        cmd_names_all = function()
+        {
+            funcs <- private$defaultcmd$all_symbols()
+            funcs <- funcs[grep("^ado_cmd_", funcs)]
+            funcs <- c(funcs, self$usercmd_names()) # unique, see usercmd_set
+
+            return(funcs)
+        },
+
         cmd_unabbreviate = function(name, cls="error", msg=NULL)
         {
-            funcs <- funcs[grep("^ado_cmd_", private$defaultcmd$all_symbols())]
-            funcs <- c(funcs, self$usercmd_names())
-
-            return(unabbreviateName(name, funcs, cls=cls, msg=msg))
+            return(unabbreviateName(name, choices=self$cmd_names_all(),
+                                    cls=cls, msg=msg))
         },
 
         ##
@@ -453,14 +469,11 @@ R6::R6Class("AdoInterpreter",
                     self$log_result(val$message %p% "\n\n")
 
                     next
-                } else if(inherits(val, "condition"))
+                } else if(inherits(val, "error"))
                 {
                     self$log_result(val$message %p% "\n\n")
 
                     break
-                } else
-                {
-                    cat("\n")
                 }
             }
 
@@ -485,23 +498,21 @@ R6::R6Class("AdoInterpreter",
         #the logger.
         deep_eval = function(expr)
         {
-            envir <- private$usercmd$env
+            envir <- as.list(private$usercmd$env)
             enclos <- private$defaultcmd$env
 
             ret <- list()
             for(chld in expr)
             {
                 if(is.expression(chld))
-                    ret[[length(ret)+1]] <- self$deep_eval(chld, envir=envir, enclos=enclos)
+                    ret[[length(ret)+1]] <- self$deep_eval(chld)
                 else
                 {
                     tmp <- suppressWarnings(withVisible(eval(chld, envir=envir, enclos=enclos)))
                     ret[[length(ret)+1]] <- tmp$value
 
                     if(tmp$visible)
-                    {
                         self$log_result(fmt(tmp$value))
-                    }
                 }
             }
 

@@ -1,4 +1,7 @@
-#Some useful infix operators
+##
+##Some useful infix operators
+##
+
 `%is%` <- function(x, y) all(y %in% class(x))
 `%p%` <- function(x, y) paste0(x, y)
 `%not_in%` <- function(x, y) (!(x %in% y))
@@ -8,7 +11,9 @@
 `%|%` <- function(x, y) bitwOr(x, y)
 `%&%` <- function(x, y) bitwAnd(x, y)
 
-### Option-list accessor methods
+##
+## Option-list accessor methods
+##
 
 #Validate and unabbreviate the provided options against the list of valid
 #options for the function calling this helper.

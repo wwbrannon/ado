@@ -206,7 +206,7 @@ function(node, context)
 {
     name <- as.character(codegen(node$children$verb, context=context))
     name <- context$cmd_unabbreviate(paste0("ado_cmd_", name)) # validated in check()
-    verb <- get(name, mode="function")
+    verb <- context$cmd_all()[[name]]
 
     args <- node$children
     args <- args[names(args) != "verb"]
@@ -239,7 +239,7 @@ function(node, context)
 {
     name <- as.character(codegen(node$children$verb, context=context))
     name <- context$cmd_unabbreviate(paste0("ado_cmd_", name)) # validated in check()
-    verb <- get(name, mode="function")
+    verb <- context$cmd_all()[[name]]
 
     lst <- list(as.symbol(name), context=context)
 
