@@ -460,19 +460,9 @@ R6::R6Class("AdoInterpreter",
                 )
 
                 if(inherits(val, "ExitRequestedException"))
-                {
                     break
-                } else if(inherits(val, "AdoException"))
-                {
+                else if(inherits(val, c("error", "AdoException")))
                     self$log_result(val$message %p% "\n\n")
-
-                    next
-                } else if(inherits(val, "error"))
-                {
-                    self$log_result(val$message %p% "\n\n")
-
-                    break
-                }
             }
 
             return(invisible(NULL))
