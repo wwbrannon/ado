@@ -37,32 +37,11 @@ int
 ParseDriver::parse()
 {
     int res;
-    FILE *tmp;
     yyscan_t yyscanner;
 
-    // Initialize the reentrant scanner
     yylex_init(&yyscanner);
 
-    if( !(tmp = tmpfile()) )
-    {
-        this->error("Cannot open temp file for writing");
-        return 1; // failure
-    }
-
-    if(fputs( (this->text).c_str(), tmp)==0 && ferror(tmp))
-    {
-        this->error("Cannot write to temp file");
-        return 1; // failure
-    }
-    rewind(tmp);
-
-    // We should just be able to do this:
-    //     yy_scan_string(text.c_str());
-    // but there's a probable flex bug that overflows yytext on unput()
-    // when input comes from yy_scan_string(). Instead, let's create a
-    // tempfile, because that works correctly.
-    yy_switch_to_buffer(yy_create_buffer(tmp, YY_BUF_SIZE, yyscanner),
-                        yyscanner);
+    yy_scan_string(text.c_str(), yyscanner);
 
     yy::AdoParser parser(*this, yyscanner);
 
@@ -73,9 +52,7 @@ ParseDriver::parse()
 
     res = parser.parse();
 
-    // wrap up the scan
     yylex_destroy(yyscanner);
-    fclose(tmp);
 
     return res;
 }
