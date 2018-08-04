@@ -42,17 +42,14 @@
 // //                    "%code requires" blocks.
 #line 15 "ado.ypp" // lalr1.cc:377
 
-#include "Ado.hpp"
-typedef void* yyscan_t;
+    #include "Ado.hpp"
+    typedef void* yyscan_t;
 
-#define YY_DECL int yylex(yy::AdoParser::semantic_type* yylval_param, \
-                          yy::AdoParser::location_type* llocp,        \
-                          ParseDriver& driver, yyscan_t yyscanner)      
+    #define YY_DECL int yylex(yy::AdoParser::semantic_type* yylval_param, \
+                              yy::AdoParser::location_type* llocp,        \
+                              ParseDriver& driver, yyscan_t yyscanner)      
 
-#define R_ACTION(node) driver.wrap_cmd_action(node);
-#define RETURN_AST(node) driver.set_ast(node);
-
-#line 56 "ado.tab.hpp" // lalr1.cc:377
+#line 53 "ado.tab.hpp" // lalr1.cc:377
 
 
 # include <cstdlib> // std::abort
@@ -124,7 +121,7 @@ typedef void* yyscan_t;
 
 
 namespace yy {
-#line 128 "ado.tab.hpp" // lalr1.cc:377
+#line 125 "ado.tab.hpp" // lalr1.cc:377
 
 
 
@@ -138,12 +135,12 @@ namespace yy {
     /// Symbol semantic values.
     union semantic_type
     {
-    #line 31 "ado.ypp" // lalr1.cc:377
+    #line 28 "ado.ypp" // lalr1.cc:377
 
     std::string   *str;
     ExprNode      *node;
 
-#line 147 "ado.tab.hpp" // lalr1.cc:377
+#line 144 "ado.tab.hpp" // lalr1.cc:377
     };
 #else
     typedef YYSTYPE semantic_type;
@@ -565,7 +562,7 @@ namespace yy {
 
 
 } // yy
-#line 569 "ado.tab.hpp" // lalr1.cc:377
+#line 566 "ado.tab.hpp" // lalr1.cc:377
 
 
 

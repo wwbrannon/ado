@@ -13,15 +13,12 @@
 
 %code requires
 {
-#include "Ado.hpp"
-typedef void* yyscan_t;
+    #include "Ado.hpp"
+    typedef void* yyscan_t;
 
-#define YY_DECL int yylex(yy::AdoParser::semantic_type* yylval_param, \
-                          yy::AdoParser::location_type* llocp,        \
-                          ParseDriver& driver, yyscan_t yyscanner)      
-
-#define R_ACTION(node) driver.wrap_cmd_action(node);
-#define RETURN_AST(node) driver.set_ast(node);
+    #define YY_DECL int yylex(yy::AdoParser::semantic_type* yylval_param, \
+                              yy::AdoParser::location_type* llocp,        \
+                              ParseDriver& driver, yyscan_t yyscanner)      
 }
 
 %param { ParseDriver& driver }
@@ -35,17 +32,19 @@ typedef void* yyscan_t;
 
 %code
 {
-#include <string>
-#include <Rcpp.h>
+    #include <string>
+    #include <Rcpp.h>
 
-YY_DECL;
+    YY_DECL;
 
-void
-yy::AdoParser::error(const location_type& l, const std::string& m)
-{
-    driver.error(l.begin.line, l.begin.column, m);
-}
+    void
+    yy::AdoParser::error(const location_type& l, const std::string& m)
+    {
+        driver.error(l.begin.line, l.begin.column, m);
+    }
 
+    #define R_ACTION(node) driver.wrap_cmd_action(node);
+    #define RETURN_AST(node) driver.set_ast(node);
 }
 
 /* Operator  precedence */
