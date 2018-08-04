@@ -1,9 +1,6 @@
 ado_cmd_insheet <-
 function(context, using_clause, varlist=NULL, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     #validate the options given against the valid list, raising a condition if
     #they fail to validate, and return the unabbreviated options
     valid_opts <- c("tab", "comma", "delimiter", "clear", "case", "names", "nonames")
@@ -53,10 +50,6 @@ function(context, using_clause, varlist=NULL, option_list=NULL)
 ado_cmd_save <-
 function(context, expression=NULL, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
-    #Handle options
     valid_opts <- c("replace", "emptyok")
     option_list <- validateOpts(option_list, valid_opts)
     repl <- hasOption(option_list, "replace")
@@ -85,9 +78,6 @@ function(context, expression=NULL, option_list=NULL)
 ado_cmd_saveold <-
 function(context, expression=NULL, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     #Handle options
     valid_opts <- c("replace")
     option_list <- validateOpts(option_list, valid_opts)
@@ -115,9 +105,6 @@ function(context, expression=NULL, option_list=NULL)
 ado_cmd_use <-
 function(context, expression, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     valid_opts <- c("clear")
     option_list <- validateOpts(option_list, valid_opts)
 
@@ -151,9 +138,6 @@ function(context, expression, option_list=NULL)
 ado_cmd_sysuse <-
 function(context, expression, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     valid_opts <- c("clear")
     option_list <- validateOpts(option_list, valid_opts)
 
@@ -183,9 +167,6 @@ function(context, expression, option_list=NULL)
 ado_cmd_webuse <-
 function(context, expression_list, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     valid_opts <- c("clear")
     option_list <- validateOpts(option_list, valid_opts)
 

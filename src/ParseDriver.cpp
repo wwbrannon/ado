@@ -1,7 +1,8 @@
 #include <string>
-#include <Rcpp.h>
-#include "Ado.hpp"
 
+#include <Rcpp.h>
+
+#include "Ado.hpp"
 #include "ado.tab.hpp"
 typedef yy::AdoParser::semantic_type YYSTYPE;
 #include "lex.yy.hpp"

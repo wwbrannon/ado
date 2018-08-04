@@ -1,9 +1,6 @@
 ado_cmd_cd <-
 function(context, expression=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     if(is.null(expression))
         return(ado_cmd_pwd(context=context))
     else
@@ -18,18 +15,12 @@ function(context, expression=NULL)
 ado_cmd_pwd <-
 function(context)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     return(cat(getwd()))
 }
 
 ado_cmd_rm <-
 function(context, expression)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     raiseifnot(length(expression) == 1, msg="Too many arguments to rm/erase")
 
     file.remove(expression[[1]])
@@ -40,9 +31,6 @@ function(context, expression)
 ado_cmd_mkdir <-
 function(context, expression, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     valid_opts <- c("public")
     option_list <- validateOpts(option_list, valid_opts)
 
@@ -59,9 +47,6 @@ function(context, expression, option_list=NULL)
 ado_cmd_ls <-
 function(context, expression=NULL, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     valid_opts <- c("wide")
     option_list <- validateOpts(option_list, valid_opts)
 
@@ -79,9 +64,6 @@ function(context, expression=NULL, option_list=NULL)
 ado_cmd_cp <-
 function(context, expression_list=NULL, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     valid_opts <- c("public", "replace", "recursive")
     option_list <- validateOpts(option_list, valid_opts)
 
@@ -117,9 +99,6 @@ function(context, expression_list=NULL, option_list=NULL)
 ado_cmd_cat <-
 function(context, expression, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     valid_opts <- c("showtabs", "starbang", "lines")
     option_list <- validateOpts(option_list, valid_opts)
 

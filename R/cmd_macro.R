@@ -3,9 +3,6 @@
 ado_cmd_local <-
 function(context, expression_list)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     exprs <- expression_list
 
     #Either an assignment or an attempt to clear this macro
@@ -60,9 +57,6 @@ function(context, expression_list)
 ado_cmd_global <-
 function(context, expression_list)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     exprs <- expression_list
 
     if(length(exprs) == 1) #an assignment
@@ -113,9 +107,6 @@ function(context, expression_list)
 ado_cmd_tempfile <-
 function(context, expression_list)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     exprs <- expression_list
 
     raiseifnot(length(exprs) >= 1, cls="EvalErrorException",
@@ -142,9 +133,6 @@ function(context, expression_list)
 ado_cmd_macro <-
 function(context, expression_list)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     exprs <- expression_list
 
     raiseifnot(length(exprs) >= 1, cls="EvalErrorException",

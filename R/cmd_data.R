@@ -1,9 +1,6 @@
 ado_cmd_clear <-
 function(context, expression=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     if(is.null(expression))
     {
         drop_data <- TRUE
@@ -38,9 +35,6 @@ function(context, expression=NULL)
 ado_cmd_head <-
 function(context, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     valid_opts <- c("n")
     option_list <- validateOpts(option_list, valid_opts)
 
@@ -66,9 +60,6 @@ function(context, option_list=NULL)
 ado_cmd_list <-
 function(context, varlist=NULL, if_clause=NULL, in_clause=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     raiseif(!is.null(if_clause) && !is.null(in_clause),
             msg="Cannot specify both in clause and if clause at once")
 
@@ -102,9 +93,6 @@ function(context, varlist=NULL, if_clause=NULL, in_clause=NULL)
 ado_cmd_drop <-
 function(context, varlist=NULL, if_clause=NULL, in_clause=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     #Only certain combinations of these arguments are valid
     raiseif(is.null(varlist) && is.null(if_clause) && is.null(in_clause),
             msg="Must specify what to drop")
@@ -140,9 +128,6 @@ function(context, varlist=NULL, if_clause=NULL, in_clause=NULL)
 ado_cmd_keep <-
 function(context, varlist=NULL, if_clause=NULL, in_clause=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     #Only certain combinations of these arguments are valid
     raiseif(is.null(varlist) && is.null(if_clause) && is.null(in_clause),
             msg="Must specify what to keep")
@@ -185,9 +170,6 @@ function(context, varlist=NULL, if_clause=NULL, in_clause=NULL)
 ado_cmd_count <-
 function(context, if_clause=NULL, in_clause=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     raiseif(!is.null(if_clause) && !is.null(in_clause),
             msg="Cannot give both an if clause and an in clause at once")
 
@@ -209,9 +191,6 @@ function(context, if_clause=NULL, in_clause=NULL)
 ado_cmd_gsort <-
 function(context, expression_list, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     valid_opts <- c("generate", "mfirst")
     option_list <- validateOpts(option_list, valid_opts)
 
@@ -238,9 +217,6 @@ function(context, expression_list, option_list=NULL)
 ado_cmd_sort <-
 function(context, varlist, in_clause=NULL, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     valid_opts <- c("stable")
     option_list <- validateOpts(option_list, valid_opts)
     stable <- hasOption(option_list, "stable")
@@ -260,9 +236,6 @@ function(context, varlist, in_clause=NULL, option_list=NULL)
 ado_cmd_lookfor <-
 function(context, expression_list)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     ind <- numeric(0)
     for(expr in expression_list)
     {
@@ -280,9 +253,6 @@ function(context, expression_list)
 ado_cmd_rename <-
 function(context, expression_list)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     raiseifnot(length(expression_list) == 2,
                msg="Incorrect number of arguments")
 
@@ -300,9 +270,6 @@ function(context, expression_list)
 ado_cmd_isid <-
 function(context, varlist, using_clause=NULL, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     valid_opts <- c("sort", "missok")
     option_list <- validateOpts(option_list, valid_opts)
     sort <- hasOption(option_list, "sort")
@@ -350,9 +317,6 @@ function(context, varlist, using_clause=NULL, option_list=NULL)
 ado_cmd_sample <-
 function(context, expression, if_clause=NULL, in_clause=NULL, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     raiseif(!is.null(if_clause) && !is.null(in_clause),
             msg="Cannot specify both if clause and in clause at once")
 
@@ -410,9 +374,6 @@ function(context, expression, if_clause=NULL, in_clause=NULL, option_list=NULL)
 ado_cmd_order <-
 function(context, varlist, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     valid_opts <- c("first", "last", "before", "after", "alphabetic", "sequential")
     option_list <- validateOpts(option_list, valid_opts)
 
@@ -532,9 +493,6 @@ function(context, varlist, option_list=NULL)
 ado_cmd_compare <-
 function(context, varlist, if_clause=NULL, in_clause=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     raiseifnot(length(varlist) == 2,
                msg="Incorrect number of arguments")
 
@@ -566,9 +524,6 @@ function(context, varlist, if_clause=NULL, in_clause=NULL)
 ado_cmd_duplicates <-
 function(context, varlist, if_clause=NULL, in_clause=NULL, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     raiseifnot(length(varlist) >= 1,
                msg="Must specify subcommand")
 
@@ -631,23 +586,16 @@ function(context, varlist, if_clause=NULL, in_clause=NULL, option_list=NULL)
 ado_cmd_append <-
 function(context, expression_list=NULL, using_clause=NULL, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
 }
 
 ado_cmd_merge <-
 function(context, varlist, using_clause, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
 }
 
 ado_cmd_split <-
 function(context, varlist, if_clause=NULL, in_clause=NULL, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     valid_opts <- c("generate", "parse", "limit", "notrim",
                     "destring", "ignore", "force", "percent")
     option_list <- validateOpts(option_list, valid_opts)
@@ -658,52 +606,38 @@ ado_cmd_codebook <-
 function(context, expression_list=NULL, if_clause=NULL, in_clause=NULL,
          option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
 }
 
 ado_cmd_collapse <-
 function(context, expression_list, if_clause=NULL, in_clause=NULL,
          weight_clause=NULL, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
 }
 
 ado_cmd_describe <-
 function(context, expression_list=NULL, using_clause=NULL, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
 }
 
 ado_cmd_expand <-
 function(context, expression, if_clause=NULL, in_clause=NULL, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
 }
 
 ado_cmd_recode <-
 function(context, expression_list, if_clause=NULL, in_clause=NULL, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
 }
 
 #FIXME - need to revise grammar to allow e.g. "reshape long"
 ado_cmd_reshape <-
 function(context, expression_list=NULL, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
 }
 
 ado_cmd_separate <-
 function(context, expression, option_list, if_clause=NULL, in_clause=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
 }
 
 # =============================================================================
@@ -711,9 +645,6 @@ function(context, expression, option_list, if_clause=NULL, in_clause=NULL)
 ado_cmd_recast <-
 function(context, expression, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     valid_opts <- c("force")
     option_list <- validateOpts(option_list, valid_opts)
 
@@ -722,79 +653,57 @@ function(context, expression, option_list=NULL)
 ado_cmd_egen <-
 function(context, expression, if_clause=NULL, in_clause=NULL, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
 }
 
 ado_cmd_generate <-
 function(context, expression, if_clause=NULL, in_clause=NULL, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
 }
 
 # =============================================================================
 ado_cmd_tostring <-
 function(context, varlist, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
 }
 
 ado_cmd_destring <-
 function(context, varlist=NULL, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
 }
 
 ado_cmd_decode <-
 function(context, expression, if_clause=NULL, in_clause=NULL, option_list)
 {
-    if(context$debug_match_call)
-        return(match.call())
 }
 
 ado_cmd_egen <-
 function(context, expression, if_clause=NULL, in_clause=NULL, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
 }
 
 ado_cmd_encode <-
 function(context, expression, if_clause=NULL, in_clause=NULL, option_list)
 {
-    if(context$debug_match_call)
-        return(match.call())
 }
 
 ado_cmd_format <-
 function(context, expression_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
 }
 
 ado_cmd_replace <-
 function(context, expression, if_clause=NULL, in_clause=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
 }
 
 ado_cmd_generate <-
 function(context, expression, if_clause=NULL, in_clause=NULL, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
 }
 
 ado_cmd_label <-
 function(context, expression_list, using_clause=NULL, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
 }
 
 ado_cmd_flist <- ado_cmd_list

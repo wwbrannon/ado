@@ -9,10 +9,9 @@ ParseDriver <- setRcppClass("ParseDriver")
 #It's necessary that these have the same numeric values as
 #the macros in the C++ header file.
 DEBUG_PARSE_TRACE       <- 4
-DEBUG_MATCH_CALL        <- 8
-DEBUG_VERBOSE_ERROR     <- 16
-DEBUG_NO_PARSE_ERROR    <- 32
-DEBUG_NO_CALLBACKS      <- 64
+DEBUG_VERBOSE_ERROR     <- 8
+DEBUG_NO_PARSE_ERROR    <- 16
+DEBUG_NO_CALLBACKS      <- 32
 
 AdoInterpreter <-
 R6::R6Class("AdoInterpreter",
@@ -576,12 +575,6 @@ R6::R6Class("AdoInterpreter",
         {
             debug_level <- self$setting_value("debug_level") # set in ctor
             return((debug_level %&% DEBUG_PARSE_TRACE) != 0)
-        },
-
-        debug_match_call = function()
-        {
-            debug_level <- self$setting_value("debug_level")
-            return((debug_level %&% DEBUG_MATCH_CALL) != 0)
         },
 
         debug_verbose_error = function()

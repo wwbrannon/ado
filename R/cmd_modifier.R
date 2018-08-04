@@ -5,20 +5,13 @@
 ado_cmd_quietly <-
 function(context, to_call)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
-    #We do need to eval the to_call command,
-    #but we don't need to print anything
+    #We do need to eval the to_call command, but we don't need to print anything
     invisible(eval(to_call, envir=parent.frame(), enclos=baseenv()))
 }
 
 ado_cmd_noisily <-
 function(context, to_call)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     #This command is basically a no-op
     eval(to_call, envir=parent.frame(), enclos=baseenv())
 }
@@ -26,9 +19,6 @@ function(context, to_call)
 ado_cmd_capture <-
 function(context, to_call)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     #Eval the command given in to_call, but catch any exceptions
     #it throws so they don't propagate upward
     val <-
@@ -53,9 +43,6 @@ function(context, to_call)
 ado_cmd_xi <-
 function(context, expression_list=NULL, option_list=NULL, to_call=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-    
     valid_opts <- c("prefix", "omit", "noomit")
     option_list <- validateOpts(option_list, valid_opts)
     
@@ -95,9 +82,6 @@ function(context, expression_list=NULL, option_list=NULL, to_call=NULL)
 ado_cmd_bysort <-
 function(context, varlist, to_call=NULL, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     if(is.null(to_call))
     {
         raiseCondition("Must specify a command for by/bysort to execute")
@@ -115,9 +99,6 @@ function(context, varlist, to_call=NULL, option_list=NULL)
 ado_cmd_by <-
 function(context, varlist, to_call=NULL, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     if(is.null(to_call))
     {
         raiseCondition("Must specify a command for by/bysort to execute")
@@ -149,9 +130,6 @@ function(context, varlist, to_call=NULL, option_list=NULL)
 ado_cmd_xi <-
 function(context, expression_list=NULL, option_list=NULL, to_call=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     valid_opts <- c("prefix", "omit", "noomit")
     option_list <- validateOpts(option_list, valid_opts)
 

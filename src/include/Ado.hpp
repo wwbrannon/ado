@@ -9,10 +9,9 @@
 
 // flags you can bitwise OR to enable debugging features
 #define DEBUG_PARSE_TRACE       4
-#define DEBUG_MATCH_CALL        8
-#define DEBUG_VERBOSE_ERROR     16
-#define DEBUG_NO_PARSE_ERROR    32
-#define DEBUG_NO_CALLBACKS      64
+#define DEBUG_VERBOSE_ERROR     8
+#define DEBUG_NO_PARSE_ERROR    16
+#define DEBUG_NO_CALLBACKS      32
 
 /*
  * The main class of node in the AST the parser generates

@@ -4,9 +4,6 @@
 ado_cmd_addCommand <-
 function(context, expression, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     valid_opts <- c("env", "newname")
     option_list <- validateOpts(option_list, valid_opts)
 

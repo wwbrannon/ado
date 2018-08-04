@@ -4,17 +4,12 @@
 ado_cmd_quit <-
 function(context)
 {
-    #Don't do anything with context$debug_match_call because otherwise we can't get
-    #out of ado() when using that flag to test
     raiseCondition("Exit requested", "ExitRequestedException")
 }
 
 ado_cmd_continue <-
 function(context, option_list=NULL)
 {
-    #Similarly, we shouldn't return match.call here because
-    #then it's impossible to test loops properly, and this command
-    #is pretty simple: its arguments are hard to screw up.
     valid_opts <- c("break")
     option_list <- validateOpts(option_list, valid_opts)
     brk <- hasOption(option_list, "break")
@@ -28,9 +23,6 @@ function(context, option_list=NULL)
 ado_cmd_do <-
 function(context, expression_list)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     filename <- as.character(expression_list[[1]])
     if(tools::file_ext(filename) == "")
     {
@@ -75,8 +67,6 @@ function(context, expression_list)
 ado_cmd_if <-
 function(context, expression, compound_cmd)
 {
-    if(context$debug_match_call)
-        return(match.call())
 }
 
 ado_cmd_exit <- ado_cmd_quit
@@ -87,9 +77,6 @@ ado_cmd_run <- ado_cmd_do
 ado_cmd_about <-
 function(context)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     fields <- c("Package", "Authors@R", "Version", "Title", "License", "URL", "BugReports")
     desc <- utils::packageDescription(utils::packageName(), fields=fields)
 
@@ -99,9 +86,6 @@ function(context)
 ado_cmd_sleep <-
 function(context, expression)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     Sys.sleep(expression[[1]])
 
     return(invisible(NULL))
@@ -110,9 +94,6 @@ function(context, expression)
 ado_cmd_display <-
 function(context, expression)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     ret <- eval(expression[[1]])
     return(structure(ret, class=c("ado_cmd_display", class(ret))))
 }
@@ -120,9 +101,6 @@ function(context, expression)
 ado_cmd_preserve <-
 function(context, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     valid_opts <- c("memory")
     option_list <- validateOpts(option_list, valid_opts)
 
@@ -136,9 +114,6 @@ function(context, option_list=NULL)
 ado_cmd_restore <-
 function(context, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     valid_opts <- c("not")
     option_list <- validateOpts(option_list, valid_opts)
 
@@ -152,9 +127,6 @@ function(context, option_list=NULL)
 ado_cmd_query <-
 function(context, varlist=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     #Subcommand is accepted for compatibility but (currently) ignored.
     #If the list of settings settles down in the future, we might implement
     #groups of them that this command can print selectively, the way Stata does.
@@ -167,9 +139,6 @@ function(context, varlist=NULL)
 ado_cmd_set <-
 function(context, expression_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     if(is.null(expression_list))
     {
         return(ado_cmd_query(context=context))
@@ -242,9 +211,6 @@ function(context, expression_list=NULL)
 ado_cmd_creturn <-
 function(context, expression)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     #Must be invoked as "creturn list"
     if(as.character(expression[[1]]) != "list")
     {
@@ -264,9 +230,6 @@ function(context, expression)
 ado_cmd_return <-
 function(context, expression)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     #Must be invoked as "return list"
     if(as.character(expression[[1]]) != "list")
     {
@@ -283,9 +246,6 @@ function(context, expression)
 ado_cmd_ereturn <-
 function(context, expression)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     #Must be invoked as "ereturn list"
     if(as.character(expression[[1]]) != "list")
     {
@@ -302,9 +262,6 @@ function(context, expression)
 ado_cmd_log <-
 function(context, expression_list=NULL, using_clause=NULL, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     valid_opts <- c("append", "replace", "text", "smcl", "name")
     option_list <- validateOpts(option_list, valid_opts)
 
@@ -370,9 +327,6 @@ function(context, expression_list=NULL, using_clause=NULL, option_list=NULL)
 ado_cmd_cmdlog <-
 function(context, expression_list=NULL, using_clause=NULL, option_list=NULL)
 {
-    if(context$debug_match_call)
-        return(match.call())
-
     valid_opts <- c("append", "replace", "permanently")
     option_list <- validateOpts(option_list, valid_opts)
 
@@ -430,8 +384,6 @@ function(context, expression_list=NULL, using_clause=NULL, option_list=NULL)
 ado_cmd_help <-
 function(context, expression)
 {
-    if(context$debug_match_call)
-        return(match.call())
 }
 
 ado_cmd_di <- ado_cmd_display
