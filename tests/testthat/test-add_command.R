@@ -1,25 +1,24 @@
 context("User-defined commands")
 
 test_that("Adding user commands works", {
-    nsenv <- getNamespace('ado')
-    pkgenv <- as.environment('package:ado')
-
-    #Make sure that our target name is not already loaded
-    expect_false('testprint' %in% ls(envir=nsenv))
-
     #The function we're turning into a command
-    cmd <- function(expression) { return(as.character(expression)) }
-
-    #Hack alert! We have to put this into the globalenv to load it.
-    tn <- temporary_name(lst=ls(envir=globalenv()))
+    cmd <- function(context, expression) { return(cat(expression[[1]])) }
 
     tryCatch(
         {
+            #Hack alert! We have to put this into the globalenv to load it.
+            tn <- temporary_name(lst=ls(envir=environment()))
             assign(tn, cmd, envir=globalenv())
 
             #Actually load the thing - this is what we're testing here
-            st <- 'addCommand ' %p% tn %p% ', newname(testprint)'
-            ado(string=st, echo=0, print.results=0)
+            st <- 'addCommand ' %p% tn %p% ', newname(testprint);'
+            obj <- AdoInterpreter$new()
+            obj$interpret(textConnection(st), echo=0)
+
+            #Check that it worked
+            out <- capture.output(obj$interpret(textConnection('testprint "foo";'), echo=0))
+            out <- Filter(function(x) nchar(x) > 0, out) #remove blank lines
+            expect_equal(out, "foo")
         }, finally=
         {
             #Tear down - remove this function from the globalenv
@@ -27,10 +26,4 @@ test_that("Adding user commands works", {
                 rm(list=tn, envir=globalenv())
         })
 
-    #Check that it worked
-    expect_true('ado_cmd_testprint' %in% ls(envir=nsenv) &&
-                'ado_cmd_testprint' %not_in% ls(envir=pkgenv))
-
-    if('ado_cmd_testprint' %in% ls(envir=nsenv))
-        expect_equal(get('ado_cmd_testprint', envir=nsenv), cmd) 
 })

@@ -40,29 +40,19 @@
 #ifndef YY_YY_ADO_TAB_HPP_INCLUDED
 # define YY_YY_ADO_TAB_HPP_INCLUDED
 // //                    "%code requires" blocks.
-#line 14 "ado.ypp" // lalr1.cc:377
+#line 15 "ado.ypp" // lalr1.cc:377
 
-#if __cplusplus > 199711L
-#define register      // Deprecated in C++11.
-#endif  // #if __cplusplus > 199711L
-
-#include <memory>
 #include "Ado.hpp"
-class AdoDriver;
 typedef void* yyscan_t;
 
 #define YY_DECL int yylex(yy::AdoParser::semantic_type* yylval_param, \
                           yy::AdoParser::location_type* llocp,        \
-                          AdoDriver& driver, yyscan_t yyscanner)      
+                          ParseDriver& driver, yyscan_t yyscanner)      
 
-#define R_ACTION(node) \
-    if(driver.callbacks == 1 && !(driver.error_seen)) \
-    { \
-        driver.wrap_cmd_action(node->as_R_object()); \
-    }
+#define R_ACTION(node) driver.wrap_cmd_action(node);
+#define RETURN_AST(node) driver.set_ast(node);
 
-
-#line 66 "ado.tab.hpp" // lalr1.cc:377
+#line 56 "ado.tab.hpp" // lalr1.cc:377
 
 
 # include <cstdlib> // std::abort
@@ -134,7 +124,7 @@ typedef void* yyscan_t;
 
 
 namespace yy {
-#line 138 "ado.tab.hpp" // lalr1.cc:377
+#line 128 "ado.tab.hpp" // lalr1.cc:377
 
 
 
@@ -148,12 +138,12 @@ namespace yy {
     /// Symbol semantic values.
     union semantic_type
     {
-    #line 41 "ado.ypp" // lalr1.cc:377
+    #line 31 "ado.ypp" // lalr1.cc:377
 
     std::string   *str;
     ExprNode      *node;
 
-#line 157 "ado.tab.hpp" // lalr1.cc:377
+#line 147 "ado.tab.hpp" // lalr1.cc:377
     };
 #else
     typedef YYSTYPE semantic_type;
@@ -355,7 +345,7 @@ namespace yy {
 
 
     /// Build a parser object.
-     AdoParser  (AdoDriver& driver_yyarg, yyscan_t yyscanner_yyarg);
+     AdoParser  (ParseDriver& driver_yyarg, yyscan_t yyscanner_yyarg);
     virtual ~ AdoParser  ();
 
     /// Parse.
@@ -568,14 +558,14 @@ namespace yy {
 
 
     // User arguments.
-    AdoDriver& driver;
+    ParseDriver& driver;
     yyscan_t yyscanner;
   };
 
 
 
 } // yy
-#line 579 "ado.tab.hpp" // lalr1.cc:377
+#line 569 "ado.tab.hpp" // lalr1.cc:377
 
 
 

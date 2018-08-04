@@ -7,10 +7,15 @@
 Logger <-
 R6::R6Class("Logger",
     public=list(
-        #currently a no-op
-        initialize=function(...) {},
+        initialize = function()
+        {
+            private$logs <- list()
+            private$cmdlogs <- list()
+            private$use_log <- TRUE
+            private$use_cmdlog <- TRUE
+        },
 
-        has_sink=function(filename, type=NULL)
+        has_sink = function(filename, type = NULL)
         {
             raiseifnot(is.null(type) || type %in% c("log", "cmdlog"),
                        msg="Invalid log type")
@@ -19,25 +24,25 @@ R6::R6Class("Logger",
 
             if(is.null(type))
             {
-                return(pth %in% names(private$.logs) ||
-                       pth %in% names(private$.cmdlogs))
+                return(pth %in% names(private$logs) ||
+                       pth %in% names(private$cmdlogs))
             } else if(type == "log")
             {
-                return(pth %in% names(private$.logs))
+                return(pth %in% names(private$logs))
             } else
             {
-                return(pth %in% names(private$.cmdlogs))
+                return(pth %in% names(private$cmdlogs))
             }
         },
 
-        sink_type=function(filename)
+        sink_type = function(filename)
         {
             raiseifnot(self$has_sink(filename),
                        msg="No such logging sink")
 
             pth <- normalizePath(filename)
 
-            if(pth %in% names(private$.logs))
+            if(pth %in% names(private$logs))
             {
                 return("log")
             } else
@@ -46,7 +51,7 @@ R6::R6Class("Logger",
             }
         },
 
-        register_sink=function(filename, type="log", header=TRUE)
+        register_sink = function(filename, type = "log", header = TRUE)
         {
             raiseif(type %not_in% c("log", "cmdlog"),
                     msg="Invalid logging type")
@@ -70,10 +75,10 @@ R6::R6Class("Logger",
 
             if(type == "log")
             {
-                private$.logs[[pth]] = con
+                private$logs[[pth]] = con
             } else
             {
-                private$.cmdlogs[[pth]] = con
+                private$cmdlogs[[pth]] = con
             }
 
             if(header)
@@ -91,49 +96,49 @@ R6::R6Class("Logger",
             return(invisible(NULL))
         },
 
-        deregister_sink=function(filename)
+        deregister_sink = function(filename)
         {
             type <- self$sink_type(filename)
             pth <- normalizePath(filename)
 
             if(type == "log")
             {
-                close(private$.logs[[pth]])
-                private$.logs[[pth]] <- NULL
+                close(private$logs[[pth]])
+                private$logs[[pth]] <- NULL
             } else
             {
-                close(private$.cmdlogs[[pth]])
-                private$.cmdlogs[[pth]] <- NULL
+                close(private$cmdlogs[[pth]])
+                private$cmdlogs[[pth]] <- NULL
             }
 
             return(invisible(NULL))
         },
 
-        deregister_all_sinks=function(type=NULL)
+        deregister_all_sinks = function(type = NULL)
         {
             raiseifnot(is.null(type) || type %in% c("log", "cmdlog"),
                        msg="Invalid log type")
 
             if(is.null(type))
             {
-                for(con in names(private$.logs))
+                for(con in names(private$logs))
                 {
                     self$deregister_sink(con)
                 }
 
-                for(con in names(private$.cmdlogs))
+                for(con in names(private$cmdlogs))
                 {
                     self$deregister_sink(con)
                 }
             } else if(type == "log")
             {
-                for(con in names(private$.logs))
+                for(con in names(private$logs))
                 {
                     self$deregister_sink(con)
                 }
             } else
             {
-                for(con in names(private$.cmdlogs))
+                for(con in names(private$cmdlogs))
                 {
                     self$deregister_sink(con)
                 }
@@ -142,25 +147,22 @@ R6::R6Class("Logger",
             return(invisible(NULL))
         },
 
-        log_command=function(msg)
+        log_command = function(msg, echo = FALSE)
         {
-            if(settingIsSet("echo") &&
-               getSettingValue("echo"))
-            {
+            if(echo)
                 cat(msg, sep="")
-            }
 
             if(self$log_enabled)
             {
-                for(con in private$.logs)
+                for(con in private$logs)
                 {
                     cat(msg, file=con, sep="", append=TRUE)
                 }
             }
-            
+
             if(self$cmdlog_enabled)
             {
-                for(con in private$.cmdlogs)
+                for(con in private$cmdlogs)
                 {
                     cat(msg, file=con, sep="", append=TRUE)
                 }
@@ -169,10 +171,9 @@ R6::R6Class("Logger",
             return(invisible(NULL))
         },
 
-        log_result=function(msg)
+        log_result = function(msg, print_results = FALSE)
         {
-            if(settingIsSet("print_results") &&
-               getSettingValue("print_results"))
+            if(print_results)
             {
                 cat(msg, sep="")
                 cat("\n")
@@ -180,7 +181,7 @@ R6::R6Class("Logger",
 
             if(self$log_enabled)
             {
-                for(con in private$.logs)
+                for(con in private$logs)
                 {
                     cat(msg, file=con, sep="", append=TRUE)
                     cat("\n")
@@ -191,29 +192,18 @@ R6::R6Class("Logger",
         }
     ),
 
-    private = list(
-        #The log and command log sink lists. These aren't stacks or queues;
-        #really they're hash tables: we just need to be able to a) get a
-        #connection given its name, and b) loop over all currently
-        #registered connections.
-        .logs = list(),
-        .cmdlogs = list(),
-        .use_log = TRUE,
-        .use_cmdlog = TRUE
-    ),
-
     active = list(
-        log_sinks = function() names(private$.logs),
-        cmdlog_sinks = function() names(private$.cmdlog_sinks),
+        log_sinks = function() names(private$logs),
+        cmdlog_sinks = function() names(private$cmdlog_sinks),
 
         log_enabled = function(value)
         {
             if(missing(value))
             {
-                return(private$.use_log)
+                return(private$use_log)
             } else
             {
-                private$.use_log <- as.logical(value)
+                private$use_log <- as.logical(value)
             }
         },
 
@@ -221,11 +211,22 @@ R6::R6Class("Logger",
         {
             if(missing(value))
             {
-                return(private$.use_cmdlog)
+                return(private$use_cmdlog)
             } else
             {
-                private$.use_cmdlog <- as.logical(value)
+                private$use_cmdlog <- as.logical(value)
             }
         }
+    ),
+
+    private = list(
+        #The log and command log sink lists. These aren't stacks or queues;
+        #really they're hash tables: we just need to be able to a) get a
+        #connection given its name, and b) loop over all currently
+        #registered connections.
+        logs       = NULL,
+        cmdlogs    = NULL,
+        use_log    = NULL,
+        use_cmdlog = NULL
     )
 )

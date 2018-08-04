@@ -1,12 +1,11 @@
 ## Macro management commands
 
 ado_cmd_local <-
-function(expression_list, return.match.call=NULL)
+function(context, expression_list)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
-    env <- get("ado_macro_env", envir=ado_env)
     exprs <- expression_list
 
     #Either an assignment or an attempt to clear this macro
@@ -18,20 +17,21 @@ function(expression_list, return.match.call=NULL)
         {
             #Clear the macro. It's not an error if it isn't set.
             nm <- paste0("_", as.character(stmt))
-            rm(list=nm, envir=env)
+            context$macro_unset(nm)
         } else if(is.call(stmt) && stmt[[1]] == as.symbol("<-"))
         {
-            #Max macro lengths per Stata
-            raiseifnot(nchar(as.character(stmt[[2]])) <= 31, cls="EvalErrorException",
+            max_macro_namelen <- context$cclass_value("max_macro_namelen")
+            raiseifnot(nchar(as.character(stmt[[2]])) <= max_macro_namelen,
+                       cls="EvalErrorException",
                        msg="Macro name too long")
 
-            #Disallow macros long enough to overflow yylex's buffer
+            #Disallow macro values long enough to overflow yylex's buffer
             val <- as.character(eval(stmt[[3]])) #the RHS
             raiseifnot(nchar(val) <= 65436, cls="EvalErrorException",
                        msg="Macro value too long")
 
             nm <- paste0("_", as.character(stmt[[2]]))
-            assign(nm, val, envir=env)
+            context$macro_set(nm, val)
         } else
         {
             raiseCondition("Bad macro assignment", cls="EvalErrorException")
@@ -48,7 +48,7 @@ function(expression_list, return.match.call=NULL)
                    msg="Macro value too long")
 
         nm <- paste0("_", as.character(exprs[[1]]))
-        assign(nm, exprs[[2]], envir=env)
+        context$macro_set(nm, exprs[[2]])
     } else
     {
         raiseCondition("Bad macro assignment", "EvalErrorException")
@@ -58,12 +58,11 @@ function(expression_list, return.match.call=NULL)
 }
 
 ado_cmd_global <-
-function(expression_list, return.match.call=NULL)
+function(context, expression_list)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
-    env <- get("ado_macro_env", envir=ado_env)
     exprs <- expression_list
 
     if(length(exprs) == 1) #an assignment
@@ -73,18 +72,20 @@ function(expression_list, return.match.call=NULL)
         if(is.symbol(stmt))
         {
             #clear the macro
-            rm(list=as.character(stmt), envir=env)
+            context$macro_unset(as.character(stmt))
         } else if(is.call(stmt) && stmt[[1]] == as.symbol("<-"))
         {
-            raiseifnot(nchar(as.character(stmt[[2]])) <= 32, cls="EvalErrorException",
+            max_macro_namelen <- context$cclass_value("max_macro_namelen")
+            raiseifnot(nchar(as.character(stmt[[2]])) <= max_macro_namelen,
+                       cls="EvalErrorException",
                        msg="Macro name too long")
-            
+
             #set the macro
             val <- as.character(eval(stmt[[3]])) #the RHS
             raiseifnot(nchar(val) <= 65436, cls="EvalErrorException",
                        msg="Macro value too long")
 
-            assign(as.character(stmt[[2]]), val, envir=env)
+            context$macro_set(as.character(stmt[[2]]), val)
         } else
         {
             raiseCondition("Bad macro assignment", cls="EvalErrorException")
@@ -100,7 +101,7 @@ function(expression_list, return.match.call=NULL)
         raiseifnot(nchar(exprs[[2]]) <= 65436, cls="EvalErrorException",
                    msg="Macro value too long")
 
-        assign(as.character(exprs[[1]]), exprs[[2]], envir=env)
+        context$macro_set(as.character(exprs[[1]]), exprs[[2]])
     } else
     {
         raiseCondition("Bad macro assignment", "EvalErrorException")
@@ -110,39 +111,40 @@ function(expression_list, return.match.call=NULL)
 }
 
 ado_cmd_tempfile <-
-function(expression_list, return.match.call=NULL)
+function(context, expression_list)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
-    env <- get("ado_macro_env", envir=ado_env)
     exprs <- expression_list
 
     raiseifnot(length(exprs) >= 1, cls="EvalErrorException",
                msg="No macro name given")
+
     for(nm in exprs)
     {
         raiseifnot(is.symbol(nm), cls="EvalErrorException",
                    msg="Invalid macro name")
 
-        #We're not going to check these for length, because
-        # a) what would we do if it were too long, anyway?
-        # b) Stata notwithstanding, both R and flex can handle any length of
-        #    string we might actually get here
         val <- paste0("_", as.character(nm))
-        assign(val, tempfile(), envir=env)
+
+        max_macro_namelen <- context$cclass_value("max_macro_namelen")
+        raiseifnot(nchar(val) <= max_macro_namelen,
+                   cls="EvalErrorException",
+                   msg="Macro name too long")
+
+        context$macro_set(val, tempfile())
     }
 
     invisible(TRUE)
 }
 
 ado_cmd_macro <-
-function(expression_list, return.match.call=NULL)
+function(context, expression_list)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
-    env <- get("ado_macro_env", envir=ado_env)
     exprs <- expression_list
 
     raiseifnot(length(exprs) >= 1, cls="EvalErrorException",
@@ -153,13 +155,13 @@ function(expression_list, return.match.call=NULL)
 
     if(what == "local")
     {
-        return(ado_cmd_local(exprs[-1]))
+        return(ado_cmd_local(context=context, expression_list=exprs[-1]))
     } else if(what == "global")
     {
-        return(ado_cmd_global(exprs[-1]))
+        return(ado_cmd_global(context=context, expression_list=exprs[-1]))
     } else if(what == "tempfile")
     {
-        return(ado_cmd_tempfile(exprs[-1]))
+        return(ado_cmd_tempfile(context=context, expression_list=exprs[-1]))
     } else if(what == "drop")
     {
         raiseifnot(length(exprs) == 2, cls="EvalErrorException",
@@ -170,15 +172,17 @@ function(expression_list, return.match.call=NULL)
         #if you want to drop a local macro, just drop it with its full
         #name that begins with an underscore
         del <- as.character(exprs[[2]])
+
         if(del == "_all")
-            rm(list=ls(envir=env), envir=env)
-        else
-            rm(list=del, envir=env)
+            del <- names(context$macro_all())
+
+        for(nm in del)
+            context$macro_unset(nm)
     } else if(what == "dir" || what == "list")
     {
         #we don't need to worry about using deparse because only
-        #character vectors can ever have been assigned to this environment
-        return(mget(ls(envir=env), envir=env))
+        #character vectors can ever have been assigned to this table
+        return(context$macro_all())
     }
 
     invisible(TRUE)

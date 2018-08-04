@@ -185,7 +185,7 @@ test_that("Assignment expressions parse", {
     expect_parse_accept("gen foo = 1\n")
     expect_parse_accept("gen foo = 1 + 3.4\n")
     expect_parse_accept('gen foo = "string"\n')
-    expect_parse_accept('gen foo = "`string"\'\n')
+    expect_parse_accept('gen foo = "`string\'"\n')
     expect_parse_accept('gen foo = seq()\n')
     expect_parse_accept("gen foo = seq[3]\n")
     expect_parse_accept("gen foo = 3 > 4\n")

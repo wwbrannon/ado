@@ -2,15 +2,15 @@
 ## First, things that are more nearly flow-control constructs than
 ## "commands" in the usual sense
 ado_cmd_quit <-
-function(return.match.call=NULL)
+function(context)
 {
-    #Don't do anything with return.match.call because otherwise we can't get
-    #out of ado() when testing with return.match.call
+    #Don't do anything with context$debug_match_call because otherwise we can't get
+    #out of ado() when using that flag to test
     raiseCondition("Exit requested", "ExitRequestedException")
 }
 
 ado_cmd_continue <-
-function(option_list=NULL, return.match.call=NULL)
+function(context, option_list=NULL)
 {
     #Similarly, we shouldn't return match.call here because
     #then it's impossible to test loops properly, and this command
@@ -26,9 +26,9 @@ function(option_list=NULL, return.match.call=NULL)
 }
 
 ado_cmd_do <-
-function(expression_list, return.match.call=NULL)
+function(context, expression_list)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     filename <- as.character(expression_list[[1]])
@@ -48,7 +48,7 @@ function(expression_list, return.match.call=NULL)
             mname <- as.symbol(as.character(ind))
             val <- as.character(vals[ind])
 
-            ado_cmd_local(expression_list=list(mname, val))
+            ado_cmd_local(context=context, expression_list=list(mname, val))
         }
     }
 
@@ -56,7 +56,7 @@ function(expression_list, return.match.call=NULL)
     #even if we're interactive and that normally wouldn't be done.
     con <- file(filename, "rb")
     on.exit(close(con), add=TRUE)
-    repl(con, echo=1)
+    context$interpret(con, echo=1)
 
     #Finally, tear down the numbered macros
     if(length(expression_list) > 1)
@@ -64,7 +64,7 @@ function(expression_list, return.match.call=NULL)
         for(ind in inds)
         {
             mname <- as.symbol(as.character(ind))
-            ado_cmd_local(expression_list=list(mname))
+            ado_cmd_local(context=context, expression_list=list(mname))
         }
     }
 
@@ -73,9 +73,9 @@ function(expression_list, return.match.call=NULL)
 
 #The if expr { } construct
 ado_cmd_if <-
-function(expression, compound_cmd, return.match.call=NULL)
+function(context, expression, compound_cmd)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 }
 
@@ -85,9 +85,9 @@ ado_cmd_run <- ado_cmd_do
 #====================================================================
 ## Now, more normal commands
 ado_cmd_about <-
-function(return.match.call=NULL)
+function(context)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     fields <- c("Package", "Authors@R", "Version", "Title", "License", "URL", "BugReports")
@@ -97,9 +97,9 @@ function(return.match.call=NULL)
 }
 
 ado_cmd_sleep <-
-function(expression, return.match.call=NULL)
+function(context, expression)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     Sys.sleep(expression[[1]])
@@ -108,9 +108,9 @@ function(expression, return.match.call=NULL)
 }
 
 ado_cmd_display <-
-function(expression, return.match.call=NULL)
+function(context, expression)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     ret <- eval(expression[[1]])
@@ -118,9 +118,9 @@ function(expression, return.match.call=NULL)
 }
 
 ado_cmd_preserve <-
-function(option_list=NULL, return.match.call=NULL)
+function(context, option_list=NULL)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     valid_opts <- c("memory")
@@ -128,16 +128,15 @@ function(option_list=NULL, return.match.call=NULL)
 
     mem <- hasOption(option_list, "memory")
 
-    dt <- get("ado_dta", envir=ado_env)
-    dt$preserve(memory=mem)
+    context$dta$preserve(memory=mem)
 
     return(invisible(NULL))
 }
 
 ado_cmd_restore <-
-function(option_list=NULL, return.match.call=NULL)
+function(context, option_list=NULL)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     valid_opts <- c("not")
@@ -145,16 +144,15 @@ function(option_list=NULL, return.match.call=NULL)
 
     cancel <- hasOption(option_list, "not")
 
-    dt <- get("ado_dta", envir=ado_env)
-    dt$restore(cancel=cancel)
+    context$dta$restore(cancel=cancel)
 
     return(invisible(NULL))
 }
 
 ado_cmd_query <-
-function(varlist=NULL, return.match.call=NULL)
+function(context, varlist=NULL)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     #Subcommand is accepted for compatibility but (currently) ignored.
@@ -163,22 +161,18 @@ function(varlist=NULL, return.match.call=NULL)
     raiseifnot(is.null(varlist) || length(varlist) == 1,
                msg="Wrong number of arguments to query")
 
-    nm <- allSettings()
-    vals <- lapply(nm, getSettingValue)
-    names(vals) <- nm
-
-    return(structure(vals, class="ado_cmd_query"))
+    return(structure(context$settings_all(), class="ado_cmd_query"))
 }
 
 ado_cmd_set <-
-function(expression_list=NULL, return.match.call=NULL)
+function(context, expression_list=NULL)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     if(is.null(expression_list))
     {
-        return(ado_cmd_query())
+        return(ado_cmd_query(context=context))
     }
 
     raiseifnot(length(expression_list) == 2,
@@ -236,21 +230,19 @@ function(expression_list=NULL, return.match.call=NULL)
             raiseCondition("Bad # of obs to set")
         }
 
-        dt <- get("ado_dta", envir=ado_env)
-        dt$set_obs(value)
+        context$dta$set_obs(value)
     } else
     {
-        env <- get("ado_settings_env", envir=ado_env)
-        assign(setting, value, envir=env)
+        context$setting_set(setting, value)
     }
 
     return(invisible(NULL))
 }
 
 ado_cmd_creturn <-
-function(expression, return.match.call=NULL)
+function(context, expression)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     #Must be invoked as "creturn list"
@@ -262,17 +254,17 @@ function(expression, return.match.call=NULL)
     #Get the values and put them into a list with their names as
     #the list names. This format is easier for the print method
     #to work with.
-    nm <- ado_func_c(enum=TRUE)
-    vals <- lapply(nm, ado_func_c)
+    nm <- ado_func_c(context=context, enum=TRUE)
+    vals <- lapply(nm, function(x) ado_func_c(context=context, val=x))
     names(vals) <- nm
 
     return(structure(vals, class="ado_cmd_creturn"))
 }
 
 ado_cmd_return <-
-function(expression, return.match.call=NULL)
+function(context, expression)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     #Must be invoked as "return list"
@@ -281,17 +273,17 @@ function(expression, return.match.call=NULL)
         raiseCondition("Unrecognized subcommand")
     }
 
-    nm <- ado_func_r(enum=TRUE)
-    vals <- lapply(nm, ado_func_r)
+    nm <- ado_func_r(context=context, enum=TRUE)
+    vals <- lapply(nm, function(x) ado_func_r(context=context, val=x))
     names(vals) <- nm
 
     return(structure(vals, class="ado_cmd_return"))
 }
 
 ado_cmd_ereturn <-
-function(expression, return.match.call=NULL)
+function(context, expression)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     #Must be invoked as "ereturn list"
@@ -300,18 +292,17 @@ function(expression, return.match.call=NULL)
         raiseCondition("Unrecognized subcommand")
     }
 
-    nm <- ado_func_e(enum=TRUE)
-    vals <- lapply(nm, ado_func_e)
+    nm <- ado_func_e(context=context, enum=TRUE)
+    vals <- lapply(nm, function(x) ado_func_e(context=context, val=x))
     names(vals) <- nm
 
     return(structure(vals, class="ado_cmd_ereturn"))
 }
 
 ado_cmd_log <-
-function(expression_list=NULL, using_clause=NULL, option_list=NULL,
-         return.match.call=NULL)
+function(context, expression_list=NULL, using_clause=NULL, option_list=NULL)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     valid_opts <- c("append", "replace", "text", "smcl", "name")
@@ -320,14 +311,12 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
     raiseif(!is.null(using_clause) && !is.null(expression_list),
             msg="Cannot specify using clause and a subcommand")
 
-    lg <- get("ado_logger", envir=ado_env)
-
     if(is.null(using_clause) && is.null(expression_list))
     {
         raiseifnot(is.null(option_list), msg="Cannot specify options here")
 
         msg <- "Open logging sinks: \n\n"
-        for(con in lg$log_sinks)
+        for(con in context$log_sinks())
         {
             msg <- msg %p% con
         }
@@ -337,7 +326,7 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
     {
         raiseif(hasOption(option_list, "smcl"), msg="SMCL is not supported")
 
-        lg$register_sink(using_clause, type="log")
+        context$log_register_sink(using_clause, type="log")
     } else #we have a subcommand
     {
         raiseifnot(is.null(option_list), msg="Cannot specify options here")
@@ -348,7 +337,7 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
         if(cmd == "query")
         {
             msg <- "Open logging sinks: \n\n"
-            for(con in lg$log_sinks)
+            for(con in context$log_sinks())
             {
                 msg <- msg %p% con
             }
@@ -361,17 +350,17 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
 
             if(length(expression_list) == 1)
             {
-                lg$deregister_all_sinks(type="log")
+                context$log_deregister_all_sinks(type="log")
             } else
             {
-                lg$deregister_sink(as.character(expression_list[[2]]))
+                context$log_deregister_sink(as.character(expression_list[[2]]))
             }
         } else if(cmd == "on")
         {
-            lg$log_enabled <- TRUE
+            context$log_set_enabled(TRUE)
         } else if(cmd == "off")
         {
-            lg$log_enabled <- FALSE
+            context$log_set_enabled(FALSE)
         }
     }
 
@@ -379,10 +368,9 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
 }
 
 ado_cmd_cmdlog <-
-function(expression_list=NULL, using_clause=NULL, option_list=NULL,
-         return.match.call=NULL)
+function(context, expression_list=NULL, using_clause=NULL, option_list=NULL)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 
     valid_opts <- c("append", "replace", "permanently")
@@ -391,14 +379,12 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
     raiseif(!is.null(using_clause) && !is.null(expression_list),
             msg="Cannot specify using clause and a subcommand")
 
-    lg <- get("ado_logger", envir=ado_env)
-
     if(is.null(using_clause) && is.null(expression_list))
     {
         raiseifnot(is.null(option_list), msg="Cannot specify options here")
 
         msg <- "Open command logging sinks: \n\n"
-        for(con in lg$cmdlog_sinks)
+        for(con in context$log_cmdlog_sinks())
         {
             msg <- msg %p% con
         }
@@ -409,7 +395,7 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
         raiseif(hasOption(option_list, "permanently"),
                 msg="Permanent option setting is not supported")
 
-        lg$register_sink(using_clause, type="cmdlog")
+        context$log_register_sink(using_clause, type="cmdlog")
     } else #we have a subcommand
     {
         raiseifnot(is.null(option_list), msg="Cannot specify options here")
@@ -424,17 +410,17 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
 
             if(length(expression_list) == 1)
             {
-                lg$deregister_all_sinks(type="cmdlog")
+                context$log_deregister_all_sinks(type="cmdlog")
             } else
             {
-                lg$deregister_sink(as.character(expression_list[[2]]))
+                context$log_deregister_sink(as.character(expression_list[[2]]))
             }
         } else if(cmd == "on")
         {
-            lg$cmdlog_enabled <- FALSE
+            context$log_cmdlog_set_enabled(TRUE)
         } else if(cmd == "off")
         {
-            lg$cmdlog_enabled <- FALSE
+            context$log_cmdlog_set_enabled(FALSE)
         }
     }
 
@@ -442,9 +428,9 @@ function(expression_list=NULL, using_clause=NULL, option_list=NULL,
 }
 
 ado_cmd_help <-
-function(expression, return.match.call=NULL)
+function(context, expression)
 {
-    if(!is.null(return.match.call) && return.match.call)
+    if(context$debug_match_call)
         return(match.call())
 }
 
