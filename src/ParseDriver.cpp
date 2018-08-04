@@ -107,7 +107,7 @@ ParseDriver::get_macro_value(std::string name)
         return Rcpp::as<std::string>(macro_accessor(name));
     } else
     {
-        Rcpp::Rcerr << "Returning empty macro for debug" << std::endl;
+        this->log(std::string("Returning empty macro for debug"));
         return std::string("");
     }
 }
@@ -115,8 +115,7 @@ ParseDriver::get_macro_value(std::string name)
 void
 ParseDriver::push_echo_text(std::string echo_text)
 {
-    if(this->echo)
-        this->echo_text_buffer += echo_text;
+    this->echo_text_buffer += echo_text;
 }
 
 void
@@ -132,18 +131,20 @@ void
 ParseDriver::error(const std::string& m)
 {
     this->error_seen = 1;
+    this->log(std::string("Error: ") + m);
+}
 
+void ParseDriver::log(const std::string& m)
+{
     if( (this->debug_level & DEBUG_NO_PARSE_ERROR) == 0 )
     {
-        std::string msg = std::string("Error: ") + m;
-
         if( (this->debug_level & DEBUG_NO_CALLBACKS) == 0 )
         {
             Rcpp::Function logger = this->context["log_result"];
-            logger(msg);
+            logger(m);
         }
         else
-            Rcpp::Rcerr << msg << std::endl;
+            Rcpp::Rcerr << m << std::endl;
     }
 }
 

@@ -94,6 +94,7 @@ class ParseDriver
 
         void error(int lineno, int col, const std::string& m);
         void error(const std::string& m);
+        void log(const std::string& m);
 
     private:
         ParseDriver(const ParseDriver& that); // no copy ctor
