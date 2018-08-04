@@ -1477,6 +1477,7 @@ strL                                {
 0[xX]{H}+                           { /* hex */
                                         R_ECHO(yytext);
                                         
+                                        // FIXME need hex floats
                                         yylval->node = new ExprNode({"ado_literal", "ado_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
@@ -1485,8 +1486,10 @@ strL                                {
 0{D}+                               { /* octal */
                                         R_ECHO(yytext);
                                         
+                                        // FIXME need octal floats
                                         yylval->node = new ExprNode({"ado_literal", "ado_number"});
 
+                                        // FIXME this should convert value to octal
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_NUMBER;
                                     }
@@ -1494,7 +1497,7 @@ strL                                {
                                         R_ECHO(yytext);
                                         
                                         yylval->node = new ExprNode({"ado_literal", "ado_number"});
-
+                                        
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_NUMBER;
                                     }
