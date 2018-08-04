@@ -16,12 +16,9 @@ test_that("Statements without terminators fail to parse", {
 
 test_that("Invalid numeric literals fail to parse", {
     expect_parse_reject("disp 0.02.34\n")
-    expect_parse_reject("disp 033-E31\n")
 })
 
 test_that("Invalid datetime literals fail to parse", {
-    expect_parse_reject("disp jan072006\n")
-    expect_parse_reject("disp jan199508\n")
     expect_parse_reject("disp 12:45:12.09 07jan2006 12:45:12.09\n")
     expect_parse_reject("disp 03:12:34 08jan1995\n")
 })
