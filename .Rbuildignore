@@ -2,12 +2,10 @@
 ^\.Rproj\.user$
 ^packrat/
 ^\.Rprofile$
-^src/parser/build/
-^src/parser/parser.a$
-^src/parser/ado.a$
+^src/parser/
 ^.travis.yml$
 ^README.Rmd$
-scratch/
+^scratch/
 ^appveyor\.yml$
 ^codecov\.yml$
 
