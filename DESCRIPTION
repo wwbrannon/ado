@@ -18,18 +18,18 @@ LazyData: true
 ByteCompile: true
 NeedsCompilation: true
 Depends:
-    R (>= 3.4.0)
+    R (>= 4.1.0)
 Imports:
-    Rcpp (>= 0.12.17),
-    R6 (>= 2.2.2),
-    methods (>= 3.4.0),
-    data.table (>= 1.11.4),
-    readstata13 (>= 0.9.2)
+    Rcpp (>= 1.0.0),
+    R6 (>= 2.5.0),
+    methods,
+    data.table (>= 1.14.0),
+    readstata13 (>= 0.10.0)
 LinkingTo: Rcpp, testthat
-SystemRequirements: C++11
+SystemRequirements: C++17
 Suggests:
     testthat,
     covr
 Encoding: UTF-8
-RoxygenNote: 6.1.0
+RoxygenNote: 7.3.2
 Biarch: TRUE

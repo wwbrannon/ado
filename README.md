@@ -1,14 +1,10 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-[![Build
-Status](https://img.shields.io/travis/wwbrannon/ado.svg?style=flat)](https://travis-ci.org/wwbrannon/ado)
-[![AppVeyor Build
-Status](https://ci.appveyor.com/api/projects/status/github/wwbrannon/ado?branch=master&svg=true)](https://ci.appveyor.com/project/wwbrannon/ado)
+[![R-CMD-check](https://github.com/wwbrannon/ado/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/wwbrannon/ado/actions/workflows/R-CMD-check.yaml)
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/ado)](https://cran.r-project.org/package=ado)
 [![Downloads](https://cranlogs.r-pkg.org/badges/ado)](https://cran.r-project.org/package=ado)
-[![Coverage
-Status](https://img.shields.io/codecov/c/github/wwbrannon/ado/master.svg)](https://codecov.io/github/wwbrannon/ado?branch=master)
+[![Coverage Status](https://img.shields.io/codecov/c/github/wwbrannon/ado/master.svg)](https://codecov.io/github/wwbrannon/ado?branch=master)
 [![License](https://img.shields.io/:license-mit-blue.svg?style=flat)](https://wwbrannon.mit-license.org/)
 
 # ado
