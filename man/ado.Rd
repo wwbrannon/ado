@@ -2,12 +2,19 @@
 % Please edit documentation in R/ado_frontend.R, R/ado_package.R
 \docType{package}
 \name{ado}
-\alias{ado}
 \alias{ado-package}
+\alias{ado}
 \title{Interpret ado code interactively or from a file.}
 \usage{
-ado(df = NULL, filename = NULL, string = NULL, assign.back = FALSE,
-  debug_level = 0, print_results = 1, echo = NULL)
+ado(
+  df = NULL,
+  filename = NULL,
+  string = NULL,
+  assign.back = FALSE,
+  debug_level = 0,
+  print_results = 1,
+  echo = NULL
+)
 }
 \arguments{
 \item{df}{If NULL, start with an empty dataset; if a data.frame, use a copy
@@ -64,3 +71,15 @@ do not persist across calls to the ado() function.
 This package is not in any way affiliated with or endorsed by StataCorp.
 }
 
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/wwbrannon/ado}
+  \item Report bugs at \url{https://github.com/wwbrannon/ado/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: William Brannon \email{wbrannon@mit.edu} (\href{https://orcid.org/0000-0002-1435-8535}{ORCID}) [copyright holder]
+
+}

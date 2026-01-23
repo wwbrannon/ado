@@ -5,8 +5,13 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
 
-RcppExport SEXP run_testthat_tests();
+
+RcppExport SEXP run_testthat_tests(void);
 RcppExport SEXP _rcpp_module_boot_class_ParseDriver();
 
 static const R_CallMethodDef CallEntries[] = {
