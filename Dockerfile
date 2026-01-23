@@ -1,4 +1,4 @@
-FROM rocker/r-ver:4.4.0
+FROM rocker/r-ver:4.5.2
 
 # System dependencies for R packages:
 # - flex, bison: parser generation for this package

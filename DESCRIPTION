@@ -18,15 +18,15 @@ LazyData: true
 ByteCompile: true
 NeedsCompilation: true
 Depends:
-    R (>= 4.1.0)
+    R (>= 4.2.0)
 Imports:
-    Rcpp (>= 1.0.0),
+    Rcpp (>= 1.0.10),
     R6 (>= 2.5.0),
     methods,
     data.table (>= 1.14.0),
     readstata13 (>= 0.10.0)
 LinkingTo: Rcpp, testthat
-SystemRequirements: C++17
+SystemRequirements: C++11
 Suggests:
     testthat,
     covr

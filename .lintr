@@ -1,0 +1,2 @@
+linters: linters_with_defaults(line_length_linter(130), indentation_linter = NULL, object_name_linter = NULL, infix_spaces_linter = NULL, spaces_left_parentheses_linter = NULL, brace_linter = NULL, commented_code_linter = NULL, return_linter = NULL, trailing_whitespace_linter = NULL, trailing_blank_lines_linter = NULL, object_usage_linter = NULL, quotes_linter = NULL, commas_linter = NULL, semicolon_linter = NULL)
+exclusions: list("src/")

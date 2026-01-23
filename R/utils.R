@@ -35,7 +35,7 @@ function(option_list, valid_opts)
                msg="Option given more than once")
 
     #Update the names
-    for(i in 1:length(given))
+    for(i in seq_along(given))
         option_list[[i]]$name <- given[i]
 
     option_list
@@ -188,7 +188,7 @@ function(expr, cls="BadCommandException", msg=NULL)
 read_input <-
 function(con=NULL)
 {
-    res = ""
+    res <- ""
 
     repeat
     {
