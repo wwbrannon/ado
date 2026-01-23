@@ -99,6 +99,37 @@ Test helpers in `helper-functions.R`:
 1. **Embedded R blocks** - `{{{ R code }}}` executes R directly
 2. **Custom commands** - R functions registered via `add_command()` can be used as ado commands
 
+## Development Environment
+
+### Docker (Recommended)
+
+A Docker environment is provided for reproducible development:
+
+```bash
+# Build the development image
+docker compose build
+
+# Start interactive R session
+docker compose run --rm dev
+
+# Run tests in Docker
+docker compose run --rm dev R -e "devtools::load_all(); devtools::test()"
+
+# Run R CMD CHECK
+docker compose run --rm dev R -e "devtools::check()"
+
+# Regenerate parser
+docker compose run --rm dev bash -c "cd src/parser && make"
+```
+
+### Local Development
+
+Install dependencies from DESCRIPTION:
+
+```bash
+R -e "remotes::install_deps(dependencies = TRUE)"
+```
+
 ## Dependencies
 
 - **Rcpp** - R/C++ interface

@@ -47,7 +47,3 @@ scratch/
 # RStudio files
 .Rproj.user
 
-# packrat
-packrat/lib*/
-packrat/src/
-

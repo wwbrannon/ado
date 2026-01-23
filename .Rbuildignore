@@ -1,7 +1,8 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^packrat/
-^\.Rprofile$
+^Dockerfile$
+^docker-compose\.yml$
+^\.dockerignore$
 ^src/parser/build/
 ^src/parser/parser.a$
 ^src/parser/ado.a$
