@@ -1,3 +1,5 @@
+.claude/settings.local.json
+
 ## Build system
 /src/Makevars
 /src/Makevars.win
