@@ -202,7 +202,7 @@ R6::R6Class("Dataset",
             } else
             {
                 private$preserve_file <- tempfile()
-                dput(private$dt, file=private$preserve_file)
+                saveRDS(private$dt, file=private$preserve_file)
             }
 
             return(invisible(TRUE))
@@ -239,7 +239,7 @@ R6::R6Class("Dataset",
                 {
                     #Load the serialized object back in
                     private$dt <- NULL
-                    private$dt <- dget(private$preserve_file)
+                    private$dt <- readRDS(private$preserve_file)
 
                     #Unlink the copy on disk to free up space
                     unlink(private$preserve_file)
@@ -260,8 +260,7 @@ R6::R6Class("Dataset",
                     raiseCondition("Column does not exist")
                 }
 
-                col <- as.symbol(col)
-                private$dt[, eval(col) := NULL]
+                private$dt[, (col) := NULL]
             }
 
             private$.changed <- TRUE
@@ -280,8 +279,13 @@ R6::R6Class("Dataset",
 
         subset = function(subset, select, ...)
         {
-            args <- c(x=private$dt, subset=subset, select=select, list(...))
-            return(do.call(subset, args))
+            # Handle numeric row indices
+            if(is.numeric(subset)) {
+                return(private$dt[subset, select, with=FALSE])
+            }
+            # Otherwise use base::subset
+            args <- c(list(x=private$dt, subset=substitute(subset), select=select), list(...))
+            return(do.call(base::subset, args))
         },
 
         in_clause_to_row_numbers = function(in_clause)
@@ -330,20 +334,20 @@ R6::R6Class("Dataset",
             to_keep <- setdiff(seq.int(1, self$nrow), rows)
 
             nm <- temporary_name(self$names)
-            private$dt[, nm := seq.int(1, self$nrow), with=FALSE]
+            private$dt[, (nm) := seq.int(1, self$nrow)]
 
-            subst <- data.table(col1 = private$dt[[nm]][to_keep])
-            setnames(subst, c(nm))
+            subst <- data.table::data.table(col1 = private$dt[[nm]][to_keep])
+            data.table::setnames(subst, c(nm))
 
             for(col in setdiff(self$names, c(nm)))
             {
-                subst[, col := private$dt[[col]][to_keep], with=FALSE]
-                private$dt[, col := NULL, with=FALSE] #delete it
+                subst[, (col) := private$dt[[col]][to_keep]]
+                private$dt[, (col) := NULL] #delete it
             }
 
             private$dt <- NULL
             private$dt <- subst
-            private$dt[, nm := NULL, with=FALSE]
+            private$dt[, (nm) := NULL]
 
             private$.changed <- TRUE
             return(invisible(TRUE))
