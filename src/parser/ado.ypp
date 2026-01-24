@@ -11,15 +11,12 @@
 
 %code requires
 {
-#include "Ado.hpp"
-typedef void* yyscan_t;
+    #include "Ado.hpp"
+    typedef void* yyscan_t;
 
-#define YY_DECL int yylex(yy::AdoParser::semantic_type* yylval_param, \
-                          yy::AdoParser::location_type* llocp,        \
-                          ParseDriver& driver, yyscan_t yyscanner)      
-
-#define R_ACTION(node) driver.wrap_cmd_action(node);
-#define RETURN_AST(node) driver.set_ast(node);
+    #define YY_DECL int yylex(yy::AdoParser::semantic_type* yylval_param, \
+                              yy::AdoParser::location_type* llocp,        \
+                              ParseDriver& driver, yyscan_t yyscanner)
 }
 
 %param { ParseDriver& driver }
@@ -33,17 +30,19 @@ typedef void* yyscan_t;
 
 %code
 {
-#include <string>
-#include <Rcpp.h>
+    #include <string>
+    #include <Rcpp.h>
 
-YY_DECL;
+    YY_DECL;
 
-void
-yy::AdoParser::error(const location_type& l, const std::string& m)
-{
-    driver.error(l.begin.line, l.begin.column, m);
-}
+    void
+    yy::AdoParser::error(const location_type& l, const std::string& m)
+    {
+        driver.error(l.begin.line, l.begin.column, m);
+    }
 
+    #define R_ACTION(node) driver.wrap_cmd_action(node);
+    #define RETURN_AST(node) driver.set_ast(node);
 }
 
 /* Operator  precedence */
@@ -214,9 +213,9 @@ translation_unit:
     | error
     {
         $1; // shut up, bison...
-        
+
         ExprNode *node = new ExprNode("ado_compound_cmd");
-        
+
         RETURN_AST(node);
         $$ = node;
     }
@@ -314,7 +313,7 @@ forvalues_cmd:
     | FORVALUES IDENT "=" NUMBER "/" NUMBER            "{" STRING_LITERAL "}"
     {
         $5; // shut up, bison...
-        
+
         $1->appendChild("macro_name", $2);
         $1->appendChild("text", $8);
 
@@ -666,13 +665,13 @@ nonmodifier_cmd:
         ExprNode *name = new ExprNode({"ado_literal", "ado_ident"});
         name->addData("value", *(new std::string("merge_spec")));
         opt->appendChild("name", name);
-        
+
         ExprNode *arglist = new ExprNode("ado_argument_expression_list");
         ExprNode *explist = new ExprNode("ado_expression_list");
         explist->appendChild($2);
         arglist->appendChild(explist);
         opt->appendChild("args", arglist);
-        
+
         $5->appendChild(opt);
         node->appendChild("option_list", $5);
 
@@ -684,7 +683,7 @@ nonmodifier_cmd:
         node->appendChild("verb", $1);
 
         node->appendChild("expression_list", $2);
-        
+
         if($3->nChildren() > 0)
             node->appendChild("option_list", $3);
 
@@ -712,7 +711,7 @@ nonmodifier_cmd:
         ExprNode *endogenous_name = new ExprNode({"ado_literal", "ado_ident"});
         endogenous_name->addData("value", *(new std::string("endogenous_vars")));
         endogenous_opt->appendChild("name", endogenous_name);
-        
+
         ExprNode *endogenous_args = new ExprNode("ado_argument_expression_list");
         endogenous_args->appendChild($5);
         endogenous_opt->appendChild("args", endogenous_args);
@@ -721,11 +720,11 @@ nonmodifier_cmd:
         ExprNode *instrumental_name = new ExprNode({"ado_literal", "ado_ident"});
         instrumental_name->addData("value", *(new std::string("instrumental_vars")));
         instrumental_opt->appendChild("name", instrumental_name);
-        
+
         ExprNode *instrumental_args = new ExprNode("ado_argument_expression_list");
         instrumental_args->appendChild($7);
         instrumental_opt->appendChild("args", instrumental_args);
-        
+
         $11->appendChild(endogenous_opt);
         $11->appendChild(instrumental_opt);
         node->appendChild("option_list", $12);
@@ -765,26 +764,26 @@ nonmodifier_cmd:
         /* the expression list we need to wrap in a function call */
         ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", *(new std::string("()")));
-        
+
         // the "left" child
         ExprNode *left = new ExprNode({"ado_literal", "ado_ident"});
         left->addData("value", *(new std::string("collapse_stat")));
         node->appendChild("left", left);
-        
+
         // the "right" child
         ExprNode *mean = new ExprNode({"ado_literal", "ado_ident"});
         mean->addData("value", *(new std::string("mean")));
 
         ExprNode *explist = new ExprNode("ado_expression_list");
         ExprNode *arglist = new ExprNode("ado_argument_expression_list");
-        
+
         explist->appendChild(mean); // stat goes first
         arglist->appendChild(explist);
         arglist->appendChild($2); // variable names or assignments follow
-        
+
         node->appendChild("right", arglist);
         cmd->appendChild("expression_list", node);
-        
+
         $$ = cmd;
     }
     | COLLAPSE collapse_list if_clause in_clause weight_clause option_list
@@ -827,7 +826,7 @@ nonmodifier_cmd:
 
         $3->prependChild($2);
         node->appendChild("expression_list", $3);
-        
+
         if($4->nChildren() > 0)
             node->appendChild("if_clause", $4);
 
@@ -839,7 +838,7 @@ nonmodifier_cmd:
 
         if($7->nChildren() > 0)
             node->appendChild("option_list", $7);
-        
+
         $$ = node;
     }
     | RECODE recode_rule_list if_clause in_clause option_list
@@ -857,7 +856,7 @@ nonmodifier_cmd:
 
         if($5->nChildren() > 0)
             node->appendChild("option_list", $5);
-        
+
         $$ = node;
     }
     ;
@@ -908,7 +907,7 @@ collapse_spec_base:
         // just for this internal representation.
         ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", *(new std::string("()")));
-        
+
         // the "left" child
         ExprNode *left = new ExprNode({"ado_literal", "ado_ident"});
         left->addData("value", *(new std::string("collapse_newvar")));
@@ -920,7 +919,7 @@ collapse_spec_base:
         explist->appendChild($1);
         explist->appendChild($3);
         arglist->appendChild(explist);
-        
+
         node->appendChild("right", arglist);
         $$ = node;
     }
@@ -945,19 +944,19 @@ collapse_spec:
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", *(new std::string("()")));
-        
+
         // the "left" child
         ExprNode *left = new ExprNode({"ado_literal", "ado_ident"});
         left->addData("value", *(new std::string("collapse_stat")));
         node->appendChild("left", left);
-        
+
         // the "right" child
         ExprNode *explist = new ExprNode("ado_expression_list");
         explist->appendChild($2); // stat goes first
         ExprNode *arglist = new ExprNode("ado_argument_expression_list");
         arglist->appendChild(explist);
         arglist->appendChild($4); // variable names or assignments follow
-        
+
         node->appendChild("right", arglist);
         $$ = node;
     }
@@ -980,38 +979,38 @@ collapse_list:
 /* Helper constructs for recode */
 recode_rule:
       IDENT
-    | "(" IDENT "=" NUMBER ")" 
+    | "(" IDENT "=" NUMBER ")"
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", *(new std::string("()")));
-        
+
         // the "left" child
         ExprNode *left = new ExprNode({"ado_literal", "ado_ident"});
         left->addData("value", *(new std::string("recode_rule_ident")));
         node->appendChild("left", left);
-        
+
         // the "right" child
         ExprNode *explist = new ExprNode("ado_expression_list");
         explist->appendChild($4); // destination value goes first
         explist->appendChild($2);
         ExprNode *arglist = new ExprNode("ado_argument_expression_list");
         arglist->appendChild(explist);
-        
+
         node->appendChild("right", arglist);
         $$ = node;
     }
-    | "(" NUMBER "/" NUMBER "=" NUMBER ")" 
+    | "(" NUMBER "/" NUMBER "=" NUMBER ")"
     {
         $3; // shut up, bison...
 
         ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", *(new std::string("()")));
-        
+
         // the "left" child
         ExprNode *left = new ExprNode({"ado_literal", "ado_ident"});
         left->addData("value", *(new std::string("recode_rule_range")));
         node->appendChild("left", left);
-        
+
         // the "right" child
         ExprNode *explist = new ExprNode("ado_expression_list");
         explist->appendChild($6); // destination value goes first
@@ -1019,27 +1018,27 @@ recode_rule:
         explist->appendChild($2); // then the lower range limit
         ExprNode *arglist = new ExprNode("ado_argument_expression_list");
         arglist->appendChild(explist);
-        
+
         node->appendChild("right", arglist);
         $$ = node;
     }
-    | "(" numlist "=" NUMBER ")" 
+    | "(" numlist "=" NUMBER ")"
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", *(new std::string("()")));
-        
+
         // the "left" child
         ExprNode *left = new ExprNode({"ado_literal", "ado_ident"});
         left->addData("value", *(new std::string("recode_rule_numlist")));
         node->appendChild("left", left);
-        
+
         // the "right" child
         ExprNode *explist = new ExprNode("ado_expression_list");
         explist->appendChild($4); // destination value goes first
         ExprNode *arglist = new ExprNode("ado_argument_expression_list");
         arglist->appendChild(explist);
         arglist->appendChild($2); // this is flattened in the code generator
-        
+
         node->appendChild("right", arglist);
         $$ = node;
     }
@@ -1066,21 +1065,21 @@ gsort_var:
         ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", *(new std::string("()")));
         node->appendChild("right", $1);
-        
+
         ExprNode *left = new ExprNode({"ado_literal", "ado_ident"});
         left->addData("value", *(new std::string("asc")));
         node->appendChild("left", left);
-        
+
         $$ = node;
     }
     | "+" IDENT
     {
         $1; // shut up, bison...
-        
+
         ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", *(new std::string("()")));
         node->appendChild("right", $2);
-        
+
         ExprNode *left = new ExprNode({"ado_literal", "ado_ident"});
         left->addData("value", *(new std::string("asc")));
         node->appendChild("left", left);
@@ -1090,11 +1089,11 @@ gsort_var:
     | "-" IDENT
     {
         $1; // shut up, bison...
-        
+
         ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", *(new std::string("()")));
         node->appendChild("right", $2);
-        
+
         ExprNode *left = new ExprNode({"ado_literal", "ado_ident"});
         left->addData("value", *(new std::string("desc")));
         node->appendChild("left", left);
@@ -1133,7 +1132,7 @@ modelspec:
         ExprNode *arglist = new ExprNode("ado_argument_expression_list");
         arglist->appendChild($2);
         node->appendChild("right", arglist);
-        
+
         $$ = node;
     }
     ;
@@ -1158,12 +1157,12 @@ anova_nest_expression:
     | anova_nest_expression "|" cross_expression
     {
         $2; // shut up, bison...
-        
+
         ExprNode *node = new ExprNode({"ado_expression", "ado_anova_nest_expression"});
         node->addData("verb", *(new std::string("%anova_nest%")));
         node->appendChild("left", $1);
         node->appendChild("right", $3);
-        
+
         $$ = node;
     }
     ;
@@ -1173,11 +1172,11 @@ anova_error_expression:
     | anova_nest_expression "/"
     {
         $2; // shut up, bison...
-        
+
         ExprNode *node = new ExprNode({"ado_expression", "ado_anova_error_expression"});
         node->addData("verb", *(new std::string("%anova_error%")));
         node->appendChild("left", $1);
-        
+
         $$ = node;
     }
     ;

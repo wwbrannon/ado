@@ -8,8 +8,7 @@ function(context, to_call)
     if(context$debug_match_call)
         return(match.call())
 
-    #We do need to eval the to_call command,
-    #but we don't need to print anything
+    #We need to eval the to_call command, but not to print anything
     invisible(eval(to_call, envir=parent.frame(), enclos=baseenv()))
 }
 

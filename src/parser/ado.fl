@@ -129,14 +129,14 @@ size_t macro_length = 0;
                                     /* if you write {{{ ... }}}, the ... will be executed as R code */
 <INITIAL>"{{{"                      {
                                         R_ECHO(yytext);
-                                        
+
                                         embed_buf.clear();
                                         yy_push_state(EMBED, yyscanner);
                                     }
 <EMBED>{
     "}}}"                           {
                                         R_ECHO(yytext);
-                                        
+
                                         yy_pop_state(yyscanner);
 
                                         ExprNode *node = new ExprNode("ado_embedded_code");
@@ -146,33 +146,33 @@ size_t macro_length = 0;
                                         yylval->node = node;
                                         return token::TOK_EMBEDDED_CODE;
                                     }
-    
+
     [\n]+                           {
                                         R_ECHO(yytext);
-                                        
+
                                         llocp->lines(yyleng);
                                         embed_buf += std::string(yytext);
                                     }
-    \}[^\}]                         { 
+    \}[^\}]                         {
                                         R_ECHO(yytext);
-                                        
+
                                         embed_buf += std::string(yytext);
                                     }
     \}\}[^\}]                       {
                                         R_ECHO(yytext);
-                                        
+
                                         embed_buf += std::string(yytext);
                                     }
     [^\}\n]+                        {
                                         R_ECHO(yytext);
-                                        
+
                                         embed_buf += std::string(yytext);
                                     }
 
     <<EOF>>                         {
                                         embed_buf.clear();
                                         yy_pop_state(yyscanner);
-                                        
+
                                         R_ERROR("Unclosed embed block");
                                         yyterminate();
                                     }
@@ -183,10 +183,10 @@ size_t macro_length = 0;
                                     /* INITIAL rules to match macros, local and global */
 <INITIAL>\`                         {
                                         R_ECHO(yytext);
-                                        
+
                                         while(!macro_stack.empty())
                                             macro_stack.pop();
-                                        
+
                                         // create and push a stack frame
                                         std::vector<std::string> frame;
                                         macro_stack.push(frame);
@@ -195,10 +195,10 @@ size_t macro_length = 0;
                                     }
 <INITIAL>\$/({L}|{D})+              {
                                         R_ECHO(yytext);
-                                        
+
                                         while(!macro_stack.empty())
                                             macro_stack.pop();
-                                        
+
                                         // create and push a stack frame
                                         std::vector<std::string> frame;
                                         macro_stack.push(frame);
@@ -207,10 +207,10 @@ size_t macro_length = 0;
                                     }
 <INITIAL>\$\{                       {
                                         R_ECHO(yytext);
-                                        
+
                                         while(!macro_stack.empty())
                                             macro_stack.pop();
-                                        
+
                                         // create and push a stack frame
                                         std::vector<std::string> frame;
                                         macro_stack.push(frame);
@@ -224,7 +224,7 @@ size_t macro_length = 0;
 <LOCAL_MACRO>{
     \`                              {
                                         R_ECHO(yytext);
-                                        
+
                                         // create and push a stack frame
                                         std::vector<std::string> frame;
                                         macro_stack.push(frame);
@@ -235,16 +235,16 @@ size_t macro_length = 0;
                                     /* Local macros can't include newlines */
     \n                              {
                                         R_ECHO(yytext);
-                                        
+
                                         llocp->lines(1);
-                                        
+
                                         while(!macro_stack.empty())
                                             macro_stack.pop();
-                                        
+
                                         do {
                                             yy_pop_state(yyscanner);
                                         } while(yy_top_state(yyscanner) != INITIAL);
-                                        
+
                                         R_ERROR("Unclosed local macro");
                                         yyterminate();
                                     }
@@ -252,16 +252,16 @@ size_t macro_length = 0;
                                     /* We've reached the matching close quote - let's expand the macro */
     \'                              {
                                         R_ECHO(yytext);
-                                        
+
                                         std::vector<std::string> frame = macro_stack.top();
                                         std::string combined, replacement;
-                                        
+
                                         macro_stack.pop();
-                                        
+
                                         for(size_t i = 0; i < frame.size(); i++)
                                             combined += frame[i];
                                         combined = std::string("_") + combined; // local macros start with a "_"
-                                        
+
                                         replacement = R_MACRO_VALUE(combined);
 
                                         if(!macro_stack.empty())
@@ -271,7 +271,7 @@ size_t macro_length = 0;
 
                                             prev.push_back(replacement);
                                             macro_stack.push(prev);
-                                            
+
                                             yy_pop_state(yyscanner);
                                         } else
                                         {
@@ -279,14 +279,14 @@ size_t macro_length = 0;
                                                 unput(replacement[i - 1]);
 
                                             macro_length += replacement.length();
-                                            
+
                                             yy_pop_state(yyscanner);
                                         }
                                     }
-    
+
     \\.                             {
                                         R_ECHO(yytext);
-                                        
+
                                         // push yytext to the back of the current frame
                                         std::vector<std::string> frame = macro_stack.top();
                                         macro_stack.pop();
@@ -296,7 +296,7 @@ size_t macro_length = 0;
                                     }
     \\                              {
                                         R_ECHO(yytext);
-                                        
+
                                         // push yytext to the back of the current frame
                                         std::vector<std::string> frame = macro_stack.top();
                                         macro_stack.pop();
@@ -308,20 +308,20 @@ size_t macro_length = 0;
                                         // These macros can't contain braces because the braces might
                                         // not be balanced, which would greatly complicate parsing loops
                                         R_ECHO(yytext);
-                                        
+
                                         while(!macro_stack.empty())
                                             macro_stack.pop();
-                                        
+
                                         do {
                                             yy_pop_state(yyscanner);
                                         } while(yy_top_state(yyscanner) != INITIAL);
-                                        
+
                                         R_ERROR("Invalid character in local macro");
                                         yyterminate();
                                     }
     [^\\\`\'\n\{\}]+                {
                                         R_ECHO(yytext);
-                                        
+
                                         // push yytext to the back of the current frame
                                         std::vector<std::string> frame = macro_stack.top();
                                         macro_stack.pop();
@@ -329,16 +329,16 @@ size_t macro_length = 0;
                                         frame.push_back(std::string(yytext));
                                         macro_stack.push(frame);
                                     }
-   
+
                                     /* This is an error (failing to close the macro) */
     <<EOF>>                         {
                                         while(!macro_stack.empty())
                                             macro_stack.pop();
-                                        
+
                                         do {
                                             yy_pop_state(yyscanner);
                                         } while(yy_top_state(yyscanner) != INITIAL);
-                                        
+
                                         R_ERROR("Unclosed local macro");
                                         yyterminate();
                                     }
@@ -353,7 +353,7 @@ size_t macro_length = 0;
                                     /* A global macro name that doesn't need to be disambiguated with braces */
     ({L}|{D})+                      {
                                         R_ECHO(yytext);
-                                        
+
                                         // push yytext to the back of the current frame
                                         std::vector<std::string> frame = macro_stack.top();
                                         macro_stack.pop();
@@ -361,22 +361,22 @@ size_t macro_length = 0;
                                         frame.push_back(std::string(yytext));
                                         macro_stack.push(frame);
                                     }
-   
+
                                     /* Any other character is a delimiter - we're at the end of the macro */
     [^{L}{D}]|\n                    {
                                         // don't R_ECHO because we're unputting the matched text to process again
 
                                         if(yytext[0] == '\n')
                                             llocp->lines(1);
-                                        
+
                                         std::vector<std::string> frame = macro_stack.top();
                                         std::string combined, replacement;
 
                                         macro_stack.pop();
-                                        
+
                                         for(size_t i = 0; i < frame.size(); i++)
                                             combined += frame[i];
-                                        
+
                                         replacement = R_MACRO_VALUE(combined);
 
                                         if(!macro_stack.empty())
@@ -387,30 +387,30 @@ size_t macro_length = 0;
                                             unput(yytext[0]); // we never saw this character
                                             prev.push_back(replacement);
                                             macro_stack.push(prev);
-                                            
+
                                             yy_pop_state(yyscanner);
                                         } else
                                         {
                                             unput(yytext[0]); // we never saw this character
                                             for(size_t i = replacement.length(); i > 0; i--)
                                                 unput(replacement[i - 1]);
-                                            
+
                                             macro_length += replacement.length();
-                                            
+
                                             yy_pop_state(yyscanner);
                                         }
                                     }
-                                        
+
                                     /* EOF is also a delimiter, but flex won't allow it in a normal rule */
     <<EOF>>                         {
                                         std::vector<std::string> frame = macro_stack.top();
                                         std::string combined, replacement;
 
                                         macro_stack.pop();
-                                        
+
                                         for(size_t i = 0; i < frame.size(); i++)
                                             combined += frame[i];
-                                        
+
                                         replacement = R_MACRO_VALUE(combined);
 
                                         if(!macro_stack.empty())
@@ -420,15 +420,15 @@ size_t macro_length = 0;
 
                                             prev.push_back(replacement);
                                             macro_stack.push(prev);
-                                            
+
                                             yy_pop_state(yyscanner);
                                         } else
                                         {
                                             for(size_t i = replacement.length(); i > 0; i--)
                                                 unput(replacement[i - 1]);
-                                            
+
                                             macro_length += replacement.length();
-                                            
+
                                             yy_pop_state(yyscanner);
                                         }
                                     }
@@ -442,7 +442,7 @@ size_t macro_length = 0;
                                     /* Allow any type of macro to be nested here */
     \`                              {
                                         R_ECHO(yytext);
-                                        
+
                                         // create and push a stack frame
                                         std::vector<std::string> frame;
                                         macro_stack.push(frame);
@@ -451,7 +451,7 @@ size_t macro_length = 0;
                                     }
     \$/({L}|{D})+                   {
                                         R_ECHO(yytext);
-                                        
+
                                         // create and push a stack frame
                                         std::vector<std::string> frame;
                                         macro_stack.push(frame);
@@ -460,7 +460,7 @@ size_t macro_length = 0;
                                     }
     \$\{                            {
                                         R_ECHO(yytext);
-                                        
+
                                         // create and push a stack frame
                                         std::vector<std::string> frame;
                                         macro_stack.push(frame);
@@ -469,7 +469,7 @@ size_t macro_length = 0;
                                     }
     \\.                             {
                                         R_ECHO(yytext);
-                                        
+
                                         // push yytext to the back of the current frame
                                         std::vector<std::string> frame = macro_stack.top();
                                         macro_stack.pop();
@@ -479,7 +479,7 @@ size_t macro_length = 0;
                                     }
     \\                              {
                                         R_ECHO(yytext);
-                                        
+
                                         // push yytext to the back of the current frame
                                         std::vector<std::string> frame = macro_stack.top();
                                         macro_stack.pop();
@@ -490,7 +490,7 @@ size_t macro_length = 0;
 
     \$                              {
                                         R_ECHO(yytext);
-                                        
+
                                         // push yytext to the back of the current frame
                                         std::vector<std::string> frame = macro_stack.top();
                                         macro_stack.pop();
@@ -502,7 +502,7 @@ size_t macro_length = 0;
                                     /* Characters that should be part of the name */
     [^\\\`\$\}\n]+                  {
                                         R_ECHO(yytext);
-                                        
+
                                         // push yytext to the back of the current frame
                                         std::vector<std::string> frame = macro_stack.top();
                                         macro_stack.pop();
@@ -510,19 +510,19 @@ size_t macro_length = 0;
                                         frame.push_back(std::string(yytext));
                                         macro_stack.push(frame);
                                     }
-   
+
                                     /* We've seen the closing brace - wrap up and expand this macro */
     \}                              {
                                         R_ECHO(yytext);
-                                        
+
                                         std::vector<std::string> frame = macro_stack.top();
                                         std::string combined, replacement;
 
                                         macro_stack.pop();
-                                        
+
                                         for(size_t i = 0; i < frame.size(); i++)
                                             combined += frame[i];
-                                        
+
                                         replacement = R_MACRO_VALUE(combined);
 
                                         if(!macro_stack.empty())
@@ -532,45 +532,45 @@ size_t macro_length = 0;
 
                                             prev.push_back(replacement);
                                             macro_stack.push(prev);
-                                            
+
                                             yy_pop_state(yyscanner);
                                         } else
                                         {
                                             for(size_t i = replacement.length(); i > 0; i--)
                                                 unput(replacement[i - 1]);
-                                            
+
                                             macro_length += replacement.length();
-                                            
+
                                             yy_pop_state(yyscanner);
                                         }
                                     }
-                                    
+
                                     /* newline here is an error - these macros can't cross lines */
     \n                              {
                                         R_ECHO(yytext);
-                                        
+
                                         llocp->lines(1);
-                                        
+
                                         while(!macro_stack.empty())
                                             macro_stack.pop();
-                                        
+
                                         do {
                                             yy_pop_state(yyscanner);
                                         } while(yy_top_state(yyscanner) != INITIAL);
-                                        
+
                                         R_ERROR("Unclosed brace-delimited global macro");
                                         yyterminate();
                                     }
-                                    
+
                                     /* EOF here is an error - the user forgot the closing "}" */
     <<EOF>>                         {
                                         while(!macro_stack.empty())
                                             macro_stack.pop();
-                                        
+
                                         do {
                                             yy_pop_state(yyscanner);
                                         } while(yy_top_state(yyscanner) != INITIAL);
-                                        
+
                                         R_ERROR("Unclosed brace-delimited global macro");
                                         yyterminate();
                                     }
@@ -582,7 +582,7 @@ size_t macro_length = 0;
                                      * scanner, in this case) to bind a macro name over a set of
                                      * values and for each such value, reparse and execute a block
                                      * of text containing the macro.
-                                     
+
                                      * The basic idea here is this: once we see one of the looping
                                      * keywords foreach or forvalues, specially lex a) the macro name,
                                      * b) the set of values it should range over, c) the block of text
@@ -664,7 +664,7 @@ size_t macro_length = 0;
 <FOREACH>{
     \{                              {
                                         R_ECHO(yytext);
-                                        
+
                                         loop_buf.clear();
                                         yy_push_state(ACCUMULATE, yyscanner);
 
@@ -700,7 +700,7 @@ size_t macro_length = 0;
                                         do {
                                             yy_pop_state(yyscanner);
                                         } while(yy_top_state(yyscanner) != INITIAL);
-                                        
+
                                         R_ERROR("Foreach loop without a statement body");
                                         yyterminate();
                                     }
@@ -714,7 +714,7 @@ size_t macro_length = 0;
 
                                         loop_buf.clear();
                                         yy_push_state(ACCUMULATE, yyscanner);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_LBRACE;
                                     }
@@ -727,7 +727,7 @@ size_t macro_length = 0;
                                         do {
                                             yy_pop_state(yyscanner);
                                         } while(yy_top_state(yyscanner) != INITIAL);
-                                        
+
                                         R_ERROR("Foreach loop without a statement body");
                                         yyterminate();
                                     }
@@ -750,14 +750,14 @@ size_t macro_length = 0;
                                         R_ECHO(yytext);
                                         yy_push_state(SHORT_COMMENT, yyscanner);
                                     }
-                                    
+
     \`\"                            {
                                         R_ECHO(yytext);
-                                        
+
                                         cdquote_buf.clear();
                                         yy_push_state(CDQUOTE_ACCUMULATE, yyscanner);
                                     }
-                                    
+
                                     /* Strings may contain unbalanced braces, so we need some subsidiary states
                                      * to handle them without confusing the brace counting code. We can't use the
                                      * usual string states because a) they don't append to loop_buf, but more
@@ -765,13 +765,13 @@ size_t macro_length = 0;
                                      * we want to defer until the subsequent reinvocation of the frontend on this text block. */
     \"                              {
                                         R_ECHO(yytext);
-                                        
+
                                         string_buf.clear();
                                         yy_push_state(STRING_ACCUMULATE, yyscanner);
                                     }
     [\n]+                           {
                                         R_ECHO(yytext);
-                                        
+
                                         llocp->lines(yyleng);
                                         loop_buf += std::string(yytext);
                                     }
@@ -788,7 +788,7 @@ size_t macro_length = 0;
                                         // variable is set to 0 when yylex starts up, and we want to see one more closing
                                         // brace than we've seen opening braces. (Its matching opening brace is consumed
                                         // in the FOREACH or FORVALUES states before we get here, but setting brace_count
-                                        // there won't persist to this invocation unless we do something not thread-safe 
+                                        // there won't persist to this invocation unless we do something not thread-safe
                                         // and make brace_count static.)
                                         brace_count--;
                                         if(brace_count > -1)
@@ -813,7 +813,7 @@ size_t macro_length = 0;
                                             do {
                                                 yy_pop_state(yyscanner);
                                             } while(yy_top_state(yyscanner) != INITIAL);
-                                            
+
                                             R_ERROR("Invalid statement body for loop");
                                             yyterminate();
                                         }
@@ -829,7 +829,7 @@ size_t macro_length = 0;
                                         do {
                                             yy_pop_state(yyscanner);
                                         } while(yy_top_state(yyscanner) != INITIAL);
-                                        
+
                                         R_ERROR("Loop statement without a closing brace");
                                         yyterminate();
                                     }
@@ -850,11 +850,11 @@ size_t macro_length = 0;
                                         // getting to EOF in this state is an error
                                         R_ECHO(yytext);
                                         llocp->lines(yyleng);
-                                        
+
                                         do {
                                             yy_pop_state(yyscanner);
                                         } while(yy_top_state(yyscanner) != INITIAL);
-                                        
+
                                         R_ERROR("Unclosed string literal");
                                         yyterminate();
                                     }
@@ -880,7 +880,7 @@ size_t macro_length = 0;
                                         do {
                                             yy_pop_state(yyscanner);
                                         } while(yy_top_state(yyscanner) != INITIAL);
-                                        
+
                                         R_ERROR("Unclosed string literal");
                                         yyterminate();
                                     }
@@ -906,11 +906,11 @@ size_t macro_length = 0;
                                         // getting to EOF in this state is an error
                                         R_ECHO(yytext);
                                         llocp->lines(yyleng);
-                                        
+
                                         do {
                                             yy_pop_state(yyscanner);
                                         } while(yy_top_state(yyscanner) != INITIAL);
-                                        
+
                                         R_ERROR("Unclosed compound double quote");
                                         yyterminate();
                                     }
@@ -936,7 +936,7 @@ size_t macro_length = 0;
                                         do {
                                             yy_pop_state(yyscanner);
                                         } while(yy_top_state(yyscanner) != INITIAL);
-                                        
+
                                         R_ERROR("Unclosed compound double quote");
                                         yyterminate();
                                     }
@@ -947,33 +947,33 @@ size_t macro_length = 0;
                                     /* Eat long comments */
 <INITIAL>"/*"                       {
                                         R_ECHO(yytext);
-                                        
+
                                         yy_push_state(LONG_COMMENT, yyscanner);
                                     }
 <LONG_COMMENT>{
                                     /* Got a close-comment marker, all done */
     "*/"                            {
                                         R_ECHO(yytext);
-                                        
+
                                         yy_pop_state(yyscanner);
                                     }
 
     [^\*\n]+                        {
                                         R_ECHO(yytext);
-                                        
+
                                         /* Eat this chunk of comment */
                                     }
     \*                              {
                                         R_ECHO(yytext);
-                                        
+
                                         /* Eat a single asterisk */
                                     }
     [\n]+                           {
                                         R_ECHO(yytext);
-                                        
+
                                         llocp->lines(yyleng);
                                     }
-    
+
     <<EOF>>                         {
                                         yy_pop_state(yyscanner);
                                         R_ERROR("Unclosed comment");
@@ -986,7 +986,7 @@ size_t macro_length = 0;
                                     /* Allow a triple slash at EOL as a line extender */
 \/\/\/\n                            {
                                         R_ECHO(yytext);
-                                        
+
                                         llocp->lines(yyleng); llocp->step();
                                     }
 
@@ -995,23 +995,23 @@ size_t macro_length = 0;
                                     /* Eat short comments */
 <INITIAL>"//"                       {
                                         R_ECHO(yytext);
-                                        
+
                                         yy_push_state(SHORT_COMMENT, yyscanner);
                                     }
 <INITIAL>^\*                        {
                                         R_ECHO(yytext);
-                                        
+
                                         yy_push_state(SHORT_COMMENT, yyscanner);
                                     }
 <SHORT_COMMENT>{
     [^\n]*                          {
                                         R_ECHO(yytext);
-                                        
+
                                         /* eat anything but a newline */
                                     }
     \n                              {
                                         R_ECHO(yytext);
-                                        
+
                                         yy_pop_state(yyscanner);
                                         llocp->lines(1);
                                         return token::TOK_NEWLINE;
@@ -1020,7 +1020,7 @@ size_t macro_length = 0;
                                         // one-line comments can be the last thing in the file
                                         yy_pop_state(yyscanner);
                                         llocp->lines(1);
-                                        
+
                                         // unput the newline that the grammar expects will be here
                                         unput('\n');
                                     }
@@ -1031,7 +1031,7 @@ size_t macro_length = 0;
                                     /* similarly, lines that start with "!" or "shell" are sh commands */
 ^\![^\n]*$                          {
                                         R_ECHO(yytext);
-                                        
+
                                         std::string *s = new std::string(yytext);
                                         std::string n = s->substr(1, s->size());
 
@@ -1042,7 +1042,7 @@ size_t macro_length = 0;
                                     }
 ^shell[^\n]*$                       {
                                         R_ECHO(yytext);
-                                        
+
                                         std::string *s = new std::string(yytext);
                                         std::string n = s->substr(5, s->size());
 
@@ -1057,14 +1057,14 @@ size_t macro_length = 0;
                                     /* Statement separators; consider more than one in a row to be one */
 [\n]                                {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         llocp->lines(yyleng);
                                         return token::TOK_NEWLINE;
                                     }
 [;]+                                {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_SEMICOLON;
                                     }
@@ -1072,14 +1072,14 @@ size_t macro_length = 0;
                                     /* ignore whitespace but track column numbers */
 {B}+                                {
                                         R_ECHO(yytext);
-                                        
+
                                         llocp->step();
                                     }
 
 
 <INITIAL>\`\"                       {
                                         R_ECHO(yytext);
-                                        
+
                                         cdquote_buf.clear();
                                         yy_push_state(CDQUOTE, yyscanner);
                                     }
@@ -1087,7 +1087,7 @@ size_t macro_length = 0;
                                     /* Allow any type of macro to be nested here */
     \`                              {
                                         R_ECHO(yytext);
-                                        
+
                                         // create and push a stack frame
                                         std::vector<std::string> frame;
                                         macro_stack.push(frame);
@@ -1096,7 +1096,7 @@ size_t macro_length = 0;
                                     }
     \$/({L}|{D})+                   {
                                         R_ECHO(yytext);
-                                        
+
                                         // create and push a stack frame
                                         std::vector<std::string> frame;
                                         macro_stack.push(frame);
@@ -1105,18 +1105,18 @@ size_t macro_length = 0;
                                     }
     \$\{                            {
                                         R_ECHO(yytext);
-                                        
+
                                         // create and push a stack frame
                                         std::vector<std::string> frame;
                                         macro_stack.push(frame);
 
                                         yy_push_state(GMACRO_BRACE, yyscanner);
                                     }
-    
+
                                     /* Saw the matching close quote - all done */
     \"\'                            {
                                         R_ECHO(yytext);
-                                        
+
                                         std::string *s = new std::string(cdquote_buf);
                                         yylval->node = new ExprNode({"ado_literal", "ado_string_literal"});
                                         yylval->node->addData("value", *s);
@@ -1127,7 +1127,7 @@ size_t macro_length = 0;
 
     \"/[^\']+                       {
                                         R_ECHO(yytext);
-                                        
+
                                         cdquote_buf += std::string(yytext);
                                     }
 
@@ -1135,7 +1135,7 @@ size_t macro_length = 0;
                                         // this is an error
                                         R_ECHO(yytext);
                                         llocp->lines(yyleng);
-                                        
+
                                         cdquote_buf.clear();
                                         yy_pop_state(yyscanner);
 
@@ -1145,53 +1145,53 @@ size_t macro_length = 0;
 
     \\\$                            {
                                         R_ECHO(yytext);
-                                        
+
                                         cdquote_buf += '$';
                                     }
     \\\`                            {
                                         R_ECHO(yytext);
-                                        
+
                                         cdquote_buf += '`';
                                     }
     \\n                             {
                                         R_ECHO(yytext);
-                                        
+
                                         cdquote_buf += '\n';
                                     }
     \\t                             {
                                         R_ECHO(yytext);
-                                        
+
                                         cdquote_buf += '\t';
                                     }
     \\r                             {
                                         R_ECHO(yytext);
-                                        
+
                                         cdquote_buf += '\r';
                                     }
     \\b                             {
                                         R_ECHO(yytext);
-                                        
+
                                         cdquote_buf += '\b';
                                     }
     \\f                             {
                                         R_ECHO(yytext);
-                                        
+
                                         cdquote_buf += '\f';
                                     }
     \\.                             {
                                         R_ECHO(yytext);
-                                        
+
                                         cdquote_buf += yytext[1];
                                     }
     \\                              {
                                         R_ECHO(yytext);
-                                        
+
                                         cdquote_buf += '\\';
                                     }
 
     [^\\\n\`\$\"]+                  {
                                         R_ECHO(yytext);
-                                        
+
                                         cdquote_buf += std::string(yytext);
                                     }
 
@@ -1206,7 +1206,7 @@ size_t macro_length = 0;
 
 <INITIAL>\"                         {
                                         R_ECHO(yytext);
-                                        
+
                                         string_buf.clear();
                                         yy_push_state(STRING, yyscanner);
                                     }
@@ -1214,7 +1214,7 @@ size_t macro_length = 0;
                                     /* Allow any type of macro to be nested here */
     \`                              {
                                         R_ECHO(yytext);
-                                        
+
                                         // create and push a stack frame
                                         std::vector<std::string> frame;
                                         macro_stack.push(frame);
@@ -1223,7 +1223,7 @@ size_t macro_length = 0;
                                     }
     \$/({L}|{D})+                   {
                                         R_ECHO(yytext);
-                                        
+
                                         // create and push a stack frame
                                         std::vector<std::string> frame;
                                         macro_stack.push(frame);
@@ -1232,18 +1232,18 @@ size_t macro_length = 0;
                                     }
     \$\{                            {
                                         R_ECHO(yytext);
-                                        
+
                                         // create and push a stack frame
                                         std::vector<std::string> frame;
                                         macro_stack.push(frame);
 
                                         yy_push_state(GMACRO_BRACE, yyscanner);
                                     }
-    
+
                                     /* Saw the matching close quote - all done */
     \"                              {
                                         R_ECHO(yytext);
-                                        
+
                                         std::string *s = new std::string(string_buf);
                                         yylval->node = new ExprNode({"ado_literal", "ado_string_literal"});
                                         yylval->node->addData("value", *s);
@@ -1256,7 +1256,7 @@ size_t macro_length = 0;
                                         // this is an error
                                         R_ECHO(yytext);
                                         llocp->lines(yyleng);
-                                        
+
                                         string_buf.clear();
                                         yy_pop_state(yyscanner);
 
@@ -1266,58 +1266,58 @@ size_t macro_length = 0;
 
     \\\"                            {
                                         R_ECHO(yytext);
-                                        
+
                                         string_buf += '"';
                                     }
     \\\`                            {
                                         R_ECHO(yytext);
-                                        
+
                                         string_buf += '`';
                                     }
     \\\$                            {
                                         R_ECHO(yytext);
-                                        
+
                                         string_buf += '$';
                                     }
     \\n                             {
                                         R_ECHO(yytext);
-                                        
+
                                         string_buf += '\n';
                                     }
     \\t                             {
                                         R_ECHO(yytext);
-                                        
+
                                         string_buf += '\t';
                                     }
     \\r                             {
                                         R_ECHO(yytext);
-                                        
+
                                         string_buf += '\r';
                                     }
     \\b                             {
                                         R_ECHO(yytext);
-                                        
+
                                         string_buf += '\b';
                                     }
     \\f                             {
                                         R_ECHO(yytext);
-                                        
+
                                         string_buf += '\f';
                                     }
     \\.                             {
                                         R_ECHO(yytext);
-                                        
+
                                         string_buf += yytext[1];
                                     }
     \\                              {
                                         R_ECHO(yytext);
-                                        
+
                                         string_buf += '\\';
                                     }
 
     [^\\\n\"\`\$]+                  {
                                         R_ECHO(yytext);
-                                        
+
                                         string_buf += std::string(yytext);
                                     }
 
@@ -1335,7 +1335,7 @@ size_t macro_length = 0;
                                    /* datetime literals */
 {D}{D}{M}{D}+                      {
                                        R_ECHO(yytext);
-                                   
+
                                        yylval->node = new ExprNode({"ado_literal", "ado_datetime"});
 
                                        std::string *s = new std::string(yytext);
@@ -1346,7 +1346,7 @@ size_t macro_length = 0;
                                    }
 {D}{D}{M}{D}+[ \t]+{D}{D}:{D}{D}(:{D}{D}(\.{D}+)?)?     {
                                                             R_ECHO(yytext);
-                                        
+
                                                             yylval->node = new ExprNode({"ado_literal", "ado_datetime"});
 
                                                             std::string *s = new std::string(yytext);
@@ -1364,7 +1364,7 @@ size_t macro_length = 0;
 
                                         std::string *s = new std::string(yytext);
                                         yylval->node->addData("value", *s);
-                                        
+
                                         return token::TOK_NUMBER_FORMAT;
                                     }
 %21x|%16H|%16L|%8H|%8L              {
@@ -1373,13 +1373,13 @@ size_t macro_length = 0;
 
                                         std::string *s = new std::string(yytext);
                                         yylval->node->addData("value", *s);
-                                        
+
                                         return token::TOK_NUMBER_FORMAT;
                                     }
 %[-~]?{D}+s                         {
                                         // string formats
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->node = new ExprNode({"ado_literal", "ado_format_spec"});
 
                                         std::string *s = new std::string(yytext);
@@ -1393,7 +1393,7 @@ size_t macro_length = 0;
 
                                         std::string *s = new std::string(yytext);
                                         yylval->node->addData("value", *s);
-                                        
+
                                         return token::TOK_DATETIME_FORMAT;
                                     }
 
@@ -1402,31 +1402,31 @@ size_t macro_length = 0;
                                     /* Numeric data types */
 byte                                {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_BYTE;
                                     }
 int                                 {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_INT;
                                     }
 long                                {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_LONG;
                                     }
 float                               {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_FLOAT;
                                     }
 double                              {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_DOUBLE;
                                     }
@@ -1436,19 +1436,19 @@ double                              {
                                     /* String data types */
 str                                 {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_STRING_TYPE_SPEC;
                                     }
 str{D}+                             {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_STRING_TYPE_SPEC;
                                     }
 strL                                {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_STRING_TYPE_SPEC;
                                     }
@@ -1457,7 +1457,7 @@ strL                                {
                                      * before we lex numbers */
 2sls                                {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->node = new ExprNode({"ado_literal", "ado_ident"});
 
                                         yylval->node->addData("value", *(new std::string("tsls")));
@@ -1468,7 +1468,7 @@ strL                                {
                                     /* numeric literals in their various formats */
 \.                                  {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->node = new ExprNode({"ado_literal", "ado_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
@@ -1476,7 +1476,8 @@ strL                                {
                                     }
 0[xX]{H}+                           { /* hex */
                                         R_ECHO(yytext);
-                                        
+
+                                        // FIXME need hex floats
                                         yylval->node = new ExprNode({"ado_literal", "ado_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
@@ -1484,15 +1485,17 @@ strL                                {
                                     }
 0{D}+                               { /* octal */
                                         R_ECHO(yytext);
-                                        
+
+                                        // FIXME need octal floats
                                         yylval->node = new ExprNode({"ado_literal", "ado_number"});
 
+                                        // FIXME this should convert value to octal
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_NUMBER;
                                     }
 {D}+                                { /* decimal integer */
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->node = new ExprNode({"ado_literal", "ado_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
@@ -1500,7 +1503,7 @@ strL                                {
                                     }
 {D}+\.({D}+)?/[^_A-Za-z_]           { /* decimal float */
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->node = new ExprNode({"ado_literal", "ado_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
@@ -1508,7 +1511,7 @@ strL                                {
                                     }
 {D}+{E}                             { /* scientific notation */
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->node = new ExprNode({"ado_literal", "ado_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
@@ -1516,7 +1519,7 @@ strL                                {
                                     }
 {D}*"."{D}+({E})?                   { /* scientific notation with fractions, or numbers like ".0239" */
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->node = new ExprNode({"ado_literal", "ado_number"});
 
                                         yylval->node->addData("value", *(new std::string(yytext)));
@@ -1528,25 +1531,25 @@ strL                                {
                                     /* Other keywords */
 using                               {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_USING;
                                     }
 if                                  {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_IF;
                                     }
 in                                  {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_IN;
                                     }
 (1\:1|1\:m|m\:1|m\:m)               {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->node = new ExprNode({"ado_literal", "ado_string_literal"});
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_MERGE_SPEC;
@@ -1557,7 +1560,7 @@ in                                  {
                                     /* Weight-clause specifiers (this is a hack) */
 "["{B}*(a|p|i|f)weight{B}*"="       {
                                         R_ECHO(yytext);
-                                        
+
                                         ExprNode *clause = new ExprNode("ado_weight_clause");
                                         ExprNode *kind = new ExprNode({"ado_literal", "ado_ident"});
                                         std::string *s = new std::string(yytext);
@@ -1578,152 +1581,152 @@ in                                  {
                                     /* infix operators and various single-character tokens */
 "&"                                 {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_AND_OP;
                                     }
 "|"                                 {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_OR_OP;
                                     }
 ">"                                 {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_GT_OP;
                                     }
 "<"                                 {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_LT_OP;
                                     }
 ">="                                {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_GE_OP;
                                     }
 "<="                                {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_LE_OP;
                                     }
 "=="                                {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_EQ_OP;
                                     }
 "!="                                {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_NE_OP;
                                     }
 "~="                                {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_NE_OP;
                                     }
 "!"                                 {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_NEG_OP;
                                     }
 "~"                                 {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_NEG_OP;
                                     }
 
 \*                                  {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_STAR;
                                     }
 \+                                  {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_PLUS;
                                     }
 \/                                  {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_SLASH;
                                     }
 \-                                  {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_MINUS;
                                     }
 \^                                  {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_CARET;
                                     }
 =                                   {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_ASSIGN;
                                     }
 \[                                  {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_LBRACKET;
                                     }
 \]                                  {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_RBRACKET;
                                     }
 \(                                  {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_LPAREN;
                                     }
 \)                                  {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_RPAREN;
                                     }
 \{                                  {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_LBRACE;
                                     }
 \}                                  {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_RBRACE;
                                     }
 ","                                 {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_COMMA;
                                     }
 \:                                  {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_COLON;
                                     }
@@ -1731,7 +1734,7 @@ in                                  {
                                     /* Factor variable operators and level-restricted virtual variables */
 "c."                                {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->node = new ExprNode({"ado_expression", "ado_factor_expression", "ado_continuous_expression"});
                                         yylval->node->addData("verb", "c.");
 
@@ -1739,7 +1742,7 @@ in                                  {
                                     }
 "i."                                {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->node = new ExprNode({"ado_expression", "ado_factor_expression", "ado_indicator_expression"});
                                         yylval->node->addData("verb", "i.");
 
@@ -1748,7 +1751,7 @@ in                                  {
 
 i?"bn."                             {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->node = new ExprNode({"ado_expression", "ado_factor_expression", "ado_baseline_expression"});
                                         yylval->node->addData("verb", "ib.");
                                         yylval->node->addData("level", "n");
@@ -1757,7 +1760,7 @@ i?"bn."                             {
                                     }
 i?"b(freq)."                        {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->node = new ExprNode({"ado_expression", "ado_factor_expression", "ado_baseline_expression"});
                                         yylval->node->addData("verb", "ib.");
                                         yylval->node->addData("level", "freq");
@@ -1766,7 +1769,7 @@ i?"b(freq)."                        {
                                     }
 i?"b(last)."                        {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->node = new ExprNode({"ado_expression", "ado_factor_expression", "ado_baseline_expression"});
                                         yylval->node->addData("verb", "ib.");
                                         yylval->node->addData("level", "last");
@@ -1775,7 +1778,7 @@ i?"b(last)."                        {
                                     }
 i?"b(first)."                       {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->node = new ExprNode({"ado_expression", "ado_factor_expression", "ado_baseline_expression"});
                                         yylval->node->addData("verb", "ib.");
                                         yylval->node->addData("level", "first");
@@ -1784,7 +1787,7 @@ i?"b(first)."                       {
                                     }
 i?"b"{D}+"."                        {
                                         R_ECHO(yytext);
-                                        
+
                                         std::string *s = new std::string(yytext);
 
                                         yylval->node = new ExprNode({"ado_expression", "ado_factor_expression", "ado_baseline_expression"});
@@ -1799,7 +1802,7 @@ i?"b"{D}+"."                        {
                                     }
 i?"b(#"{D}+")."                     {
                                         R_ECHO(yytext);
-                                        
+
                                         std::string *s = new std::string(yytext);
 
                                         yylval->node = new ExprNode({"ado_expression", "ado_factor_expression", "ado_baseline_expression"});
@@ -1815,7 +1818,7 @@ i?"b(#"{D}+")."                     {
 
 i?{D}+"."                          {
                                         R_ECHO(yytext);
-                                        
+
                                         std::string *s = new std::string(yytext);
 
                                         yylval->node = new ExprNode({"ado_expression", "ado_factor_expression", "ado_indicator_expression"});
@@ -1826,7 +1829,7 @@ i?{D}+"."                          {
                                     }
 "i("{D}+(\ +{D}+)*")."              {
                                         R_ECHO(yytext);
-                                        
+
                                         std::string *s = new std::string(yytext);
                                         std::vector<std::string> x = split(s->substr(2, s->length() - 2), ' ');
 
@@ -1843,7 +1846,7 @@ i?{D}+"."                          {
                                     }
 "i("\ *{D}+\ *\/{D}+\ *")."         {
                                         R_ECHO(yytext);
-                                        
+
                                         std::string *s = new std::string(yytext);
                                         std::vector<std::string> x = split(s->substr(2, s->length() -2), '/');
                                         yylval->node = new ExprNode({"ado_expression", "ado_factor_expression", "ado_indicator_expression"});
@@ -1857,7 +1860,7 @@ i?{D}+"."                          {
 
 i?"o"{D}+"."                        {
                                         R_ECHO(yytext);
-                                        
+
                                         std::string *s = new std::string(yytext);
 
                                         yylval->node = new ExprNode({"ado_expression", "ado_factor_expression", "ado_omit_expression"});
@@ -1872,7 +1875,7 @@ i?"o"{D}+"."                        {
                                     }
 i?"o("{D}+(\ +{D}+)*")."            {
                                         R_ECHO(yytext);
-                                        
+
                                         std::string *s = new std::string(yytext);
                                         std::vector<std::string> x;
 
@@ -1894,7 +1897,7 @@ i?"o("{D}+(\ +{D}+)*")."            {
                                     }
 i?"o("\ *{D}+\ *\/{D}+\ *")."       {
                                         R_ECHO(yytext);
-                                        
+
                                         std::string *s = new std::string(yytext);
                                         std::vector<std::string> x;
 
@@ -1914,13 +1917,13 @@ i?"o("\ *{D}+\ *\/{D}+\ *")."       {
 
 "##"                                {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_FACT_CROSS;
                                     }
 "#"                                 {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->str = new std::string(yytext);
                                         return token::TOK_CROSS;
                                     }
@@ -1930,7 +1933,7 @@ i?"o("\ *{D}+\ *\/{D}+\ *")."       {
                                     /* command verbs that have to be hardcoded into the grammar */
 capture                             {
                                         R_ECHO(yytext);
-                                        
+
                                         ExprNode *verb = new ExprNode({"ado_literal", "ado_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
@@ -1939,7 +1942,7 @@ capture                             {
                                     }
 cap                                 {
                                         R_ECHO(yytext);
-                                        
+
                                         ExprNode *verb = new ExprNode({"ado_literal", "ado_ident"});
                                         verb->addData("value", "capture");
 
@@ -1948,7 +1951,7 @@ cap                                 {
                                     }
 quietly                             {
                                         R_ECHO(yytext);
-                                        
+
                                         ExprNode *verb = new ExprNode({"ado_literal", "ado_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
@@ -1957,7 +1960,7 @@ quietly                             {
                                     }
 qui                                 {
                                         R_ECHO(yytext);
-                                        
+
                                         ExprNode *verb = new ExprNode({"ado_literal", "ado_ident"});
                                         verb->addData("value", "quietly");
 
@@ -1966,18 +1969,18 @@ qui                                 {
                                     }
 noisily                             {
                                         R_ECHO(yytext);
-                                        
+
                                         ExprNode *verb = new ExprNode({"ado_literal", "ado_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
                                         yylval->node = verb;
                                         return token::TOK_NOISILY;
                                     }
-                                    
+
                                     /* Non-prefix special commands */
 by                                  {
                                         R_ECHO(yytext);
-                                        
+
                                         ExprNode *verb = new ExprNode({"ado_literal", "ado_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
@@ -1986,7 +1989,7 @@ by                                  {
                                     }
 bysort                              {
                                         R_ECHO(yytext);
-                                        
+
                                         ExprNode *verb = new ExprNode({"ado_literal", "ado_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
@@ -1995,7 +1998,7 @@ bysort                              {
                                     }
 xi                                  {
                                         R_ECHO(yytext);
-                                        
+
                                         ExprNode *verb = new ExprNode({"ado_literal", "ado_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
@@ -2007,7 +2010,7 @@ xi                                  {
                                      * have idiosyncratic syntax */
 merge                               {
                                         R_ECHO(yytext);
-                                        
+
                                         ExprNode *verb = new ExprNode({"ado_literal", "ado_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
@@ -2016,7 +2019,7 @@ merge                               {
                                     }
 collapse                            {
                                         R_ECHO(yytext);
-                                        
+
                                         ExprNode *verb = new ExprNode({"ado_literal", "ado_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
@@ -2025,7 +2028,7 @@ collapse                            {
                                     }
 recode                              {
                                         R_ECHO(yytext);
-                                        
+
                                         ExprNode *verb = new ExprNode({"ado_literal", "ado_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
@@ -2034,7 +2037,7 @@ recode                              {
                                     }
 ivregress                           {
                                         R_ECHO(yytext);
-                                        
+
                                         ExprNode *verb = new ExprNode({"ado_literal", "ado_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
@@ -2043,7 +2046,7 @@ ivregress                           {
                                     }
 gsort                               {
                                         R_ECHO(yytext);
-                                        
+
                                         ExprNode *verb = new ExprNode({"ado_literal", "ado_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
@@ -2052,7 +2055,7 @@ gsort                               {
                                     }
 lrtest                              {
                                         R_ECHO(yytext);
-                                        
+
                                         ExprNode *verb = new ExprNode({"ado_literal", "ado_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
@@ -2061,7 +2064,7 @@ lrtest                              {
                                     }
 anova                               {
                                         R_ECHO(yytext);
-                                        
+
                                         ExprNode *verb = new ExprNode({"ado_literal", "ado_ident"});
                                         verb->addData("value", *(new std::string(yytext)));
 
@@ -2074,7 +2077,7 @@ anova                               {
                                     /* all non-keyword identifiers */
 [_A-Za-z][A-Za-z0-9_]*              {
                                         R_ECHO(yytext);
-                                        
+
                                         yylval->node = new ExprNode({"ado_literal", "ado_ident"});
                                         yylval->node->addData("value", *(new std::string(yytext)));
                                         return token::TOK_IDENT;
@@ -2098,9 +2101,9 @@ ado_yy_fatal_error(const char *msg)
 
     cond["message"] = std::string(msg);
     cond["call"] = R_NilValue;
-    
+
     cls = Rcpp::CharacterVector::create("error", "condition");
-    
+
     cond.attr("class") = cls;
     Rcpp::Function stopper("stop");
     stopper(cond);
