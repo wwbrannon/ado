@@ -1273,6 +1273,42 @@ format_spec:
 
 literal_expression:
       IDENT
+    | BYTE
+    {
+        ExprNode *node = new ExprNode({"ado_literal", "ado_ident"});
+        node->addData("value", *($1));
+        $$ = node;
+    }
+    | INT
+    {
+        ExprNode *node = new ExprNode({"ado_literal", "ado_ident"});
+        node->addData("value", *($1));
+        $$ = node;
+    }
+    | LONG
+    {
+        ExprNode *node = new ExprNode({"ado_literal", "ado_ident"});
+        node->addData("value", *($1));
+        $$ = node;
+    }
+    | FLOAT
+    {
+        ExprNode *node = new ExprNode({"ado_literal", "ado_ident"});
+        node->addData("value", *($1));
+        $$ = node;
+    }
+    | DOUBLE
+    {
+        ExprNode *node = new ExprNode({"ado_literal", "ado_ident"});
+        node->addData("value", *($1));
+        $$ = node;
+    }
+    | STRING_TYPE_SPEC
+    {
+        ExprNode *node = new ExprNode({"ado_literal", "ado_ident"});
+        node->addData("value", *($1));
+        $$ = node;
+    }
     | NUMBER
     | STRING_LITERAL
     | DATE

@@ -1,32 +1,15 @@
 ## Macro management commands
 ##
-## KNOWN BUG: String literal assignment doesn't parse
-## ===================================================
-## The parser (src/parser/ado.ypp) currently rejects string literal assignment:
+## FIXED: Type keywords can now be used as variable names
+## =======================================================
+## Previously, type keywords like 'str', 'int', 'byte', etc. could not be used
+## as variable/macro names because the lexer always tokenized them as type
+## specifiers rather than identifiers.
 ##
-##   local str "world"           # Parse error: unexpected STRING_LITERAL
-##   local str = "world"         # Parse error: unexpected =
-##
-## The R implementation below (lines 39-51) DOES support the two-argument form
-## where exprs[[2]] is a character string, but the Bison grammar doesn't allow
-## STRING_LITERAL in assignment expressions or as standalone expressions in
-## expression_list.
-##
-## This works:
-##   local x = 5                 # Numeric assignment
-##   local str = "foo" + "bar"   # String expression (if supported)
-##
-## This fails:
-##   local str = "world"         # String literal on RHS of =
-##   local str "world"           # String literal as second expression
-##
-## Root cause: The grammar expects STRING_LITERAL only in literal_expression,
-## but somewhere in the chain literal_expression → primary_expression → ... →
-## logical_expression → expression, string literals aren't accepted in assignment
-## context. The error "expecting ( or IDENT" suggests the parser sees the string
-## and expects a function call or another identifier.
-##
-## Fix needed: Trace through ado.ypp to find where string literals are rejected.
+## Fixed by adding type tokens (BYTE, INT, LONG, FLOAT, DOUBLE, STRING_TYPE_SPEC)
+## to the literal_expression grammar rule in ado.ypp, allowing them to be used
+## as identifiers in expression contexts while still functioning as type
+## specifiers in type contexts (like after 'gen').
 
 ado_cmd_local <-
 function(context, expression_list)

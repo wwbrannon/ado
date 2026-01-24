@@ -47,17 +47,14 @@
 // "%code requires" blocks.
 #line 13 "ado.ypp"
 
-#include "Ado.hpp"
-typedef void* yyscan_t;
+    #include "Ado.hpp"
+    typedef void* yyscan_t;
 
-#define YY_DECL int yylex(yy::AdoParser::semantic_type* yylval_param, \
-                          yy::AdoParser::location_type* llocp,        \
-                          ParseDriver& driver, yyscan_t yyscanner)      
+    #define YY_DECL int yylex(yy::AdoParser::semantic_type* yylval_param, \
+                              yy::AdoParser::location_type* llocp,        \
+                              ParseDriver& driver, yyscan_t yyscanner)
 
-#define R_ACTION(node) driver.wrap_cmd_action(node);
-#define RETURN_AST(node) driver.set_ast(node);
-
-#line 61 "ado.tab.hpp"
+#line 58 "ado.tab.hpp"
 
 
 # include <cstdlib> // std::abort
@@ -192,7 +189,7 @@ typedef void* yyscan_t;
 #endif
 
 namespace yy {
-#line 196 "ado.tab.hpp"
+#line 193 "ado.tab.hpp"
 
 
 
@@ -210,12 +207,12 @@ namespace yy {
     /// Symbol semantic values.
     union value_type
     {
-#line 29 "ado.ypp"
+#line 26 "ado.ypp"
 
     std::string   *str;
     ExprNode      *node;
 
-#line 219 "ado.tab.hpp"
+#line 216 "ado.tab.hpp"
 
     };
 #endif
@@ -1004,7 +1001,7 @@ namespace yy {
     /// Constants.
     enum
     {
-      yylast_ = 793,     ///< Last index in yytable_.
+      yylast_ = 828,     ///< Last index in yytable_.
       yynnts_ = 66,  ///< Number of nonterminal symbols.
       yyfinal_ = 112 ///< Termination state number.
     };
@@ -1018,7 +1015,7 @@ namespace yy {
 
 
 } // yy
-#line 1022 "ado.tab.hpp"
+#line 1019 "ado.tab.hpp"
 
 
 

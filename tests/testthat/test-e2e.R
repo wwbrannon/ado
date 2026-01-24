@@ -29,15 +29,12 @@ test_that("run_ado_script works with inline script", {
   expect_equal(result$macros[["_y"]], "6")
 })
 
-test_that("string literal assignment to macros (KNOWN BUG - parser issue)", {
-  skip("Parser doesn't support string literal assignment - see R/cmd_macro.R for details")
-
-  # These should work but currently fail to parse:
-  # local str "world"       - two-argument form without =
-  # local str = "world"     - assignment form with string literal RHS
+test_that("string literal assignment to macros works (FIXED!)", {
+  # Tests the fix for string literal assignment - type keywords like 'str'
+  # are now allowed as identifiers in expressions
 
   tmp <- tempfile(fileext = ".do")
-  writeLines('local str = "world"\ndisplay "$str"', tmp)
+  writeLines('local str = "world"\ndisplay "`str\'"', tmp)
   on.exit(unlink(tmp))
 
   result <- run_ado_script(tmp)
