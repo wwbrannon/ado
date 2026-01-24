@@ -1,24 +1,18 @@
-scratch/
-
-^src/parser/build/
-^src/parser/parser.a$
-^src/parser/ado.a$
-
+^scratch/
+^src/parser/
 ^README.Rmd$
-
 Makefile
-
-^.*\.Rproj$
-^\.Rproj\.user$
 
 ^Dockerfile$
 ^docker-compose\.yml$
 ^\.dockerignore$
 
-^.claude/
-CLAUDE.md
+^.*\.Rproj$
+^\.Rproj\.user$
 
 ^codecov\.yml$
+^.claude/
+^CLAUDE.md$
 ^.lintr$
 ^.github/
 
