@@ -75,7 +75,7 @@ Key command files:
 
 ### Parser/Lexer Changes
 1. Edit `src/parser/ado.ypp` (grammar) or `src/parser/ado.fl` (lexer)
-2. Run `./configure` to regenerate C++ files
+2. Run `make parser` to regenerate C++ files
 3. Never manually edit generated files (`lex.yy.cpp`, `ado.tab.cpp`)
 
 ## Test Structure
@@ -103,23 +103,35 @@ Test helpers in `helper-functions.R`:
 
 ### Docker (Recommended)
 
-A Docker environment is provided for reproducible development:
+A Docker environment is provided for reproducible development. Use the Makefile for common operations:
 
 ```bash
 # Build the development image
-docker compose build
+make build
 
 # Start interactive R session
-docker compose run --rm dev
+make shell
 
-# Run tests in Docker
-docker compose run --rm dev R -e "devtools::load_all(); devtools::test()"
+# Run tests
+make test
 
 # Run R CMD CHECK
-docker compose run --rm dev R -e "devtools::check()"
+make check
 
-# Regenerate parser
-docker compose run --rm dev bash -c "cd src/parser && make"
+# Generate documentation
+make document
+
+# Code coverage
+make coverage
+
+# Regenerate parser from Flex/Bison sources
+make parser
+
+# Clean build artifacts
+make clean
+
+# See all available commands
+make help
 ```
 
 ### Local Development
