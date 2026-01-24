@@ -876,208 +876,202 @@ namespace yy {
 #line 877 "ado.tab.cpp"
         break;
 
-      case symbol_kind::S_type_operator: // type_operator
+      case symbol_kind::S_unary_operator: // unary_operator
 #line 159 "ado.ypp"
                     { delete (yysym.value.str); }
 #line 883 "ado.tab.cpp"
         break;
 
-      case symbol_kind::S_unary_operator: // unary_operator
-#line 159 "ado.ypp"
-                    { delete (yysym.value.str); }
-#line 889 "ado.tab.cpp"
-        break;
-
       case symbol_kind::S_unary_factor_operator: // unary_factor_operator
 #line 160 "ado.ypp"
                     { delete (yysym.value.node); }
-#line 895 "ado.tab.cpp"
+#line 889 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_power_operator: // power_operator
 #line 159 "ado.ypp"
                     { delete (yysym.value.str); }
-#line 901 "ado.tab.cpp"
+#line 895 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_multiplication_operator: // multiplication_operator
 #line 159 "ado.ypp"
                     { delete (yysym.value.str); }
-#line 907 "ado.tab.cpp"
+#line 901 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_additive_operator: // additive_operator
 #line 159 "ado.ypp"
                     { delete (yysym.value.str); }
-#line 913 "ado.tab.cpp"
+#line 907 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_relational_operator: // relational_operator
 #line 159 "ado.ypp"
                     { delete (yysym.value.str); }
-#line 919 "ado.tab.cpp"
+#line 913 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_equality_operator: // equality_operator
 #line 159 "ado.ypp"
                     { delete (yysym.value.str); }
-#line 925 "ado.tab.cpp"
+#line 919 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_logical_operator: // logical_operator
 #line 159 "ado.ypp"
                     { delete (yysym.value.str); }
-#line 931 "ado.tab.cpp"
+#line 925 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_cross_operator: // cross_operator
 #line 159 "ado.ypp"
                     { delete (yysym.value.str); }
-#line 937 "ado.tab.cpp"
+#line 931 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_format_spec: // format_spec
 #line 160 "ado.ypp"
                     { delete (yysym.value.node); }
-#line 943 "ado.tab.cpp"
+#line 937 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_literal_expression: // literal_expression
 #line 160 "ado.ypp"
                     { delete (yysym.value.node); }
-#line 949 "ado.tab.cpp"
+#line 943 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_primary_expression: // primary_expression
 #line 160 "ado.ypp"
                     { delete (yysym.value.node); }
-#line 955 "ado.tab.cpp"
+#line 949 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_unary_factor_expression: // unary_factor_expression
 #line 160 "ado.ypp"
                     { delete (yysym.value.node); }
-#line 961 "ado.tab.cpp"
+#line 955 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_cross_expression: // cross_expression
 #line 160 "ado.ypp"
                     { delete (yysym.value.node); }
-#line 967 "ado.tab.cpp"
+#line 961 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_postfix_expression: // postfix_expression
 #line 160 "ado.ypp"
                     { delete (yysym.value.node); }
-#line 973 "ado.tab.cpp"
+#line 967 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_power_expression: // power_expression
 #line 160 "ado.ypp"
                     { delete (yysym.value.node); }
-#line 979 "ado.tab.cpp"
+#line 973 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_unary_expression: // unary_expression
 #line 160 "ado.ypp"
                     { delete (yysym.value.node); }
-#line 985 "ado.tab.cpp"
+#line 979 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_multiplication_expression: // multiplication_expression
 #line 160 "ado.ypp"
                     { delete (yysym.value.node); }
-#line 991 "ado.tab.cpp"
+#line 985 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_additive_expression: // additive_expression
 #line 160 "ado.ypp"
                     { delete (yysym.value.node); }
-#line 997 "ado.tab.cpp"
+#line 991 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_relational_expression: // relational_expression
 #line 160 "ado.ypp"
                     { delete (yysym.value.node); }
-#line 1003 "ado.tab.cpp"
+#line 997 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_equality_expression: // equality_expression
 #line 160 "ado.ypp"
                     { delete (yysym.value.node); }
-#line 1009 "ado.tab.cpp"
+#line 1003 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_logical_expression: // logical_expression
 #line 160 "ado.ypp"
                     { delete (yysym.value.node); }
-#line 1015 "ado.tab.cpp"
+#line 1009 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_expression: // expression
 #line 160 "ado.ypp"
                     { delete (yysym.value.node); }
-#line 1021 "ado.tab.cpp"
+#line 1015 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_expression_list: // expression_list
 #line 160 "ado.ypp"
                     { delete (yysym.value.node); }
-#line 1027 "ado.tab.cpp"
+#line 1021 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_argument_expression_list: // argument_expression_list
 #line 160 "ado.ypp"
                     { delete (yysym.value.node); }
-#line 1033 "ado.tab.cpp"
+#line 1027 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_option_list: // option_list
 #line 160 "ado.ypp"
                     { delete (yysym.value.node); }
-#line 1039 "ado.tab.cpp"
+#line 1033 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_options: // options
 #line 160 "ado.ypp"
                     { delete (yysym.value.node); }
-#line 1045 "ado.tab.cpp"
+#line 1039 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_option: // option
 #line 160 "ado.ypp"
                     { delete (yysym.value.node); }
-#line 1051 "ado.tab.cpp"
+#line 1045 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_option_ident: // option_ident
 #line 160 "ado.ypp"
                     { delete (yysym.value.node); }
-#line 1057 "ado.tab.cpp"
+#line 1051 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_weight_clause: // weight_clause
 #line 160 "ado.ypp"
                     { delete (yysym.value.node); }
-#line 1063 "ado.tab.cpp"
+#line 1057 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_if_clause: // if_clause
 #line 160 "ado.ypp"
                     { delete (yysym.value.node); }
-#line 1069 "ado.tab.cpp"
+#line 1063 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_in_clause: // in_clause
 #line 160 "ado.ypp"
                     { delete (yysym.value.node); }
-#line 1075 "ado.tab.cpp"
+#line 1069 "ado.tab.cpp"
         break;
 
       case symbol_kind::S_using_clause: // using_clause
 #line 160 "ado.ypp"
                     { delete (yysym.value.node); }
-#line 1081 "ado.tab.cpp"
+#line 1075 "ado.tab.cpp"
         break;
 
       default:
@@ -1359,7 +1353,7 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 1363 "ado.tab.cpp"
+#line 1357 "ado.tab.cpp"
     break;
 
   case 3: // translation_unit: translation_unit external_statement
@@ -1382,7 +1376,7 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 1386 "ado.tab.cpp"
+#line 1380 "ado.tab.cpp"
     break;
 
   case 4: // translation_unit: translation_unit error
@@ -1395,7 +1389,7 @@ namespace yy {
         // so already (unlike the one-statement error production below)
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 1399 "ado.tab.cpp"
+#line 1393 "ado.tab.cpp"
     break;
 
   case 5: // translation_unit: error
@@ -1408,37 +1402,37 @@ namespace yy {
         RETURN_AST(node);
         (yylhs.value.node) = node;
     }
-#line 1412 "ado.tab.cpp"
+#line 1406 "ado.tab.cpp"
     break;
 
   case 6: // external_statement: cmd
 #line 225 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 1418 "ado.tab.cpp"
+#line 1412 "ado.tab.cpp"
     break;
 
   case 7: // external_statement: compound_cmd
 #line 226 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 1424 "ado.tab.cpp"
+#line 1418 "ado.tab.cpp"
     break;
 
   case 8: // external_statement: if_cmd
 #line 227 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 1430 "ado.tab.cpp"
+#line 1424 "ado.tab.cpp"
     break;
 
   case 9: // external_statement: foreach_cmd
 #line 228 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 1436 "ado.tab.cpp"
+#line 1430 "ado.tab.cpp"
     break;
 
   case 10: // external_statement: forvalues_cmd
 #line 229 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 1442 "ado.tab.cpp"
+#line 1436 "ado.tab.cpp"
     break;
 
   case 11: // foreach_cmd: FOREACH IDENT foreach_sep varlist "{" STRING_LITERAL "}"
@@ -1450,7 +1444,7 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[6].value.node);
     }
-#line 1454 "ado.tab.cpp"
+#line 1448 "ado.tab.cpp"
     break;
 
   case 12: // foreach_cmd: FOREACH IDENT foreach_sep numlist "{" STRING_LITERAL "}"
@@ -1462,7 +1456,7 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[6].value.node);
     }
-#line 1466 "ado.tab.cpp"
+#line 1460 "ado.tab.cpp"
     break;
 
   case 13: // foreach_cmd: FOREACH IDENT foreach_sep LOCAL IDENT "{" STRING_LITERAL "}"
@@ -1474,7 +1468,7 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[7].value.node);
     }
-#line 1478 "ado.tab.cpp"
+#line 1472 "ado.tab.cpp"
     break;
 
   case 14: // foreach_cmd: FOREACH IDENT foreach_sep GLOBAL IDENT "{" STRING_LITERAL "}"
@@ -1486,7 +1480,7 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[7].value.node);
     }
-#line 1490 "ado.tab.cpp"
+#line 1484 "ado.tab.cpp"
     break;
 
   case 15: // foreach_cmd: FOREACH IDENT foreach_sep VARLIST varlist "{" STRING_LITERAL "}"
@@ -1498,7 +1492,7 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[7].value.node);
     }
-#line 1502 "ado.tab.cpp"
+#line 1496 "ado.tab.cpp"
     break;
 
   case 16: // foreach_cmd: FOREACH IDENT foreach_sep NEWLIST varlist "{" STRING_LITERAL "}"
@@ -1510,7 +1504,7 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[7].value.node);
     }
-#line 1514 "ado.tab.cpp"
+#line 1508 "ado.tab.cpp"
     break;
 
   case 17: // foreach_cmd: FOREACH IDENT foreach_sep NUMLIST numlist "{" STRING_LITERAL "}"
@@ -1522,7 +1516,7 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[7].value.node);
     }
-#line 1526 "ado.tab.cpp"
+#line 1520 "ado.tab.cpp"
     break;
 
   case 18: // forvalues_cmd: FORVALUES IDENT "=" NUMBER "(" NUMBER ")" NUMBER "{" STRING_LITERAL "}"
@@ -1537,7 +1531,7 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[10].value.node);
     }
-#line 1541 "ado.tab.cpp"
+#line 1535 "ado.tab.cpp"
     break;
 
   case 19: // forvalues_cmd: FORVALUES IDENT "=" NUMBER "/" NUMBER "{" STRING_LITERAL "}"
@@ -1554,7 +1548,7 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[8].value.node);
     }
-#line 1558 "ado.tab.cpp"
+#line 1552 "ado.tab.cpp"
     break;
 
   case 20: // forvalues_cmd: FORVALUES IDENT "=" NUMBER NUMBER ":" NUMBER "{" STRING_LITERAL "}"
@@ -1569,7 +1563,7 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[9].value.node);
     }
-#line 1573 "ado.tab.cpp"
+#line 1567 "ado.tab.cpp"
     break;
 
   case 21: // forvalues_cmd: FORVALUES IDENT "=" NUMBER NUMBER TO NUMBER "{" STRING_LITERAL "}"
@@ -1584,7 +1578,7 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[9].value.node);
     }
-#line 1588 "ado.tab.cpp"
+#line 1582 "ado.tab.cpp"
     break;
 
   case 24: // if_cmd: IF expression compound_cmd
@@ -1596,7 +1590,7 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 1600 "ado.tab.cpp"
+#line 1594 "ado.tab.cpp"
     break;
 
   case 25: // compound_cmd: "{" cmds "}"
@@ -1604,7 +1598,7 @@ namespace yy {
     {
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 1608 "ado.tab.cpp"
+#line 1602 "ado.tab.cpp"
     break;
 
   case 26: // cmds: cmd
@@ -1616,7 +1610,7 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 1620 "ado.tab.cpp"
+#line 1614 "ado.tab.cpp"
     break;
 
   case 27: // cmds: compound_cmd
@@ -1624,7 +1618,7 @@ namespace yy {
     {
         (yylhs.value.node) = (yystack_[0].value.node);
     }
-#line 1628 "ado.tab.cpp"
+#line 1622 "ado.tab.cpp"
     break;
 
   case 28: // cmds: cmds cmd
@@ -1634,7 +1628,7 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 1638 "ado.tab.cpp"
+#line 1632 "ado.tab.cpp"
     break;
 
   case 29: // cmds: cmds compound_cmd
@@ -1644,19 +1638,19 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 1648 "ado.tab.cpp"
+#line 1642 "ado.tab.cpp"
     break;
 
   case 30: // cmd: cmd_sep
 #line 401 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 1654 "ado.tab.cpp"
+#line 1648 "ado.tab.cpp"
     break;
 
   case 31: // cmd: EMBEDDED_CODE
 #line 402 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 1660 "ado.tab.cpp"
+#line 1654 "ado.tab.cpp"
     break;
 
   case 32: // cmd: nonmodifier_cmd cmd_sep
@@ -1666,7 +1660,7 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 1670 "ado.tab.cpp"
+#line 1664 "ado.tab.cpp"
     break;
 
   case 33: // cmd: long_modifier_cmd ":" modifier_cmd_list compound_cmd cmd_sep
@@ -1679,7 +1673,7 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[2].value.node);
     }
-#line 1683 "ado.tab.cpp"
+#line 1677 "ado.tab.cpp"
     break;
 
   case 34: // cmd: long_modifier_cmd ":" modifier_cmd_list nonmodifier_cmd cmd_sep
@@ -1692,7 +1686,7 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[2].value.node);
     }
-#line 1696 "ado.tab.cpp"
+#line 1690 "ado.tab.cpp"
     break;
 
   case 35: // cmd: long_modifier_cmd ":" nonmodifier_cmd cmd_sep
@@ -1707,7 +1701,7 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 1711 "ado.tab.cpp"
+#line 1705 "ado.tab.cpp"
     break;
 
   case 36: // cmd: modifier_cmd_list nonmodifier_cmd cmd_sep
@@ -1719,7 +1713,7 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[2].value.node);
     }
-#line 1723 "ado.tab.cpp"
+#line 1717 "ado.tab.cpp"
     break;
 
   case 37: // cmd: modifier_cmd_list ":" nonmodifier_cmd cmd_sep
@@ -1731,7 +1725,7 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[3].value.node);
     }
-#line 1735 "ado.tab.cpp"
+#line 1729 "ado.tab.cpp"
     break;
 
   case 38: // cmd: modifier_cmd_list compound_cmd cmd_sep
@@ -1743,7 +1737,7 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[2].value.node);
     }
-#line 1747 "ado.tab.cpp"
+#line 1741 "ado.tab.cpp"
     break;
 
   case 39: // cmd: modifier_cmd_list ":" compound_cmd cmd_sep
@@ -1755,7 +1749,7 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[3].value.node);
     }
-#line 1759 "ado.tab.cpp"
+#line 1753 "ado.tab.cpp"
     break;
 
   case 40: // cmd: modifier_cmd_list long_modifier_cmd ":" nonmodifier_cmd cmd_sep
@@ -1768,7 +1762,7 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[4].value.node);
     }
-#line 1772 "ado.tab.cpp"
+#line 1766 "ado.tab.cpp"
     break;
 
   case 41: // cmd: modifier_cmd_list long_modifier_cmd ":" compound_cmd cmd_sep
@@ -1781,7 +1775,7 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[4].value.node);
     }
-#line 1785 "ado.tab.cpp"
+#line 1779 "ado.tab.cpp"
     break;
 
   case 42: // cmd: modifier_cmd_list long_modifier_cmd ":" modifier_cmd_list nonmodifier_cmd cmd_sep
@@ -1795,7 +1789,7 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[5].value.node);
     }
-#line 1799 "ado.tab.cpp"
+#line 1793 "ado.tab.cpp"
     break;
 
   case 43: // cmd: modifier_cmd_list long_modifier_cmd ":" modifier_cmd_list compound_cmd cmd_sep
@@ -1809,7 +1803,7 @@ namespace yy {
 
         (yylhs.value.node) = (yystack_[5].value.node);
     }
-#line 1813 "ado.tab.cpp"
+#line 1807 "ado.tab.cpp"
     break;
 
   case 44: // cmd_sep: NEWLINE
@@ -1819,7 +1813,7 @@ namespace yy {
 
         (yylhs.value.node) = new ExprNode();
     }
-#line 1823 "ado.tab.cpp"
+#line 1817 "ado.tab.cpp"
     break;
 
   case 45: // cmd_sep: ";"
@@ -1829,7 +1823,7 @@ namespace yy {
 
         (yylhs.value.node) = new ExprNode();
     }
-#line 1833 "ado.tab.cpp"
+#line 1827 "ado.tab.cpp"
     break;
 
   case 46: // modifier_cmd: CAPTURE
@@ -1840,7 +1834,7 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 1844 "ado.tab.cpp"
+#line 1838 "ado.tab.cpp"
     break;
 
   case 47: // modifier_cmd: QUIETLY
@@ -1851,7 +1845,7 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 1855 "ado.tab.cpp"
+#line 1849 "ado.tab.cpp"
     break;
 
   case 48: // modifier_cmd: NOISILY
@@ -1862,7 +1856,7 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 1866 "ado.tab.cpp"
+#line 1860 "ado.tab.cpp"
     break;
 
   case 49: // long_modifier_cmd: BYSORT expression_list option_list
@@ -1878,7 +1872,7 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 1882 "ado.tab.cpp"
+#line 1876 "ado.tab.cpp"
     break;
 
   case 50: // long_modifier_cmd: BY expression_list option_list
@@ -1894,7 +1888,7 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 1898 "ado.tab.cpp"
+#line 1892 "ado.tab.cpp"
     break;
 
   case 51: // long_modifier_cmd: XI option_list
@@ -1908,7 +1902,7 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 1912 "ado.tab.cpp"
+#line 1906 "ado.tab.cpp"
     break;
 
   case 52: // modifier_cmd_list: modifier_cmd
@@ -1918,7 +1912,7 @@ namespace yy {
         node->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 1922 "ado.tab.cpp"
+#line 1916 "ado.tab.cpp"
     break;
 
   case 53: // modifier_cmd_list: modifier_cmd_list modifier_cmd
@@ -1927,7 +1921,7 @@ namespace yy {
         (yystack_[1].value.node)->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 1931 "ado.tab.cpp"
+#line 1925 "ado.tab.cpp"
     break;
 
   case 54: // nonmodifier_cmd: IDENT expression_list if_clause in_clause weight_clause using_clause option_list
@@ -1954,7 +1948,7 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 1958 "ado.tab.cpp"
+#line 1952 "ado.tab.cpp"
     break;
 
   case 55: // nonmodifier_cmd: IDENT if_clause in_clause weight_clause using_clause option_list
@@ -1980,7 +1974,7 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 1984 "ado.tab.cpp"
+#line 1978 "ado.tab.cpp"
     break;
 
   case 56: // nonmodifier_cmd: MERGE MERGE_SPEC expression_list using_clause option_list
@@ -2012,7 +2006,7 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 2016 "ado.tab.cpp"
+#line 2010 "ado.tab.cpp"
     break;
 
   case 57: // nonmodifier_cmd: XI expression_list option_list
@@ -2028,7 +2022,7 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 2032 "ado.tab.cpp"
+#line 2026 "ado.tab.cpp"
     break;
 
   case 58: // nonmodifier_cmd: IVREGRESS TSLS varlist "(" varlist "=" varlist ")" if_clause in_clause weight_clause option_list
@@ -2074,7 +2068,7 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 2078 "ado.tab.cpp"
+#line 2072 "ado.tab.cpp"
     break;
 
   case 59: // nonmodifier_cmd: GSORT gsort_varlist option_list
@@ -2090,7 +2084,7 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 2094 "ado.tab.cpp"
+#line 2088 "ado.tab.cpp"
     break;
 
   case 60: // nonmodifier_cmd: COLLAPSE collapse_spec_base_list if_clause in_clause weight_clause option_list
@@ -2137,7 +2131,7 @@ namespace yy {
 
         (yylhs.value.node) = cmd;
     }
-#line 2141 "ado.tab.cpp"
+#line 2135 "ado.tab.cpp"
     break;
 
   case 61: // nonmodifier_cmd: COLLAPSE collapse_list if_clause in_clause weight_clause option_list
@@ -2162,7 +2156,7 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 2166 "ado.tab.cpp"
+#line 2160 "ado.tab.cpp"
     break;
 
   case 62: // nonmodifier_cmd: LRTEST modelspec_list option_list
@@ -2178,7 +2172,7 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 2182 "ado.tab.cpp"
+#line 2176 "ado.tab.cpp"
     break;
 
   case 63: // nonmodifier_cmd: ANOVA IDENT anova_term_list if_clause in_clause weight_clause option_list
@@ -2204,7 +2198,7 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 2208 "ado.tab.cpp"
+#line 2202 "ado.tab.cpp"
     break;
 
   case 64: // nonmodifier_cmd: RECODE recode_rule_list if_clause in_clause option_list
@@ -2226,7 +2220,7 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 2230 "ado.tab.cpp"
+#line 2224 "ado.tab.cpp"
     break;
 
   case 65: // varlist: IDENT
@@ -2236,7 +2230,7 @@ namespace yy {
         node->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 2240 "ado.tab.cpp"
+#line 2234 "ado.tab.cpp"
     break;
 
   case 66: // varlist: varlist IDENT
@@ -2245,19 +2239,19 @@ namespace yy {
         (yystack_[1].value.node)->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 2249 "ado.tab.cpp"
+#line 2243 "ado.tab.cpp"
     break;
 
   case 67: // number_or_missing: NUMBER
 #line 880 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 2255 "ado.tab.cpp"
+#line 2249 "ado.tab.cpp"
     break;
 
   case 68: // number_or_missing: "."
 #line 881 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 2261 "ado.tab.cpp"
+#line 2255 "ado.tab.cpp"
     break;
 
   case 69: // numlist: number_or_missing
@@ -2267,7 +2261,7 @@ namespace yy {
         node->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 2271 "ado.tab.cpp"
+#line 2265 "ado.tab.cpp"
     break;
 
   case 70: // numlist: numlist number_or_missing
@@ -2276,13 +2270,13 @@ namespace yy {
         (yystack_[1].value.node)->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 2280 "ado.tab.cpp"
+#line 2274 "ado.tab.cpp"
     break;
 
   case 71: // collapse_spec_base: IDENT
 #line 900 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 2286 "ado.tab.cpp"
+#line 2280 "ado.tab.cpp"
     break;
 
   case 72: // collapse_spec_base: IDENT "=" IDENT
@@ -2311,7 +2305,7 @@ namespace yy {
         node->appendChild("right", arglist);
         (yylhs.value.node) = node;
     }
-#line 2315 "ado.tab.cpp"
+#line 2309 "ado.tab.cpp"
     break;
 
   case 73: // collapse_spec_base_list: collapse_spec_base
@@ -2321,7 +2315,7 @@ namespace yy {
         node->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 2325 "ado.tab.cpp"
+#line 2319 "ado.tab.cpp"
     break;
 
   case 74: // collapse_spec_base_list: collapse_spec_base_list collapse_spec_base
@@ -2330,7 +2324,7 @@ namespace yy {
         (yystack_[1].value.node)->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 2334 "ado.tab.cpp"
+#line 2328 "ado.tab.cpp"
     break;
 
   case 75: // collapse_spec: "(" IDENT ")" collapse_spec_base_list
@@ -2354,7 +2348,7 @@ namespace yy {
         node->appendChild("right", arglist);
         (yylhs.value.node) = node;
     }
-#line 2358 "ado.tab.cpp"
+#line 2352 "ado.tab.cpp"
     break;
 
   case 76: // collapse_list: collapse_spec
@@ -2364,7 +2358,7 @@ namespace yy {
         node->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 2368 "ado.tab.cpp"
+#line 2362 "ado.tab.cpp"
     break;
 
   case 77: // collapse_list: collapse_list collapse_spec
@@ -2373,13 +2367,13 @@ namespace yy {
         (yystack_[1].value.node)->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 2377 "ado.tab.cpp"
+#line 2371 "ado.tab.cpp"
     break;
 
   case 78: // recode_rule: IDENT
 #line 981 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 2383 "ado.tab.cpp"
+#line 2377 "ado.tab.cpp"
     break;
 
   case 79: // recode_rule: "(" IDENT "=" NUMBER ")"
@@ -2403,7 +2397,7 @@ namespace yy {
         node->appendChild("right", arglist);
         (yylhs.value.node) = node;
     }
-#line 2407 "ado.tab.cpp"
+#line 2401 "ado.tab.cpp"
     break;
 
   case 80: // recode_rule: "(" NUMBER "/" NUMBER "=" NUMBER ")"
@@ -2430,7 +2424,7 @@ namespace yy {
         node->appendChild("right", arglist);
         (yylhs.value.node) = node;
     }
-#line 2434 "ado.tab.cpp"
+#line 2428 "ado.tab.cpp"
     break;
 
   case 81: // recode_rule: "(" numlist "=" NUMBER ")"
@@ -2454,7 +2448,7 @@ namespace yy {
         node->appendChild("right", arglist);
         (yylhs.value.node) = node;
     }
-#line 2458 "ado.tab.cpp"
+#line 2452 "ado.tab.cpp"
     break;
 
   case 82: // recode_rule_list: recode_rule
@@ -2464,7 +2458,7 @@ namespace yy {
         node->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 2468 "ado.tab.cpp"
+#line 2462 "ado.tab.cpp"
     break;
 
   case 83: // recode_rule_list: recode_rule_list recode_rule
@@ -2473,7 +2467,7 @@ namespace yy {
         (yystack_[1].value.node)->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 2477 "ado.tab.cpp"
+#line 2471 "ado.tab.cpp"
     break;
 
   case 84: // gsort_var: IDENT
@@ -2489,7 +2483,7 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 2493 "ado.tab.cpp"
+#line 2487 "ado.tab.cpp"
     break;
 
   case 85: // gsort_var: "+" IDENT
@@ -2507,7 +2501,7 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 2511 "ado.tab.cpp"
+#line 2505 "ado.tab.cpp"
     break;
 
   case 86: // gsort_var: "-" IDENT
@@ -2525,7 +2519,7 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 2529 "ado.tab.cpp"
+#line 2523 "ado.tab.cpp"
     break;
 
   case 87: // gsort_varlist: gsort_var
@@ -2535,7 +2529,7 @@ namespace yy {
         node->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 2539 "ado.tab.cpp"
+#line 2533 "ado.tab.cpp"
     break;
 
   case 88: // gsort_varlist: gsort_varlist gsort_var
@@ -2544,19 +2538,19 @@ namespace yy {
         (yystack_[1].value.node)->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 2548 "ado.tab.cpp"
+#line 2542 "ado.tab.cpp"
     break;
 
   case 89: // modelspec: IDENT
 #line 1121 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 2554 "ado.tab.cpp"
+#line 2548 "ado.tab.cpp"
     break;
 
   case 90: // modelspec: "."
 #line 1122 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 2560 "ado.tab.cpp"
+#line 2554 "ado.tab.cpp"
     break;
 
   case 91: // modelspec: "(" varlist ")"
@@ -2575,7 +2569,7 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 2579 "ado.tab.cpp"
+#line 2573 "ado.tab.cpp"
     break;
 
   case 92: // modelspec_list: modelspec
@@ -2585,7 +2579,7 @@ namespace yy {
         node->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 2589 "ado.tab.cpp"
+#line 2583 "ado.tab.cpp"
     break;
 
   case 93: // modelspec_list: modelspec_list modelspec
@@ -2594,13 +2588,13 @@ namespace yy {
         (yystack_[1].value.node)->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 2598 "ado.tab.cpp"
+#line 2592 "ado.tab.cpp"
     break;
 
   case 94: // anova_nest_expression: cross_expression
 #line 1156 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 2604 "ado.tab.cpp"
+#line 2598 "ado.tab.cpp"
     break;
 
   case 95: // anova_nest_expression: anova_nest_expression "|" cross_expression
@@ -2615,13 +2609,13 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 2619 "ado.tab.cpp"
+#line 2613 "ado.tab.cpp"
     break;
 
   case 96: // anova_error_expression: anova_nest_expression
 #line 1171 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 2625 "ado.tab.cpp"
+#line 2619 "ado.tab.cpp"
     break;
 
   case 97: // anova_error_expression: anova_nest_expression "/"
@@ -2635,7 +2629,7 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 2639 "ado.tab.cpp"
+#line 2633 "ado.tab.cpp"
     break;
 
   case 98: // anova_term_list: anova_error_expression
@@ -2645,7 +2639,7 @@ namespace yy {
         node->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 2649 "ado.tab.cpp"
+#line 2643 "ado.tab.cpp"
     break;
 
   case 99: // anova_term_list: anova_term_list anova_error_expression
@@ -2654,364 +2648,445 @@ namespace yy {
         (yystack_[1].value.node)->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = (yystack_[1].value.node);
     }
+#line 2652 "ado.tab.cpp"
+    break;
+
+  case 101: // unary_operator: "-"
+#line 1211 "ado.ypp"
+      { (yylhs.value.str) = (yystack_[0].value.str); }
 #line 2658 "ado.tab.cpp"
     break;
 
-  case 100: // type_operator: BYTE
-#line 1207 "ado.ypp"
+  case 102: // unary_operator: "+"
+#line 1212 "ado.ypp"
       { (yylhs.value.str) = (yystack_[0].value.str); }
 #line 2664 "ado.tab.cpp"
     break;
 
-  case 101: // type_operator: INT
-#line 1208 "ado.ypp"
+  case 103: // unary_operator: "!"
+#line 1213 "ado.ypp"
       { (yylhs.value.str) = (yystack_[0].value.str); }
 #line 2670 "ado.tab.cpp"
     break;
 
-  case 102: // type_operator: LONG
-#line 1209 "ado.ypp"
-      { (yylhs.value.str) = (yystack_[0].value.str); }
+  case 104: // unary_factor_operator: CONT_OPERATOR
+#line 1217 "ado.ypp"
+      { (yylhs.value.node) = (yystack_[0].value.node); }
 #line 2676 "ado.tab.cpp"
     break;
 
-  case 103: // type_operator: FLOAT
-#line 1210 "ado.ypp"
-      { (yylhs.value.str) = (yystack_[0].value.str); }
+  case 105: // unary_factor_operator: BASE_OPERATOR
+#line 1218 "ado.ypp"
+      { (yylhs.value.node) = (yystack_[0].value.node); }
 #line 2682 "ado.tab.cpp"
     break;
 
-  case 104: // type_operator: DOUBLE
-#line 1211 "ado.ypp"
-      { (yylhs.value.str) = (yystack_[0].value.str); }
+  case 106: // unary_factor_operator: IND_OPERATOR
+#line 1219 "ado.ypp"
+      { (yylhs.value.node) = (yystack_[0].value.node); }
 #line 2688 "ado.tab.cpp"
     break;
 
-  case 105: // type_operator: STRING_TYPE_SPEC
-#line 1212 "ado.ypp"
-      { (yylhs.value.str) = (yystack_[0].value.str); }
+  case 107: // unary_factor_operator: OMIT_OPERATOR
+#line 1220 "ado.ypp"
+      { (yylhs.value.node) = (yystack_[0].value.node); }
 #line 2694 "ado.tab.cpp"
     break;
 
-  case 107: // unary_operator: "-"
-#line 1220 "ado.ypp"
-      { (yylhs.value.str) = (yystack_[0].value.str); }
+  case 108: // power_operator: "^"
+#line 1224 "ado.ypp"
+    { (yylhs.value.str) = (yystack_[0].value.str); }
 #line 2700 "ado.tab.cpp"
     break;
 
-  case 108: // unary_operator: "+"
-#line 1221 "ado.ypp"
+  case 109: // multiplication_operator: "*"
+#line 1228 "ado.ypp"
       { (yylhs.value.str) = (yystack_[0].value.str); }
 #line 2706 "ado.tab.cpp"
     break;
 
-  case 109: // unary_operator: "!"
-#line 1222 "ado.ypp"
+  case 110: // multiplication_operator: "/"
+#line 1229 "ado.ypp"
       { (yylhs.value.str) = (yystack_[0].value.str); }
 #line 2712 "ado.tab.cpp"
     break;
 
-  case 110: // unary_factor_operator: CONT_OPERATOR
-#line 1226 "ado.ypp"
-      { (yylhs.value.node) = (yystack_[0].value.node); }
+  case 111: // additive_operator: "+"
+#line 1233 "ado.ypp"
+      { (yylhs.value.str) = (yystack_[0].value.str); }
 #line 2718 "ado.tab.cpp"
     break;
 
-  case 111: // unary_factor_operator: BASE_OPERATOR
-#line 1227 "ado.ypp"
-      { (yylhs.value.node) = (yystack_[0].value.node); }
+  case 112: // additive_operator: "-"
+#line 1234 "ado.ypp"
+      { (yylhs.value.str) = (yystack_[0].value.str); }
 #line 2724 "ado.tab.cpp"
     break;
 
-  case 112: // unary_factor_operator: IND_OPERATOR
-#line 1228 "ado.ypp"
-      { (yylhs.value.node) = (yystack_[0].value.node); }
+  case 113: // relational_operator: "<"
+#line 1238 "ado.ypp"
+      { (yylhs.value.str) = (yystack_[0].value.str); }
 #line 2730 "ado.tab.cpp"
     break;
 
-  case 113: // unary_factor_operator: OMIT_OPERATOR
-#line 1229 "ado.ypp"
-      { (yylhs.value.node) = (yystack_[0].value.node); }
+  case 114: // relational_operator: ">"
+#line 1239 "ado.ypp"
+      { (yylhs.value.str) = (yystack_[0].value.str); }
 #line 2736 "ado.tab.cpp"
     break;
 
-  case 114: // power_operator: "^"
-#line 1233 "ado.ypp"
-    { (yylhs.value.str) = (yystack_[0].value.str); }
+  case 115: // relational_operator: ">="
+#line 1240 "ado.ypp"
+      { (yylhs.value.str) = (yystack_[0].value.str); }
 #line 2742 "ado.tab.cpp"
     break;
 
-  case 115: // multiplication_operator: "*"
-#line 1237 "ado.ypp"
+  case 116: // relational_operator: "<="
+#line 1241 "ado.ypp"
       { (yylhs.value.str) = (yystack_[0].value.str); }
 #line 2748 "ado.tab.cpp"
     break;
 
-  case 116: // multiplication_operator: "/"
-#line 1238 "ado.ypp"
+  case 117: // equality_operator: "=="
+#line 1245 "ado.ypp"
       { (yylhs.value.str) = (yystack_[0].value.str); }
 #line 2754 "ado.tab.cpp"
     break;
 
-  case 117: // additive_operator: "+"
-#line 1242 "ado.ypp"
+  case 118: // equality_operator: "!="
+#line 1246 "ado.ypp"
       { (yylhs.value.str) = (yystack_[0].value.str); }
 #line 2760 "ado.tab.cpp"
     break;
 
-  case 118: // additive_operator: "-"
-#line 1243 "ado.ypp"
+  case 119: // logical_operator: "&"
+#line 1250 "ado.ypp"
       { (yylhs.value.str) = (yystack_[0].value.str); }
 #line 2766 "ado.tab.cpp"
     break;
 
-  case 119: // relational_operator: "<"
-#line 1247 "ado.ypp"
+  case 120: // logical_operator: "|"
+#line 1251 "ado.ypp"
       { (yylhs.value.str) = (yystack_[0].value.str); }
 #line 2772 "ado.tab.cpp"
     break;
 
-  case 120: // relational_operator: ">"
-#line 1248 "ado.ypp"
+  case 121: // cross_operator: "##"
+#line 1255 "ado.ypp"
       { (yylhs.value.str) = (yystack_[0].value.str); }
 #line 2778 "ado.tab.cpp"
     break;
 
-  case 121: // relational_operator: ">="
-#line 1249 "ado.ypp"
+  case 122: // cross_operator: "#"
+#line 1256 "ado.ypp"
       { (yylhs.value.str) = (yystack_[0].value.str); }
 #line 2784 "ado.tab.cpp"
     break;
 
-  case 122: // relational_operator: "<="
-#line 1250 "ado.ypp"
-      { (yylhs.value.str) = (yystack_[0].value.str); }
+  case 123: // format_spec: STRING_FORMAT
+#line 1260 "ado.ypp"
+      { (yylhs.value.node) = (yystack_[0].value.node); }
 #line 2790 "ado.tab.cpp"
     break;
 
-  case 123: // equality_operator: "=="
-#line 1254 "ado.ypp"
-      { (yylhs.value.str) = (yystack_[0].value.str); }
+  case 124: // format_spec: NUMBER_FORMAT
+#line 1261 "ado.ypp"
+      { (yylhs.value.node) = (yystack_[0].value.node); }
 #line 2796 "ado.tab.cpp"
     break;
 
-  case 124: // equality_operator: "!="
-#line 1255 "ado.ypp"
-      { (yylhs.value.str) = (yystack_[0].value.str); }
+  case 125: // format_spec: DATETIME_FORMAT
+#line 1262 "ado.ypp"
+      { (yylhs.value.node) = (yystack_[0].value.node); }
 #line 2802 "ado.tab.cpp"
     break;
 
-  case 125: // logical_operator: "&"
-#line 1259 "ado.ypp"
-      { (yylhs.value.str) = (yystack_[0].value.str); }
+  case 126: // literal_expression: IDENT
+#line 1283 "ado.ypp"
+      { (yylhs.value.node) = (yystack_[0].value.node); }
 #line 2808 "ado.tab.cpp"
     break;
 
-  case 126: // logical_operator: "|"
-#line 1260 "ado.ypp"
-      { (yylhs.value.str) = (yystack_[0].value.str); }
-#line 2814 "ado.tab.cpp"
+  case 127: // literal_expression: BYTE
+#line 1285 "ado.ypp"
+    {
+        ExprNode *node = new ExprNode({"ado_literal", "ado_ident"});
+        node->addData("value", *((yystack_[0].value.str)));
+        (yylhs.value.node) = node;
+    }
+#line 2818 "ado.tab.cpp"
     break;
 
-  case 127: // cross_operator: "##"
-#line 1264 "ado.ypp"
-      { (yylhs.value.str) = (yystack_[0].value.str); }
-#line 2820 "ado.tab.cpp"
+  case 128: // literal_expression: INT
+#line 1291 "ado.ypp"
+    {
+        ExprNode *node = new ExprNode({"ado_literal", "ado_ident"});
+        node->addData("value", *((yystack_[0].value.str)));
+        (yylhs.value.node) = node;
+    }
+#line 2828 "ado.tab.cpp"
     break;
 
-  case 128: // cross_operator: "#"
-#line 1265 "ado.ypp"
-      { (yylhs.value.str) = (yystack_[0].value.str); }
-#line 2826 "ado.tab.cpp"
-    break;
-
-  case 129: // format_spec: STRING_FORMAT
-#line 1269 "ado.ypp"
-      { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 2832 "ado.tab.cpp"
-    break;
-
-  case 130: // format_spec: NUMBER_FORMAT
-#line 1270 "ado.ypp"
-      { (yylhs.value.node) = (yystack_[0].value.node); }
+  case 129: // literal_expression: LONG
+#line 1297 "ado.ypp"
+    {
+        ExprNode *node = new ExprNode({"ado_literal", "ado_ident"});
+        node->addData("value", *((yystack_[0].value.str)));
+        (yylhs.value.node) = node;
+    }
 #line 2838 "ado.tab.cpp"
     break;
 
-  case 131: // format_spec: DATETIME_FORMAT
-#line 1271 "ado.ypp"
+  case 130: // literal_expression: FLOAT
+#line 1303 "ado.ypp"
+    {
+        ExprNode *node = new ExprNode({"ado_literal", "ado_ident"});
+        node->addData("value", *((yystack_[0].value.str)));
+        (yylhs.value.node) = node;
+    }
+#line 2848 "ado.tab.cpp"
+    break;
+
+  case 131: // literal_expression: DOUBLE
+#line 1309 "ado.ypp"
+    {
+        ExprNode *node = new ExprNode({"ado_literal", "ado_ident"});
+        node->addData("value", *((yystack_[0].value.str)));
+        (yylhs.value.node) = node;
+    }
+#line 2858 "ado.tab.cpp"
+    break;
+
+  case 132: // literal_expression: STRING_TYPE_SPEC
+#line 1315 "ado.ypp"
+    {
+        ExprNode *node = new ExprNode({"ado_literal", "ado_ident"});
+        node->addData("value", *((yystack_[0].value.str)));
+        (yylhs.value.node) = node;
+    }
+#line 2868 "ado.tab.cpp"
+    break;
+
+  case 133: // literal_expression: NUMBER
+#line 1320 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 2844 "ado.tab.cpp"
+#line 2874 "ado.tab.cpp"
     break;
 
-  case 132: // literal_expression: IDENT
-#line 1275 "ado.ypp"
+  case 134: // literal_expression: STRING_LITERAL
+#line 1321 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 2850 "ado.tab.cpp"
-    break;
-
-  case 133: // literal_expression: BYTE
-#line 1277 "ado.ypp"
-    {
-        ExprNode *node = new ExprNode({"ado_literal", "ado_ident"});
-        node->addData("value", *((yystack_[0].value.str)));
-        (yylhs.value.node) = node;
-    }
-#line 2860 "ado.tab.cpp"
-    break;
-
-  case 134: // literal_expression: INT
-#line 1283 "ado.ypp"
-    {
-        ExprNode *node = new ExprNode({"ado_literal", "ado_ident"});
-        node->addData("value", *((yystack_[0].value.str)));
-        (yylhs.value.node) = node;
-    }
-#line 2870 "ado.tab.cpp"
-    break;
-
-  case 135: // literal_expression: LONG
-#line 1289 "ado.ypp"
-    {
-        ExprNode *node = new ExprNode({"ado_literal", "ado_ident"});
-        node->addData("value", *((yystack_[0].value.str)));
-        (yylhs.value.node) = node;
-    }
 #line 2880 "ado.tab.cpp"
     break;
 
-  case 136: // literal_expression: FLOAT
-#line 1295 "ado.ypp"
-    {
-        ExprNode *node = new ExprNode({"ado_literal", "ado_ident"});
-        node->addData("value", *((yystack_[0].value.str)));
-        (yylhs.value.node) = node;
-    }
-#line 2890 "ado.tab.cpp"
-    break;
-
-  case 137: // literal_expression: DOUBLE
-#line 1301 "ado.ypp"
-    {
-        ExprNode *node = new ExprNode({"ado_literal", "ado_ident"});
-        node->addData("value", *((yystack_[0].value.str)));
-        (yylhs.value.node) = node;
-    }
-#line 2900 "ado.tab.cpp"
-    break;
-
-  case 138: // literal_expression: STRING_TYPE_SPEC
-#line 1307 "ado.ypp"
-    {
-        ExprNode *node = new ExprNode({"ado_literal", "ado_ident"});
-        node->addData("value", *((yystack_[0].value.str)));
-        (yylhs.value.node) = node;
-    }
-#line 2910 "ado.tab.cpp"
-    break;
-
-  case 139: // literal_expression: NUMBER
-#line 1312 "ado.ypp"
-      { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 2916 "ado.tab.cpp"
-    break;
-
-  case 140: // literal_expression: STRING_LITERAL
-#line 1313 "ado.ypp"
-      { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 2922 "ado.tab.cpp"
-    break;
-
-  case 141: // literal_expression: DATE
-#line 1314 "ado.ypp"
-      { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 2928 "ado.tab.cpp"
-    break;
-
-  case 142: // literal_expression: DATETIME
-#line 1315 "ado.ypp"
-      { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 2934 "ado.tab.cpp"
-    break;
-
-  case 143: // literal_expression: "."
-#line 1316 "ado.ypp"
-      { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 2940 "ado.tab.cpp"
-    break;
-
-  case 144: // literal_expression: format_spec
-#line 1317 "ado.ypp"
-      { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 2946 "ado.tab.cpp"
-    break;
-
-  case 145: // primary_expression: literal_expression
+  case 135: // literal_expression: DATE
 #line 1322 "ado.ypp"
+      { (yylhs.value.node) = (yystack_[0].value.node); }
+#line 2886 "ado.tab.cpp"
+    break;
+
+  case 136: // literal_expression: DATETIME
+#line 1323 "ado.ypp"
+      { (yylhs.value.node) = (yystack_[0].value.node); }
+#line 2892 "ado.tab.cpp"
+    break;
+
+  case 137: // literal_expression: "."
+#line 1324 "ado.ypp"
+      { (yylhs.value.node) = (yystack_[0].value.node); }
+#line 2898 "ado.tab.cpp"
+    break;
+
+  case 138: // literal_expression: format_spec
+#line 1325 "ado.ypp"
+      { (yylhs.value.node) = (yystack_[0].value.node); }
+#line 2904 "ado.tab.cpp"
+    break;
+
+  case 139: // primary_expression: literal_expression
+#line 1330 "ado.ypp"
     {
         (yylhs.value.node) = (yystack_[0].value.node);
     }
-#line 2954 "ado.tab.cpp"
+#line 2912 "ado.tab.cpp"
     break;
 
-  case 146: // primary_expression: "(" expression ")"
-#line 1326 "ado.ypp"
+  case 140: // primary_expression: "(" expression ")"
+#line 1334 "ado.ypp"
     {
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 2962 "ado.tab.cpp"
+#line 2920 "ado.tab.cpp"
     break;
 
-  case 147: // primary_expression: type_operator "(" expression_list ")"
-#line 1330 "ado.ypp"
+  case 141: // primary_expression: BYTE "(" expression_list ")"
+#line 1338 "ado.ypp"
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_type_expression"});
         node->addData("verb", *((yystack_[3].value.str)));
         node->appendChild("left", (yystack_[1].value.node));
-
         (yylhs.value.node) = node;
     }
-#line 2974 "ado.tab.cpp"
+#line 2931 "ado.tab.cpp"
     break;
 
-  case 148: // primary_expression: type_operator IDENT
-#line 1338 "ado.ypp"
+  case 142: // primary_expression: INT "(" expression_list ")"
+#line 1345 "ado.ypp"
+    {
+        ExprNode *node = new ExprNode({"ado_expression", "ado_type_expression"});
+        node->addData("verb", *((yystack_[3].value.str)));
+        node->appendChild("left", (yystack_[1].value.node));
+        (yylhs.value.node) = node;
+    }
+#line 2942 "ado.tab.cpp"
+    break;
+
+  case 143: // primary_expression: LONG "(" expression_list ")"
+#line 1352 "ado.ypp"
+    {
+        ExprNode *node = new ExprNode({"ado_expression", "ado_type_expression"});
+        node->addData("verb", *((yystack_[3].value.str)));
+        node->appendChild("left", (yystack_[1].value.node));
+        (yylhs.value.node) = node;
+    }
+#line 2953 "ado.tab.cpp"
+    break;
+
+  case 144: // primary_expression: FLOAT "(" expression_list ")"
+#line 1359 "ado.ypp"
+    {
+        ExprNode *node = new ExprNode({"ado_expression", "ado_type_expression"});
+        node->addData("verb", *((yystack_[3].value.str)));
+        node->appendChild("left", (yystack_[1].value.node));
+        (yylhs.value.node) = node;
+    }
+#line 2964 "ado.tab.cpp"
+    break;
+
+  case 145: // primary_expression: DOUBLE "(" expression_list ")"
+#line 1366 "ado.ypp"
+    {
+        ExprNode *node = new ExprNode({"ado_expression", "ado_type_expression"});
+        node->addData("verb", *((yystack_[3].value.str)));
+        node->appendChild("left", (yystack_[1].value.node));
+        (yylhs.value.node) = node;
+    }
+#line 2975 "ado.tab.cpp"
+    break;
+
+  case 146: // primary_expression: STRING_TYPE_SPEC "(" expression_list ")"
+#line 1373 "ado.ypp"
+    {
+        ExprNode *node = new ExprNode({"ado_expression", "ado_type_expression"});
+        node->addData("verb", *((yystack_[3].value.str)));
+        node->appendChild("left", (yystack_[1].value.node));
+        (yylhs.value.node) = node;
+    }
+#line 2986 "ado.tab.cpp"
+    break;
+
+  case 147: // primary_expression: BYTE IDENT
+#line 1380 "ado.ypp"
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_type_expression"});
         node->addData("verb", *((yystack_[1].value.str)));
-
         ExprNode *lst = new ExprNode("ado_expression_list");
         lst->appendChild((yystack_[0].value.node));
         node->appendChild("left", lst);
-
         (yylhs.value.node) = node;
     }
-#line 2989 "ado.tab.cpp"
+#line 2999 "ado.tab.cpp"
     break;
 
-  case 149: // unary_factor_expression: primary_expression
-#line 1351 "ado.ypp"
+  case 148: // primary_expression: INT IDENT
+#line 1389 "ado.ypp"
+    {
+        ExprNode *node = new ExprNode({"ado_expression", "ado_type_expression"});
+        node->addData("verb", *((yystack_[1].value.str)));
+        ExprNode *lst = new ExprNode("ado_expression_list");
+        lst->appendChild((yystack_[0].value.node));
+        node->appendChild("left", lst);
+        (yylhs.value.node) = node;
+    }
+#line 3012 "ado.tab.cpp"
+    break;
+
+  case 149: // primary_expression: LONG IDENT
+#line 1398 "ado.ypp"
+    {
+        ExprNode *node = new ExprNode({"ado_expression", "ado_type_expression"});
+        node->addData("verb", *((yystack_[1].value.str)));
+        ExprNode *lst = new ExprNode("ado_expression_list");
+        lst->appendChild((yystack_[0].value.node));
+        node->appendChild("left", lst);
+        (yylhs.value.node) = node;
+    }
+#line 3025 "ado.tab.cpp"
+    break;
+
+  case 150: // primary_expression: FLOAT IDENT
+#line 1407 "ado.ypp"
+    {
+        ExprNode *node = new ExprNode({"ado_expression", "ado_type_expression"});
+        node->addData("verb", *((yystack_[1].value.str)));
+        ExprNode *lst = new ExprNode("ado_expression_list");
+        lst->appendChild((yystack_[0].value.node));
+        node->appendChild("left", lst);
+        (yylhs.value.node) = node;
+    }
+#line 3038 "ado.tab.cpp"
+    break;
+
+  case 151: // primary_expression: DOUBLE IDENT
+#line 1416 "ado.ypp"
+    {
+        ExprNode *node = new ExprNode({"ado_expression", "ado_type_expression"});
+        node->addData("verb", *((yystack_[1].value.str)));
+        ExprNode *lst = new ExprNode("ado_expression_list");
+        lst->appendChild((yystack_[0].value.node));
+        node->appendChild("left", lst);
+        (yylhs.value.node) = node;
+    }
+#line 3051 "ado.tab.cpp"
+    break;
+
+  case 152: // primary_expression: STRING_TYPE_SPEC IDENT
+#line 1425 "ado.ypp"
+    {
+        ExprNode *node = new ExprNode({"ado_expression", "ado_type_expression"});
+        node->addData("verb", *((yystack_[1].value.str)));
+        ExprNode *lst = new ExprNode("ado_expression_list");
+        lst->appendChild((yystack_[0].value.node));
+        node->appendChild("left", lst);
+        (yylhs.value.node) = node;
+    }
+#line 3064 "ado.tab.cpp"
+    break;
+
+  case 153: // unary_factor_expression: primary_expression
+#line 1436 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 2995 "ado.tab.cpp"
+#line 3070 "ado.tab.cpp"
     break;
 
-  case 150: // unary_factor_expression: unary_factor_operator primary_expression
-#line 1353 "ado.ypp"
+  case 154: // unary_factor_expression: unary_factor_operator primary_expression
+#line 1438 "ado.ypp"
     {
         (yystack_[1].value.node)->appendChild("left", (yystack_[0].value.node));
 
         (yylhs.value.node) = (yystack_[1].value.node); // ExprNode constructed by the lexer, which is a bit of a hack
     }
-#line 3005 "ado.tab.cpp"
+#line 3080 "ado.tab.cpp"
     break;
 
-  case 151: // cross_expression: unary_factor_expression
-#line 1361 "ado.ypp"
+  case 155: // cross_expression: unary_factor_expression
+#line 1446 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 3011 "ado.tab.cpp"
+#line 3086 "ado.tab.cpp"
     break;
 
-  case 152: // cross_expression: cross_expression cross_operator unary_factor_expression
-#line 1363 "ado.ypp"
+  case 156: // cross_expression: cross_expression cross_operator unary_factor_expression
+#line 1448 "ado.ypp"
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_cross_expression"});
         node->addData("verb", *((yystack_[1].value.str)));
@@ -3019,17 +3094,17 @@ namespace yy {
         node->appendChild("right", (yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 3023 "ado.tab.cpp"
+#line 3098 "ado.tab.cpp"
     break;
 
-  case 153: // postfix_expression: cross_expression
-#line 1373 "ado.ypp"
+  case 157: // postfix_expression: cross_expression
+#line 1458 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 3029 "ado.tab.cpp"
+#line 3104 "ado.tab.cpp"
     break;
 
-  case 154: // postfix_expression: postfix_expression "[" additive_expression "]"
-#line 1375 "ado.ypp"
+  case 158: // postfix_expression: postfix_expression "[" additive_expression "]"
+#line 1460 "ado.ypp"
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", std::string("[]"));
@@ -3038,11 +3113,11 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 3042 "ado.tab.cpp"
+#line 3117 "ado.tab.cpp"
     break;
 
-  case 155: // postfix_expression: postfix_expression "(" ")"
-#line 1384 "ado.ypp"
+  case 159: // postfix_expression: postfix_expression "(" ")"
+#line 1469 "ado.ypp"
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", std::string("()"));
@@ -3050,11 +3125,11 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 3054 "ado.tab.cpp"
+#line 3129 "ado.tab.cpp"
     break;
 
-  case 156: // postfix_expression: postfix_expression "(" argument_expression_list ")"
-#line 1392 "ado.ypp"
+  case 160: // postfix_expression: postfix_expression "(" argument_expression_list ")"
+#line 1477 "ado.ypp"
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_postfix_expression"});
         node->addData("verb", std::string("()"));
@@ -3063,17 +3138,17 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 3067 "ado.tab.cpp"
+#line 3142 "ado.tab.cpp"
     break;
 
-  case 157: // power_expression: postfix_expression
-#line 1403 "ado.ypp"
+  case 161: // power_expression: postfix_expression
+#line 1488 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 3073 "ado.tab.cpp"
+#line 3148 "ado.tab.cpp"
     break;
 
-  case 158: // power_expression: power_expression power_operator postfix_expression
-#line 1405 "ado.ypp"
+  case 162: // power_expression: power_expression power_operator postfix_expression
+#line 1490 "ado.ypp"
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_arithmetic_expression", "ado_power_expression"});
         node->addData("verb", *((yystack_[1].value.str)));
@@ -3081,34 +3156,34 @@ namespace yy {
         node->appendChild("right", (yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 3085 "ado.tab.cpp"
+#line 3160 "ado.tab.cpp"
     break;
 
-  case 159: // unary_expression: power_expression
-#line 1415 "ado.ypp"
+  case 163: // unary_expression: power_expression
+#line 1500 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 3091 "ado.tab.cpp"
+#line 3166 "ado.tab.cpp"
     break;
 
-  case 160: // unary_expression: unary_operator power_expression
-#line 1417 "ado.ypp"
+  case 164: // unary_expression: unary_operator power_expression
+#line 1502 "ado.ypp"
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_arithmetic_expression", "ado_unary_expression"});
         node->addData("verb", *((yystack_[1].value.str)));
         node->appendChild("right", (yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 3102 "ado.tab.cpp"
+#line 3177 "ado.tab.cpp"
     break;
 
-  case 161: // multiplication_expression: unary_expression
-#line 1426 "ado.ypp"
+  case 165: // multiplication_expression: unary_expression
+#line 1511 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 3108 "ado.tab.cpp"
+#line 3183 "ado.tab.cpp"
     break;
 
-  case 162: // multiplication_expression: multiplication_expression multiplication_operator unary_expression
-#line 1428 "ado.ypp"
+  case 166: // multiplication_expression: multiplication_expression multiplication_operator unary_expression
+#line 1513 "ado.ypp"
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_arithmetic_expression", "ado_multiplication_expression"});
         node->addData("verb", *((yystack_[1].value.str)));
@@ -3116,17 +3191,17 @@ namespace yy {
         node->appendChild("right", (yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 3120 "ado.tab.cpp"
+#line 3195 "ado.tab.cpp"
     break;
 
-  case 163: // additive_expression: multiplication_expression
-#line 1438 "ado.ypp"
+  case 167: // additive_expression: multiplication_expression
+#line 1523 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 3126 "ado.tab.cpp"
+#line 3201 "ado.tab.cpp"
     break;
 
-  case 164: // additive_expression: additive_expression additive_operator multiplication_expression
-#line 1440 "ado.ypp"
+  case 168: // additive_expression: additive_expression additive_operator multiplication_expression
+#line 1525 "ado.ypp"
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_arithmetic_expression", "ado_additive_expression"});
         node->addData("verb", *((yystack_[1].value.str)));
@@ -3134,17 +3209,17 @@ namespace yy {
         node->appendChild("right", (yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 3138 "ado.tab.cpp"
+#line 3213 "ado.tab.cpp"
     break;
 
-  case 165: // relational_expression: additive_expression
-#line 1450 "ado.ypp"
+  case 169: // relational_expression: additive_expression
+#line 1535 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 3144 "ado.tab.cpp"
+#line 3219 "ado.tab.cpp"
     break;
 
-  case 166: // relational_expression: relational_expression relational_operator additive_expression
-#line 1452 "ado.ypp"
+  case 170: // relational_expression: relational_expression relational_operator additive_expression
+#line 1537 "ado.ypp"
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_relational_expression"});
         node->addData("verb", *((yystack_[1].value.str)));
@@ -3152,17 +3227,17 @@ namespace yy {
         node->appendChild("right", (yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 3156 "ado.tab.cpp"
+#line 3231 "ado.tab.cpp"
     break;
 
-  case 167: // equality_expression: relational_expression
-#line 1462 "ado.ypp"
+  case 171: // equality_expression: relational_expression
+#line 1547 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 3162 "ado.tab.cpp"
+#line 3237 "ado.tab.cpp"
     break;
 
-  case 168: // equality_expression: equality_expression equality_operator relational_expression
-#line 1464 "ado.ypp"
+  case 172: // equality_expression: equality_expression equality_operator relational_expression
+#line 1549 "ado.ypp"
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_equality_expression"});
         node->addData("verb", *((yystack_[1].value.str)));
@@ -3170,17 +3245,17 @@ namespace yy {
         node->appendChild("right", (yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 3174 "ado.tab.cpp"
+#line 3249 "ado.tab.cpp"
     break;
 
-  case 169: // logical_expression: equality_expression
-#line 1474 "ado.ypp"
+  case 173: // logical_expression: equality_expression
+#line 1559 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 3180 "ado.tab.cpp"
+#line 3255 "ado.tab.cpp"
     break;
 
-  case 170: // logical_expression: logical_expression logical_operator equality_expression
-#line 1476 "ado.ypp"
+  case 174: // logical_expression: logical_expression logical_operator equality_expression
+#line 1561 "ado.ypp"
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_logical_expression"});
         node->addData("verb", *((yystack_[1].value.str)));
@@ -3188,17 +3263,17 @@ namespace yy {
         node->appendChild("right", (yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 3192 "ado.tab.cpp"
+#line 3267 "ado.tab.cpp"
     break;
 
-  case 171: // expression: logical_expression
-#line 1486 "ado.ypp"
+  case 175: // expression: logical_expression
+#line 1571 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 3198 "ado.tab.cpp"
+#line 3273 "ado.tab.cpp"
     break;
 
-  case 172: // expression: logical_expression assignment_operator logical_expression
-#line 1488 "ado.ypp"
+  case 176: // expression: logical_expression assignment_operator logical_expression
+#line 1573 "ado.ypp"
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_assignment_expression"});
         node->addData("verb", "=");
@@ -3206,96 +3281,96 @@ namespace yy {
         node->appendChild("right", (yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 3210 "ado.tab.cpp"
+#line 3285 "ado.tab.cpp"
     break;
 
-  case 173: // expression_list: expression
-#line 1499 "ado.ypp"
+  case 177: // expression_list: expression
+#line 1584 "ado.ypp"
     {
         ExprNode *node = new ExprNode("ado_expression_list");
         node->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 3220 "ado.tab.cpp"
+#line 3295 "ado.tab.cpp"
     break;
 
-  case 174: // expression_list: expression_list expression
-#line 1505 "ado.ypp"
+  case 178: // expression_list: expression_list expression
+#line 1590 "ado.ypp"
     {
         (yystack_[1].value.node)->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 3229 "ado.tab.cpp"
+#line 3304 "ado.tab.cpp"
     break;
 
-  case 175: // argument_expression_list: expression_list
-#line 1513 "ado.ypp"
+  case 179: // argument_expression_list: expression_list
+#line 1598 "ado.ypp"
     {
         ExprNode *node = new ExprNode("ado_argument_expression_list");
         node->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 3239 "ado.tab.cpp"
+#line 3314 "ado.tab.cpp"
     break;
 
-  case 176: // argument_expression_list: argument_expression_list "," expression_list
-#line 1519 "ado.ypp"
+  case 180: // argument_expression_list: argument_expression_list "," expression_list
+#line 1604 "ado.ypp"
     {
         (yystack_[2].value.node)->appendChild((yystack_[0].value.node));
 
         (yylhs.value.node) = (yystack_[2].value.node);
     }
-#line 3249 "ado.tab.cpp"
+#line 3324 "ado.tab.cpp"
     break;
 
-  case 177: // option_list: %empty
-#line 1534 "ado.ypp"
+  case 181: // option_list: %empty
+#line 1619 "ado.ypp"
     {
         (yylhs.value.node) = new ExprNode("ado_option_list");
     }
-#line 3257 "ado.tab.cpp"
+#line 3332 "ado.tab.cpp"
     break;
 
-  case 178: // option_list: "," options
-#line 1538 "ado.ypp"
+  case 182: // option_list: "," options
+#line 1623 "ado.ypp"
     {
         (yylhs.value.node) = (yystack_[0].value.node);
     }
-#line 3265 "ado.tab.cpp"
+#line 3340 "ado.tab.cpp"
     break;
 
-  case 179: // options: option
-#line 1545 "ado.ypp"
+  case 183: // options: option
+#line 1630 "ado.ypp"
     {
         ExprNode *node = new ExprNode("ado_option_list");
         node->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = node;
     }
-#line 3275 "ado.tab.cpp"
+#line 3350 "ado.tab.cpp"
     break;
 
-  case 180: // options: options option
-#line 1551 "ado.ypp"
+  case 184: // options: options option
+#line 1636 "ado.ypp"
     {
         (yystack_[1].value.node)->appendChild((yystack_[0].value.node));
         (yylhs.value.node) = (yystack_[1].value.node);
     }
-#line 3284 "ado.tab.cpp"
+#line 3359 "ado.tab.cpp"
     break;
 
-  case 181: // option: option_ident
-#line 1559 "ado.ypp"
+  case 185: // option: option_ident
+#line 1644 "ado.ypp"
     {
         ExprNode *node = new ExprNode("ado_option");
         node->appendChild("name", (yystack_[0].value.node));
 
         (yylhs.value.node) = node;
     }
-#line 3295 "ado.tab.cpp"
+#line 3370 "ado.tab.cpp"
     break;
 
-  case 182: // option: option_ident "(" argument_expression_list ")"
-#line 1566 "ado.ypp"
+  case 186: // option: option_ident "(" argument_expression_list ")"
+#line 1651 "ado.ypp"
     {
         ExprNode *node = new ExprNode("ado_option");
         node->appendChild("name", (yystack_[3].value.node));
@@ -3303,139 +3378,139 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 3307 "ado.tab.cpp"
+#line 3382 "ado.tab.cpp"
     break;
 
-  case 183: // option_ident: IDENT
-#line 1578 "ado.ypp"
+  case 187: // option_ident: IDENT
+#line 1663 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 3313 "ado.tab.cpp"
+#line 3388 "ado.tab.cpp"
     break;
 
-  case 184: // option_ident: BY
-#line 1579 "ado.ypp"
+  case 188: // option_ident: BY
+#line 1664 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 3319 "ado.tab.cpp"
+#line 3394 "ado.tab.cpp"
     break;
 
-  case 185: // option_ident: BYSORT
-#line 1580 "ado.ypp"
+  case 189: // option_ident: BYSORT
+#line 1665 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 3325 "ado.tab.cpp"
+#line 3400 "ado.tab.cpp"
     break;
 
-  case 186: // option_ident: XI
-#line 1581 "ado.ypp"
+  case 190: // option_ident: XI
+#line 1666 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 3331 "ado.tab.cpp"
+#line 3406 "ado.tab.cpp"
     break;
 
-  case 187: // option_ident: CAPTURE
-#line 1582 "ado.ypp"
+  case 191: // option_ident: CAPTURE
+#line 1667 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 3337 "ado.tab.cpp"
+#line 3412 "ado.tab.cpp"
     break;
 
-  case 188: // option_ident: QUIETLY
-#line 1583 "ado.ypp"
+  case 192: // option_ident: QUIETLY
+#line 1668 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 3343 "ado.tab.cpp"
+#line 3418 "ado.tab.cpp"
     break;
 
-  case 189: // option_ident: NOISILY
-#line 1584 "ado.ypp"
+  case 193: // option_ident: NOISILY
+#line 1669 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 3349 "ado.tab.cpp"
+#line 3424 "ado.tab.cpp"
     break;
 
-  case 190: // option_ident: MERGE
-#line 1585 "ado.ypp"
+  case 194: // option_ident: MERGE
+#line 1670 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 3355 "ado.tab.cpp"
+#line 3430 "ado.tab.cpp"
     break;
 
-  case 191: // option_ident: COLLAPSE
-#line 1586 "ado.ypp"
+  case 195: // option_ident: COLLAPSE
+#line 1671 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 3361 "ado.tab.cpp"
+#line 3436 "ado.tab.cpp"
     break;
 
-  case 192: // option_ident: RECODE
-#line 1587 "ado.ypp"
+  case 196: // option_ident: RECODE
+#line 1672 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 3367 "ado.tab.cpp"
+#line 3442 "ado.tab.cpp"
     break;
 
-  case 193: // option_ident: IVREGRESS
-#line 1588 "ado.ypp"
+  case 197: // option_ident: IVREGRESS
+#line 1673 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 3373 "ado.tab.cpp"
+#line 3448 "ado.tab.cpp"
     break;
 
-  case 194: // option_ident: GSORT
-#line 1589 "ado.ypp"
+  case 198: // option_ident: GSORT
+#line 1674 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 3379 "ado.tab.cpp"
+#line 3454 "ado.tab.cpp"
     break;
 
-  case 195: // option_ident: LRTEST
-#line 1590 "ado.ypp"
+  case 199: // option_ident: LRTEST
+#line 1675 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 3385 "ado.tab.cpp"
+#line 3460 "ado.tab.cpp"
     break;
 
-  case 196: // option_ident: ANOVA
-#line 1591 "ado.ypp"
+  case 200: // option_ident: ANOVA
+#line 1676 "ado.ypp"
       { (yylhs.value.node) = (yystack_[0].value.node); }
-#line 3391 "ado.tab.cpp"
+#line 3466 "ado.tab.cpp"
     break;
 
-  case 197: // weight_clause: %empty
-#line 1602 "ado.ypp"
+  case 201: // weight_clause: %empty
+#line 1687 "ado.ypp"
     {
         (yylhs.value.node) = new ExprNode("ado_weight_clause");
     }
-#line 3399 "ado.tab.cpp"
+#line 3474 "ado.tab.cpp"
     break;
 
-  case 198: // weight_clause: WEIGHT_SPEC literal_expression "]"
-#line 1606 "ado.ypp"
+  case 202: // weight_clause: WEIGHT_SPEC literal_expression "]"
+#line 1691 "ado.ypp"
     {
         (yystack_[2].value.node)->appendChild("right", (yystack_[1].value.node));
         (yylhs.value.node) = (yystack_[2].value.node);
     }
-#line 3408 "ado.tab.cpp"
+#line 3483 "ado.tab.cpp"
     break;
 
-  case 199: // if_clause: %empty
-#line 1620 "ado.ypp"
+  case 203: // if_clause: %empty
+#line 1705 "ado.ypp"
     {
         (yylhs.value.node) = new ExprNode("ado_if_clause");
     }
-#line 3416 "ado.tab.cpp"
+#line 3491 "ado.tab.cpp"
     break;
 
-  case 200: // if_clause: IF expression
-#line 1624 "ado.ypp"
+  case 204: // if_clause: IF expression
+#line 1709 "ado.ypp"
     {
         ExprNode *node = new ExprNode("ado_if_clause");
         node->appendChild("if_expression", (yystack_[0].value.node));
 
         (yylhs.value.node) = node;
     }
-#line 3427 "ado.tab.cpp"
+#line 3502 "ado.tab.cpp"
     break;
 
-  case 201: // in_clause: %empty
-#line 1640 "ado.ypp"
+  case 205: // in_clause: %empty
+#line 1725 "ado.ypp"
     {
         (yylhs.value.node) = new ExprNode("ado_in_clause");
     }
-#line 3435 "ado.tab.cpp"
+#line 3510 "ado.tab.cpp"
     break;
 
-  case 202: // in_clause: IN unary_expression "/" unary_expression
-#line 1644 "ado.ypp"
+  case 206: // in_clause: IN unary_expression "/" unary_expression
+#line 1729 "ado.ypp"
     {
         (yystack_[1].value.str); // suppressing a stupid bison warning
 
@@ -3445,52 +3520,52 @@ namespace yy {
 
         (yylhs.value.node) = node;
     }
-#line 3449 "ado.tab.cpp"
+#line 3524 "ado.tab.cpp"
     break;
 
-  case 203: // in_clause: IN unary_expression
-#line 1654 "ado.ypp"
+  case 207: // in_clause: IN unary_expression
+#line 1739 "ado.ypp"
     {
         ExprNode *node = new ExprNode("ado_in_clause");
         node->appendChild("upper", (yystack_[0].value.node));
 
         (yylhs.value.node) = node;
     }
-#line 3460 "ado.tab.cpp"
+#line 3535 "ado.tab.cpp"
     break;
 
-  case 204: // using_clause: %empty
-#line 1670 "ado.ypp"
+  case 208: // using_clause: %empty
+#line 1755 "ado.ypp"
     {
         (yylhs.value.node) = new ExprNode("ado_using_clause");
     }
-#line 3468 "ado.tab.cpp"
+#line 3543 "ado.tab.cpp"
     break;
 
-  case 205: // using_clause: USING STRING_LITERAL
-#line 1674 "ado.ypp"
+  case 209: // using_clause: USING STRING_LITERAL
+#line 1759 "ado.ypp"
     {
         ExprNode *node = new ExprNode("ado_using_clause");
         node->appendChild("filename", (yystack_[0].value.node));
 
         (yylhs.value.node) = node;
     }
-#line 3479 "ado.tab.cpp"
+#line 3554 "ado.tab.cpp"
     break;
 
-  case 206: // using_clause: USING IDENT
-#line 1681 "ado.ypp"
+  case 210: // using_clause: USING IDENT
+#line 1766 "ado.ypp"
     {
         ExprNode *node = new ExprNode("ado_using_clause");
         node->appendChild("filename", (yystack_[0].value.node));
 
         (yylhs.value.node) = node;
     }
-#line 3490 "ado.tab.cpp"
+#line 3565 "ado.tab.cpp"
     break;
 
 
-#line 3494 "ado.tab.cpp"
+#line 3569 "ado.tab.cpp"
 
             default:
               break;
@@ -3842,296 +3917,344 @@ namespace yy {
   }
 
 
-  const short  AdoParser ::yypact_ninf_ = -216;
+  const short  AdoParser ::yypact_ninf_ = -228;
 
-  const signed char  AdoParser ::yytable_ninf_ = -106;
+  const signed char  AdoParser ::yytable_ninf_ = -1;
 
   const short
    AdoParser ::yypact_[] =
   {
-     287,  -216,  -216,  -216,   682,   344,  -216,   560,   388,   560,
-    -216,  -216,  -216,   -22,    27,    -3,    42,    77,    32,    13,
-     560,    54,    60,   259,  -216,  -216,  -216,  -216,  -216,  -216,
-    -216,  -216,   138,   710,   218,  -216,   654,  -216,  -216,  -216,
-     560,  -216,  -216,  -216,  -216,  -216,  -216,  -216,    45,   102,
-     118,   119,   123,   124,  -216,  -216,  -216,   560,  -216,  -216,
-    -216,  -216,   130,   615,   739,  -216,  -216,  -216,  -216,   198,
-     191,   137,  -216,   214,   248,   206,   228,   194,  -216,   344,
-     101,   388,   753,   388,  -216,   388,   560,   139,   182,  -216,
-      10,  -216,    21,   200,   169,  -216,  -216,    20,   208,   210,
-    -216,  -216,    46,   200,  -216,  -216,  -216,    30,   615,   227,
-     -24,   241,  -216,  -216,  -216,    90,   122,   218,  -216,   229,
-     218,  -216,  -216,  -216,  -216,   237,  -216,   560,  -216,   137,
-    -216,  -216,  -216,   615,   431,   560,  -216,   615,  -216,  -216,
-     560,  -216,  -216,   560,  -216,  -216,  -216,  -216,   560,  -216,
-    -216,   560,  -216,  -216,  -216,   560,   560,  -216,   101,   560,
-     185,  -216,  -216,  -216,  -216,  -216,  -216,  -216,  -216,  -216,
-    -216,  -216,  -216,  -216,  -216,  -216,   753,  -216,   262,  -216,
-    -216,   474,   260,   239,  -216,   101,  -216,   101,  -216,   131,
-     251,   257,  -216,  -216,   180,  -216,   101,  -216,  -216,  -216,
-    -216,    52,  -216,  -216,    26,  -216,   575,   198,  -216,  -216,
-    -216,    39,   243,   560,    47,   218,   218,   218,  -216,    47,
-    -216,  -216,   517,  -216,  -216,   560,   246,   117,   191,  -216,
-     214,   248,   206,   233,   228,   185,   256,   782,   215,  -216,
-     560,   230,   268,   247,  -216,   185,   185,   200,  -216,   249,
-     250,   253,  -216,  -216,   268,  -216,  -216,   615,  -216,   101,
-     258,   261,   200,   200,    92,   158,   155,   168,   218,   218,
-    -216,  -216,  -216,   218,    47,   218,  -216,  -216,   560,  -216,
-     215,   560,  -216,  -216,  -216,  -216,  -216,  -216,   274,   268,
-     255,  -216,  -216,  -216,   247,   268,   268,   186,   273,   283,
-     288,  -216,   198,   185,   285,   289,   162,   171,   181,   269,
-     270,   291,   292,    17,  -216,  -216,  -216,   218,   218,  -216,
-     560,   268,  -216,  -216,  -216,  -216,  -216,  -216,   200,   293,
-    -216,  -216,   268,   294,   295,   298,   299,   318,   308,   313,
-     317,   290,   321,   322,  -216,  -216,  -216,    87,   345,  -216,
-     343,   347,   348,   349,   350,  -216,  -216,   325,   331,   354,
-     355,   305,  -216,  -216,  -216,  -216,  -216,  -216,   357,   358,
-     336,   338,   101,   339,  -216,   361,   362,   185,   378,  -216,
-    -216,   268,  -216,  -216
+     304,  -228,  -228,  -228,   883,   361,  -228,   792,   405,   792,
+    -228,  -228,  -228,   -30,    24,    11,    40,    54,    31,    51,
+     792,    63,   131,   276,  -228,  -228,  -228,  -228,  -228,  -228,
+    -228,  -228,   165,   911,   218,  -228,   855,  -228,  -228,  -228,
+     792,  -228,  -228,  -228,  -228,  -228,  -228,  -228,    72,    90,
+     100,   108,   111,   130,  -228,  -228,  -228,   792,  -228,  -228,
+    -228,  -228,   807,   941,  -228,  -228,  -228,  -228,   182,    41,
+     149,  -228,   209,   237,   221,   217,   204,  -228,   361,   110,
+     405,   956,   405,  -228,   405,   792,   170,   181,  -228,    13,
+    -228,    22,   175,   174,  -228,  -228,    18,   177,   190,  -228,
+    -228,    49,   175,  -228,  -228,  -228,    38,   807,   224,   101,
+     236,  -228,  -228,  -228,   968,    44,   218,  -228,   239,   218,
+    -228,  -228,  -228,  -228,   251,   792,  -228,   792,  -228,   792,
+    -228,   792,  -228,   792,  -228,   792,  -228,  -228,   149,  -228,
+    -228,  -228,   807,   448,   792,  -228,   807,  -228,  -228,   792,
+    -228,  -228,   792,  -228,  -228,  -228,  -228,   792,  -228,  -228,
+     792,  -228,  -228,  -228,   792,   792,  -228,   110,   792,   198,
+    -228,  -228,  -228,  -228,  -228,  -228,  -228,  -228,  -228,  -228,
+    -228,  -228,  -228,  -228,  -228,   956,  -228,   260,  -228,  -228,
+     491,   258,   240,  -228,   110,  -228,   110,  -228,   133,   247,
+     253,  -228,  -228,   188,  -228,   110,  -228,  -228,  -228,  -228,
+      84,  -228,  -228,    99,  -228,   115,   182,  -228,  -228,  -228,
+      37,   242,   792,   939,   218,   218,   218,  -228,   939,  -228,
+    -228,   534,   577,   620,   663,   706,   749,  -228,  -228,   792,
+     241,   120,    41,  -228,   209,   237,   221,   219,   217,   198,
+     256,   997,   213,  -228,   792,   225,   268,   248,  -228,   198,
+     198,   175,  -228,   250,   254,   259,  -228,  -228,   268,  -228,
+    -228,   807,  -228,   110,   257,   261,   175,   175,     7,    96,
+      94,   155,   218,   218,  -228,  -228,  -228,   218,   939,   218,
+    -228,  -228,  -228,  -228,  -228,  -228,  -228,   792,  -228,   213,
+     792,  -228,  -228,  -228,  -228,  -228,  -228,   265,   268,   255,
+    -228,  -228,  -228,   248,   268,   268,    33,   266,   277,   282,
+    -228,   182,   198,   281,   283,   156,   167,   158,   262,   263,
+     267,   269,     2,  -228,  -228,  -228,   218,   218,  -228,   792,
+     268,  -228,  -228,  -228,  -228,  -228,  -228,   175,   270,  -228,
+    -228,   268,   264,   272,   273,   280,   284,   297,   298,   305,
+     307,   285,   289,  -228,  -228,  -228,   161,   328,  -228,   327,
+     329,   330,   331,   332,  -228,  -228,   309,   312,   337,   338,
+     306,  -228,  -228,  -228,  -228,  -228,  -228,   358,   359,   339,
+     340,   110,   343,  -228,   365,   366,   198,   367,  -228,  -228,
+     268,  -228,  -228
   };
 
   const unsigned char
    AdoParser ::yydefact_[] =
   {
-       0,     5,    44,    45,     0,   199,    31,     0,   177,     0,
+       0,     5,    44,    45,     0,   203,    31,     0,   181,     0,
       47,    46,    48,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     2,     9,    10,     8,     7,     6,
-      30,    52,     0,     0,     0,    27,     0,    26,   108,   107,
-       0,   109,   139,   132,   140,   141,   142,   143,   133,   134,
-     135,   136,   137,   138,   129,   131,   130,     0,   110,   112,
-     111,   113,     0,     0,     0,   144,   145,   149,   151,   153,
-     157,   159,   161,   163,   165,   167,   169,   171,   173,   199,
-     201,   177,     0,   177,    51,   177,     0,     0,    71,    73,
-     199,    76,   199,     0,     0,    78,    82,   199,     0,     0,
-      84,    87,   177,     0,    89,    90,    92,   177,     0,     0,
-       0,     0,     1,     4,     3,     0,     0,     0,    53,     0,
-       0,    32,    25,    29,    28,     0,   200,     0,   148,   160,
-     150,   127,   128,     0,     0,     0,   114,     0,   115,   116,
-       0,   117,   118,     0,   119,   120,   121,   122,     0,   123,
-     124,     0,   106,   126,   125,     0,     0,   174,   201,     0,
-     197,    50,   183,   184,   186,   185,   188,   187,   189,   190,
-     191,   193,   192,   194,   195,   196,   178,   179,   181,    57,
-      49,   204,     0,     0,    74,   201,    77,   201,    65,     0,
-      67,     0,    68,    69,     0,    83,   201,    85,    86,    88,
-      59,     0,    93,    62,    96,    98,   199,    94,    24,    22,
-      23,     0,     0,     0,     0,     0,     0,     0,    38,     0,
-      36,   146,     0,   152,   155,   175,     0,     0,   158,   162,
-     164,   166,   168,   172,   170,   197,   203,     0,   204,   180,
-       0,     0,   177,     0,    72,   197,   197,     0,    66,     0,
-       0,     0,    67,    70,   177,    91,    97,     0,    99,   201,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-      35,    39,    37,     0,     0,     0,   147,   156,     0,   154,
-     204,     0,   133,   134,   135,   136,   137,   138,     0,   177,
-       0,   206,   205,    56,    75,   177,   177,     0,     0,     0,
-       0,    64,    95,   197,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,    33,    34,    41,     0,     0,    40,
-     176,   177,   202,   198,    55,   182,    60,    61,     0,     0,
-      79,    81,   177,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,    43,    42,    54,     0,     0,    63,
-       0,     0,     0,     0,     0,    11,    12,     0,     0,     0,
-       0,   199,    80,    13,    14,    15,    16,    17,     0,     0,
-       0,     0,   201,     0,    19,     0,     0,   197,     0,    20,
-      21,   177,    18,    58
+      30,    52,     0,     0,     0,    27,     0,    26,   102,   101,
+       0,   103,   133,   126,   134,   135,   136,   137,   127,   128,
+     129,   130,   131,   132,   123,   125,   124,     0,   104,   106,
+     105,   107,     0,     0,   138,   139,   153,   155,   157,   161,
+     163,   165,   167,   169,   171,   173,   175,   177,   203,   205,
+     181,     0,   181,    51,   181,     0,     0,    71,    73,   203,
+      76,   203,     0,     0,    78,    82,   203,     0,     0,    84,
+      87,   181,     0,    89,    90,    92,   181,     0,     0,     0,
+       0,     1,     4,     3,     0,     0,     0,    53,     0,     0,
+      32,    25,    29,    28,     0,     0,   147,     0,   148,     0,
+     149,     0,   150,     0,   151,     0,   152,   204,   164,   154,
+     121,   122,     0,     0,     0,   108,     0,   109,   110,     0,
+     111,   112,     0,   113,   114,   115,   116,     0,   117,   118,
+       0,   100,   120,   119,     0,     0,   178,   205,     0,   201,
+      50,   187,   188,   190,   189,   192,   191,   193,   194,   195,
+     197,   196,   198,   199,   200,   182,   183,   185,    57,    49,
+     208,     0,     0,    74,   205,    77,   205,    65,     0,    67,
+       0,    68,    69,     0,    83,   205,    85,    86,    88,    59,
+       0,    93,    62,    96,    98,   203,    94,    24,    22,    23,
+       0,     0,     0,     0,     0,     0,     0,    38,     0,    36,
+     140,     0,     0,     0,     0,     0,     0,   156,   159,   179,
+       0,     0,   162,   166,   168,   170,   172,   176,   174,   201,
+     207,     0,   208,   184,     0,     0,   181,     0,    72,   201,
+     201,     0,    66,     0,     0,     0,    67,    70,   181,    91,
+      97,     0,    99,   205,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,    35,    39,    37,     0,     0,     0,
+     141,   142,   143,   144,   145,   146,   160,     0,   158,   208,
+       0,   127,   128,   129,   130,   131,   132,     0,   181,     0,
+     210,   209,    56,    75,   181,   181,     0,     0,     0,     0,
+      64,    95,   201,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,    33,    34,    41,     0,     0,    40,   180,
+     181,   206,   202,    55,   186,    60,    61,     0,     0,    79,
+      81,   181,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,    43,    42,    54,     0,     0,    63,     0,
+       0,     0,     0,     0,    11,    12,     0,     0,     0,     0,
+     203,    80,    13,    14,    15,    16,    17,     0,     0,     0,
+       0,   205,     0,    19,     0,     0,   201,     0,    20,    21,
+     181,    18,    58
   };
 
   const short
    AdoParser ::yypgoto_[] =
   {
-    -216,  -216,   371,  -216,  -216,  -216,  -216,     2,  -216,    25,
-     -31,   -26,   363,   -92,   -25,   -94,  -172,  -187,   -74,   154,
-     306,  -216,   303,  -216,   300,  -216,   296,  -216,  -216,   195,
-    -216,  -216,  -216,  -216,  -216,  -216,  -216,  -216,  -216,  -216,
-    -216,  -216,  -216,   167,   341,   276,   -98,   278,   353,  -123,
-     263,    61,   266,   254,   264,   -15,     6,   178,   -81,  -216,
-     267,  -216,  -215,   -78,  -140,  -206
+    -228,  -228,   348,  -228,  -228,  -228,  -228,     1,  -228,    26,
+     -33,   -26,   349,   -86,   -24,   -75,  -188,  -200,   -76,   126,
+     293,  -228,   290,  -228,   286,  -228,   279,  -228,  -228,   173,
+    -228,  -228,  -228,  -228,  -228,  -228,  -228,  -228,  -228,  -228,
+    -228,  -228,   138,   345,   249,   -96,   244,   351,  -133,   271,
+      52,   232,   246,   292,   -17,     3,   160,   -80,  -228,   230,
+    -228,  -227,   -72,  -153,  -210
   };
 
-  const unsigned char
+  const short
    AdoParser ::yydefgoto_[] =
   {
-       0,    23,    24,    25,    26,   211,    27,    28,    36,    29,
-      30,    31,    32,    33,    34,   189,   193,   194,    89,    90,
-      91,    92,    96,    97,   101,   102,   106,   107,   204,   205,
-     206,    62,   155,    63,    64,   137,   140,   143,   148,   151,
-     156,   133,    65,    66,    67,    68,    69,    70,    71,    72,
-      73,    74,    75,    76,    77,    78,    83,   226,    84,   176,
-     177,   178,   238,    80,   160,   242
+       0,    23,    24,    25,    26,   220,    27,    28,    36,    29,
+      30,    31,    32,    33,    34,   198,   202,   203,    88,    89,
+      90,    91,    95,    96,   100,   101,   105,   106,   213,   214,
+     215,   164,    62,    63,   146,   149,   152,   157,   160,   165,
+     142,    64,    65,    66,    67,    68,    69,    70,    71,    72,
+      73,    74,    75,    76,    77,    82,   240,    83,   185,   186,
+     187,   252,    79,   169,   256
   };
 
   const short
    AdoParser ::yytable_[] =
   {
-     161,   158,   179,   121,   180,   109,    35,   118,   120,   201,
-     207,    79,   185,    81,   187,    85,   184,   229,   235,   196,
-     280,   200,   253,   214,   266,   125,   203,    94,    87,    37,
-     295,   296,   289,   342,    87,   117,   236,   103,   123,   103,
-     209,    82,   126,    88,    86,   245,   108,   246,   256,    94,
-      98,    99,  -100,    95,   257,   210,   254,    82,    93,     4,
-      88,   124,   255,   104,   157,   104,   157,   105,   157,   105,
-     157,   252,   188,    57,   321,    95,   192,   308,  -100,   100,
-       5,    98,    99,    57,    57,   248,   218,   110,   332,   220,
-     215,   217,   181,   111,   253,   343,   213,   361,    10,    11,
-      12,    13,    14,    15,    16,    17,    18,    19,   207,  -101,
-     100,   208,   260,   261,   262,   263,   264,   265,   216,   303,
-     248,   141,   142,     5,   252,  -102,  -103,   274,   259,   192,
-    -104,  -105,   279,   222,     4,  -101,   253,   127,   247,   213,
-     225,    10,    11,    12,    13,    14,    15,    16,    17,    18,
-      19,  -102,  -103,   297,   115,     5,  -104,  -105,   322,   302,
-     136,   293,   381,   128,   248,   159,   157,   310,   306,   307,
-     309,   213,   182,   301,   335,   311,    13,    14,    15,    16,
-      17,    18,    19,   336,   270,   271,   272,   252,   118,   269,
-     312,   248,   192,   337,   275,   248,   227,   251,   134,   183,
-     313,   190,   191,   328,   248,   135,   192,   157,   324,   231,
-     157,   152,   252,   252,   326,   327,   268,   192,   192,   248,
-     184,   273,   153,   154,   144,   145,     2,     3,   131,   132,
-     146,   147,   377,   188,   347,   138,   139,   314,   315,     4,
-     346,   197,   316,   198,   319,   219,   225,   221,   118,   318,
-     237,   349,   141,   142,   149,   150,   277,   278,   212,   112,
-     113,   153,   154,   291,   292,   325,   278,     2,     3,   240,
-     243,     4,   244,   249,   250,   267,   317,   241,   281,    82,
-      88,   298,   299,   372,   320,   300,   344,   345,     1,   323,
-     329,   304,     5,   330,   305,     2,     3,   333,   331,     4,
-     383,   334,   358,   338,   339,   157,     6,     7,     8,     9,
-      10,    11,    12,    13,    14,    15,    16,    17,    18,    19,
-       5,   355,    20,   340,   341,   348,   356,   357,   350,   351,
-      21,    22,   352,   353,     6,     7,     8,     9,    10,    11,
-      12,    13,    14,    15,    16,    17,    18,    19,    38,    39,
-      20,    40,   354,   359,   360,   362,   363,   368,    21,    22,
-     364,   365,   366,   367,    41,   369,   370,   371,    57,   373,
-     375,   374,   376,   378,   379,   380,    42,    43,    44,    45,
-      46,    47,    48,    49,    50,    51,    52,    53,    54,    55,
-      56,   382,    38,    39,   114,    40,   119,   294,   186,    82,
-     195,   258,   199,   202,   288,   130,   230,    57,    41,   223,
-     234,    58,    59,    60,    61,   228,   129,   232,   290,   233,
+     170,   120,   188,   108,   189,    35,   167,   117,    78,   119,
+      80,   216,    84,   193,   249,   267,   243,   194,   361,   196,
+     280,   209,   299,   124,   205,    93,   212,   210,   223,    86,
+      37,    86,   314,   315,   116,   250,    85,   122,   102,   266,
+     137,   259,   308,   260,   201,   102,    87,    93,   143,    81,
+     347,    94,   268,    97,    98,   144,     4,    87,    97,    98,
+      81,   166,   123,   166,   103,   166,   262,   166,   104,   266,
+     197,   103,    92,    94,   201,   104,    57,     5,   327,   125,
+     362,    57,    99,   227,   107,    57,   229,    99,   190,   340,
+     224,   226,   267,   222,   269,   351,   109,   127,    13,    14,
+      15,    16,    17,    18,    19,   126,   329,   129,   328,   217,
+     274,   275,   276,   277,   278,   131,   225,   262,   133,   216,
+     322,   270,    40,   128,   150,   151,   266,   271,   231,   262,
+     232,   201,   233,   130,   234,   298,   235,   135,   236,   267,
+     261,   132,   288,   273,   134,   279,   239,    42,    43,    44,
+      45,    46,    47,    48,    49,    50,    51,    52,    53,    54,
+      55,    56,   330,   136,   110,   218,   262,   341,   354,   400,
+     356,   380,   145,   166,   168,   321,   312,   331,    57,   355,
+     219,   114,    58,    59,    60,    61,   316,   332,   320,   262,
+     266,   284,   285,   286,   262,   201,   241,   117,   192,   283,
+     262,   325,   326,   191,   289,   265,   199,   200,   197,   245,
+     206,   201,   140,   141,   166,   166,   166,   166,   166,   166,
+     266,   161,   166,   207,   282,   201,     2,     3,   343,   287,
+     147,   148,   162,   163,   345,   346,     4,   193,   396,   153,
+     154,   150,   151,   158,   159,   155,   156,   162,   163,   333,
+     334,   296,   297,   221,   335,   228,   338,   239,   310,   311,
+     365,   230,   117,   251,   337,   344,   297,   254,   257,   263,
+     264,   368,   366,   258,   281,   255,   111,   112,   300,    81,
+     342,    87,   317,   348,     2,     3,   318,   349,     4,   336,
+     323,   319,   350,   352,   324,   353,   357,   358,   369,   359,
+     339,   360,   367,   363,   364,     1,   370,   371,   391,     5,
+     374,   375,     2,     3,   372,   376,     4,   378,   373,   377,
+     402,   379,   166,     6,     7,     8,     9,    10,    11,    12,
+      13,    14,    15,    16,    17,    18,    19,     5,   381,    20,
+     382,   387,   383,   384,   385,   386,   388,    21,    22,   389,
+     390,     6,     7,     8,     9,    10,    11,    12,    13,    14,
+      15,    16,    17,    18,    19,    38,    39,    20,    40,    57,
+     392,   113,   393,   394,   395,    21,    22,   397,   398,   399,
+     401,    41,   118,   313,   195,   211,   204,   208,   272,   307,
+     242,   237,   246,    42,    43,    44,    45,    46,    47,    48,
+      49,    50,    51,    52,    53,    54,    55,    56,   139,    38,
+      39,   248,    40,   138,   309,   253,    81,     0,     0,     0,
+       0,     0,     0,   244,    57,    41,     0,     0,    58,    59,
+      60,    61,     0,     0,     0,     0,     0,    42,    43,    44,
+      45,    46,    47,    48,    49,    50,    51,    52,    53,    54,
+      55,    56,    38,    39,     0,    40,   247,     0,   238,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,    41,     0,
+       0,     0,    58,    59,    60,    61,     0,     0,     0,     0,
       42,    43,    44,    45,    46,    47,    48,    49,    50,    51,
       52,    53,    54,    55,    56,    38,    39,     0,    40,     0,
-       0,   224,     0,   239,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,    41,     0,     0,     0,    58,    59,    60,    61,     0,
        0,     0,     0,    42,    43,    44,    45,    46,    47,    48,
       49,    50,    51,    52,    53,    54,    55,    56,    38,    39,
-       0,    40,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,    41,     0,     0,     0,    58,    59,
+       0,    40,     0,     0,   290,     0,     0,     0,     0,     0,
+       0,     0,     0,   255,    41,     0,     0,     0,    58,    59,
       60,    61,     0,     0,     0,     0,    42,    43,    44,    45,
       46,    47,    48,    49,    50,    51,    52,    53,    54,    55,
-      56,    38,    39,     0,    40,     0,     0,   276,     0,     0,
-       0,     0,     0,     0,     0,     0,   241,    41,     0,     0,
+      56,    38,    39,     0,    40,     0,     0,   291,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,    41,     0,     0,
        0,    58,    59,    60,    61,     0,     0,     0,     0,    42,
       43,    44,    45,    46,    47,    48,    49,    50,    51,    52,
       53,    54,    55,    56,    38,    39,     0,    40,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-      41,     0,    40,     0,    58,    59,    60,    61,     0,     0,
+     292,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+      41,     0,     0,     0,    58,    59,    60,    61,     0,     0,
        0,     0,    42,    43,    44,    45,    46,    47,    48,    49,
-      50,    51,    52,    53,    54,    55,    56,    42,    43,    44,
-      45,    46,    47,    48,    49,    50,    51,    52,    53,    54,
-      55,    56,    40,     0,     0,     0,     0,    58,    59,    60,
-      61,     0,     0,     0,     0,     0,     0,     0,    57,     0,
-       0,     0,    58,    59,    60,    61,     0,    42,    43,    44,
-      45,    46,    47,    48,    49,    50,    51,    52,    53,    54,
-      55,    56,     2,     3,     0,     0,     4,   122,     0,     0,
+      50,    51,    52,    53,    54,    55,    56,    38,    39,     0,
+      40,     0,     0,   293,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,    41,     0,     0,     0,    58,    59,    60,
+      61,     0,     0,     0,     0,    42,    43,    44,    45,    46,
+      47,    48,    49,    50,    51,    52,    53,    54,    55,    56,
+      38,    39,     0,    40,     0,     0,   294,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,    41,     0,     0,     0,
+      58,    59,    60,    61,     0,     0,     0,     0,    42,    43,
+      44,    45,    46,    47,    48,    49,    50,    51,    52,    53,
+      54,    55,    56,    38,    39,     0,    40,     0,     0,   295,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,    41,
+       0,     0,     0,    58,    59,    60,    61,     0,     0,     0,
+       0,    42,    43,    44,    45,    46,    47,    48,    49,    50,
+      51,    52,    53,    54,    55,    56,    38,    39,     0,    40,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,    58,    59,    60,    61,     0,     5,     0,     0,
-       2,     3,     0,     0,     4,     0,     0,     0,     0,     0,
-       0,     6,     7,     8,     9,    10,    11,    12,    13,    14,
-      15,    16,    17,    18,    19,     5,     0,     0,     0,     0,
-       0,     0,     4,     0,     0,     0,   116,     0,     0,     6,
-       7,     8,     9,    10,    11,    12,    13,    14,    15,    16,
-      17,    18,    19,     5,     0,     0,    40,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     7,     8,
-       9,    10,    11,    12,    13,    14,    15,    16,    17,    18,
-      19,    42,    43,    44,    45,    46,    47,    48,    49,    50,
-      51,    52,    53,    54,    55,    56,   162,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,   163,   164,   165,   166,   167,   168,   169,   170,   171,
-     172,   173,   174,   175,    42,    43,    44,    45,    46,    47,
-     282,   283,   284,   285,   286,   287,    54,    55,    56
+       0,     0,    41,     0,    40,     0,    58,    59,    60,    61,
+       0,     0,     0,     0,    42,    43,    44,    45,    46,    47,
+      48,    49,    50,    51,    52,    53,    54,    55,    56,    42,
+      43,    44,    45,    46,    47,    48,    49,    50,    51,    52,
+      53,    54,    55,    56,     0,     0,     0,     0,     0,    58,
+      59,    60,    61,     2,     3,     0,     0,     4,   121,     0,
+       0,     0,     0,     0,    58,    59,    60,    61,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     5,     0,
+       0,     2,     3,     0,     0,     4,     0,     0,     0,     0,
+       0,     0,     6,     7,     8,     9,    10,    11,    12,    13,
+      14,    15,    16,    17,    18,    19,     5,     0,     0,     0,
+       0,     0,     0,     4,     0,     0,     0,   115,     0,     0,
+       6,     7,     8,     9,    10,    11,    12,    13,    14,    15,
+      16,    17,    18,    19,     5,     0,     0,     0,    40,     0,
+       0,     4,     0,     0,     0,     0,     0,     0,     0,     7,
+       8,     9,    10,    11,    12,    13,    14,    15,    16,    17,
+      18,    19,     5,    42,    43,    44,    45,    46,    47,    48,
+      49,    50,    51,    52,    53,    54,    55,    56,   222,   171,
+      10,    11,    12,    13,    14,    15,    16,    17,    18,    19,
+       0,     5,     0,     0,   172,   173,   174,   175,   176,   177,
+     178,   179,   180,   181,   182,   183,   184,   222,     0,    10,
+      11,    12,    13,    14,    15,    16,    17,    18,    19,    42,
+      43,    44,    45,    46,    47,   301,   302,   303,   304,   305,
+     306,    54,    55,    56
   };
 
   const short
    AdoParser ::yycheck_[] =
   {
-      81,    79,    83,    34,    85,    20,     4,    33,    33,   103,
-     108,     5,    90,     7,    92,     9,    90,   140,   158,    97,
-     235,   102,   194,   115,   211,    40,   107,     7,     7,     4,
-     245,   246,   238,    16,     7,    33,   159,     7,    36,     7,
-      64,    11,    57,    33,    66,   185,    33,   187,    22,     7,
-       4,     5,     7,    33,    28,    79,   196,    11,    61,    12,
-      33,    36,    10,    33,    79,    33,    81,    37,    83,    37,
-      85,    32,    33,    63,   280,    33,    37,   264,    33,    33,
-      33,     4,     5,    63,    63,    33,   117,    33,   303,   120,
-     115,   116,    86,    33,   266,    78,    49,    10,    51,    52,
-      53,    54,    55,    56,    57,    58,    59,    60,   206,     7,
-      33,   109,    73,    74,    75,    76,    77,   211,   116,   259,
-      33,     4,     5,    33,    32,     7,     7,   219,   206,    37,
-       7,     7,    15,   127,    12,    33,   308,     7,     7,    49,
-     134,    51,    52,    53,    54,    55,    56,    57,    58,    59,
-      60,    33,    33,   247,    16,    33,    33,    33,   281,   257,
-      23,   242,   377,    33,    33,    64,   181,    12,   262,   263,
-      12,    49,    33,   254,    12,     7,    54,    55,    56,    57,
-      58,    59,    60,    12,   215,   216,   217,    32,   214,   214,
-      22,    33,    37,    12,   219,    33,   135,    17,     7,    17,
-      32,    32,    33,    17,    33,    14,    37,   222,   289,   148,
-     225,    17,    32,    32,   295,   296,   214,    37,    37,    33,
-     294,   219,    28,    29,    18,    19,     8,     9,    30,    31,
-      24,    25,   372,    33,   328,    21,    22,   268,   269,    12,
-     321,    33,   273,    33,   275,    16,   240,    10,   274,   274,
-      65,   332,     4,     5,    26,    27,    10,    11,    17,     0,
-       1,    28,    29,    33,    34,    10,    11,     8,     9,     7,
-      10,    12,    33,    22,    17,    32,   274,    62,    22,    11,
-      33,    32,    32,   361,   278,    32,   317,   318,     1,    15,
-      17,    33,    33,    10,    33,     8,     9,    12,    10,    12,
-     381,    12,    12,    34,    34,   320,    47,    48,    49,    50,
-      51,    52,    53,    54,    55,    56,    57,    58,    59,    60,
-      33,    13,    63,    32,    32,    32,    13,    10,    34,    34,
-      71,    72,    34,    34,    47,    48,    49,    50,    51,    52,
-      53,    54,    55,    56,    57,    58,    59,    60,     4,     5,
-      63,     7,    34,    32,    32,    10,    13,    32,    71,    72,
-      13,    13,    13,    13,    20,    34,    12,    12,    63,    12,
-      34,    13,    34,    34,    13,    13,    32,    33,    34,    35,
-      36,    37,    38,    39,    40,    41,    42,    43,    44,    45,
-      46,    13,     4,     5,    23,     7,    33,   243,    92,    11,
-      97,   206,   102,   107,   237,    64,   143,    63,    20,   133,
-     156,    67,    68,    69,    70,   137,    63,   151,   240,   155,
+      80,    34,    82,    20,    84,     4,    78,    33,     5,    33,
+       7,   107,     9,    89,   167,   203,   149,    89,    16,    91,
+     220,   101,   249,    40,    96,     7,   106,   102,   114,     7,
+       4,     7,   259,   260,    33,   168,    66,    36,     7,    32,
+      57,   194,   252,   196,    37,     7,    33,     7,     7,    11,
+      17,    33,   205,     4,     5,    14,    12,    33,     4,     5,
+      11,    78,    36,    80,    33,    82,    33,    84,    37,    32,
+      33,    33,    61,    33,    37,    37,    63,    33,   278,     7,
+      78,    63,    33,   116,    33,    63,   119,    33,    85,   299,
+     114,   115,   280,    49,    10,   322,    33,     7,    54,    55,
+      56,    57,    58,    59,    60,    33,    12,     7,    12,   108,
+      73,    74,    75,    76,    77,     7,   115,    33,     7,   215,
+     273,    22,     7,    33,     4,     5,    32,    28,   125,    33,
+     127,    37,   129,    33,   131,    15,   133,     7,   135,   327,
+       7,    33,   228,   215,    33,   220,   143,    32,    33,    34,
+      35,    36,    37,    38,    39,    40,    41,    42,    43,    44,
+      45,    46,     7,    33,    33,    64,    33,   300,    12,   396,
+      12,    10,    23,   190,    64,   271,   256,    22,    63,    12,
+      79,    16,    67,    68,    69,    70,   261,    32,   268,    33,
+      32,   224,   225,   226,    33,    37,   144,   223,    17,   223,
+      33,   276,   277,    33,   228,    17,    32,    33,    33,   157,
+      33,    37,    30,    31,   231,   232,   233,   234,   235,   236,
+      32,    17,   239,    33,   223,    37,     8,     9,   308,   228,
+      21,    22,    28,    29,   314,   315,    12,   313,   391,    18,
+      19,     4,     5,    26,    27,    24,    25,    28,    29,   282,
+     283,    10,    11,    17,   287,    16,   289,   254,    33,    34,
+     340,    10,   288,    65,   288,    10,    11,     7,    10,    22,
+      17,   351,   347,    33,    32,    62,     0,     1,    22,    11,
+      15,    33,    32,    17,     8,     9,    32,    10,    12,   288,
+      33,    32,    10,    12,    33,    12,    34,    34,    34,    32,
+     297,    32,    32,   336,   337,     1,    34,    34,   380,    33,
+      13,    13,     8,     9,    34,    10,    12,    32,    34,    12,
+     400,    32,   339,    47,    48,    49,    50,    51,    52,    53,
+      54,    55,    56,    57,    58,    59,    60,    33,    10,    63,
+      13,    32,    13,    13,    13,    13,    34,    71,    72,    12,
+      12,    47,    48,    49,    50,    51,    52,    53,    54,    55,
+      56,    57,    58,    59,    60,     4,     5,    63,     7,    63,
+      12,    23,    13,    34,    34,    71,    72,    34,    13,    13,
+      13,    20,    33,   257,    91,   106,    96,   101,   215,   251,
+     146,   142,   160,    32,    33,    34,    35,    36,    37,    38,
+      39,    40,    41,    42,    43,    44,    45,    46,    63,     4,
+       5,   165,     7,    62,   254,   185,    11,    -1,    -1,    -1,
+      -1,    -1,    -1,   152,    63,    20,    -1,    -1,    67,    68,
+      69,    70,    -1,    -1,    -1,    -1,    -1,    32,    33,    34,
+      35,    36,    37,    38,    39,    40,    41,    42,    43,    44,
+      45,    46,     4,     5,    -1,     7,   164,    -1,    10,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    20,    -1,
+      -1,    -1,    67,    68,    69,    70,    -1,    -1,    -1,    -1,
       32,    33,    34,    35,    36,    37,    38,    39,    40,    41,
       42,    43,    44,    45,    46,     4,     5,    -1,     7,    -1,
-      -1,    10,    -1,   176,    -1,    -1,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
       -1,    20,    -1,    -1,    -1,    67,    68,    69,    70,    -1,
       -1,    -1,    -1,    32,    33,    34,    35,    36,    37,    38,
       39,    40,    41,    42,    43,    44,    45,    46,     4,     5,
-      -1,     7,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    20,    -1,    -1,    -1,    67,    68,
+      -1,     7,    -1,    -1,    10,    -1,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    62,    20,    -1,    -1,    -1,    67,    68,
       69,    70,    -1,    -1,    -1,    -1,    32,    33,    34,    35,
       36,    37,    38,    39,    40,    41,    42,    43,    44,    45,
       46,     4,     5,    -1,     7,    -1,    -1,    10,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    62,    20,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    20,    -1,    -1,
       -1,    67,    68,    69,    70,    -1,    -1,    -1,    -1,    32,
       33,    34,    35,    36,    37,    38,    39,    40,    41,    42,
       43,    44,    45,    46,     4,     5,    -1,     7,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      20,    -1,     7,    -1,    67,    68,    69,    70,    -1,    -1,
+      10,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
+      20,    -1,    -1,    -1,    67,    68,    69,    70,    -1,    -1,
       -1,    -1,    32,    33,    34,    35,    36,    37,    38,    39,
-      40,    41,    42,    43,    44,    45,    46,    32,    33,    34,
-      35,    36,    37,    38,    39,    40,    41,    42,    43,    44,
-      45,    46,     7,    -1,    -1,    -1,    -1,    67,    68,    69,
-      70,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    63,    -1,
-      -1,    -1,    67,    68,    69,    70,    -1,    32,    33,    34,
-      35,    36,    37,    38,    39,    40,    41,    42,    43,    44,
-      45,    46,     8,     9,    -1,    -1,    12,    13,    -1,    -1,
+      40,    41,    42,    43,    44,    45,    46,     4,     5,    -1,
+       7,    -1,    -1,    10,    -1,    -1,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    20,    -1,    -1,    -1,    67,    68,    69,
+      70,    -1,    -1,    -1,    -1,    32,    33,    34,    35,    36,
+      37,    38,    39,    40,    41,    42,    43,    44,    45,    46,
+       4,     5,    -1,     7,    -1,    -1,    10,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,    20,    -1,    -1,    -1,
+      67,    68,    69,    70,    -1,    -1,    -1,    -1,    32,    33,
+      34,    35,    36,    37,    38,    39,    40,    41,    42,    43,
+      44,    45,    46,     4,     5,    -1,     7,    -1,    -1,    10,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    20,
+      -1,    -1,    -1,    67,    68,    69,    70,    -1,    -1,    -1,
+      -1,    32,    33,    34,    35,    36,    37,    38,    39,    40,
+      41,    42,    43,    44,    45,    46,     4,     5,    -1,     7,
       -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    67,    68,    69,    70,    -1,    33,    -1,    -1,
-       8,     9,    -1,    -1,    12,    -1,    -1,    -1,    -1,    -1,
-      -1,    47,    48,    49,    50,    51,    52,    53,    54,    55,
-      56,    57,    58,    59,    60,    33,    -1,    -1,    -1,    -1,
-      -1,    -1,    12,    -1,    -1,    -1,    16,    -1,    -1,    47,
-      48,    49,    50,    51,    52,    53,    54,    55,    56,    57,
-      58,    59,    60,    33,    -1,    -1,     7,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    48,    49,
-      50,    51,    52,    53,    54,    55,    56,    57,    58,    59,
-      60,    32,    33,    34,    35,    36,    37,    38,    39,    40,
-      41,    42,    43,    44,    45,    46,    33,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    48,    49,    50,    51,    52,    53,    54,    55,    56,
-      57,    58,    59,    60,    32,    33,    34,    35,    36,    37,
-      38,    39,    40,    41,    42,    43,    44,    45,    46
+      -1,    -1,    20,    -1,     7,    -1,    67,    68,    69,    70,
+      -1,    -1,    -1,    -1,    32,    33,    34,    35,    36,    37,
+      38,    39,    40,    41,    42,    43,    44,    45,    46,    32,
+      33,    34,    35,    36,    37,    38,    39,    40,    41,    42,
+      43,    44,    45,    46,    -1,    -1,    -1,    -1,    -1,    67,
+      68,    69,    70,     8,     9,    -1,    -1,    12,    13,    -1,
+      -1,    -1,    -1,    -1,    67,    68,    69,    70,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    33,    -1,
+      -1,     8,     9,    -1,    -1,    12,    -1,    -1,    -1,    -1,
+      -1,    -1,    47,    48,    49,    50,    51,    52,    53,    54,
+      55,    56,    57,    58,    59,    60,    33,    -1,    -1,    -1,
+      -1,    -1,    -1,    12,    -1,    -1,    -1,    16,    -1,    -1,
+      47,    48,    49,    50,    51,    52,    53,    54,    55,    56,
+      57,    58,    59,    60,    33,    -1,    -1,    -1,     7,    -1,
+      -1,    12,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    48,
+      49,    50,    51,    52,    53,    54,    55,    56,    57,    58,
+      59,    60,    33,    32,    33,    34,    35,    36,    37,    38,
+      39,    40,    41,    42,    43,    44,    45,    46,    49,    33,
+      51,    52,    53,    54,    55,    56,    57,    58,    59,    60,
+      -1,    33,    -1,    -1,    48,    49,    50,    51,    52,    53,
+      54,    55,    56,    57,    58,    59,    60,    49,    -1,    51,
+      52,    53,    54,    55,    56,    57,    58,    59,    60,    32,
+      33,    34,    35,    36,    37,    38,    39,    40,    41,    42,
+      43,    44,    45,    46
   };
 
   const unsigned char
@@ -4143,39 +4266,41 @@ namespace yy {
       90,    91,    92,    93,    94,    87,    88,    89,     4,     5,
        7,    20,    32,    33,    34,    35,    36,    37,    38,    39,
       40,    41,    42,    43,    44,    45,    46,    63,    67,    68,
-      69,    70,   111,   113,   114,   122,   123,   124,   125,   126,
-     127,   128,   129,   130,   131,   132,   133,   134,   135,   136,
-     143,   136,    11,   136,   138,   136,    66,     7,    33,    98,
-      99,   100,   101,    61,     7,    33,   102,   103,     4,     5,
-      33,   104,   105,     7,    33,    37,   106,   107,    33,   135,
-      33,    33,     0,     1,    82,    16,    16,    87,    91,    92,
-      94,    90,    13,    87,    89,   135,   135,     7,    33,   128,
-     124,    30,    31,   121,     7,    14,    23,   115,    21,    22,
-     116,     4,     5,   117,    18,    19,    24,    25,   118,    26,
-      27,   119,    17,    28,    29,   112,   120,   135,   143,    64,
-     144,   138,    33,    48,    49,    50,    51,    52,    53,    54,
-      55,    56,    57,    58,    59,    60,   139,   140,   141,   138,
-     138,   136,    33,    17,    98,   143,   100,   143,    33,    95,
-      32,    33,    37,    96,    97,   102,   143,    33,    33,   104,
-     138,    95,   106,   138,   108,   109,   110,   126,    87,    64,
-      79,    85,    17,    49,    93,    94,    87,    94,    90,    16,
-      90,    10,   136,   125,    10,   136,   137,   131,   127,   129,
-     130,   131,   132,   134,   133,   144,   129,    65,   142,   140,
-       7,    62,   145,    10,    33,   144,   144,     7,    33,    22,
-      17,    17,    32,    96,   144,    10,    22,    28,   109,   143,
-      73,    74,    75,    76,    77,    95,    97,    32,    87,    94,
-      90,    90,    90,    87,    93,    94,    10,    10,    11,    15,
-     142,    22,    38,    39,    40,    41,    42,    43,   123,   145,
-     137,    33,    34,   138,    99,   142,   142,    95,    32,    32,
-      32,   138,   126,   144,    33,    33,    95,    95,    97,    12,
-      12,     7,    22,    32,    90,    90,    90,    87,    94,    90,
-     136,   145,   129,    15,   138,    10,   138,   138,    17,    17,
-      10,    10,   142,    12,    12,    12,    12,    12,    34,    34,
-      32,    32,    16,    78,    90,    90,   138,    95,    32,   138,
-      34,    34,    34,    34,    34,    13,    13,    10,    12,    32,
-      32,    10,    10,    13,    13,    13,    13,    13,    32,    34,
-      12,    12,   143,    12,    13,    34,    34,   144,    34,    13,
-      13,   142,    13,   138
+      69,    70,   112,   113,   121,   122,   123,   124,   125,   126,
+     127,   128,   129,   130,   131,   132,   133,   134,   135,   142,
+     135,    11,   135,   137,   135,    66,     7,    33,    98,    99,
+     100,   101,    61,     7,    33,   102,   103,     4,     5,    33,
+     104,   105,     7,    33,    37,   106,   107,    33,   134,    33,
+      33,     0,     1,    82,    16,    16,    87,    91,    92,    94,
+      90,    13,    87,    89,   134,     7,    33,     7,    33,     7,
+      33,     7,    33,     7,    33,     7,    33,   134,   127,   123,
+      30,    31,   120,     7,    14,    23,   114,    21,    22,   115,
+       4,     5,   116,    18,    19,    24,    25,   117,    26,    27,
+     118,    17,    28,    29,   111,   119,   134,   142,    64,   143,
+     137,    33,    48,    49,    50,    51,    52,    53,    54,    55,
+      56,    57,    58,    59,    60,   138,   139,   140,   137,   137,
+     135,    33,    17,    98,   142,   100,   142,    33,    95,    32,
+      33,    37,    96,    97,   102,   142,    33,    33,   104,   137,
+      95,   106,   137,   108,   109,   110,   125,    87,    64,    79,
+      85,    17,    49,    93,    94,    87,    94,    90,    16,    90,
+      10,   135,   135,   135,   135,   135,   135,   124,    10,   135,
+     136,   130,   126,   128,   129,   130,   131,   133,   132,   143,
+     128,    65,   141,   139,     7,    62,   144,    10,    33,   143,
+     143,     7,    33,    22,    17,    17,    32,    96,   143,    10,
+      22,    28,   109,   142,    73,    74,    75,    76,    77,    95,
+      97,    32,    87,    94,    90,    90,    90,    87,    93,    94,
+      10,    10,    10,    10,    10,    10,    10,    11,    15,   141,
+      22,    38,    39,    40,    41,    42,    43,   122,   144,   136,
+      33,    34,   137,    99,   141,   141,    95,    32,    32,    32,
+     137,   125,   143,    33,    33,    95,    95,    97,    12,    12,
+       7,    22,    32,    90,    90,    90,    87,    94,    90,   135,
+     144,   128,    15,   137,    10,   137,   137,    17,    17,    10,
+      10,   141,    12,    12,    12,    12,    12,    34,    34,    32,
+      32,    16,    78,    90,    90,   137,    95,    32,   137,    34,
+      34,    34,    34,    34,    13,    13,    10,    12,    32,    32,
+      10,    10,    13,    13,    13,    13,    13,    32,    34,    12,
+      12,   142,    12,    13,    34,    34,   143,    34,    13,    13,
+     141,    13,   137
   };
 
   const unsigned char
@@ -4191,17 +4316,18 @@ namespace yy {
       97,    98,    98,    99,    99,   100,   101,   101,   102,   102,
      102,   102,   103,   103,   104,   104,   104,   105,   105,   106,
      106,   106,   107,   107,   108,   108,   109,   109,   110,   110,
-     111,   111,   111,   111,   111,   111,   112,   113,   113,   113,
-     114,   114,   114,   114,   115,   116,   116,   117,   117,   118,
-     118,   118,   118,   119,   119,   120,   120,   121,   121,   122,
-     122,   122,   123,   123,   123,   123,   123,   123,   123,   123,
-     123,   123,   123,   123,   123,   124,   124,   124,   124,   125,
-     125,   126,   126,   127,   127,   127,   127,   128,   128,   129,
-     129,   130,   130,   131,   131,   132,   132,   133,   133,   134,
-     134,   135,   135,   136,   136,   137,   137,   138,   138,   139,
-     139,   140,   140,   141,   141,   141,   141,   141,   141,   141,
-     141,   141,   141,   141,   141,   141,   141,   142,   142,   143,
-     143,   144,   144,   144,   145,   145,   145
+     111,   112,   112,   112,   113,   113,   113,   113,   114,   115,
+     115,   116,   116,   117,   117,   117,   117,   118,   118,   119,
+     119,   120,   120,   121,   121,   121,   122,   122,   122,   122,
+     122,   122,   122,   122,   122,   122,   122,   122,   122,   123,
+     123,   123,   123,   123,   123,   123,   123,   123,   123,   123,
+     123,   123,   123,   124,   124,   125,   125,   126,   126,   126,
+     126,   127,   127,   128,   128,   129,   129,   130,   130,   131,
+     131,   132,   132,   133,   133,   134,   134,   135,   135,   136,
+     136,   137,   137,   138,   138,   139,   139,   140,   140,   140,
+     140,   140,   140,   140,   140,   140,   140,   140,   140,   140,
+     140,   141,   141,   142,   142,   143,   143,   143,   144,   144,
+     144
   };
 
   const signed char
@@ -4221,13 +4347,14 @@ namespace yy {
        1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
        1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
        1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
-       1,     1,     1,     1,     1,     1,     3,     4,     2,     1,
-       2,     1,     3,     1,     4,     3,     4,     1,     3,     1,
-       2,     1,     3,     1,     3,     1,     3,     1,     3,     1,
-       3,     1,     3,     1,     2,     1,     3,     0,     2,     1,
-       2,     1,     4,     1,     1,     1,     1,     1,     1,     1,
-       1,     1,     1,     1,     1,     1,     1,     0,     3,     0,
-       2,     0,     4,     2,     0,     2,     2
+       3,     4,     4,     4,     4,     4,     4,     2,     2,     2,
+       2,     2,     2,     1,     2,     1,     3,     1,     4,     3,
+       4,     1,     3,     1,     2,     1,     3,     1,     3,     1,
+       3,     1,     3,     1,     3,     1,     3,     1,     2,     1,
+       3,     0,     2,     1,     2,     1,     4,     1,     1,     1,
+       1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
+       1,     0,     3,     0,     2,     0,     4,     2,     0,     2,
+       2
   };
 
 
@@ -4257,14 +4384,13 @@ namespace yy {
   "collapse_spec_base", "collapse_spec_base_list", "collapse_spec",
   "collapse_list", "recode_rule", "recode_rule_list", "gsort_var",
   "gsort_varlist", "modelspec", "modelspec_list", "anova_nest_expression",
-  "anova_error_expression", "anova_term_list", "type_operator",
-  "assignment_operator", "unary_operator", "unary_factor_operator",
-  "power_operator", "multiplication_operator", "additive_operator",
-  "relational_operator", "equality_operator", "logical_operator",
-  "cross_operator", "format_spec", "literal_expression",
-  "primary_expression", "unary_factor_expression", "cross_expression",
-  "postfix_expression", "power_expression", "unary_expression",
-  "multiplication_expression", "additive_expression",
+  "anova_error_expression", "anova_term_list", "assignment_operator",
+  "unary_operator", "unary_factor_operator", "power_operator",
+  "multiplication_operator", "additive_operator", "relational_operator",
+  "equality_operator", "logical_operator", "cross_operator", "format_spec",
+  "literal_expression", "primary_expression", "unary_factor_expression",
+  "cross_expression", "postfix_expression", "power_expression",
+  "unary_expression", "multiplication_expression", "additive_expression",
   "relational_expression", "equality_expression", "logical_expression",
   "expression", "expression_list", "argument_expression_list",
   "option_list", "options", "option", "option_ident", "weight_clause",
@@ -4287,17 +4413,18 @@ namespace yy {
      891,   900,   901,   929,   935,   943,   966,   972,   981,   982,
     1002,  1025,  1048,  1054,  1063,  1075,  1089,  1106,  1112,  1121,
     1122,  1123,  1141,  1147,  1156,  1157,  1171,  1172,  1185,  1191,
-    1207,  1208,  1209,  1210,  1211,  1212,  1216,  1220,  1221,  1222,
-    1226,  1227,  1228,  1229,  1233,  1237,  1238,  1242,  1243,  1247,
-    1248,  1249,  1250,  1254,  1255,  1259,  1260,  1264,  1265,  1269,
-    1270,  1271,  1275,  1276,  1282,  1288,  1294,  1300,  1306,  1312,
-    1313,  1314,  1315,  1316,  1317,  1321,  1325,  1329,  1337,  1351,
-    1352,  1361,  1362,  1373,  1374,  1383,  1391,  1403,  1404,  1415,
-    1416,  1426,  1427,  1438,  1439,  1450,  1451,  1462,  1463,  1474,
-    1475,  1486,  1487,  1498,  1504,  1512,  1518,  1533,  1537,  1544,
-    1550,  1558,  1565,  1578,  1579,  1580,  1581,  1582,  1583,  1584,
-    1585,  1586,  1587,  1588,  1589,  1590,  1591,  1601,  1605,  1619,
-    1623,  1639,  1643,  1653,  1669,  1673,  1680
+    1207,  1211,  1212,  1213,  1217,  1218,  1219,  1220,  1224,  1228,
+    1229,  1233,  1234,  1238,  1239,  1240,  1241,  1245,  1246,  1250,
+    1251,  1255,  1256,  1260,  1261,  1262,  1283,  1284,  1290,  1296,
+    1302,  1308,  1314,  1320,  1321,  1322,  1323,  1324,  1325,  1329,
+    1333,  1337,  1344,  1351,  1358,  1365,  1372,  1379,  1388,  1397,
+    1406,  1415,  1424,  1436,  1437,  1446,  1447,  1458,  1459,  1468,
+    1476,  1488,  1489,  1500,  1501,  1511,  1512,  1523,  1524,  1535,
+    1536,  1547,  1548,  1559,  1560,  1571,  1572,  1583,  1589,  1597,
+    1603,  1618,  1622,  1629,  1635,  1643,  1650,  1663,  1664,  1665,
+    1666,  1667,  1668,  1669,  1670,  1671,  1672,  1673,  1674,  1675,
+    1676,  1686,  1690,  1704,  1708,  1724,  1728,  1738,  1754,  1758,
+    1765
   };
 
   void
@@ -4383,8 +4510,8 @@ namespace yy {
   }
 
 } // yy
-#line 4387 "ado.tab.cpp"
+#line 4514 "ado.tab.cpp"
 
-#line 1689 "ado.ypp"
+#line 1774 "ado.ypp"
 
 

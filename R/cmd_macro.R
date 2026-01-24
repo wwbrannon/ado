@@ -6,10 +6,19 @@
 ## as variable/macro names because the lexer always tokenized them as type
 ## specifiers rather than identifiers.
 ##
-## Fixed by adding type tokens (BYTE, INT, LONG, FLOAT, DOUBLE, STRING_TYPE_SPEC)
-## to the literal_expression grammar rule in ado.ypp, allowing them to be used
-## as identifiers in expression contexts while still functioning as type
-## specifiers in type contexts (like after 'gen').
+## Fixed in two steps:
+##
+## 1. Added type tokens (BYTE, INT, LONG, FLOAT, DOUBLE, STRING_TYPE_SPEC)
+##    to the literal_expression grammar rule in ado.ypp, allowing them to be
+##    used as identifiers in expression contexts.
+##
+## 2. Eliminated the type_operator non-terminal and inlined its uses in
+##    primary_expression to resolve reduce/reduce conflicts. This gives the
+##    parser unambiguous rules for when type keywords appear.
+##
+## Result: Type keywords work both as identifiers (local str = "world") and
+## as type specifiers (gen byte x = 1), with shift/reduce conflicts correctly
+## resolved by default precedence rules.
 
 ado_cmd_local <-
 function(context, expression_list)

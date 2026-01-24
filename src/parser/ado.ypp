@@ -136,7 +136,7 @@
 
 %type <str>     unary_operator power_operator equality_operator
 %type <str>     multiplication_operator additive_operator relational_operator logical_operator
-%type <str>     cross_operator type_operator
+%type <str>     cross_operator
 
 %type <node>    if_clause in_clause weight_clause using_clause
 
@@ -1203,15 +1203,6 @@ anova_term_list:
  **************************************************************
 */
 
-type_operator:
-      BYTE
-    | INT
-    | LONG
-    | FLOAT
-    | DOUBLE
-    | STRING_TYPE_SPEC
-    ;
-
 assignment_operator:
     "="
     ;
@@ -1271,6 +1262,23 @@ format_spec:
     | DATETIME_FORMAT
     ;
 
+/* Type keywords can be used as identifiers in addition to type specifiers.
+ * The rules below that add BYTE, INT, etc. to literal_expression enable this.
+ * These rules create shift/reduce conflicts with the primary_expression rules
+ * that use type keywords for type specifications (BYTE IDENT, BYTE "(...)", etc.).
+ *
+ * The conflicts are documented and intentional:
+ * - When parser sees: BYTE followed by IDENT or "("
+ * - Conflict: Should it reduce BYTE → literal_expression, or shift to read more?
+ * - Resolution: Bison defaults to SHIFT (correct behavior)
+ * - Result: "gen byte x = 1" parses as type specification
+ *           "local byte = 5" parses correctly when BYTE stands alone
+ *           "anova y byte" parses correctly with BYTE as variable name
+ *
+ * Expected warnings from Bison:
+ * - "12 shift/reduce conflicts" (6 type tokens × 2 contexts: IDENT and "(")
+ * - All resolved correctly by default shift behavior
+ */
 literal_expression:
       IDENT
     | BYTE
@@ -1326,23 +1334,100 @@ primary_expression:
     {
         $$ = $2;
     }
-    | type_operator "(" expression_list ")"
+    | BYTE "(" expression_list ")"
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_type_expression"});
         node->addData("verb", *($1));
         node->appendChild("left", $3);
-
         $$ = node;
     }
-    | type_operator IDENT
+    | INT "(" expression_list ")"
     {
         ExprNode *node = new ExprNode({"ado_expression", "ado_type_expression"});
         node->addData("verb", *($1));
-
+        node->appendChild("left", $3);
+        $$ = node;
+    }
+    | LONG "(" expression_list ")"
+    {
+        ExprNode *node = new ExprNode({"ado_expression", "ado_type_expression"});
+        node->addData("verb", *($1));
+        node->appendChild("left", $3);
+        $$ = node;
+    }
+    | FLOAT "(" expression_list ")"
+    {
+        ExprNode *node = new ExprNode({"ado_expression", "ado_type_expression"});
+        node->addData("verb", *($1));
+        node->appendChild("left", $3);
+        $$ = node;
+    }
+    | DOUBLE "(" expression_list ")"
+    {
+        ExprNode *node = new ExprNode({"ado_expression", "ado_type_expression"});
+        node->addData("verb", *($1));
+        node->appendChild("left", $3);
+        $$ = node;
+    }
+    | STRING_TYPE_SPEC "(" expression_list ")"
+    {
+        ExprNode *node = new ExprNode({"ado_expression", "ado_type_expression"});
+        node->addData("verb", *($1));
+        node->appendChild("left", $3);
+        $$ = node;
+    }
+    | BYTE IDENT
+    {
+        ExprNode *node = new ExprNode({"ado_expression", "ado_type_expression"});
+        node->addData("verb", *($1));
         ExprNode *lst = new ExprNode("ado_expression_list");
         lst->appendChild($2);
         node->appendChild("left", lst);
-
+        $$ = node;
+    }
+    | INT IDENT
+    {
+        ExprNode *node = new ExprNode({"ado_expression", "ado_type_expression"});
+        node->addData("verb", *($1));
+        ExprNode *lst = new ExprNode("ado_expression_list");
+        lst->appendChild($2);
+        node->appendChild("left", lst);
+        $$ = node;
+    }
+    | LONG IDENT
+    {
+        ExprNode *node = new ExprNode({"ado_expression", "ado_type_expression"});
+        node->addData("verb", *($1));
+        ExprNode *lst = new ExprNode("ado_expression_list");
+        lst->appendChild($2);
+        node->appendChild("left", lst);
+        $$ = node;
+    }
+    | FLOAT IDENT
+    {
+        ExprNode *node = new ExprNode({"ado_expression", "ado_type_expression"});
+        node->addData("verb", *($1));
+        ExprNode *lst = new ExprNode("ado_expression_list");
+        lst->appendChild($2);
+        node->appendChild("left", lst);
+        $$ = node;
+    }
+    | DOUBLE IDENT
+    {
+        ExprNode *node = new ExprNode({"ado_expression", "ado_type_expression"});
+        node->addData("verb", *($1));
+        ExprNode *lst = new ExprNode("ado_expression_list");
+        lst->appendChild($2);
+        node->appendChild("left", lst);
+        $$ = node;
+    }
+    | STRING_TYPE_SPEC IDENT
+    {
+        ExprNode *node = new ExprNode({"ado_expression", "ado_type_expression"});
+        node->addData("verb", *($1));
+        ExprNode *lst = new ExprNode("ado_expression_list");
+        lst->appendChild($2);
+        node->appendChild("left", lst);
         $$ = node;
     }
     ;

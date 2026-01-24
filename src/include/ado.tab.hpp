@@ -455,41 +455,40 @@ namespace yy {
         S_anova_nest_expression = 108,           // anova_nest_expression
         S_anova_error_expression = 109,          // anova_error_expression
         S_anova_term_list = 110,                 // anova_term_list
-        S_type_operator = 111,                   // type_operator
-        S_assignment_operator = 112,             // assignment_operator
-        S_unary_operator = 113,                  // unary_operator
-        S_unary_factor_operator = 114,           // unary_factor_operator
-        S_power_operator = 115,                  // power_operator
-        S_multiplication_operator = 116,         // multiplication_operator
-        S_additive_operator = 117,               // additive_operator
-        S_relational_operator = 118,             // relational_operator
-        S_equality_operator = 119,               // equality_operator
-        S_logical_operator = 120,                // logical_operator
-        S_cross_operator = 121,                  // cross_operator
-        S_format_spec = 122,                     // format_spec
-        S_literal_expression = 123,              // literal_expression
-        S_primary_expression = 124,              // primary_expression
-        S_unary_factor_expression = 125,         // unary_factor_expression
-        S_cross_expression = 126,                // cross_expression
-        S_postfix_expression = 127,              // postfix_expression
-        S_power_expression = 128,                // power_expression
-        S_unary_expression = 129,                // unary_expression
-        S_multiplication_expression = 130,       // multiplication_expression
-        S_additive_expression = 131,             // additive_expression
-        S_relational_expression = 132,           // relational_expression
-        S_equality_expression = 133,             // equality_expression
-        S_logical_expression = 134,              // logical_expression
-        S_expression = 135,                      // expression
-        S_expression_list = 136,                 // expression_list
-        S_argument_expression_list = 137,        // argument_expression_list
-        S_option_list = 138,                     // option_list
-        S_options = 139,                         // options
-        S_option = 140,                          // option
-        S_option_ident = 141,                    // option_ident
-        S_weight_clause = 142,                   // weight_clause
-        S_if_clause = 143,                       // if_clause
-        S_in_clause = 144,                       // in_clause
-        S_using_clause = 145                     // using_clause
+        S_assignment_operator = 111,             // assignment_operator
+        S_unary_operator = 112,                  // unary_operator
+        S_unary_factor_operator = 113,           // unary_factor_operator
+        S_power_operator = 114,                  // power_operator
+        S_multiplication_operator = 115,         // multiplication_operator
+        S_additive_operator = 116,               // additive_operator
+        S_relational_operator = 117,             // relational_operator
+        S_equality_operator = 118,               // equality_operator
+        S_logical_operator = 119,                // logical_operator
+        S_cross_operator = 120,                  // cross_operator
+        S_format_spec = 121,                     // format_spec
+        S_literal_expression = 122,              // literal_expression
+        S_primary_expression = 123,              // primary_expression
+        S_unary_factor_expression = 124,         // unary_factor_expression
+        S_cross_expression = 125,                // cross_expression
+        S_postfix_expression = 126,              // postfix_expression
+        S_power_expression = 127,                // power_expression
+        S_unary_expression = 128,                // unary_expression
+        S_multiplication_expression = 129,       // multiplication_expression
+        S_additive_expression = 130,             // additive_expression
+        S_relational_expression = 131,           // relational_expression
+        S_equality_expression = 132,             // equality_expression
+        S_logical_expression = 133,              // logical_expression
+        S_expression = 134,                      // expression
+        S_expression_list = 135,                 // expression_list
+        S_argument_expression_list = 136,        // argument_expression_list
+        S_option_list = 137,                     // option_list
+        S_options = 138,                         // options
+        S_option = 139,                          // option
+        S_option_ident = 140,                    // option_ident
+        S_weight_clause = 141,                   // weight_clause
+        S_if_clause = 142,                       // if_clause
+        S_in_clause = 143,                       // in_clause
+        S_using_clause = 144                     // using_clause
       };
     };
 
@@ -752,7 +751,7 @@ namespace yy {
     static const short yypgoto_[];
 
     // YYDEFGOTO[NTERM-NUM].
-    static const unsigned char yydefgoto_[];
+    static const short yydefgoto_[];
 
     // YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
     // positive, shift that token.  If negative, reduce the rule whose
@@ -1001,9 +1000,9 @@ namespace yy {
     /// Constants.
     enum
     {
-      yylast_ = 828,     ///< Last index in yytable_.
-      yynnts_ = 66,  ///< Number of nonterminal symbols.
-      yyfinal_ = 112 ///< Termination state number.
+      yylast_ = 1043,     ///< Last index in yytable_.
+      yynnts_ = 65,  ///< Number of nonterminal symbols.
+      yyfinal_ = 111 ///< Termination state number.
     };
 
 
@@ -1015,7 +1014,7 @@ namespace yy {
 
 
 } // yy
-#line 1019 "ado.tab.hpp"
+#line 1018 "ado.tab.hpp"
 
 
 
