@@ -38,3 +38,18 @@ test_that("Invalid expressions are rejected", {
   # Note: Function existence is often checked at codegen or runtime, not semantic
 })
 
+test_that("Invalid type specifications in gen commands are rejected", {
+  skip("Semantic validation for type usage in gen commands not yet implemented")
+
+  # After allowing type keywords as identifiers, these now parse successfully
+  # but should fail semantic analysis because they use type keywords incorrectly
+
+  # Type keyword used as variable name instead of type specifier
+  expect_semantic_reject("gen foo byte = 1\n")
+  expect_semantic_reject("gen foo byte\n")
+  expect_semantic_reject("gen foo = int 1\n")
+  expect_semantic_reject("gen foo int\n")
+  expect_semantic_reject("gen foo = 1 strL\n")
+  expect_semantic_reject("gen foo strL\n")
+})
+
