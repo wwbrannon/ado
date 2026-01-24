@@ -58,12 +58,6 @@ R6::R6Class("AdoInterpreter",
                 self$dta$use_dataframe(df)
         },
 
-        finalize = function()
-        {
-            self$dta$clear()
-            self$log_deregister_all_sinks()
-        },
-
         ##
         ## Logging methods
         ##
@@ -607,6 +601,12 @@ R6::R6Class("AdoInterpreter",
         macro_syms = NULL,
         usercmd = NULL,
         defaultcmd = NULL,
+
+        finalize = function()
+        {
+            self$dta$clear()
+            self$log_deregister_all_sinks()
+        },
 
         default_webuse_url = function()
         {
