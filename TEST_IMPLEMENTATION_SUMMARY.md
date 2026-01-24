@@ -88,14 +88,15 @@ This document summarizes the test suite expansion completed for the ado package.
 
 3. **test-add_command.R**: Fails because `temporary_name()` utility function is not exported
 
-## Files Modified
+## Files Modified/Created
 - ✅ `tests/testthat/helper-functions.R` - Added codegen test helpers, fixed namespace issues
-- ✅ `tests/testthat/test-semantic_accept.R` - Filled from empty stub
-- ✅ `tests/testthat/test-semantic_reject.R` - Partially filled
-- ✅ `tests/testthat/test-codegen.R` - Filled from empty stub
-- ✅ `tests/testthat/test-dataset.R` - Filled from empty stub
+- ✅ `tests/testthat/test-semantic_accept.R` - Filled from empty stub (Phase 1)
+- ✅ `tests/testthat/test-semantic_reject.R` - Partially filled (Phase 1)
+- ✅ `tests/testthat/test-codegen.R` - Filled from empty stub (Phase 1)
+- ✅ `tests/testthat/test-dataset.R` - Filled from empty stub (Phase 1)
+- ✅ `tests/testthat/test-utils.R` - **NEW** Comprehensive utility function tests (Phase 4)
 
-## Phase 2-5 Status (Not Yet Implemented)
+## Phase 2-3, 5 Status (Not Yet Implemented)
 
 ### Phase 2: R6 Class Unit Tests
 - ❌ `test-ado_interpreter.R` - Not created
@@ -110,8 +111,25 @@ This document summarizes the test suite expansion completed for the ado package.
 - ❌ `test-cmd_loop.R` - Not created
 - ❌ `test-cmd_macro.R` - Not created
 
-### Phase 4: Utility Function Tests
-- ❌ `test-utils.R` - Not created
+### Phase 4: Utility Function Tests ✅
+**File:** `tests/testthat/test-utils.R`
+
+**Coverage Added:**
+- **Infix operators:** `%is%`, `%p%`, `%not_in%`, `%xor%`, `%|%`, `%&%` (6 test blocks)
+- **Option handling:** `validateOpts`, `hasOption`, `optionArgs` (6 test blocks)
+- **General utilities:** `temporary_name`, `char_count`, `flatten`, `rev_string`, `valid_data_type`, `unabbreviateName`, `expression_list_to_formula` (10 test blocks)
+- **Condition handling:** `raiseCondition`, `raiseif`, `raiseifnot` (6 test blocks)
+- **Input handling:** `read_input` (3 test blocks)
+- **Integration tests:** End-to-end workflows (2 test blocks)
+
+**Tests Added:** 139 tests, all passing ✅
+
+**Key Testing Patterns:**
+- Infix operators tested with local assignment to handle non-exported functions
+- Option validation tested against AST structure matching actual parser output
+- Utility functions tested for edge cases (empty inputs, invalid inputs, type preservation)
+- Condition handling tested for proper exception raising and class hierarchy
+- Integration tests verify real-world usage patterns from the codebase
 
 ### Phase 5: End-to-End Testing
 - ❌ `test-e2e.R` - Not created
@@ -119,26 +137,36 @@ This document summarizes the test suite expansion completed for the ado package.
 
 ## Next Steps
 
-1. **Fix known codegen failures**:
-   - Debug datetime literal codegen
-   - Debug weight clause codegen
+1. **Implement Phase 2**: R6 class tests for AdoInterpreter, SymbolTable, Logger
+   - ~60 tests for AdoInterpreter (symbol table accessors, c-class behavior, command lookup, etc.)
+   - ~20 tests for SymbolTable (basic operations, set/unset, bulk operations)
+   - ~10 tests for Logger (sink management, logging enable/disable)
 
-2. **Refine Dataset tests**:
-   - Fix drop_rows API usage
-   - Fix sorting test expectations
-   - Fix in_clause_to_row_numbers tests
+2. **Fix known issues from Phase 1**:
+   - **Codegen failures** (2 tests): datetime literal and weight clause code generation
+   - **Dataset test failures**: API usage mismatches in drop_rows, sorting, in_clause_to_row_numbers
+   - **test-add_command.R**: Export `temporary_name()` or adjust tests
 
-3. **Implement Phase 2**: R6 class tests for AdoInterpreter, SymbolTable, Logger
+3. **Implement Phase 3**: Command implementation tests
+   - Priority commands: data manipulation, load/save, loops, macros
+   - ~100 tests for fully implemented commands
 
-4. **Implement Phase 3**: Command implementation tests
-
-5. **Implement Phase 4**: Utility function tests
-
-6. **Implement Phase 5**: End-to-end testing infrastructure
+4. **Implement Phase 5**: End-to-end testing infrastructure
+   - Fixture-based approach with .do files and expected outputs
+   - ~50 tests covering full pipeline execution
 
 ## Impact
 
 **Before:** ~300 tests covering parser and basic functionality
-**After:** ~430+ tests (estimated) with semantic analysis, code generation, and dataset coverage
+**Current:** ~569 tests with semantic analysis, code generation, dataset, and utility coverage
 
-**Code Coverage Improvement:** Phase 1 adds ~130 new tests targeting previously untested code paths in semantic analysis and code generation.
+**Phase Completion:**
+- ✅ Phase 1 (Semantic, Codegen, Dataset): ~130 new tests
+- ✅ Phase 4 (Utilities): 139 new tests
+- ❌ Phase 2 (R6 Classes): Not started (~90 tests estimated)
+- ❌ Phase 3 (Commands): Not started (~100 tests estimated)
+- ❌ Phase 5 (E2E): Not started (~50 tests estimated)
+
+**Total Estimated Final Tests:** ~909 tests when all phases complete
+
+**Code Coverage Improvement:** Phases 1 & 4 add ~270 tests targeting previously untested utility functions, semantic analysis, and code generation paths.
