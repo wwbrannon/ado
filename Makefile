@@ -24,7 +24,7 @@ shell:
 	docker compose run --rm dev
 
 test:
-	docker compose run --rm dev R -e "devtools::load_all(); devtools::test()"
+	docker compose run --rm dev R -e "devtools::load_all(); testthat::set_max_fails(Inf); devtools::test()"
 
 check:
 	docker compose run --rm dev R -e "devtools::check()"
