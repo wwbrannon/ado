@@ -29,7 +29,8 @@ LinkingTo: Rcpp, testthat
 SystemRequirements: C++11
 Suggests:
     testthat,
-    covr
+    covr,
+    jsonlite
 Encoding: UTF-8
 RoxygenNote: 7.3.3
 Biarch: TRUE

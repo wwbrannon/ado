@@ -1,0 +1,7 @@
+42
+
+3.14159
+
+hello world
+
+multiple words in one line
