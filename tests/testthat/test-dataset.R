@@ -391,10 +391,14 @@ test_that("restore with cancel works", {
   expect_true(TRUE)
 })
 
-test_that("restore without preserve errors", {
-  # NOTE: raiseCondition doesn't throw errors
-  # Skip this test
-  skip("raiseCondition doesn't throw errors")
+test_that("restore without preserve signals condition", {
+  ds <- ado:::Dataset$new()
+
+  # Restore without preserve should signal AdoException
+  expect_condition_signaled(
+    ds$restore(),
+    class = "AdoException"
+  )
 })
 
 test_that("drop_columns validates column existence", {
@@ -404,8 +408,11 @@ test_that("drop_columns validates column existence", {
   # Valid column should work
   expect_silent(ds$drop_columns("x"))
 
-  # Invalid column produces a warning (not an error due to raiseCondition)
-  expect_warning(ds$drop_columns("nonexistent"))
+  # Invalid column should signal AdoException
+  expect_condition_signaled(
+    ds$drop_columns("nonexistent"),
+    class = "AdoException"
+  )
 })
 
 test_that("in_clause_to_row_numbers handles f/F and l/L", {
@@ -430,9 +437,26 @@ test_that("in_clause_to_row_numbers handles f/F and l/L", {
 })
 
 test_that("in_clause_to_row_numbers validates bounds", {
-  # NOTE: raiseCondition signals but doesn't throw errors
-  # Skip these error-checking tests
-  skip("raiseCondition doesn't throw errors")
+  df <- data.frame(x = 1:10)
+  ds <- ado:::Dataset$new(df)
+
+  # Start after end should signal AdoException
+  expect_condition_signaled(
+    ds$in_clause_to_row_numbers(list(lower = 5, upper = 2)),
+    class = "AdoException"
+  )
+
+  # End beyond dataset should signal AdoException
+  expect_condition_signaled(
+    ds$in_clause_to_row_numbers(list(lower = 1, upper = 20)),
+    class = "AdoException"
+  )
+
+  # Start below 1 should signal AdoException
+  expect_condition_signaled(
+    ds$in_clause_to_row_numbers(list(lower = -20, upper = 5)),
+    class = "AdoException"
+  )
 })
 
 test_that("dtypes correctly identifies data types", {

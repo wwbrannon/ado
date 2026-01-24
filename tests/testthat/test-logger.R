@@ -75,16 +75,32 @@ test_that("register_sink normalizes paths", {
 })
 
 test_that("register_sink detects duplicates", {
-  # NOTE: raiseCondition signals but doesn't stop execution,
-  # so duplicate registration doesn't actually throw an error.
-  # This test is skipped since the current implementation doesn't prevent duplicates.
-  skip("raiseCondition doesn't throw errors")
+  logger <- ado:::Logger$new()
+  temp_file <- temp_log_file()
+  on.exit(unlink(temp_file), add = TRUE)
+
+  # Register once
+  logger$register_sink(temp_file, type = "log", header = FALSE)
+
+  # Try to register again - should signal AdoException
+  expect_condition_signaled(
+    logger$register_sink(temp_file, type = "log", header = FALSE),
+    class = "AdoException"
+  )
+
+  # Cleanup
+  logger$deregister_sink(temp_file)
 })
 
 test_that("register_sink rejects invalid type", {
-  # NOTE: raiseCondition signals but doesn't stop execution.
-  # This test is skipped since the current implementation doesn't validate type.
-  skip("raiseCondition doesn't throw errors")
+  logger <- ado:::Logger$new()
+  temp_file <- temp_log_file()
+
+  # Invalid type should signal AdoException
+  expect_condition_signaled(
+    logger$register_sink(temp_file, type = "invalid"),
+    class = "AdoException"
+  )
 })
 
 test_that("register_sink writes header when requested", {
@@ -122,10 +138,15 @@ test_that("sink_type returns correct type", {
   logger$deregister_all_sinks()
 })
 
-test_that("sink_type errors for unregistered sink", {
-  # NOTE: raiseCondition signals but doesn't stop execution.
-  # This test is skipped.
-  skip("raiseCondition doesn't throw errors")
+test_that("sink_type signals condition for unregistered sink", {
+  logger <- ado:::Logger$new()
+  temp_file <- temp_log_file()
+
+  # Should signal AdoException for unregistered sink
+  expect_condition_signaled(
+    logger$sink_type(temp_file),
+    class = "AdoException"
+  )
 })
 
 test_that("has_sink works with type parameter", {
@@ -148,9 +169,14 @@ test_that("has_sink works with type parameter", {
 })
 
 test_that("has_sink rejects invalid type", {
-  # NOTE: raiseCondition signals but doesn't stop execution.
-  # This test is skipped.
-  skip("raiseCondition doesn't throw errors")
+  logger <- ado:::Logger$new()
+  temp_file <- temp_log_file()
+
+  # Invalid type should signal AdoException
+  expect_condition_signaled(
+    logger$has_sink(temp_file, type = "invalid"),
+    class = "AdoException"
+  )
 })
 
 test_that("deregister_sink removes sink and closes file", {

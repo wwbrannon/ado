@@ -26,6 +26,25 @@ function(str)
     eval(bquote(expect_equal(parse_accept(.(str)), 0)))
 }
 
+## Helper for testing raiseCondition() which signals but doesn't throw errors
+expect_condition_signaled <-
+function(expr, class = "AdoException")
+{
+  condition_signaled <- FALSE
+
+  withCallingHandlers(
+    expr,
+    condition = function(c) {
+      if (inherits(c, class)) {
+        condition_signaled <<- TRUE
+      }
+    }
+  )
+
+  expect_true(condition_signaled,
+              label = sprintf("Expected condition of class '%s' to be signaled", class))
+}
+
 ## Functions for semantic analysis tests
 ado_parse <-
 function(str)
